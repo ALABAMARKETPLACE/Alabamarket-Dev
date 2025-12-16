@@ -73,7 +73,7 @@ function PaymentBox(props: any) {
                   fontSize: "10px",
                   fontWeight: "bold"
                 }}>
-                  NGN
+                  ₦
                 </div>
               </div>
             </Col>

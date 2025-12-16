@@ -1,28 +1,128 @@
 @use "../../../config/styleVariable.scss" as global;
+
 .sellerimg {
   width: 100px;
 }
+
 .sellerRegister-box2 {
   height: 100%;
   min-height: 50vh;
-  border-left: 1px solid global.$grey5;
-  padding-left: 20px;
+  border-left: 2px solid rgba(255, 153, 0, 0.2);
+  padding-left: 30px;
   @media screen and (min-width: 320px) and (max-width: 768px) {
     padding-left: 0px;
     border-left: 0px;
   }
 }
 
+.sellerRegister-Heading {
+  font-size: 36px;
+  font-family: global.$Bold;
+  text-align: left;
+  background: linear-gradient(135deg, #1d1d1d 0%, global.$orange 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-top: 20px;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+  animation: slideInDown 0.6s ease-out;
+  
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+}
+
+.sellerRegister-subHeading {
+  font-size: 28px;
+  font-family: global.$Bold;
+  text-align: left;
+  background: linear-gradient(135deg, #1a4d3e 0%, global.$orange 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+  animation: slideInDown 0.6s ease-out;
+  
+  @media (max-width: 768px) {
+    font-size: 22px;
+  }
+}
+
 .sellerRegister-banner-item {
-  height: 100px;
+  height: 140px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0px 39px;
+  padding: 24px 20px;
   text-align: center;
-  @media screen {
-    padding: 0%;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 14px;
+  border: 2px solid rgba(255, 107, 44, 0.15);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 153, 0, 0.2) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-12px) scale(1.05);
+    box-shadow: 0 16px 48px rgba(255, 107, 44, 0.25);
+    border-color: rgba(255, 107, 44, 0.5);
+    background: linear-gradient(135deg, #ffffff 0%, #fffbf7 100%);
+    
+    &::before {
+      opacity: 1;
+    }
+    
+    svg {
+      filter: drop-shadow(0 6px 16px rgba(255, 107, 44, 0.4));
+      transform: scale(1.15) rotate(-8deg);
+      color: global.$orange;
+    }
+  }
+  
+  svg {
+    font-size: 56px;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 12px;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+  }
+  
+  span {
+    margin-top: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    line-height: 1.4;
+    font-size: 14px;
+    color: #1d1d1d;
+  }
+  
+  @media screen and (max-width: 768px) {
+    padding: 18px 12px;
+    height: 120px;
+    
+    svg {
+      font-size: 44px;
+      width: 44px;
+      height: 44px;
+    }
   }
 }
 
@@ -48,87 +148,581 @@
   justify-content: center;
   flex-direction: column;
   height: 100%;
+  animation: slideInLeft 0.6s ease-out;
+  
+  h4 {
+    margin-bottom: 16px;
+  }
 }
+
 .sellerRegister-box5 {
-  border: 1px solid lightgrey;
-  border-radius: 7px;
-  padding: 40px;
-  @media screen and (max-width: 768px) {
-    border: none;
-  }
-}
-.individualSellerPage-Box5 {
-  max-width: 100%;
-  height: 300px;
-  border-radius: 10px;
-  @media screen and (max-width: 768px) {
-    height: 200px;
-  }
-}
-.sellerRegister-box12 {
-  background-color: rgb(240, 240, 240);
+  border: 2px solid rgba(255, 107, 44, 0.2);
+  border-radius: 16px;
   padding: 20px;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #ffffff 100%);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: slideInRight 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, global.$orange 50%, transparent 100%);
+  }
+  
+  &:hover {
+    box-shadow: 0 16px 48px rgba(255, 107, 44, 0.18);
+    border-color: rgba(255, 107, 44, 0.4);
+    transform: translateY(-4px);
+  }
+  
+  div {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255, 153, 0, 0.02) 0%, rgba(26, 77, 62, 0.02) 100%);
+    transition: all 0.3s ease;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+    
+    &:hover {
+      background: linear-gradient(135deg, rgba(255, 153, 0, 0.06) 0%, rgba(26, 77, 62, 0.06) 100%);
+      transform: translateX(4px);
+    }
+    
+    svg {
+      min-width: 28px;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    }
+  }
+  
+  @media screen and (max-width: 768px) {
+    border: 2px solid rgba(255, 107, 44, 0.2);
+    padding: 18px 16px;
+  }
 }
+
+.sellerRegister-box12 {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #ffffff 100%);
+  padding: 32px 28px;
+  border-radius: 16px;
+  border: 2px solid rgba(255, 107, 44, 0.15);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  margin: 32px 0 56px;
+  animation: slideInUp 0.6s ease-out;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        rgba(255, 153, 0, 0.02) 10px,
+        rgba(255, 153, 0, 0.02) 20px
+      );
+    pointer-events: none;
+  }
+  
+  &:hover {
+    box-shadow: 0 12px 40px rgba(255, 107, 44, 0.12);
+    border-color: rgba(255, 107, 44, 0.25);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 28px 20px;
+    margin: 28px 0;
+  }
+}
+.sellerRegister-text1 {
+  font-size: 15px;
+  font-family: global.$Regular;
+  color: #666666;
+  letter-spacing: 0.4px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+  
+  .sellerRegister-box5 & {
+    font-size: 13px;
+    margin-bottom: 0;
+    line-height: 1.5;
+    color: #777;
+  }
+}
+
+.sellerRegister-text2 {
+  font-size: 16px;
+  font-family: global.$SemiBold;
+  color: #1d1d1d;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  .sellerRegister-box5 & {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #222;
+  }
+  
+  &:hover {
+    color: global.$orange;
+    transform: translateX(4px);
+  }
+}
+
 .sellerRegister-text13 {
   font-size: 15px;
+  color: #666666;
+  letter-spacing: 0.3px;
 }
+
 .text-secondary {
   font-size: 15px;
+  color: #8a8a8a;
+  letter-spacing: 0.3px;
 }
 
 .sellerRegister-Txt8 {
   font-family: global.$Bold;
-  font-size: 30px;
-}
-
-// new styles
-.sellerRegister-Heading {
-  font-size: 30px;
-  font-family: global.$SemiBold;
-  text-align: left;
-  color: #000;
-}
-.sellerRegister-subHeading {
-  font-size: 25px;
-  font-family: global.$SemiBold;
-  text-align: left;
-  color: #000;
-}
-.sellerRegister-text1 {
-  font-size: 14px;
-  font-family: global.$Regular;
-  color: global.$grey1;
-  letter-spacing: 0.05em;
-}
-.sellerRegister-text2 {
-  font-size: 15px;
-  font-family: global.$SemiBold;
+  font-size: 36px;
+  background: linear-gradient(135deg, #1d1d1d 0%, global.$orange 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .sellerRegister-ImagePicker {
-  border: 2px dashed global.$grey5;
-  padding: 15px;
-  border-radius: 6px;
+  border: 2px dashed rgba(255, 153, 0, 0.3);
+  padding: 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255, 153, 0, 0.02) 0%, rgba(26, 77, 62, 0.02) 100%);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  
+  &:hover {
+    border-color: rgba(255, 153, 0, 0.5);
+    background: linear-gradient(135deg, rgba(255, 153, 0, 0.05) 0%, rgba(26, 77, 62, 0.05) 100%);
+  }
 }
+
 .sellerRegister-ImagePickerBox {
   display: flex;
   flex-direction: row;
   align-items: center;
   font-family: global.$SemiBold;
   font-size: 15px;
+  color: #1d1d1d;
 }
+
 .sellerRegister-row {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 16px;
 }
+
 .sellerRegister-fileCard {
-  border: 1px solid global.$grey5;
+  border: 2px solid rgba(255, 107, 44, 0.15);
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   border-radius: 10px;
-  padding: 10px;
+  padding: 14px;
   font-family: global.$SemiBold;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: rgba(255, 107, 44, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 107, 44, 0.1);
+  }
+}
+
+.sellerRegister-step3row2 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(255, 153, 0, 0.03) 0%, rgba(26, 77, 62, 0.02) 100%);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 107, 44, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: rgba(255, 107, 44, 0.2);
+    background: linear-gradient(135deg, rgba(255, 153, 0, 0.06) 0%, rgba(26, 77, 62, 0.04) 100%);
+  }
+}
+
+.IndividualStep1-Box1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  
+  svg {
+    color: global.$orange;
+    filter: drop-shadow(0 2px 4px rgba(255, 107, 44, 0.2));
+  }
+}
+
+.individualSellerPage-Box5 {
+  max-width: 100%;
+  height: 320px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border: 2px solid rgba(255, 107, 44, 0.1);
+  animation: slideInUp 0.6s ease-out;
+  
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(255, 107, 44, 0.2);
+    border-color: rgba(255, 107, 44, 0.2);
+  }
+  
+  @media screen and (max-width: 768px) {
+    height: 240px;
+  }
+}
+
+// ========================
+// Professional Input Styling
+// ========================
+
+.input-form-label {
+  font-size: 14px;
+  font-family: global.$SemiBold;
+  color: #1d1d1d;
+  margin-bottom: 8px;
+  display: block;
+  letter-spacing: 0.3px;
+  font-weight: 600;
+}
+
+// Ant Design Form Item Customization
+.ant-form-item {
+  margin-bottom: 20px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.ant-form-item-label {
+  padding: 0;
+  
+  label {
+    color: #1d1d1d;
+    font-family: global.$SemiBold;
+    font-size: 14px;
+    font-weight: 600;
+    height: auto;
+    
+    &::after {
+      content: " *";
+      color: #ff4d4f;
+    }
+    
+    &.ant-form-item-optional::after {
+      content: "";
+    }
+  }
+}
+
+// Input & Textarea Styling
+.ant-input,
+.ant-input-number,
+.ant-select-selector,
+.ant-picker,
+textarea.ant-input {
+  border: 2px solid #e8e8e8 !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+  padding: 10px 14px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: #ffffff !important;
+  color: #1d1d1d !important;
+  font-family: global.$Regular !important;
+  
+  &:hover {
+    border-color: rgba(255, 107, 44, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(255, 107, 44, 0.08) !important;
+  }
+  
+  &:focus,
+  &.ant-input-focused {
+    border-color: global.$orange !important;
+    box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.15) !important;
+    outline: none !important;
+  }
+  
+  &::placeholder {
+    color: #999 !important;
+    opacity: 1 !important;
+  }
+  
+  &:disabled {
+    background: #f5f5f5 !important;
+    color: #999 !important;
+    cursor: not-allowed !important;
+    border-color: #e8e8e8 !important;
+  }
+}
+
+// Select Component
+.ant-select {
+  .ant-select-selector {
+    padding: 4px 11px !important;
+    
+    .ant-select-selection-item {
+      color: #1d1d1d;
+      font-size: 14px;
+    }
+  }
+  
+  &.ant-select-focused .ant-select-selector {
+    border-color: global.$orange !important;
+    box-shadow: 0 0 0 3px rgba(255, 107, 44, 0.15) !important;
+  }
+}
+
+// Date Picker
+.ant-picker {
+  width: 100% !important;
+  
+  .ant-picker-input {
+    color: #1d1d1d !important;
+  }
+}
+
+// Checkbox & Radio
+.ant-checkbox-wrapper {
+  color: #1d1d1d;
+  font-size: 14px;
+  
+  .ant-checkbox-inner {
+    border-color: #e8e8e8;
+    background: white;
+    transition: all 0.3s ease;
+  }
+  
+  &:hover .ant-checkbox-inner {
+    border-color: global.$orange;
+  }
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: global.$orange !important;
+  border-color: global.$orange !important;
+}
+
+.ant-radio-wrapper {
+  color: #1d1d1d;
+  font-size: 14px;
+  
+  .ant-radio-inner {
+    border-color: #e8e8e8;
+    background: white;
+    transition: all 0.3s ease;
+  }
+  
+  &:hover .ant-radio-inner {
+    border-color: global.$orange;
+  }
+}
+
+.ant-radio-checked .ant-radio-inner {
+  border-color: global.$orange !important;
+}
+
+// Button Styling
+.ant-btn {
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  height: auto !important;
+  padding: 10px 24px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-family: global.$SemiBold !important;
+  letter-spacing: 0.3px;
+  
+  &.ant-btn-default {
+    border-color: #e8e8e8 !important;
+    color: #1d1d1d !important;
+    
+    &:hover {
+      border-color: global.$orange !important;
+      color: global.$orange !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 44, 0.15);
+    }
+  }
+  
+  &.ant-btn-primary {
+    background: linear-gradient(135deg, global.$orange 0%, #ff8c4d 100%) !important;
+    border: none !important;
+    color: white !important;
+    
+    &:hover {
+      opacity: 0.92;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255, 107, 44, 0.3);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// Error Message Styling
+.ant-form-item-explain-error {
+  font-size: 12px !important;
+  color: #ff4d4f !important;
+  margin-top: 6px !important;
+  font-family: global.$Regular;
+}
+
+.ant-form-item-has-error {
+  .ant-input,
+  .ant-select-selector,
+  .ant-picker {
+    border-color: #ff4d4f !important;
+    
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.15) !important;
+    }
+  }
+}
+
+// Container & Layout
+.sellerRegister-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+// Steps Styling
+.sellerRegister-steps {
+  margin-bottom: 32px;
+  padding: 0;
+  
+  .ant-steps-item {
+    flex-grow: 1;
+    
+    &-process .ant-steps-item-icon {
+      background: linear-gradient(135deg, global.$orange 0%, #ff8c4d 100%);
+      border-color: global.$orange;
+    }
+    
+    &-finish .ant-steps-item-icon {
+      background: linear-gradient(135deg, global.$orange 0%, #ff8c4d 100%);
+      border-color: global.$orange;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .ant-steps-item-title {
+      font-size: 12px;
+    }
+    
+    .ant-steps-item-description {
+      font-size: 11px;
+    }
+  }
+}
+
+// Animations
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

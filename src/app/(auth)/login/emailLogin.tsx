@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button, Form, Input, notification } from "antd";
 import { BiErrorCircle } from "react-icons/bi";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
 
 import React from "react";
 import { useRouter } from "next/navigation";
@@ -16,15 +17,14 @@ function EmailLogin() {
   const [notificationApi, contextHolder] = notification.useNotification();
   const dispatch = useAppDispatch();
   const LoginEmail = async (values: any) => {
-    console.log("DAVOODVALUES=======>>>>>", values);
     try {
       setIsLoading(true);
+      setError(null);
       const result: any = await signIn("credentials", {
         redirect: false,
         email: values.email,
         password: values.password,
       });
-      console.log("DAVOODRESULT=======>>>>>", result);
       if (result.ok) {
         const session: any = await getSession();
         dispatch(
@@ -36,72 +36,93 @@ function EmailLogin() {
         navigation.replace("/auth");
       } else {
         notificationApi.error({
-          message: result.error || "something went wrong.",
+          message: result.error || "Invalid email or password",
         });
+        setError(result.error || "Login failed");
       }
     } catch (err) {
       setIsLoading(false);
       setError("Something went wrong");
+      notificationApi.error({
+        message: "Something went wrong. Please try again.",
+      });
     }
   };
 
   return (
-    <div>
+    <div className="email-login-container">
       {contextHolder}
-      <div className="LoginScreen-txt2 text-center">
-        Enter your email and we’ll check for you.
+      <div className="email-login-subtitle">
+        Enter your email and password to sign in to your account
       </div>
-      <br />
-      <Form onFinish={LoginEmail}>
+      
+      <Form onFinish={LoginEmail} layout="vertical" className="email-login-form">
         <Form.Item
           name={"email"}
+          label={<span className="email-login-label">Email Address</span>}
           rules={[
-            { required: true, message: "Please Enter your Email" },
-            { type: "email", message: "Please enter a Valid Email" },
+            { required: true, message: "Please enter your email address" },
+            { type: "email", message: "Please enter a valid email address" },
           ]}
         >
-          <Input size="large" placeholder="Enter your Email" />
+          <Input 
+            size="large" 
+            placeholder="you@example.com"
+            prefix={<MailOutlined style={{ color: '#FF9900', marginRight: 8 }} />}
+            className="email-login-input"
+          />
         </Form.Item>
+
         <Form.Item
           name={"password"}
+          label={<span className="email-login-label">Password</span>}
           rules={[
-            { required: true, message: "Please Enter Password" },
-            { max: 20, message: "" },
+            { required: true, message: "Please enter your password" },
+            { min: 6, message: "Password must be at least 6 characters" },
           ]}
         >
-          <Input.Password size="large" placeholder="Enter Password" />
+          <Input.Password 
+            size="large" 
+            placeholder="Enter your password"
+            prefix={<LockOutlined style={{ color: '#FF9900', marginRight: 8 }} />}
+            className="email-login-input"
+          />
         </Form.Item>
+
         {error ? (
-          <div className="LoginScreen-errortxt">
-            <BiErrorCircle />
-            &nbsp;
+          <div className="email-login-error">
+            <BiErrorCircle style={{ marginRight: 6 }} />
             {error}
           </div>
         ) : null}
-        <div className="row">
-          <div className="col-sm-6">
-            <div
-              className="LoginScreen-txt3 h-100 d-flex align-items-center"
-              onClick={() => navigation.push("/forgot-password")}
-            >
-              Forgot password ?
-            </div>
-          </div>
-          <div className="col-sm-6">
-            <Button
-              loading={isLoading}
-              block
-              size="large"
-              type="primary"
-              htmlType="submit"
-              style={{ height: 45 }}
-            >
-              Login
-            </Button>
-          </div>
+
+        <div className="email-login-footer-actions">
+          <button
+            type="button"
+            className="email-login-forgot-btn"
+            onClick={() => navigation.push("/forgot-password")}
+          >
+            Forgot password?
+          </button>
+          <Button
+            loading={isLoading}
+            size="large"
+            type="primary"
+            htmlType="submit"
+            className="email-login-btn"
+            style={{
+              height: 48,
+              fontSize: 16,
+              fontWeight: 600,
+              background: 'linear-gradient(135deg, #FF9900 0%, #FFB84D 100%)',
+              border: 'none',
+              borderRadius: 12,
+            }}
+          >
+            {isLoading ? "Signing in..." : "Sign In"}
+          </Button>
         </div>
       </Form>
-      <hr />
     </div>
   );
 }

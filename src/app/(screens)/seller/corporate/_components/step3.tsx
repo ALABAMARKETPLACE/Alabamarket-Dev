@@ -13,147 +13,191 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
     <div className="sellerRegister-stepbox">
       <Container>
         <Row>
-          <Col md={4}>
-            <Form
-              form={form}
-              onFinish={onFinish}
-              initialValues={{
-                seller_name: formData?.seller_name,
-                citizenship_country: formData?.citizenship_country,
-                birth_country: formData?.birth_country,
-                dob: formData?.dob ? dayjs(formData?.dob) : null,
-                issue_country: formData?.issue_country,
-                expiry_date: formData?.expiry_date
-                  ? dayjs(formData?.expiry_date)
-                  : null,
-                id_type: formData?.id_type,
-              }}
-            >
-              <div className="input-form-label">Seller Name</div>
-              <Form.Item
-                name="seller_name"
-                rules={[
-                  { required: true, message: "Please Provide Seller name" },
-                  {
-                    max: 50,
-                    message: "Seller Name is too long",
-                  },
-                ]}
+          <Col md={{ span: 12, offset: 0 }} lg={{ span: 10, offset: 1 }} xl={{ span: 8, offset: 2 }}>
+            <div style={{ animation: "fadeInUp 0.6s ease-out" }}>
+              <Form
+                form={form}
+                onFinish={onFinish}
+                layout="vertical"
+                initialValues={{
+                  seller_name: formData?.seller_name,
+                  citizenship_country: formData?.citizenship_country,
+                  birth_country: formData?.birth_country,
+                  dob: formData?.dob ? dayjs(formData?.dob) : null,
+                  issue_country: formData?.issue_country,
+                  expiry_date: formData?.expiry_date
+                    ? dayjs(formData?.expiry_date)
+                    : null,
+                  id_type: formData?.id_type,
+                }}
               >
-                <Input placeholder="Seller Name" size="large" />
-              </Form.Item>
-              <div className="input-form-label">Citizenship Country</div>
-              <Form.Item name="citizenship_country">
-                <Select
-                  placeholder="Citizenship Country"
-                  size="large"
-                  showSearch={true}
-                >
-                  {Country?.map((item: any) => {
-                    return (
-                      <Option key={item.name} value={item.name}>
-                        {item.name}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <div className="input-form-label">Birth Country</div>
-              <Form.Item name="birth_country">
-                <Select
-                  placeholder="Birth Country"
-                  size="large"
-                  showSearch={true}
-                >
-                  {Country?.map((item: any) => {
-                    return (
-                      <Option key={item.name} value={item.name}>
-                        {item.name}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <div className="input-form-label">Date of Birth</div>
-              <Form.Item name="dob">
-                <DatePicker
-                  placeholder="DOB"
-                  style={{ width: "100%" }}
-                  size="large"
-                />
-              </Form.Item>
-              <div className="input-form-label">ID Proof</div>
-              <Form.Item name="id_type">
-                <Select placeholder="Select ID Proof" size="large">
-                  <Option key="NIN">NIN</Option>
-                  <Option key="Passport">Passport</Option>
-                  <Option value="Driving Liscence">Drivers Liscence</Option>
-                </Select>
-              </Form.Item>
-              <div className="input-form-label">Issue Country</div>
-              <Form.Item name="issue_country">
-                <Select
-                  placeholder="Issue Country"
-                  size="large"
-                  showSearch={true}
-                >
-                  {Country?.map((item: any) => {
-                    return (
-                      <Option key={item.name} value={item.name}>
-                        {item.name}
-                      </Option>
-                    );
-                  })}
-                </Select>
-              </Form.Item>
-              <div className="input-form-label">Expiry Date</div>
-              <Form.Item name="expiry_date">
-                <DatePicker
-                  placeholder="Expiry Date"
-                  style={{ width: "100%" }}
-                  size="large"
-                />
-              </Form.Item>
-              <Row>
-                <Col md={6} xs={6}>
-                  <Button onClick={() => goBack()} block size="large">
-                    Back
-                  </Button>
-                </Col>
-                <Col md={6} xs={6}>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" block size="large">
-                      Continue
+                {/* Personal Information Section */}
+                <div style={{ marginBottom: "32px" }}>
+                  <h3 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "20px", color: "#1d1d1d", letterSpacing: "0.3px", fontFamily: "global.$SemiBold" }}>
+                    👤 Personal Information
+                  </h3>
+                  <div style={{ background: "#fafbfc", padding: "20px", borderRadius: "12px", border: "1px solid #e8e8e8" }}>
+                    <Row gutter={[16, 16]}>
+                      <Col xs={24}>
+                        <div className="input-form-label">Seller Name</div>
+                        <Form.Item
+                          name="seller_name"
+                          rules={[
+                            { required: true, message: "Please Provide Seller name" },
+                            {
+                              max: 50,
+                              message: "Seller Name is too long",
+                            },
+                          ]}
+                          style={{ marginBottom: 0 }}
+                        >
+                          <Input placeholder="Enter your full name" size="large" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+
+                {/* Citizenship & Birth Section */}
+                <div style={{ marginBottom: "32px" }}>
+                  <h3 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "20px", color: "#1d1d1d", letterSpacing: "0.3px", fontFamily: "global.$SemiBold" }}>
+                    🌍 Citizenship & Birth Information
+                  </h3>
+                  <div style={{ background: "#fafbfc", padding: "20px", borderRadius: "12px", border: "1px solid #e8e8e8" }}>
+                    <Row gutter={[16, 16]}>
+                      <Col xs={24} sm={12}>
+                        <div className="input-form-label">Citizenship Country</div>
+                        <Form.Item 
+                          name="citizenship_country"
+                          style={{ marginBottom: 0 }}
+                        >
+                          <Select
+                            placeholder="Select your citizenship country"
+                            size="large"
+                            showSearch={true}
+                          >
+                            {Country?.map((item: any) => {
+                              return (
+                                <Option key={item.name} value={item.name}>
+                                  {item.name}
+                                </Option>
+                              );
+                            })}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} sm={12}>
+                        <div className="input-form-label">Birth Country</div>
+                        <Form.Item 
+                          name="birth_country"
+                          style={{ marginBottom: 0 }}
+                        >
+                          <Select
+                            placeholder="Select your birth country"
+                            size="large"
+                            showSearch={true}
+                          >
+                            {Country?.map((item: any) => {
+                              return (
+                                <Option key={item.name} value={item.name}>
+                                  {item.name}
+                                </Option>
+                              );
+                            })}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24}>
+                        <div className="input-form-label">Date of Birth</div>
+                        <Form.Item 
+                          name="dob"
+                          style={{ marginBottom: 0 }}
+                        >
+                          <DatePicker
+                            placeholder="Select your date of birth"
+                            style={{ width: "100%" }}
+                            size="large"
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+
+                {/* ID Proof Section */}
+                <div style={{ marginBottom: "32px" }}>
+                  <h3 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "20px", color: "#1d1d1d", letterSpacing: "0.3px", fontFamily: "global.$SemiBold" }}>
+                    🆔 ID Proof Details
+                  </h3>
+                  <div style={{ background: "#fafbfc", padding: "20px", borderRadius: "12px", border: "1px solid #e8e8e8" }}>
+                    <Row gutter={[16, 16]}>
+                      <Col xs={24} sm={12}>
+                        <div className="input-form-label">ID Proof Type</div>
+                        <Form.Item 
+                          name="id_type"
+                          style={{ marginBottom: 0 }}
+                        >
+                          <Select placeholder="Select ID type" size="large">
+                            <Option key="NIN">NIN</Option>
+                            <Option key="Passport">Passport</Option>
+                            <Option value="Driving Liscence">Drivers License</Option>
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24} sm={12}>
+                        <div className="input-form-label">ID Issue Country</div>
+                        <Form.Item 
+                          name="issue_country"
+                          style={{ marginBottom: 0 }}
+                        >
+                          <Select
+                            placeholder="Select issuing country"
+                            size="large"
+                            showSearch={true}
+                          >
+                            {Country?.map((item: any) => {
+                              return (
+                                <Option key={item.name} value={item.name}>
+                                  {item.name}
+                                </Option>
+                              );
+                            })}
+                          </Select>
+                        </Form.Item>
+                      </Col>
+                      <Col xs={24}>
+                        <div className="input-form-label">ID Expiry Date</div>
+                        <Form.Item 
+                          name="expiry_date"
+                          style={{ marginBottom: 0 }}
+                        >
+                          <DatePicker
+                            placeholder="Select expiry date"
+                            style={{ width: "100%" }}
+                            size="large"
+                          />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <Row gutter={[12, 12]} style={{ marginTop: "32px" }}>
+                  <Col xs={24} sm={12}>
+                    <Button onClick={() => goBack()} block size="large" style={{ height: "44px" }}>
+                      ← Back
                     </Button>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Form>
-          </Col>
-          <Col sm={8}>
-            <div className="sellerRegister-box2">
-              <h4 className="sellerRegister-subHeading">3. Seller Details</h4>
-              <div className="sellerRegister-text1">
-                Here you can provide details of the seller. that includes the
-                Full Name of the person, and his/her Citizenship country. You
-                can select the country from the available options in the
-                dropdown. <br />
-                <b>Birth Country:</b> Select the country where you've born from
-                the dropdown list. also select the DOB.
-                <br />
-                <br />
-                <b>ID Proof: </b>Select the type of Proof which you'd like to
-                submit as you ID proof from the available options. you'll have
-                to upload a softcopy or photograph of the same in the upload
-                Documents section. <br />
-                <br />
-                <b>Issue Country: </b> Select the country where the selected ID
-                card has been issued. <br />
-                <br />
-                <b>Expiry Date:</b> Provide the Expiry date of the selected ID
-                Proof.
-                <br />
-              </div>
+                  </Col>
+                  <Col xs={24} sm={12}>
+                    <Form.Item style={{ marginBottom: 0 }}>
+                      <Button type="primary" htmlType="submit" block size="large" style={{ height: "44px" }}>
+                        Continue →
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Form>
             </div>
           </Col>
         </Row>

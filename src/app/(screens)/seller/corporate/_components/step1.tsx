@@ -331,10 +331,10 @@ function Step1({ moveToNextStep, formData }: any) {
                 <Col md="4">
                   <FcInTransit size={35} />
                   <div className="sellerRegister-text2 mt-3">
-                    Sell Across Dubai
+                    Sell Across Nigeria
                   </div>
                   <div className="sellerRegister-text1">
-                    Reach over 50 crore+ customers across 27000+ pincodes
+                Reach over 100 million potential customers across 36 states, the FCT, and thousands of locations nationwide
                   </div>
                 </Col>
                 <Col md="4">

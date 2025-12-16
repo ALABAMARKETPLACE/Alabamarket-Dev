@@ -31,65 +31,54 @@ const Footer = () => {
       <I18nextProvider i18n={i18n}>
         <Container fluid className="Footer-container">
           <Row>
+            {/* Brand & About Section */}
             <Col sm={6} md={12} xs={12} lg={3}>
-              <Link href={"/"} className="Footer_logoBox">
-                <div>
-                  <Image alt="" src={Logo} className="Footer_logo" />
+              <Link href={"/"} className="Footer_logoBox Footer_logoBox-modern">
+                <div className="Footer-logo-wrapper">
+                  <Image alt="Alaba Marketplace" src={Logo} className="Footer_logo" />
                 </div>
-                {/* <div style={{ marginTop: 5 }}>{API.NAME}</div> */}
+                <div className="Footer-brand-text">Alaba</div>
               </Link>
+              <div className="Footer-tagline">Marketplace</div>
               <br />
               <div className="Footer-text3">
-                Discover a world of exceptional products and unbeatable deals at
-                {API.NAME}. Your one-stop destination for the latest in fashion,
-                electronics, home decor, beauty, and more.
+                Discover a world of exceptional products and unbeatable deals at {API.NAME}. Your one-stop destination for the latest in fashion, electronics, home decor, beauty, and more.
               </div>
-              <div style={{ margin: 10 }} />
-              <Row>
-                <Col sm={2} xs={2} className="Footer-icon">
-                  <a
-                    // href="https://www.facebook.com/"
-                    target="_blank"
-                  >
-                    <RiFacebookBoxFill />
-                  </a>
-                </Col>
-                <Col sm={2} xs={2} className="Footer-icon">
-                  <a
-                    // href="https://www.facebook.com/"
-                    target="_blank"
-                  >
-                    <BiLogoInstagramAlt />
-                  </a>
-                </Col>
-                <Col sm={2} xs={2} className="Footer-icon">
-                  <a
-                    // href="https://www.facebook.com/"
-                    target="_blank"
-                  >
-                    <FaSquareTwitter />
-                  </a>
-                </Col>
-              </Row>
+              
+              {/* Social Media Icons */}
+              <div className="Footer-social-links">
+                <Row>
+                  <Col sm={2} xs={2} className="Footer-icon">
+                    <a target="_blank" rel="noreferrer">
+                      <RiFacebookBoxFill />
+                    </a>
+                  </Col>
+                  <Col sm={2} xs={2} className="Footer-icon">
+                    <a target="_blank" rel="noreferrer">
+                      <BiLogoInstagramAlt />
+                    </a>
+                  </Col>
+                  <Col sm={2} xs={2} className="Footer-icon">
+                    <a target="_blank" rel="noreferrer">
+                      <FaSquareTwitter />
+                    </a>
+                  </Col>
+                </Row>
+              </div>
             </Col>
+
+            {/* Seller Section */}
             <Col sm={6} md={6} xs={12} lg={2}>
               <div className="Footer-text1">Become a Seller</div>
               <div className="Footer-text2">
                 <Link href="/seller_signup">Create Account</Link>
               </div>
-              {/* <div className="Footer-text2">
-                <Link
-                  target="_blank"
-                  href="https://play.google.com/store/apps/details?id=com.nextmeseller&hl=en_AU"
-                >
-                  Seller App
-                </Link>
-              </div> */}
               <div className="Footer-text2">
                 <Link href="/seller_support">Seller Support</Link>
               </div>
             </Col>
 
+            {/* Terms & Policy Section */}
             <Col sm={6} md={6} xs={12} lg={2}>
               <div className="Footer-text1">{t("terms_policy")}</div>
               <div className="Footer-text2">
@@ -108,10 +97,12 @@ const Footer = () => {
                 <Link href="access_statement">Accessibility Statement</Link>
               </div>
             </Col>
+
+            {/* Support Section */}
             <Col sm={6} md={6} xs={12} lg={2}>
               <div className="Footer-text1">{t("contact_us")}</div>
               <div className="Footer-text2">
-                <Link href="/fa-questions">FAQ,S</Link>
+                <Link href="/fa-questions">FAQ's</Link>
               </div>
               <div className="Footer-text2">
                 <Link href="contact_us">{t("contact")}</Link>
@@ -119,49 +110,49 @@ const Footer = () => {
               <div className="Footer-text2">
                 <a href={`mailto:${API.CONTACT_MAIL}`}>{API.CONTACT_MAIL}</a>
               </div>
-              <div className="Footer-text2">
-                {/* <a href="tel:+917001800600">{API.CONTACT_NUMBER}</a> */}
-              </div>
             </Col>
-            <Col sm={6} md={6} xs={12} lg={3}>
+
+            {/* Payment Methods Section */}
+            <Col sm={6} md={6} xs={12} lg={2}>
               <div className="Footer-text1">{t("payment_methrd")}</div>
-              <Row>
-                <Col sm={3} xs={3}>
+              <Row className="Footer-payment-methods" style={{ gap: '8px' }}>
+                <Col style={{ flex: '0 0 auto' }}>
                   <Image
-                    alt="AlabaMarketplace"
+                    alt="Visa"
                     src={Visa}
                     className="Footer_icon2"
                   />
                 </Col>
-                <Col sm={3} xs={3}>
+                <Col style={{ flex: '0 0 auto' }}>
                   <Image
-                    alt="AlabaMarketplace"
+                    alt="Mastercard"
                     src={Mastercard}
                     className="Footer_icon2"
                   />
                 </Col>
-                <Col sm={3} xs={3}>
+                <Col style={{ flex: '0 0 auto' }}>
                   <Image
-                    alt="AlabaMarketplace"
+                    alt="Diners Club"
                     src={Dinners}
                     className="Footer_icon2"
                   />
                 </Col>
-                <Col sm={3} xs={3}>
+                <Col style={{ flex: '0 0 auto' }}>
                   <Image
-                    alt="AlabaMarketplace"
+                    alt="Samsung Pay"
                     src={samsungpay}
                     className="Footer_icon2"
                   />
                 </Col>
               </Row>
+            </Col>
+            
+            {/* Download App Section */}
+            <Col sm={6} md={6} xs={12} lg={2}>
               <div className="Footer-text1">{t("download_app")}</div>
-              <Row>
+              <Row className="Footer-app-links">
                 <Col sm={6} xs={6}>
-                  <a
-                    target="_blank"
-                    // href="https://play.google.com/store/apps/details?id=com.nextmeapp&hl=en"
-                  >
+                  <a target="_blank" rel="noreferrer">
                     <Image
                       src={GooglePlay}
                       alt="google play store"
@@ -170,10 +161,7 @@ const Footer = () => {
                   </a>
                 </Col>
                 <Col sm={6} xs={6}>
-                  <a
-                    target="_blank"
-                    // href="https://apps.apple.com/in/app/next-me/id6504331008"
-                  >
+                  <a target="_blank" rel="noreferrer">
                     <Image
                       src={AppleStore}
                       alt="appstore"
@@ -188,7 +176,7 @@ const Footer = () => {
       </I18nextProvider>
       <br />
       <div className="Footer-Box1">
-        COPYRIGHT © 2024 Alaba Marketplace LLC. ALL RIGHTS RESERVED
+        COPYRIGHT © 2025 Alaba Marketplace LLC. ALL RIGHTS RESERVED
       </div>
     </footer>
   );

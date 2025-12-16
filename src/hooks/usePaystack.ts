@@ -55,9 +55,9 @@ export const usePaystack = (): any => {
           throw new Error("Missing required payment data");
         }
 
-        // Ensure amount is in kobo (minimum 100 kobo = 1 NGN)
+        // Ensure amount is in kobo (minimum 100 kobo = ₦1)
         if (data.amount < 100) {
-          throw new Error("Amount must be at least 100 kobo (1 NGN)");
+          throw new Error("Amount must be at least 100 kobo (₦1)");
         }
 
         const result: any = await dispatch(initializePayment(data)).unwrap();
@@ -105,9 +105,9 @@ export const usePaystack = (): any => {
           throw new Error("Store ID is required for split payments");
         }
 
-        // Ensure amount is in kobo (minimum 100 kobo = 1 NGN)
+        // Ensure amount is in kobo (minimum 100 kobo = ₦1)
         if (data.amount < 100) {
-          throw new Error("Amount must be at least 100 kobo (1 NGN)");
+          throw new Error("Amount must be at least 100 kobo (₦1)");
         }
 
         // Calculate split for display

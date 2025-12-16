@@ -46,15 +46,12 @@ function Page() {
   ];
   return (
     <div className="Screen-box">
-      <br />
       <Container>
         <Row>
           <Col sm={6} xs={12}>
-            <br />
             <h4 className="sellerRegister-Heading">
               Begin your selling journey on {API.NAME}
             </h4>
-            <br />
             <Row>
               {!user ? (
                 <Col md={3} className="mb-2 mb-md-0">
@@ -79,7 +76,6 @@ function Page() {
                 </Button>
               </Col>
             </Row>
-            <br />
             <div>
               <p className="sellerRegister-text2">
                 <FaLongArrowAltRight color={API.COLOR} size={20} />
@@ -122,7 +118,6 @@ function Page() {
             />
           </Col>
         </Row>
-        <br />
         <div className="sellerRegister-box12">
           <Row>
             <Col md="2" sm="6" xs="6">
@@ -132,7 +127,6 @@ function Page() {
                   Thousands of {API.NAME} customers
                 </span>
               </div>
-              <br />
             </Col>
 
             <Col md="2" sm="6" xs="6">
@@ -142,7 +136,6 @@ function Page() {
                   Low cost of doing business
                 </span>
               </div>
-              <br />
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
@@ -151,7 +144,6 @@ function Page() {
                   7* days secure & regular payments
                 </span>
               </div>
-              <br />
             </Col>
 
             <Col md="2" sm="6" xs="6">
@@ -161,7 +153,6 @@ function Page() {
                   One click Seller Support
                 </span>
               </div>
-              <br />
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
@@ -170,16 +161,14 @@ function Page() {
                   Faster shipping across the country
                 </span>
               </div>
-              <br />
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
                 <FcBriefcase size={50} />
                 <span className="sellerRegister-text2">
-                  Acces to shopping Festivals
+                  Access to shopping Festivals
                 </span>
               </div>
-              <br />
             </Col>
           </Row>
         </div>
@@ -202,20 +191,21 @@ function Page() {
           <Col md={6}>
             <div className="sellerRegister-box5">
               {sellerFeatures.map((feature, index) => (
-                <div key={index} style={{ display: "flex" }}>
-                  <div style={{ marginRight: "15px" }}>{feature.icon}</div>
-                  <div>
-                    <p className="sellerRegister-text2">{feature.title}</p>
-                    <p className="sellerRegister-text1">
-                      {feature.description}
-                    </p>
+                <div key={index} style={{ marginRight: "12px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                    <div style={{ flexShrink: 0, marginTop: "2px" }}>{feature.icon}</div>
+                    <div style={{ flex: 1 }}>
+                      <p className="sellerRegister-text2" style={{ margin: "0 0 4px 0" }}>{feature.title}</p>
+                      <p className="sellerRegister-text1" style={{ margin: 0 }}>
+                        {feature.description}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </Col>
         </Row>
-        <br />
       </Container>
       {/* {isLoginModalVisible ? (
         <SellerLoginModal
