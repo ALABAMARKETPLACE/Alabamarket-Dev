@@ -1,0 +1,72 @@
+{
+  "start_shopping_now": "ابدأ التسوق الآن",
+  "become_a_seller": "كن بائعًا",
+
+  "empty_cart": "سلة التسوق الخاصة بك فارغة",
+  "find_gift": "العثور على هدايا",
+
+  "need_help": "بحاجة إلى مساعدة؟",
+  "need_desc": "تواصل معنا على أي من قنوات الدعم",
+
+  "store_locate": "البحث عن المتجر",
+  "store_desc": "العثور على المتجر القريب",
+
+  "feedback": "تقديم ملاحظات",
+  "feedback_desc": "أرسل لنا ملاحظاتك",
+
+  "chat_now": "الدردشة الآن",
+  "chat_desc": "الدردشة على واتساب",
+
+  "payment_method": "وسيلة الدفع",
+
+  "company": "الشركة",
+  "about": "عن",
+  "next_help": "Next Help",
+  "best_price": "أفضل الأسعار",
+  "service_centers": "مراكز الخدمة",
+  "careers": "وظائف",
+  "solution_bar": "بار الحلول",
+  "brand_promise": "وعد العلامة التجارية",
+  "terms_and_conditions": "الأحكام والشروط",
+
+  "assistance": "المساعدة",
+  "check_warrenty_status": "تحقق من حالة الضمان",
+  "store_locator": "البحث عن المتجر",
+  "easy_payment_plan": "خطة الدفع السهلة",
+  "disclaimer_policy": "سياسة الإخلاء",
+  "return_policy": "سياسة الإرجاع والتبادل",
+  "bulk_order": "استفسارات الطلب بالجملة",
+  "report_fraud": "الإبلاغ عن الاحتيال",
+
+  "publications": "المنشورات",
+  "catelogue": "كتالوج آخر",
+  "newsletter": "النشرة الإخبارية",
+  "blog": "المدونة",
+  "whatsapp_us": "تواصل معنا عبر واتساب",
+  "tell_more": "أخبرنا المزيد",
+
+  "payment_methrd": "وسيلة الدفع",
+  "contact": "اتصل بنا",
+  "download_app": "تحميل التطبيق",
+  "contact_us": "اتصل بنا",
+  "terms_policy": "البنود والسياسة",
+  "privacy_policy": "الخصوصية والسياسة",
+  "terms_conditons": "الشروط والأحكام",
+  "payment_refunds": "المدفوعات والاسترداد",
+  "cancel_return": "الإلغاء والإرجاع",
+
+  "cart": "عربة التسوق",
+  "signin": "تسجيل الدخول",
+  "trending_now": "الموجة الحالية",
+  "top_products": "أفضل المنتجات",
+
+  "search_placeholder": "البحث عن الهدايا والزهور",
+
+  "dashboard": "لوحة التحكم",
+  "orders": "الطلبات",
+  "favourites": "المفضلة",
+  "addresses": "العناوين",
+  "account": "الحساب",
+  "logout": "تسجيل الخروج",
+  "search gifts and flowers":"البحث عن الهدايا والزهور"
+}

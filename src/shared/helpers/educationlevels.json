@@ -1,0 +1,87 @@
+[
+    {
+      "name": "Elementary School",
+      "key": "elementarySchool",
+      "category": "School",
+      "level": "Basic Education"
+    },
+    {
+      "name": "High School",
+      "key": "highSchool",
+      "category": "School",
+      "level": "Secondary Education"
+    },
+    {
+      "name": "Matriculation",
+      "key": "matriculation",
+      "category": "School",
+      "level": "Secondary Education"
+    },
+    {
+      "name": "Undergraduate",
+      "key": "undergraduate",
+      "category": "Higher Education",
+      "level": "Bachelor's Level"
+    },
+    {
+      "name": "Graduate",
+      "key": "graduate",
+      "category": "Higher Education",
+      "level": "Master's Level"
+    },
+    {
+      "name": "Bachelor's Degree",
+      "key": "bachelorsDegree",
+      "category": "Higher Education",
+      "level": "Bachelor's Level"
+    },
+    {
+      "name": "Master's Degree",
+      "key": "mastersDegree",
+      "category": "Higher Education",
+      "level": "Master's Level"
+    },
+    {
+      "name": "Doctorate (Ph.D.)",
+      "key": "doctorate",
+      "category": "Higher Education",
+      "level": "Doctoral Level"
+    },
+    {
+      "name": "Postgraduate Diploma/Certificate",
+      "key": "postgraduateDiploma",
+      "category": "Higher Education",
+      "level": "Postgraduate Level"
+    },
+    {
+      "name": "Law Degree (LLB, JD)",
+      "key": "lawDegree",
+      "category": "Professional Degree",
+      "level": "Law"
+    },
+    {
+      "name": "Medical Degree (MBBS, MD)",
+      "key": "medicalDegree",
+      "category": "Professional Degree",
+      "level": "Medicine"
+    },
+    {
+      "name": "Engineering Degree (BEng, MEng, B Tech)",
+      "key": "engineeringDegree",
+      "category": "Professional Degree",
+      "level": "Engineering"
+    },
+    {
+      "name": "Business Degree (BBA, MBA)",
+      "key": "businessDegree",
+      "category": "Professional Degree",
+      "level": "Business"
+    },
+    {
+      "name": "Nursing Degree (BSN, MSN)",
+      "key": "nursingDegree",
+      "category": "Professional Degree",
+      "level": "Nursing"
+    }
+  ]
+  

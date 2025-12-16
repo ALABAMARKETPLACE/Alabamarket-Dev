@@ -1,0 +1,31 @@
+@use "../../config/styleVariable.scss" as global;
+
+.noData {
+  width: "100%";
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.noData-icon {
+  color: grey;
+  font-size: 70px;
+}
+
+.noData-txt1 {
+  color: global.$primary;
+  font-family: global.$SemiBold;
+  font-size: 25px;
+  margin-top: 15px;
+}
+
+.noData-txt2 {
+  color: global.$grey2;
+  font-family: global.$Medium;
+  font-size: 15px;
+  text-align: center;
+  width: 300px;
+}
+

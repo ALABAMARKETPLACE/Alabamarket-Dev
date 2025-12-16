@@ -1,0 +1,69 @@
+@use "../../config/styleVariable.scss" as global;
+
+.StoreItem {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 90%;
+  border: 1px solid rgb(228, 228, 228);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0px 4px 6px 1px rgba(0, 0, 0, 0.1);
+  }
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    background-color: #fff;
+    border: 0px;
+    border-bottom: 1px solid rgb(241, 241, 241);
+    margin-bottom: 10px;
+  }
+}
+
+.StoreItem-img {
+  width: 100px;
+  height: 90px;
+  object-fit: contain;
+  padding: 10px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    width: 90px;
+  }
+}
+
+.StoreItem-box1 {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  border-left: 1px solid rgb(241, 241, 241);
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    border-left: 0px;
+  }
+}
+
+.StoreItem-txt1 {
+  font-family: global.$Bold;
+  font-size: 18px;
+}
+
+.StoreItem-txt2 {
+  font-family: global.$Medium;
+  font-size: 14px;
+  color: rgb(89, 89, 89);
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: inline-block; /* Ensure it's a block or inline-block element */
+  max-width: 230px;
+}
+
+.StoreItem-txt3 {
+  font-family: global.$Medium;
+  font-size: 12px;
+}
+
+.StoreItem-txt4 {
+  padding: 10px;
+}

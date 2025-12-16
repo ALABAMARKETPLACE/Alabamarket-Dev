@@ -1,0 +1,10 @@
+[
+    {
+        "value": "approved",
+        "label": "Approved Sellers"
+    },
+    {
+        "value": "cancelled",
+        "label": "Deactivated Sellers"
+    }
+]

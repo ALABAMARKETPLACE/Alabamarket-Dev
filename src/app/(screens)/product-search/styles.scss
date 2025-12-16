@@ -1,0 +1,63 @@
+@use "../../../config/styleVariable.scss" as vars;
+
+.search-text1 {
+  font-family: vars.$Bold;
+  font-size: 16px;
+  padding: 10px 10px;
+}
+
+.search-Recomandation {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgb(243, 243, 243);
+  padding: 5px 10px;
+  img {
+    width: 30px;
+    height: 40px;
+    border-radius: 5px;
+    object-fit: contain;
+    border: 1px solid rgb(243, 243, 243);
+  }
+  &:hover {
+    background-color: rgb(243, 243, 243);
+  }
+  &:last-child {
+    border-bottom: 0px;
+  }
+}
+
+.search-Recomandation-text1 {
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-Recomandation-text2 {
+  font-size: 15px;
+  font-family: vars.$SemiBold;
+}
+
+.search-CatItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  color: rgb(212, 212, 212);
+  &:hover {
+    background-color: rgb(243, 243, 243);
+  }
+}
+
+.search-CatItem-text1 {
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #000;
+}

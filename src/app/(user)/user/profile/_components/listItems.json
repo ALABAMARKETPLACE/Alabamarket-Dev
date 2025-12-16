@@ -1,0 +1,16 @@
+[
+  { "text": "You are logged out of your Alaba Marketplace Account" },
+  { "text": "Your public profile on Alaba Marketplace is no longer visible" },
+  {
+    "text": "Your reviews/ratings are still visible, while your profile information is shown as ‘unavailable’ as a result of deactivation."
+  },
+  {
+    "text": "Your wishlist items are no longer accessible through the associated public hyperlink. Wishlist is shown as ‘unavailable’ as a result of deactivation"
+  },
+  {
+    "text": "You will be unsubscribed from receiving promotional emails from Alaba Marketplace"
+  },
+  {
+    "text": "Your account data is retained and is restored in case you choose to reactivate your account"
+  }
+]

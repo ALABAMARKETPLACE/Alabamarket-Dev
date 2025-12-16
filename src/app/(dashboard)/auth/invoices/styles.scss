@@ -1,0 +1,25 @@
+@use "../../../../config/styleVariable.scss" as global;
+// edit invoice
+.invoice-item-before-table{
+    @media screen and (min-width:320px) and (max-width:766px) {
+        margin-top: 1rem !important;
+    }
+    &:first-child{
+        margin-top: 0rem !important;
+    }
+}
+.invoiceform-date-input{
+    margin-bottom:12px;
+}
+.invoiceform-vat{
+    margin-top: 6px;
+    margin-bottom: 0px;
+    font-size: 20px;
+    font-family: global.$Medium;
+}
+.edit-invoice-submit{
+    display: flex;
+    justify-content: end;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}

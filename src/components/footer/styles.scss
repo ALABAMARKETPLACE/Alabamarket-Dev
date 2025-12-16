@@ -1,0 +1,101 @@
+@use "../../config/styleVariable.scss" as vars;
+
+.Footer {
+  background-color: #f7f7f7;
+  padding-top: 20px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding: 10px;
+    padding-top: 30px;
+  }
+}
+
+.Footer-container {
+  padding: 0 10px;
+}
+
+.Footer-Box1 {
+  text-align: center;
+  border-top: 1px solid rgb(230, 230, 230);
+  font-size: 10px;
+  padding: 10px;
+}
+
+.Footer_logoBox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  font-size: 30px;
+  font-family: vars.$Bold;
+  color: #000;
+  text-decoration: none;
+}
+
+.Footer_logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.Footer_img {
+  object-fit: fill;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgb(219, 219, 219);
+}
+
+.Footer-text1 {
+  font-size: 18px;
+  font-family: vars.$Bold;
+  padding-bottom: 15px;
+  padding-top: 10px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    margin-top: 10px;
+  }
+}
+
+.Footer-text2 {
+  margin-bottom: 10px;
+  font-family: vars.$SemiBold;
+  font-size: 14px;
+  a {
+    text-decoration: none;
+    color: rgb(89, 89, 89);
+    &:hover {
+      color: vars.$primary;
+      border-bottom: 1px solid vars.$primary;
+    }
+  }
+}
+
+.Footer-text3 {
+  font-size: 13px;
+  font-family: vars.$Medium;
+  color: #000;
+}
+
+.Footer-icon {
+  font-size: 28px;
+  a {
+    text-decoration: none;
+    color: rgb(59, 59, 59);
+    &:hover {
+      color: vars.$primary;
+    }
+  }
+}
+
+.Footer_icon2 {
+  height: 40px;
+  object-fit: contain;
+  border: 1px solid rgb(224, 224, 224);
+  width: 100%;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #fff;
+}

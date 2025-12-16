@@ -1,0 +1,14 @@
+@use "../../config/styleVariable.scss" as global;
+
+.loading-spaceStyle {
+  width: "100%";
+  min-height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loading-loadingText {
+  color: global.$grey1;
+  font-family: global.$Medium;
+  font-size: 20px;
+}

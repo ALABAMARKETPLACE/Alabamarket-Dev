@@ -1,0 +1,40 @@
+@use "../../../../../config/styleVariable.scss" as global;
+//invoiceview screen firstsection (invoice id ,issue date ,due date section)
+.invoiceview-firstsection {
+  border-bottom: 1px solid global.$grey6;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.invoiceview-item-title {
+  font-size: 18px;
+  font-family: global.$SemiBold;
+}
+.invoiceview-item {
+  font-size: 16px;
+  font-family: global.$Regular;
+  padding-left: 0.5rem;
+}
+
+.invoiceview-address {
+  padding-top: 0.2rem;
+  padding-left: 0.5rem;
+  padding-bottom: 1rem;
+  font-size: 16px;
+  font-family: global.$Regular;
+  color: global.$grey2;
+}
+.invoiceview-itemTable {
+    .ant-table-content::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+    }
+}
+.invoiceview-total-section {
+  margin-top: 2rem !important;
+  justify-content: end;
+}
+.invoiceview-total-items {
+  display: flex;
+  justify-content: space-between;
+}

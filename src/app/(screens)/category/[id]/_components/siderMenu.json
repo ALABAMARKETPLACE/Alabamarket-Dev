@@ -1,0 +1,28 @@
+[
+    {
+		"id": 1,
+		"menu": "Price",
+		"options": ["₹ 0 TO ₹ 499", "₹ 500 TO ₹ 999", "₹ 1000 TO ₹ 1499", "₹ 1500 TO ₹ 1999", "₹ 2000 TO ₹ 2499", "₹ 2500 TO ₹ 2999"]
+	},
+    {
+		"id": 2,
+		"menu": "Flavour",
+		"options":["Chocolate", "Trulle", "Pineapple", "Blackforest", "Butterscotch", "Vanilla", "Red Velvet", "Blueberry", "Mixfruit"]
+	},
+    {
+		"id": 3,
+		"menu": "Cake Type",
+		"options":["Cream Cakes", "Designer Cakes", "Photo Cakes", "Dry Cakes", "Cup Cakes", "Jar Cakes", "Fondant Cakes"]
+	},
+    {
+		"id": 4,
+		"menu": "Shape",
+		"options":["Round", "Heart", "Square", "Others"]
+	},
+    {
+		"id": 5,
+		"menu": "Weight",
+		"options":["1/2 Kg", "1 Kg", "2 Kg"]
+
+	}
+]

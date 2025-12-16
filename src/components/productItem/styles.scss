@@ -1,0 +1,136 @@
+@use "../../config/styleVariable.scss" as global;
+.ProductItem {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 124px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  &:hover {
+    // cursor: pointer;
+    box-shadow: 0px 4px 6px 1px rgba(0, 0, 0, 0.1);
+  }
+  background-color: rgb(253, 253, 253);
+  border: 0.5px solid rgb(225, 225, 225);
+}
+.ProductItem-Box1 {
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+.ProductItem-Box2 {
+  flex: 1 1 auto;
+  padding: 10px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding: 8px;
+  }
+}
+.ProductItem-img {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+  object-position: center;
+  transition: scale 100ms;
+  background-color: #fff;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f1f1;
+  &:hover {
+    scale: 1.05;
+  }
+  @media screen and (max-width: 768px) {
+    height: 200px;
+  }
+  @media screen and (max-width: 576px) {
+    height: 170px;
+  }
+}
+.ProductItem-txt1 {
+  font-family: global.$Medium;
+  text-transform: capitalize;
+  font-size: 16px;
+  white-space: wrap;
+  cursor: pointer;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 14px;
+  }
+  &:hover {
+    color: global.$primary;
+  }
+}
+.ProductItem-txt2 {
+  font-family: global.$Regular;
+  font-size: 13px;
+  color: rgb(92, 92, 92);
+  white-space: nowrap;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+.ProductItem-txt3 {
+  font-size: 20px;
+  cursor: pointer;
+  font-family: "DM Sans", sans-serif;
+  font-weight: bold;
+  @media (max-width: 762px) {
+    font-size: 16px;
+  }
+}
+.ProductItem-txt5 {
+  font-size: 13px;
+  color: global.$green;
+  &:hover {
+    color: global.$primary;
+  }
+}
+.product_status_tag {
+  font-size: 12px;
+  font-family: global.$SemiBold;
+  display: flex;
+  color: rgb(31, 31, 31);
+  inset: 0 auto auto 0;
+  & .badge2 {
+    $backgroundColor: rgb(203, 203, 203);
+    padding-block: 2px;
+    padding-left: 6px;
+    padding-right: 3px;
+    position: relative;
+    &::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 0px solid transparent;
+      border-right: 10px solid transparent;
+      top: 0;
+      right: -10px;
+    }
+    &.orange {
+      background-color: rgb(255, 221, 159);
+      &::after {
+        border-top: 22px solid rgb(255, 221, 159);
+      }
+    }
+    &.blue {
+      background-color: rgb(154, 221, 255);
+      &::after {
+        border-top: 22px solid rgb(154, 221, 255);
+      }
+    }
+    &.red {
+      background-color: rgb(255, 128, 128);
+      &::after {
+        border-top: 22px solid rgb(255, 128, 128);
+      }
+    }
+    &.grey {
+      background-color: rgb(203, 203, 203);
+      &::after {
+        border-top: 22px solid rgb(203, 203, 203);
+      }
+    }
+  }
+}

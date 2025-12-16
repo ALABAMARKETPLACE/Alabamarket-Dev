@@ -1,0 +1,22 @@
+[
+    {
+        "value": "active",
+        "label": "Active Products"
+    },
+    {
+        "value": "inactive",
+        "label": "Inactive Products"
+    },
+    {
+        "value": "out_of_stock",
+        "label": "Out of Stock Products"
+    },
+    {
+        "value": "instock",
+        "label": "Products In Stock"
+    },
+    {
+        "value": "all",
+        "label": "All Products"
+    }
+]

@@ -1,0 +1,84 @@
+@use "../../../../config/styleVariable.scss" as global;
+
+.checkout-box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+}
+
+.checkout-txt1{
+    font-family: global.$Bold;
+    font-size: 40px;
+    text-align: center;
+    @media screen and (min-width: 320px) and (max-width: 768px) {
+        font-size: 30px;
+      }
+}
+
+.checkout-txt2{
+    font-family: global.$Medium;
+    font-size: 15px;
+    text-align: center;
+    color: gray;
+}
+
+.checkout-box2{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 70vh;
+    background: radial-gradient(circle, #b9ffdd,#fafffd, #ffffff);
+    background-repeat: no-repeat;
+}
+
+.checkout-txt3{
+    font-family: global.$SemiBold;
+    margin-bottom: 4px;
+    font-size: 20px;
+    background-color: rgb(238, 238, 238);
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.checkout-box3{
+    border: 2px dashed rgb(208, 208, 208);
+    height: 100%;
+    border-radius: 4px;
+}
+
+.checkout-txt4{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    font-family: global.$Medium;
+    color: rgb(94, 94, 94);
+    font-size: 15px;
+}
+
+.checkout-box4{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 70vh;
+    background: radial-gradient(circle, #ffb9b9,#ffffff,#ffffff, #ffffff);
+    background-repeat: no-repeat; 
+}
+
+.checkout-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    font-family: global.$Medium;
+    font-size: 14px;
+}

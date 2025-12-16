@@ -1,0 +1,45 @@
+@use "../../../../config/styleVariable.scss" as global;
+
+.search-store-subcategories {
+  overflow-x: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+.search-store-tags {
+  background-color: #e6e1e2;
+  border-radius: 16px;
+  padding-block: 4px;
+  &:hover {
+    // background-color: rgb(223, 223, 223);
+    color: global.$primary;
+  }
+  &.active {
+    background-color: global.$primary;
+    color: white;
+  }
+}
+.searchstore-website-link{
+  color: global.$primary;
+  &:hover{
+    color:black;
+  }
+}
+.card-store-full{
+  & .ant-card-body{
+    @media (max-width:762px) {
+      padding: 10px;
+    }
+  }
+}
+.product-loaderBox {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  margin-left: -10px;
+}

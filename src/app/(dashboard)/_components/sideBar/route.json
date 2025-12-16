@@ -1,0 +1,181 @@
+[
+  {
+    "section": "Platform Home",
+    "routes": [
+      {
+        "id": 2,
+        "menu": "Dashboard",
+        "icon": "MdSpaceDashboard",
+        "route": "/auth/dashboard",
+        "role": [
+          "admin"
+        ]
+      },
+      {
+        "id": 1,
+        "menu": "Dashboard",
+        "icon": "FaChartPie",
+        "route": "/auth/overview",
+        "role": [
+          "seller"
+        ]
+      }
+    ]
+  },
+  {
+    "section": "Manage Store",
+    "routes": [
+      {
+        "id": 5,
+        "menu": "Orders",
+        "icon": "TbListDetails",
+        "route": "/auth/orders",
+        "role": [
+          "seller",
+          "admin"
+        ]
+      },
+      {
+        "id": 9,
+        "menu": "Products",
+        "icon": "AiOutlineProduct",
+        "route": "/auth/products",
+        "role": [
+          "seller",
+          "admin"
+        ]
+      },
+      {
+        "id": 6,
+        "menu": "Banner",
+        "icon": "TfiLayoutSliderAlt",
+        "route": "/auth/banners",
+        "role": [
+          "seller",
+          "admin"
+        ]
+      },
+      
+      {
+        "id": 7,
+        "menu": "Categories",
+        "icon": "MdOutlineCategory",
+        "route": "/auth/categories",
+        "role": [
+          "admin"
+        ]
+      },
+      {
+        "id": 8,
+        "menu": "Sub Categories",
+        "icon": "TbCategory2",
+        "route": "/auth/sub-categories",
+        "role": [
+          "admin"
+        ]
+      },
+      {
+        "id": 16,
+        "menu": "Manage Store",
+        "icon": "RiStore2Line",
+        "route": "/auth/manage-store",
+        "role": [
+          "seller"
+        ]
+      },
+      {
+        "id": 17,
+        "menu": "Boost Requests",
+        "icon": "TbRocket",
+        "route": "/auth/boost-request",
+        "role": [
+          "seller"
+        ]
+      },
+      {
+        "id": 25,
+        "menu": "Settings",
+        "icon": "RiSettings5Fill",
+        "route": "/auth/account-settings",
+        "role": [
+          "seller"
+        ]
+      }
+    ]
+  },
+  {
+    "section": "Manage People",
+    "routes": [
+      {
+        "id": 4,
+        "menu": "Sellers",
+        "icon": "IoStorefrontSharp",
+        "route": "/auth/sellers",
+        "role": [
+          "admin"
+        ]
+      },
+      {
+        "id": 3,
+        "menu": "Seller Requests",
+        "icon": "RiUserReceived2Line",
+        "route": "/auth/seller-request",
+        "role": [
+          "admin"
+        ]
+      },
+      {
+        "id": 18,
+        "menu": "Boost Approvals",
+        "icon": "TbRocket",
+        "route": "/auth/boost-approvals",
+        "role": [
+          "admin"
+        ]
+      },
+      {
+        "id": 14,
+        "menu": "Users",
+        "icon": "HiUsers",
+        "route": "/auth/users",
+        "role": [
+          "admin"
+        ]
+      },
+      {
+        "id": 15,
+        "menu": "Enquiry",
+        "icon": "IoChatbubbleEllipsesSharp",
+        "route": "/auth/enquiry",
+        "role": [
+          "admin"
+        ]
+      }
+    ]
+  },
+  {
+    "section": "Extra",
+    "routes": [
+      {
+        "id": 12,
+        "menu": "Invoices",
+        "icon": "TbInvoice",
+        "route": "/auth/invoices",
+        "role": [
+          "admin"
+        ]
+      },
+      
+      {
+        "id": 24,
+        "menu": "Settlements",
+        "icon": "FaFileInvoice",
+        "route": "/auth/settlements",
+        "role": [
+          "seller",
+          "admin"
+        ]
+      }
+    ]
+  }
+]

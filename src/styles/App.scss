@@ -1,0 +1,209 @@
+@use "../config/styleVariable.scss" as global;
+@import "../../node_modules/bootstrap/scss/bootstrap.scss";
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+html,
+body {
+  overflow-x: hidden;
+}
+.Screen-box {
+  min-height: 50vh;
+  background-color: #ffffff;
+  padding: 0px 66px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding: 0px 0px;
+  }
+}
+.heading_bredcume {
+  color: grey;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+@font-face {
+  font-family: "DMSans-Regular";
+  src: url("../../src/assets/fonts/DMSans-Regular.ttf") format("truetype");
+}
+@font-face {
+  font-family: "DMSans-Bold";
+  src: url("../../src/assets/fonts/DMSans-Bold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "DMSans-Medium";
+  src: url("../../src/assets/fonts/DMSans-Medium.ttf") format("truetype");
+}
+@font-face {
+  font-family: "DMSans-SemiBold";
+  src: url("../../src/assets/fonts/DMSans-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: "DMSans-Thin";
+  src: url("../../src/assets/fonts/DMSans-Thin.ttf") format("truetype");
+}
+.Loading-box {
+  min-height: 70vh;
+  background-color: #fff;
+  padding: 0px 66px;
+  margin-top: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Horizontal-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.Horizontal-Heading1 {
+  font-size: 28px;
+  font-family: global.$Bold;
+  color: #000;
+
+  margin-bottom: 5px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 20px;
+    padding-left: 10px;
+    padding-bottom: 0px;
+  }
+}
+
+.Horizontal-PscrollBox {
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  overflow-y: hidden;
+  white-space: nowrap;
+  padding-bottom: 10px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding-left: 15px;
+  }
+}
+
+.Horizontal-item {
+  display: inline-block;
+  vertical-align: middle;
+  width: 220px;
+  margin-right: 16px;
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    width: 170px;
+
+    margin-right: 5px;
+  }
+}
+
+.Horizontal-PscrollBox::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.Horizontal-btn1 {
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e5e5bd;
+  color: #000;
+  background-color: #fff;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px 1px rgba(0, 0, 0, 0.1);
+  &:hover {
+    height: 50px;
+    width: 50px;
+  }
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    display: none;
+  }
+}
+
+.Horizontal-btn2 {
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e5e5bd;
+  color: #000;
+  background-color: #fff;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px 1px rgba(0, 0, 0, 0.1);
+  &:hover {
+    height: 50px;
+    width: 50px;
+  }
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    display: none;
+  }
+}
+
+.Horizontal-viewButton {
+  font-family: global.$Bold;
+  margin-right: 16px;
+  font-size: 14px;
+  padding-top: 10px;
+  color: gray;
+  cursor: pointer;
+  &:hover {
+    color: global.$primary;
+  }
+}
+
+.slider-btn-left {
+  inset: 50% auto auto 10px;
+  transform: translateY(-100%);
+}
+
+.slider-btn-right {
+  inset: 50% 10px auto auto;
+  transform: translateY(-100%);
+}
+
+.w-300 {
+  width: 300px;
+}
+.ftscreen-fnt {
+  & div,
+  & p,
+  & li {
+    font-family: global.$Regular;
+  }
+
+  & h1,
+  & h2,
+  & h3,
+  & h4,
+  & h5,
+  & h6 {
+    font-family: global.$Bold;
+  }
+}
+
+.input-form-label {
+  font-size: 14px;
+  color: rgb(101, 101, 101);
+  font-family: global.$SemiBold;
+}
+.card-subtitle-text {
+  font-size: 20px;
+  font-weight: medium;
+  @media (max-width: 762px) {
+    font-size: 16px;
+  }
+}
+.text-color-primary1 {
+  color: global.$primary;
+}
+.footer_heading {
+  font-family: global.$Bold;
+  font-size: 25px;
+  padding-bottom: 20px;
+}
+.lg-25 {
+  @media (min-width: 992px) {
+    width: 20% !important;
+  }
+}

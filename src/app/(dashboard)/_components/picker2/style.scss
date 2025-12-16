@@ -1,0 +1,8 @@
+.ImagePicker-Box {
+  border: 1.5px dashed darkgray;
+}
+.ImagePicker-Box3 {
+  &:hover {
+    background-color: rgb(240, 240, 240);
+  }
+}

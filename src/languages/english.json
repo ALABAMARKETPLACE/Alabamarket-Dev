@@ -1,0 +1,72 @@
+{
+  "start_shopping_now": "START SHOPPING NOW",
+  "become_a_seller": "Become a Seller",
+  "manage_store": "",
+
+  "empty_cart": "Your cart is empty",
+  "find_gift": "Find Gifts",
+
+  "need_help": "Need help?",
+  "need_desc": "Reach out to us on any of the support channel",
+
+  "store_locate": "Store Locator",
+  "store_desc": "Find the nearby store",
+
+  "feedback": "Feedback",
+  "feedback_desc": "Send us your feedback",
+
+  "chat_now": "Chat Now",
+  "chat_desc": "Chat on WhatsApp",
+
+  "payment_method": "Payment Methord",
+
+  "company": "Company",
+  "about": "About",
+  "next_help": "Next Help",
+  "best_price": "Best Price",
+  "service_centers": "Service Centers",
+  "careers": "Careers",
+  "solution_bar": "Solution Bar",
+  "brand_promise": "Brand Promise",
+  "terms_and_conditions": "Terms and Conditions",
+
+  "assistance": "Assistance",
+  "check_warrenty_status": "Check Warranty status",
+  "store_locator": "Store Locator",
+  "easy_payment_plan": "Easy Payment Plan",
+  "disclaimer_policy": "Disclaimer Policy",
+  "return_policy": "Return and Exchange Policy",
+  "bulk_order": "Bulk Order Enquires",
+  "report_fraud": "Report Fraud",
+
+  "publications": "Publications",
+  "catelogue": "Latest Catelogue",
+  "newsletter": "Newsletter",
+  "blog": "Blog",
+  "whatsapp_us": "Whatsapp Us",
+  "tell_more": "Tell Us More",
+
+  "payment_methrd": "Payment Method",
+  "download_app": "Download App",
+  "contact": "Contact",
+  "contact_us": "Contact Us",
+  "terms_policy": "Terms & Policy",
+  "privacy_policy": "Privacy and Policy",
+  "terms_conditons": "Terms of Service",
+  "cancel_refund": "Refund Policy",
+
+  "cart": "Cart",
+  "signin": "Sign In",
+  "trending_now": "Trending Now",
+  "top_products": "Top Products",
+  "search_placeholder": "Search gifts and flowers",
+
+  "dashboard": "Dashboard",
+  "orders": "Orders",
+  "favourites": "Favourites",
+  "addresses": "Addresses",
+  "account": "Account",
+  "logout": "Logout",
+  "search gifts and flowers":"Search Gifts and Flowers"
+  
+}

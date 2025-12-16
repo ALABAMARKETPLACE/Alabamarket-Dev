@@ -1,0 +1,73 @@
+{
+  "start_shopping_now": "COMENZAR A COMPRAR AHORA",
+  "become_a_seller": "Conviértete en Vendedor",
+
+  "empty_cart": "Tu carrito está vacío",
+  "find_gift": "Encuentra Regalos",
+
+  "need_help": "¿Necesitas ayuda?",
+  "need_desc": "Contáctanos a través de cualquiera de los canales de soporte",
+
+  "store_locate": "Localizador de Tiendas",
+  "store_desc": "Encuentra la tienda más cercana",
+
+  "feedback": "Comentarios",
+  "feedback_desc": "Envíanos tus comentarios",
+
+  "chat_now": "Chatea Ahora",
+  "chat_desc": "Chatea en WhatsApp",
+
+  "payment_method": "Método de Pago",
+
+  "company": "Compañía",
+  "about": "Acerca de",
+  "next_help": "Ayuda de Next",
+  "best_price": "Mejor Precio",
+  "service_centers": "Centros de Servicio",
+  "careers": "Carreras",
+  "solution_bar": "Barra de Soluciones",
+  "brand_promise": "Promesa de la Marca",
+  "terms_and_conditions": "Términos y Condiciones",
+
+  "assistance": "Asistencia",
+  "check_warrenty_status": "Verificar el estado de la garantía",
+  "store_locator": "Localizador de Tiendas",
+  "easy_payment_plan": "Plan de Pago Fácil",
+  "disclaimer_policy": "Política de Descargo de Responsabilidad",
+  "return_policy": "Política de Devolución e Intercambio",
+  "bulk_order": "Consultas de Pedidos a Granel",
+  "report_fraud": "Reportar Fraude",
+
+  "publications": "Publicaciones",
+  "catelogue": "Catálogo Más Reciente",
+  "newsletter": "Boletín",
+  "blog": "Blog",
+  "whatsapp_us": "WhatsApp con Nosotros",
+  "tell_more": "Cuéntanos Más",
+
+  "payment_methrd": "Método de Pago",
+  "contact": "Contacto",
+  "download_app": "Descargar Aplicación",
+  "contact_us": "Contáctenos",
+  "terms_policy": "Términos y Política",
+  "privacy_policy": "Privacidad y Política",
+  "terms_conditons": "Términos y Condiciones",
+  "payment_refunds": "Pagos y Reembolsos",
+  "cancel_return": "Cancelación y Devolución",
+
+  "cart": "Carrito",
+  "signin": "Iniciar Sesión",
+  "trending_now": "Tendencia Actual",
+  "top_products": "Productos Destacados",
+
+  "search_placeholder": "Buscar regalos y flores",
+
+  "dashboard": "TABLERO",
+  "orders": "PEDIDOS",
+  "favourites": "FAVORITOS",
+  "addresses": "DIRECCIONES",
+  "account": "CUENTA",
+  "logout": "CERRAR SESIÓN",
+  "search gifts and flowers":"buscar regalos y flores"
+
+}

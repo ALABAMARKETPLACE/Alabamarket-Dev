@@ -1,0 +1,258 @@
+@use "../../../config/styleVariable.scss" as global;
+
+.Cart-box {
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    margin: 0px 0px;
+  }
+}
+
+.Cart-box2 {
+  position: sticky;
+  top: 6.2rem;
+  border: none;
+  position: -webkit-sticky;
+}
+
+.Cart-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.Cart-txt1 {
+  font-family: global.$Bold;
+  font-size: 24px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 18px;
+  }
+}
+
+.Cart-txt1Icon {
+  border: 1px solid rgb(222, 221, 221);
+  padding: 5px 8px;
+  margin-right: 10px;
+  font-size: 18px;
+  border-radius: 10px;
+  color: rgb(115, 115, 115);
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 15px;
+    padding: 0px 5px;
+  }
+}
+
+.Cart-txt2 {
+  font-family: global.$SemiBold;
+  font-size: 14px;
+  color: red;
+  background-color: rgb(240, 240, 240);
+  padding: 7px 20px;
+  border-radius: 100px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding: 5px 10px;
+  }
+}
+
+.Cart-txt3 {
+  font-family: global.$SemiBold;
+  font-size: 16px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 14px;
+  }
+}
+
+.Cart-txt4 {
+  font-family: global.$Bold;
+  font-size: 19px;
+  text-align: right;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 16px;
+  }
+}
+
+.Cart-txt5 {
+  font-family: global.$Bold;
+  font-size: 20px;
+}
+
+.Cart-txt6 {
+  font-family: global.$SemiBold;
+  font-size: 14px;
+  color: global.$primary;
+  background-color: rgb(255, 255, 255);
+  border-radius: 100px;
+}
+
+.Cart-txt7 {
+  font-family: global.$Bold;
+  font-size: 35px;
+  text-align: right;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 25px;
+  }
+}
+
+.Cart-SummaryCard {
+  padding: 20px;
+  border-radius: 10px;
+  padding-top: 10px;
+  margin: 0px 0px 0px 30px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    margin: 0px 0px;
+    padding: 0px;
+  }
+}
+
+.Cart-line {
+  background-color: rgb(181, 181, 181);
+  height: 1px;
+  margin-top: 13px;
+}
+
+.Cart-line2 {
+  padding: 10px;
+  border-bottom: 2px dashed rgb(168, 168, 168);
+}
+
+.Cart-btn1 {
+  background-color: global.$primary;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-family: global.$Bold;
+  color: #fff;
+  padding-left: 25px;
+  font-size: 19px;
+}
+
+.Cart-btn1Box {
+  height: 50px;
+  width: 50px;
+  background-color: #ffffff17;
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.Cart-CartItem {
+  border-bottom: 1px solid rgb(222, 221, 221);
+  padding: 20px 0px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    align-items: flex-start;
+    padding: 10px 0px;
+  }
+}
+
+.Cart-CartItem-img {
+  height: 75px;
+  width: 75px;
+  margin-right: 10px;
+  border-radius: 10px;
+  object-fit: contain;
+  border: 1px solid rgb(229, 229, 229);
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    height: 45px;
+    width: 45px;
+  }
+}
+
+.Cart-CartItem-txt1 {
+  font-family: global.$Bold;
+  font-size: 17px;
+  text-transform: capitalize;
+}
+
+.Cart-CartItem-txt2 {
+  font-family: global.$Medium;
+  font-size: 14px;
+  color: rgb(94, 94, 94);
+}
+.Cart-CartItem-txt55 {
+  font-family: global.$Medium;
+  font-size: 14px;
+  color: rgb(151, 151, 151);
+}
+
+.Cart-CartItem-txt3 {
+  margin-right: 15px;
+  font-family: global.$Bold;
+  font-size: 20px;
+}
+
+.Cart-CartItem-txt4 {
+  font-family: global.$Medium;
+  font-size: 14px;
+  margin-bottom: 5px;
+  &.red {
+    color: red;
+  }
+  &.green {
+    color: rgb(19, 178, 69);
+  }
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    margin-bottom: 10px;
+  }
+}
+
+.Cart-error {
+  font-family: global.$Medium;
+  color: red;
+  font-size: 16px;
+}
+
+.Cart-txt8 {
+  font-size: 13px;
+  font-family: global.$Medium;
+}
+
+.Cart-txt9 {
+  color: grey;
+  font-family: global.$Medium;
+  font-size: 12px;
+}
+
+.Cart-AddressItem {
+  cursor: pointer;
+  border: 1px solid rgb(222, 221, 221);
+  padding: 10px;
+  border-radius: 6px;
+  height: 100%;
+  background-color: rgb(246, 246, 246);
+  &.active {
+    border: 1px solid #05540d;
+    background-color: #fff;
+  }
+}
+
+.Cart-paymentBox {
+  cursor: pointer;
+  border: 1px solid rgb(222, 221, 221);
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: rgb(246, 246, 246);
+  &.active {
+    border: 1px solid #05540d;
+    background-color: #fff;
+  }
+}
+.text-small-summarycard {
+  font-size: 14px;
+}
+.Cart-bankDetails-box {
+  font-family: global.$Light;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 30px;
+  font-family: "DMSans-Bold";
+  flex: 1;
+}

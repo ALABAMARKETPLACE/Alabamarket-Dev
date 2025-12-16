@@ -1,0 +1,18 @@
+[
+    {
+        "value": "",
+        "label": "All Settlements"
+    },
+    {
+        "value": "pending",
+        "label": "Pending Settlements"
+    },
+    {
+        "value": "requested",
+        "label": "Requested Settlements"
+    },
+    {
+        "value": "success",
+        "label": "Completed Settlements"
+    }
+]

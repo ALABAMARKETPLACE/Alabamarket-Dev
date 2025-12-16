@@ -1,0 +1,102 @@
+@use "../../../config/styleVariable.scss" as global;
+.userSidebar-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 100px;
+  border: 1px solid global.$primary;
+  padding: 1px;
+  background-color: #dbdbdb;
+}
+.userSidebar-storeBox {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border: 1px solid rgb(224, 224, 224);
+  padding: 10px;
+  border-radius: 10px;
+  background-color: #fff;
+  
+}
+.userSidebar-txt1 {
+  font-family: global.$SemiBold;
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.userSidebar-txt2 {
+  font-family: global.$Medium;
+  font-size: 12px;
+  color: green;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.profile-edit-btn{
+  color: #a10244;
+  cursor: pointer;
+  font-family: global.$SemiBold;
+  font-size: 18px;
+}
+.profile-txt1 {
+  font-family: global.$Bold;
+  font-size: 30px;
+  padding-bottom: 20px;
+  padding-top: 10px;
+}
+.profile-dashboard-txt5 {
+  color: #464646;
+  font-family: global.$Bold;
+  font-size: 16px;
+  margin-right: 20px;
+}
+.profile-dashboard-Box5 {
+  color: black;
+  font-family: global.$Bold;
+  font-size: 23px;
+}
+.profile-dashboard-txt6 {
+  color: #6f6f6f;
+  font-family: global.$Bold;
+  font-size: 24px;
+}
+.sidebar-item:hover {
+  background-color: #f0f0f0; 
+  border-radius: 8px;
+  cursor: pointer;
+  color: #a10244;
+}
+.profile-menu {
+  height: 45px;
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+  margin-bottom: 2px;
+  // color: rgb(76, 76, 76);
+  border-radius: 6px;
+  &:hover {
+    background-color: #f0f0f0; 
+    color:  #a10244;
+    cursor: pointer;
+    padding: 10px 0;
+    width: 100%;
+    padding-left: 5px;
+    margin-bottom: 2px;
+  }
+}
+.profile-menu-selected {
+  height: 45px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  padding-left: 5px;
+  // color: rgb(109, 109, 109);
+  background-color: rgb(212, 212, 212);
+  color:  #a10244;
+  margin-bottom: 2px;
+  cursor: pointer;
+  padding: 10px 0;
+  width: 100%;
+  padding-left: 5px;
+}

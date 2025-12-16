@@ -1,0 +1,95 @@
+@use "../../config/styleVariable.scss" as global;
+
+$borderRadius: 12px;
+.store-all-card-img {
+  width: 30px;
+  height: 30px;
+  & img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    outline: 1px solid rgb(211, 211, 211);
+  }
+}
+.store-all-img-container {
+  width: 100%;
+  height: 130px;
+  & img {
+    width: 100%;
+    height: 100%;
+    border-top-right-radius: $borderRadius;
+    border-top-left-radius: $borderRadius;
+    object-fit: contain;
+  }
+}
+.store-All-Horizontal-Pscroll {
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding-left: 5px;
+  }
+}
+.store-All-Horizontal-Pscroll + .store-All-Horizontal-Pscroll{
+    margin-top: 30px;
+}
+.store-All-Horizontal-PscrollBox {
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+
+.store-All-Horizontal-item {
+  display: inline-block;
+  vertical-align: middle;
+  width: 200px;
+  margin-right: 16px;
+  // height: 280px;
+  @media screen and (min-width: 320px) and (max-width: 762px) {
+    width: 150px;
+    // height: 220px;
+    margin-right: 5px;
+  }
+}
+.store-All-Horizontal-PscrollBox::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.store-All-Horizontal-btn1 {
+  height: 40px;
+  width: 40px;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgb(183, 183, 183);
+  color: #000;
+  background-color: #fff;
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    display: none;
+  }
+}
+.store-All-slider-btn-left {
+  inset: 35% auto auto -20px;
+  // transform: translateY(-100%);
+}
+
+.store-All-slider-btn-right {
+  inset: 35% -20px auto auto;
+  // transform: translateY(-100%);
+}
+.store-All-Horizontal-viewButton {
+  font-family: global.$Bold;
+  margin-right: 16px;
+  font-size: 14px;
+  padding-top: 5px;
+  color: gray;
+  &:hover{
+    color: global.$primary;
+  }
+}
+.product-search-multi-title {
+  font-family: global.$SemiBold;
+}
+

@@ -1,0 +1,263 @@
+@use "../../../../config/styleVariable.scss" as vars;
+
+.searchInp {
+    border: 1px solid #0000001a;
+    width: 500px;
+    height: 34px;
+    border-radius: 10px;
+    background: white;
+}
+
+.searchInp:hover {
+    border: 1px solid vars.$primary;
+
+}
+
+.searchInp>input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    outline: none;
+    padding: 0 15px;
+}
+
+.searchInp>button {
+    border: 1px solid vars.$primary;
+    border-radius: 10px;
+    padding: 0px 10px;
+    background-color: vars.$primary;
+    color: vars.$backround;
+}
+
+.category {
+
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    scroll-behavior: smooth;
+    position: relative;
+    padding-bottom: 5px;
+    padding-top: 10px;
+    border-radius: 8px;
+}
+
+.category::-webkit-scrollbar {
+    height: 3px;
+}
+
+.category::-webkit-scrollbar-thumb {
+    background: vars.$primary2;
+    border-radius: 10px;
+}
+
+.category::-webkit-scrollbar-thumb {
+    transition: background-color 0.3s ease;
+}
+
+.category::-webkit-scrollbar-thumb:hover {
+    background-color: vars.$grey2;
+    transition: 1s;
+}
+
+
+.category>button {
+
+    margin: 0 5px;
+    border-radius: 10px;
+    border: 1px solid vars.$grey3;
+    background-color: vars.$grey3;
+    padding: 4px 8px;
+    font-size: 15px;
+}
+
+.category>button.active {
+    background-color: vars.$primary;
+    color: vars.$backround;
+}
+.category>button.active:hover {
+    background-color: vars.$primary;
+    color: vars.$backround;
+}
+
+.category>button:hover {
+
+    color: vars.$primary;
+    transition: .5s;
+}
+
+
+.productsList>div>div {
+
+    border-radius: 10px;
+    border: 1px solid vars.$grey5;
+    height: 100%;
+    padding: 10px 8px;
+    background-color: vars.$backround;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.productsList>div>div>img {
+    object-fit: cover;
+    width: 148px;
+    padding-bottom: 8px;
+}
+
+.productsList>div>div>div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.productsList>div>div>div>div>button {
+    border: 1px solid vars.$primary;
+    border-radius: 8px;
+    color: vars.$backround;
+    background-color: vars.$primary;
+    padding: 3px 12px;
+    font-weight: 950;
+}
+
+.productsList>div>div>div>div>button:hover {
+
+    background-color: #64002a;
+    transition: .5s;
+}
+
+.productsList>div>div>div>div>h5{
+
+    margin: 0;
+    font-weight: 800;
+}
+
+.disc{
+    color: vars.$grey2;
+    font-size: 12px;
+    margin: 0;
+}
+
+.closeBtn>svg{
+    color:vars.$primary;
+    font-size: 15px;
+}
+
+.reqSubmitBtn{
+    width: 100%;
+    border: none;
+    padding: 7px 0px;
+    color: vars.$backround;
+    background-color: vars.$primary;
+    font-size: 18px;
+    font-weight: 950;
+    border-radius: 10px;
+}
+.reqSubmitBtn:hover{
+    background-color: #64002a;
+    transition: .5s;
+}
+
+.emptyImg{
+    background-color: transparent !important;
+    width: 100% !important;
+    border: none !important;
+    display: flex !important;
+    justify-content: center !important;
+    
+}
+
+.orders-headerFilters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.orders-filterWrapper {
+  width: 100%;
+}
+
+.orders-filterRow {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.orders-filterRow--dropdown {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.orders-filterDropdownContent {
+  padding: 16px;
+  width: min(360px, calc(100vw - 32px));
+}
+
+.orders-filterItem {
+  flex: 0 0 auto;
+}
+
+.orders-filterItem--search {
+  min-width: 160px;
+  max-width: 220px;
+  flex: 0 1 220px;
+}
+
+.orders-filterItem--range {
+  min-width: 240px;
+  flex: 0 1 320px;
+}
+
+.orders-filterTrigger {
+  display: none;
+}
+
+.orders-filterDropdownOverlay {
+  .orders-filterDropdownContent {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .orders-filterRow--inline {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 1024px) {
+  .orders-headerFilters {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .orders-filterRow--inline {
+    flex-wrap: wrap;
+  }
+
+  .orders-filterItem {
+    flex: 1 1 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .orders-filterItem,
+  .orders-filterItem--search,
+  .orders-filterItem--range {
+    width: 100%;
+    flex: 1 1 100%;
+  }
+
+  .orders-filterTrigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+

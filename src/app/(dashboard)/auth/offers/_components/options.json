@@ -1,0 +1,18 @@
+[
+    {
+        "value": "active",
+        "label": "Active Offers"
+    },
+    {
+        "value": "inactive",
+        "label": "Inactive Offers"
+    },
+    {
+        "value": "expired",
+        "label": "Expired Offers"
+    },
+    {
+        "value": "all",
+        "label": "All Offers"
+    }
+]

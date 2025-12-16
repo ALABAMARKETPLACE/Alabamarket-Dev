@@ -1,0 +1,46 @@
+[
+    {
+        "value": "",
+        "label": "All Orders"
+    },
+    {
+        "value": "pending",
+        "label": "Pending"
+    },
+    {
+        "value": "cancelled",
+        "label": "Cancelled"
+    },
+    {
+        "value": "shipped",
+        "label": "Shipped"
+    },
+    {
+        "value": "out_for_delivery",
+        "label": "Out For Delivery"
+    },
+    {
+        "value": "packed",
+        "label": "Packed"
+    },
+    {
+        "value": "delivered",
+        "label": "Delivered"
+    },
+    {
+        "value": "rejected",
+        "label": "Rejected"
+    },
+    {
+        "value": "processing",
+        "label": "Processing"
+    },
+    {
+        "value": "failed",
+        "label": "Failed"
+    },
+    {
+        "value": "substitution",
+        "label": "Substitution"
+    }
+]
