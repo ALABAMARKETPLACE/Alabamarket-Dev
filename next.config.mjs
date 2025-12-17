@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
 
-  // DO NOT use static export for authenticated apps
+  // IMPORTANT: do NOT statically export auth apps
   output: "standalone",
 
   images: {
