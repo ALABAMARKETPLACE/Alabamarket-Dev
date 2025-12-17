@@ -148,58 +148,35 @@ function Page() {
     }
   };
   return (
-    <div className="Screen-box" style={{ background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", minHeight: "100vh", paddingTop: "40px", paddingBottom: "40px" }}>
+    <div className="Screen-box">
+      <br />
       <Container>
         <div className="sellerRegister-row">
-          <div style={{ flex: 1 }}>
+          <div>
             <h4 className="sellerRegister-Heading">
               Create Your Seller Account
             </h4>
-            <p style={{ color: "#666", fontSize: "15px", margin: "8px 0 0 0", fontFamily: "global.$Regular" }}>
-              Join our marketplace and start selling today
-            </p>
           </div>
           <div
-            style={{
-              color: API.COLOR,
-              fontSize: "15px",
-              cursor: "pointer",
-              fontFamily: "global.$SemiBold",
-              fontWeight: 600,
-              transition: "all 0.3s ease",
-              padding: "8px 16px",
-              borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px"
-            }}
+            className="sellerRegister-text2"
+            style={{ color: "blue" }}
             onClick={() => navigation.push("/seller/individual")}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = `rgba(${parseInt(API.COLOR.slice(1, 3), 16)}, ${parseInt(API.COLOR.slice(3, 5), 16)}, ${parseInt(API.COLOR.slice(5, 7), 16)}, 0.1)`;
-              e.currentTarget.style.transform = "translateX(4px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.transform = "translateX(0)";
-            }}
           >
-            💼 Switch to Individual
+            Individual
           </div>
         </div>
-        
-        <div style={{ background: "white", borderRadius: "16px", padding: "32px", boxShadow: "0 12px 32px rgba(0,0,0,0.08)", marginBottom: "32px", marginTop: "24px" }}>
-          <Steps className="sellerRegister-steps" current={currentStep}>
-            <Step title={"Profile"} description={"Email, Phone, Password"} />
-            <Step title={"Business Info"} description={"Store, Location, Details"} />
-            <Step title={"Seller Details"} description={"Owner Information"} />
-            <Step
-              title={"Documents"}
-              description={"Upload & Verify"}
-            />
-          </Steps>
-        </div>
-        
-        <div style={{ background: "white", borderRadius: "16px", padding: "32px", boxShadow: "0 12px 32px rgba(0,0,0,0.08)" }}>
+        <br />
+        <Steps className="sellerRegister-steps" current={currentStep}>
+          <Step title={"Profile"} description={"Enter email,phone etc..."} />
+          <Step title={"Business Info"} description={"Name, Location etc..."} />
+          <Step title={"Seller Details"} description={"Owner Details etc..."} />
+          <Step
+            title={"Upload Documents"}
+            description={"ID, Business Registration etc..."}
+          />
+        </Steps>
+        <br />
+        <div>
           {currentStep === 0 ? (
             <Step1
               moveToNextStep={moveToNextStep}
@@ -240,6 +217,7 @@ function Page() {
           )}
         </div>
       </Container>
+      <br />
     </div>
   );
 }

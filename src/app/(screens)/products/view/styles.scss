@@ -1,0 +1,400 @@
+// Products page styling with glittering effect
+.products-page {
+  background: 
+    linear-gradient(135deg, 
+      rgba(255, 140, 66, 0.15) 0%, 
+      rgba(255, 200, 150, 0.1) 25%,
+      rgba(255, 255, 255, 0.98) 50%,
+      rgba(255, 200, 150, 0.1) 75%,
+      rgba(255, 140, 66, 0.15) 100%
+    );
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  animation: pageEnter 0.8s ease-out;
+  
+  // Glittering animated background
+  &::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background-image: 
+      radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.15) 0%, transparent 2%),
+      radial-gradient(circle at 60% 70%, rgba(255, 140, 66, 0.2) 0%, transparent 2%),
+      radial-gradient(circle at 40% 50%, rgba(255, 255, 255, 0.4) 0%, transparent 1%),
+      radial-gradient(circle at 80% 20%, rgba(255, 200, 100, 0.15) 0%, transparent 2%),
+      radial-gradient(circle at 15% 80%, rgba(255, 180, 80, 0.2) 0%, transparent 2%),
+      radial-gradient(circle at 90% 60%, rgba(255, 255, 255, 0.3) 0%, transparent 1%),
+      radial-gradient(circle at 30% 90%, rgba(255, 220, 120, 0.15) 0%, transparent 2%);
+    background-size: 200% 200%, 300% 300%, 150% 150%, 250% 250%, 200% 200%, 180% 180%, 220% 220%;
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 25% 75%, 75% 25%;
+    animation: glitter 8s ease-in-out infinite, shimmerMove 15s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+  
+  // Floating particles effect
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle, rgba(255, 215, 0, 0.4) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255, 140, 66, 0.3) 1px, transparent 1px),
+      radial-gradient(circle, rgba(255, 180, 80, 0.35) 1px, transparent 1px);
+    background-size: 50px 50px, 80px 80px, 100px 100px;
+    background-position: 0 0, 40px 60px, 80px 20px;
+    animation: float 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.3;
+  }
+  
+  // Ensure content is above the background pattern
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+@keyframes glitter {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(90deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05) rotate(180deg);
+  }
+  75% {
+    opacity: 0.85;
+    transform: scale(1.08) rotate(270deg);
+  }
+}
+
+@keyframes shimmerMove {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 25% 75%, 75% 25%;
+  }
+  50% {
+    background-position: 100% 100%, 0% 0%, 25% 75%, 100% 0%, 0% 100%, 75% 25%, 25% 75%;
+  }
+  100% {
+    background-position: 0% 0%, 100% 100%, 50% 50%, 0% 100%, 100% 0%, 25% 75%, 75% 25%;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  100% {
+    transform: translateY(-100px) translateX(50px);
+  }
+}
+
+// Staggered animation for product cards with scroll reveal
+.product-card-searchstore {
+  @for $i from 1 through 24 {
+    &:nth-child(#{$i}) .ProductItem {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+  
+  // Scroll reveal animation
+  opacity: 0;
+  animation: scrollReveal 0.6s ease-out forwards;
+  position: relative;
+  
+  @for $i from 1 through 24 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.03}s;
+    }
+  }
+  
+  // Magical shine wave on load
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -100%;
+    width: 50%;
+    height: 200%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.9) 50%,
+      transparent 100%
+    );
+    transform: skewX(-20deg);
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+  }
+  
+  @for $i from 1 through 24 {
+    &:nth-child(#{$i})::before {
+      animation: magicShine 1.5s ease-out #{$i * 0.08}s 1;
+    }
+  }
+}
+
+@keyframes scrollReveal {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes magicShine {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    left: 150%;
+    opacity: 0;
+  }
+}
+
+// Enhanced button styling for "Show More"
+.products-page {
+  .show-more-btn {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 700;
+    letter-spacing: 1px;
+    box-shadow: 
+      0 4px 15px rgba(255, 140, 66, 0.3),
+      0 2px 8px rgba(255, 215, 0, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #fffaf5 100%
+    ) !important;
+    
+    // Animated gradient border
+    &::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(
+        45deg,
+        #ff8c42,
+        #ffd700,
+        #ff6b35,
+        #ffb366,
+        #ff8c42
+      );
+      background-size: 300% 300%;
+      border-radius: 50px;
+      z-index: -1;
+      animation: gradientRotate 3s linear infinite;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    
+    // Shine effect
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.6),
+        transparent
+      );
+      transition: left 0.6s;
+    }
+    
+    &:hover:not(:disabled) {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 
+        0 10px 25px rgba(255, 140, 66, 0.45),
+        0 5px 15px rgba(255, 215, 0, 0.3),
+        0 2px 10px rgba(255, 140, 66, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      background: linear-gradient(
+        135deg,
+        #ff8c42 0%,
+        #ffb366 100%
+      ) !important;
+      color: #ffffff !important;
+      border-color: #ff8c42 !important;
+      
+      &::before {
+        opacity: 1;
+      }
+      
+      &::after {
+        left: 100%;
+      }
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(-2px) scale(1.02);
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+@keyframes gradientRotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+// Enhanced loading skeleton animation
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Smooth scroll behavior with parallax effect
+.products-page {
+  scroll-behavior: smooth;
+  
+  &::before,
+  &::after {
+    will-change: transform;
+  }
+}
+
+// Add parallax scrolling effect to background
+@media (prefers-reduced-motion: no-preference) {
+  .products-page::before {
+    animation: glitter 8s ease-in-out infinite, 
+               shimmerMove 15s linear infinite,
+               parallaxScroll 30s linear infinite;
+  }
+  
+  .products-page::after {
+    animation: float 20s linear infinite,
+               parallaxFloat 25s ease-in-out infinite;
+  }
+}
+
+@keyframes parallaxScroll {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.05) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) scale(1) rotate(360deg);
+  }
+}
+
+@keyframes parallaxFloat {
+  0%, 100% {
+    transform: translateY(0) translateX(0) scale(1);
+  }
+  25% {
+    transform: translateY(-30px) translateX(20px) scale(1.02);
+  }
+  50% {
+    transform: translateY(-50px) translateX(40px) scale(1.05);
+  }
+  75% {
+    transform: translateY(-30px) translateX(20px) scale(1.02);
+  }
+}
+
+// Grid improvements
+.products-page .row {
+  perspective: 1000px;
+  margin: 0 -8px;
+  
+  @media (min-width: 768px) {
+    margin: 0 -12px;
+  }
+}
+
+.products-page .col,
+.products-page [class*="col-"] {
+  padding: 8px;
+  
+  @media (min-width: 768px) {
+    padding: 12px;
+  }
+}
+
+// Page header styling
+.products-page {
+  .PageHeader {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 12px rgba(255, 140, 66, 0.08);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .products-page {
+    background: linear-gradient(135deg, 
+      rgba(255, 140, 66, 0.1) 0%, 
+      rgba(255, 255, 255, 0.98) 15%,
+      rgba(255, 255, 255, 0.98) 85%,
+      rgba(255, 140, 66, 0.06) 100%
+    );
+  }
+}

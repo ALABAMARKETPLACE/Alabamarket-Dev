@@ -106,259 +106,238 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
     <div className="sellerRegister-stepbox">
       <Container>
         <Row>
-          <Col md={{ span: 12, offset: 0 }} lg={{ span: 10, offset: 1 }} xl={{ span: 8, offset: 2 }}>
-            <div style={{ animation: "fadeInUp 0.6s ease-out" }}>
-              <Form
-                form={form}
-                onFinish={onFinish}
-                layout="vertical"
-                initialValues={{
-                  id_type: formData?.id_type,
-                  id_proof: formData?.id_proof,
-                }}
+          <Col md={4}>
+            <Form
+              form={form}
+              onFinish={onFinish}
+              initialValues={{
+                id_type: formData?.id_type,
+                id_proof: formData?.id_proof,
+              }}
+            >
+              <div className="input-form-label">ID Proof Documents</div>
+              <Form.Item name="id_proof">
+                <FilePicker onSubmit={handleFileUpload} fileName={file?.file} />
+              </Form.Item>
+              <div className="input-form-label">
+                Business Registration Document
+              </div>
+              <Form.Item
+                name={"trn_upload"}
+                rules={[
+                  {
+                    //  required: true,
+                    message: "Business Registration Number is required",
+                  },
+                ]}
               >
-                {/* Document Upload Section */}
-                <div style={{ marginBottom: "32px" }}>
-                  <h3 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "20px", color: "#1d1d1d", letterSpacing: "0.3px", fontFamily: "global.$SemiBold" }}>
-                    📄 Upload Documents
-                  </h3>
-                  <div style={{ background: "#fafbfc", padding: "20px", borderRadius: "12px", border: "1px solid #e8e8e8" }}>
-                    <Row gutter={[16, 16]}>
-                      <Col xs={24}>
-                        <div className="input-form-label">ID Proof Document</div>
-                        <div style={{ marginBottom: "4px", fontSize: "12px", color: "#666" }}>
-                          Upload a clear image or PDF of your ID proof (NIN, Passport, or Driver's License)
-                        </div>
-                        <Form.Item 
-                          name="id_proof"
-                          style={{ marginBottom: 0 }}
-                        >
-                          <FilePicker onSubmit={handleFileUpload} fileName={file?.file} />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24}>
-                        <div className="input-form-label">Business Registration Document</div>
-                        <div style={{ marginBottom: "4px", fontSize: "12px", color: "#666" }}>
-                          Upload your Business Registration or Trade License document
-                        </div>
-                        <Form.Item
-                          name={"trn_upload"}
-                          rules={[
-                            {
-                              message: "Business Registration Document is required",
-                            },
-                          ]}
-                          style={{ marginBottom: 0 }}
-                        >
-                          <FilePicker
-                            onSubmit={handleFileUpload2}
-                            fileName={file2?.file}
-                          />
-                        </Form.Item>
-                      </Col>
-                      <Col xs={24}>
-                        <div style={{ padding: "12px", backgroundColor: "#fff7e6", border: "1px solid #ffa940", borderRadius: "8px", marginBottom: "12px" }}>
-                          <span style={{ color: "#ffa940", fontSize: "13px", fontWeight: 500, display: "flex", gap: "8px", alignItems: "center" }}>
-                            ⚠️ Ensure documents are clear, readable, and in good quality. Blurry or invalid documents will cause rejection.
-                          </span>
-                        </div>
-                      </Col>
-                    </Row>
-                  </div>
-                </div>
+                <FilePicker
+                  onSubmit={handleFileUpload2}
+                  fileName={file2?.file}
+                />
+              </Form.Item>
 
-                {/* Subscription Plan Section */}
-                <div style={{ marginBottom: "32px" }}>
-                  <h3 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "20px", color: "#1d1d1d", letterSpacing: "0.3px", fontFamily: "global.$SemiBold" }}>
-                    💳 Choose Your Subscription Plan
-                  </h3>
-                  <div style={{ background: "#fafbfc", padding: "20px", borderRadius: "12px", border: "1px solid #e8e8e8" }}>
-                    <Radio.Group
-                      value={selectedPlan}
-                      onChange={(e) => setSelectedPlan(e.target.value)}
-                      style={{ width: "100%" }}
-                    >
-                      <Row style={{ marginBottom: 20 }}>
-                        {plans.map((plan) => (
-                          <Col md={6} key={plan.id} style={{ marginBottom: 15 }}>
-                            <Card
+              {/* Subscription Plan Selection */}
+              <div
+                className="input-form-label"
+                style={{ marginTop: 30, fontSize: 16, fontWeight: 600 }}
+              >
+                Choose Your Subscription Plan
+              </div>
+              <Radio.Group
+                value={selectedPlan}
+                onChange={(e) => setSelectedPlan(e.target.value)}
+                style={{ width: "100%" }}
+              >
+                <Row style={{ marginBottom: 20 }}>
+                  {plans.map((plan) => (
+                    <Col md={6} key={plan.id} style={{ marginBottom: 15 }}>
+                      <Card
+                        style={{
+                          height: "100%",
+                          border:
+                            selectedPlan === plan.id
+                              ? `2px solid ${plan.color}`
+                              : "1px solid #d9d9d9",
+                          cursor: "pointer",
+                          position: "relative",
+                        }}
+                        onClick={() => setSelectedPlan(plan.id)}
+                        hoverable
+                      >
+                        {plan.popular && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: -10,
+                              right: 20,
+                              background: plan.color,
+                              color: "#fff",
+                              padding: "4px 12px",
+                              borderRadius: 4,
+                              fontSize: 11,
+                              fontWeight: 600,
+                              zIndex: 1,
+                            }}
+                          >
+                            POPULAR
+                          </div>
+                        )}
+                        <Radio value={plan.id} style={{ width: "100%" }}>
+                          <div>
+                            <div
                               style={{
-                                height: "100%",
-                                border:
-                                  selectedPlan === plan.id
-                                    ? `2px solid ${plan.color}`
-                                    : "1px solid #e8e8e8",
-                                cursor: "pointer",
-                                position: "relative",
-                                borderRadius: "10px",
-                                transition: "all 0.3s ease"
+                                fontSize: 16,
+                                fontWeight: 600,
+                                color: plan.color,
+                                marginBottom: 8,
                               }}
-                              onClick={() => setSelectedPlan(plan.id)}
-                              hoverable
                             >
-                              {plan.popular && (
-                                <div
-                                  style={{
-                                    position: "absolute",
-                                    top: -10,
-                                    right: 20,
-                                    background: plan.color,
-                                    color: "#fff",
-                                    padding: "4px 12px",
-                                    borderRadius: 6,
-                                    fontSize: 11,
-                                    fontWeight: 600,
-                                    zIndex: 1,
-                                  }}
-                                >
-                                  POPULAR
-                                </div>
-                              )}
-                              <Radio value={plan.id} style={{ width: "100%" }}>
-                                <div>
-                                  <div
-                                    style={{
-                                      fontSize: 16,
-                                      fontWeight: 600,
-                                      color: plan.color,
-                                      marginBottom: 8,
-                                    }}
+                              {plan.name}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 22,
+                                fontWeight: 700,
+                                color: "#000",
+                                marginBottom: 5,
+                              }}
+                            >
+                              {plan.currency}
+                              {plan.price.toLocaleString()}
+                              <span
+                                style={{
+                                  fontSize: 13,
+                                  fontWeight: 400,
+                                  color: "#666",
+                                }}
+                              >
+                                {" "}
+                                / {plan.duration}
+                              </span>
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 12,
+                                color: "#666",
+                                marginBottom: 8,
+                              }}
+                            >
+                              {plan.description}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 12,
+                                fontWeight: 600,
+                                color: plan.color,
+                                marginBottom: 10,
+                              }}
+                            >
+                              Pricing model: per day
+                            </div>
+                            <div
+                              style={{
+                                fontSize: 12,
+                                fontWeight: 600,
+                                color: "#333",
+                                marginBottom: 10,
+                              }}
+                            >
+                              Products: {plan.min_products} –{" "}
+                              {plan.max_products}
+                            </div>
+                            <ul
+                              style={{
+                                paddingLeft: 20,
+                                fontSize: 11,
+                                margin: 0,
+                              }}
+                            >
+                              {plan.features
+                                .slice(0, 3)
+                                .map((feature: string, idx: number) => (
+                                  <li
+                                    key={idx}
+                                    style={{ color: "#333", marginBottom: 2 }}
                                   >
-                                    {plan.name}
-                                  </div>
-                                  <div
-                                    style={{
-                                      fontSize: 22,
-                                      fontWeight: 700,
-                                      color: "#1d1d1d",
-                                      marginBottom: 5,
-                                    }}
-                                  >
-                                    {plan.currency}
-                                    {plan.price.toLocaleString()}
-                                    <span
-                                      style={{
-                                        fontSize: 13,
-                                        fontWeight: 400,
-                                        color: "#666",
-                                      }}
-                                    >
-                                      {" "}
-                                      / {plan.duration}
-                                    </span>
-                                  </div>
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      color: "#666",
-                                      marginBottom: 8,
-                                    }}
-                                  >
-                                    {plan.description}
-                                  </div>
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontWeight: 600,
-                                      color: plan.color,
-                                      marginBottom: 8,
-                                    }}
-                                  >
-                                    Pricing: {plan.duration}
-                                  </div>
-                                  <div
-                                    style={{
-                                      fontSize: 12,
-                                      fontWeight: 600,
-                                      color: "#333",
-                                      marginBottom: 10,
-                                    }}
-                                  >
-                                    Products: {plan.min_products} – {plan.max_products}
-                                  </div>
-                                  {plan.features?.length > 0 && (
-                                    <ul
-                                      style={{
-                                        paddingLeft: 20,
-                                        fontSize: 11,
-                                        margin: 0,
-                                      }}
-                                    >
-                                      {plan.features
-                                        .slice(0, 3)
-                                        .map((feature: string, idx: number) => (
-                                          <li
-                                            key={idx}
-                                            style={{ color: "#333", marginBottom: 2 }}
-                                          >
-                                            {feature}
-                                          </li>
-                                        ))}
-                                    </ul>
-                                  )}
-                                </div>
-                              </Radio>
-                              {selectedPlan === plan.id && (
-                                <CheckCircleOutlined
-                                  style={{
-                                    position: "absolute",
-                                    top: 15,
-                                    right: 15,
-                                    fontSize: 20,
-                                    color: plan.color,
-                                  }}
-                                />
-                              )}
-                            </Card>
-                          </Col>
-                        ))}
-                      </Row>
-                    </Radio.Group>
-                  </div>
-                </div>
+                                    {feature}
+                                  </li>
+                                ))}
+                            </ul>
+                          </div>
+                        </Radio>
+                        {selectedPlan === plan.id && (
+                          <CheckCircleOutlined
+                            style={{
+                              position: "absolute",
+                              top: 15,
+                              right: 15,
+                              fontSize: 20,
+                              color: plan.color,
+                            }}
+                          />
+                        )}
+                      </Card>
+                    </Col>
+                  ))}
+                </Row>
+              </Radio.Group>
 
-                {/* Alerts */}
-                {error && (
-                  <div style={{ marginBottom: "20px" }}>
-                    <Alert
-                      description={
-                        <h6 style={{ color: "#ff4d4f", margin: 0 }}>
-                          ❌ Please upload both required documents before continuing
-                        </h6>
-                      }
-                      type="error"
-                    />
+              <Alert
+                description={
+                  <div>
+                    Please ensure that the documents are thoroughly verified
+                    before uploading. If there are any issues with the uploaded
+                    documents, your account registration will not be processed.
                   </div>
-                )}
-
-                <div style={{ marginBottom: "20px" }}>
+                }
+                type="warning"
+                closable
+              />
+              <br />
+              {error ? (
+                <>
                   <Alert
                     description={
-                      <div style={{ fontSize: "13px" }}>
-                        ⚠️ <b>Document Verification Important:</b> Please ensure that the documents are thoroughly verified before uploading. If there are any issues with the uploaded documents, your account registration will not be processed.
-                      </div>
+                      <h6 style={{ color: "red" }}>
+                        Please select required documents
+                      </h6>
                     }
-                    type="warning"
-                    closable
+                    type="error"
                   />
-                </div>
+                  <br />
+                </>
+              ) : null}
 
-                {/* Action Buttons */}
-                <Row gutter={[12, 12]} style={{ marginTop: "32px" }}>
-                  <Col xs={24} sm={12}>
-                    <Button block onClick={() => goBack()} size="large" style={{ height: "44px" }}>
-                      ← Back
+              <Row>
+                <Col md={6} xs={6}>
+                  <Button block onClick={() => goBack()} size="large">
+                    Back
+                  </Button>
+                </Col>
+                <Col md={6} xs={6}>
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit" block size="large">
+                      Continue
                     </Button>
-                  </Col>
-                  <Col xs={24} sm={12}>
-                    <Form.Item style={{ marginBottom: 0 }}>
-                      <Button type="primary" htmlType="submit" block size="large" style={{ height: "44px" }}>
-                        Continue →
-                      </Button>
-                    </Form.Item>
-                  </Col>
-                </Row>
-              </Form>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Col>
+          <Col md={8}>
+            <div className="sellerRegister-box2">
+              <h4 className="sellerRegister-subHeading">4. Upload Documents</h4>
+              <div className="sellerRegister-text1">
+                <b>ID Proof:</b> Upload the ID Proof which you have selected in
+                Step3. you can upload an Image or Pdf of the same. make sure the
+                data is clear and readable. if you are uploding image, upload
+                good quality images.
+                <br /> <br />
+                <b>Business Registration Number: </b>Upload Your Business
+                Registration Document. if you have. you can also upload an image
+                or pdf. <br />
+              </div>
             </div>
           </Col>
         </Row>

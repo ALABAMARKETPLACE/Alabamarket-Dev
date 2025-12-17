@@ -15,6 +15,7 @@ import { GET } from "../../../../util/apicall";
 import _ from "lodash";
 import useMediaQuery from "../../../../shared/hook/useMediaQuery";
 import NoData from "../../../../components/noData";
+import "./styles.scss";
 const result: any = {
   recent: "Recently Launched Products",
   toprated: "Top Rated Products",
@@ -328,7 +329,7 @@ function Page() {
     // window.scrollTo(0, 0);
   }, [typeParam, positionParam, lattitude, longitude, isFeaturedView]);
   return (
-    <div className="Screen-box py-3">
+    <div className="Screen-box products-page py-3">
       {contextHolder}
       <PageHeader
         title={headerTitle ?? result[typeParam] ?? "Products"}
@@ -363,15 +364,19 @@ function Page() {
               </div>
             ) : null}
             {(hasFeaturedMore || fallbackHasMore) && (
-              <div className="d-flex justify-content-center mt-3">
+              <div className="d-flex justify-content-center mt-4 mb-3">
                 <button
-                  className="btn"
+                  className="btn show-more-btn"
                   style={{
-                    border: "1px solid #A10244",
-                    color: "#A10244",
+                    border: "2px solid #ff8c42",
+                    color: "#ff8c42",
                     backgroundColor: "#ffffff",
-                    padding: "8px 20px",
-                    borderRadius: "30px",
+                    padding: "12px 32px",
+                    borderRadius: "50px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    textTransform: "uppercase",
+                    letterSpacing: "1px",
                   }}
                   onClick={handleShowMore}
                   disabled={loadingMore}
@@ -396,15 +401,19 @@ function Page() {
               ))}
             </Row>
             {(meta?.hasNextPage ?? false) && (
-              <div className="d-flex justify-content-center mt-3">
+              <div className="d-flex justify-content-center mt-4 mb-3">
                 <button
-                  className="btn"
+                  className="btn show-more-btn"
                   style={{
-                    border: "1px solid #A10244",
-                    color: "#A10244",
+                    border: "2px solid #ff8c42",
+                    color: "#ff8c42",
                     backgroundColor: "#ffffff",
-                    padding: "8px 20px",
-                    borderRadius: "30px",
+                    padding: "12px 32px",
+                    borderRadius: "50px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    textTransform: "uppercase",
+                    letterSpacing: "1px",
                   }}
                   onClick={handleShowMore}
                   disabled={loadingMore}

@@ -1,134 +1,51 @@
 @use "../../config/styleVariable.scss" as vars;
 
 .Footer {
-  background: linear-gradient(135deg, #0d3d33 0%, #1a5a4a 50%, #0d3d33 100%);
-  padding-top: 56px;
-  padding-bottom: 40px;
-  border-top: 4px solid;
-  border-image: linear-gradient(90deg, #FF9900, #FFB84D, #FF9900) 1 0 0 0;
-  box-shadow: 0 -12px 40px rgba(13, 61, 51, 0.5), 0 -4px 12px rgba(255, 153, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  position: relative;
-  overflow: hidden;
-  
+  background: linear-gradient(to right, 
+    rgba(76, 175, 80, 0.2) 0%, 
+    rgba(255, 255, 255, 1) 30%, 
+    rgba(255, 255, 255, 1) 70%, 
+    rgba(255, 140, 66, 0.2) 100%);
+  padding-top: 20px;
+  border-top: 4px solid transparent;
+  border-image: linear-gradient(to right, #4caf50 0%, #4caf50 40%, #ff8c42 40%, #ff8c42 100%) 1;
+  box-shadow: 0 -2px 10px rgba(255, 140, 66, 0.08);
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding: 24px;
-    padding-top: 32px;
-  }
-  
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      repeating-linear-gradient(
-        45deg,
-        transparent,
-        transparent 10px,
-        rgba(255, 153, 0, 0.02) 10px,
-        rgba(255, 153, 0, 0.02) 20px
-      ),
-      repeating-linear-gradient(
-        -45deg,
-        transparent,
-        transparent 10px,
-        rgba(255, 200, 100, 0.01) 10px,
-        rgba(255, 200, 100, 0.01) 20px
-      );
-    pointer-events: none;
-    z-index: 0;
+    padding: 10px;
+    padding-top: 30px;
   }
 }
 
 .Footer-container {
-  padding: 0 12px;
-  position: relative;
-  z-index: 1;
-  max-width: 1400px;
-  margin: 0 auto;
-  
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding: 0 8px;
-  }
+  padding: 0 10px;
 }
 
 .Footer-Box1 {
   text-align: center;
-  border-top: 1px solid rgba(255, 153, 0, 0.2);
-  font-size: 12px;
-  padding: 24px 10px;
-  color: #a0a0a0;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  position: relative;
-  z-index: 1;
+  border-top: 2px solid transparent;
+  border-image: linear-gradient(to right, #ff8c42 0%, #ff8c42 50%, #4caf50 50%, #4caf50 100%) 1;
+  font-size: 10px;
+  padding: 10px;
+  background: linear-gradient(to right, rgba(255, 140, 66, 0.15), rgba(76, 175, 80, 0.15));
 }
 
 .Footer_logoBox {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   font-size: 30px;
   font-family: vars.$Bold;
-  color: #FF9900;
+  color: #000;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  margin-bottom: 20px;
-  z-index: 1;
-  position: relative;
-  
-  &:hover {
-    .Footer-logo-wrapper {
-      transform: scale(1.12) rotate(6deg) translateY(-3px);
-    }
-    
-    .Footer-brand-text {
-      color: #FFB84D;
-      letter-spacing: 1.5px;
-    }
-  }
-}
-
-.Footer_logoBox-modern {
-  &:hover {
-    transform: none;
-  }
-}
-
-.Footer-logo-wrapper {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .Footer_logo {
-  width: 56px;
-  height: 56px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
-  border-radius: 12px;
+  border-radius: 5px;
   overflow: hidden;
-  background: #ffffff;
-  border: 2px solid #FFB84D;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 8px 24px rgba(255, 153, 0, 0.35);
-  z-index: 1;
-  
-  &:hover {
-    box-shadow: 0 12px 36px rgba(255, 153, 0, 0.5);
-    transform: translateY(-6px) rotate(-4deg) scale(1.1);
-    border-color: #FF7B1C;
-  }
-}
-
-.Footer-brand-text {
-  font-size: 26px;
-  font-weight: 700;
-  color: #FF9900;
-  letter-spacing: 0.2px;
-  text-transform: uppercase;
-  font-family: vars.$Bold;
-  transition: all 0.3s ease;
 }
 
 .Footer_img {
@@ -136,157 +53,58 @@
   width: 100%;
   height: 100%;
   background-color: #fff;
-  padding: 12px;
-  border-radius: 12px;
-  border: 2px solid rgba(255, 153, 0, 0.12);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  
-  &:hover {
-    box-shadow: 0 6px 18px rgba(255, 153, 0, 0.25);
-    border-color: rgba(255, 153, 0, 0.4);
-    transform: translateY(-3px) scale(1.03);
-  }
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid rgb(219, 219, 219);
 }
 
 .Footer-text1 {
   font-size: 18px;
   font-family: vars.$Bold;
-  padding-bottom: 22px;
-  padding-top: 12px;
-  color: #ffffff;
-  letter-spacing: 0.5px;
-  font-weight: 700;
-  position: relative;
-  z-index: 1;
-  text-transform: uppercase;
-  
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: 8px;
-    left: 0;
-    width: 50px;
-    height: 3px;
-    background: linear-gradient(90deg, #FF9900, #FFB84D);
-    border-radius: 2px;
-    transition: all 0.3s ease;
-  }
-  
-  &:hover::after {
-    width: 100%;
-  }
-  
+  padding-bottom: 15px;
+  padding-top: 10px;
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    margin-top: 12px;
+    margin-top: 10px;
   }
 }
 
 .Footer-text2 {
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   font-family: vars.$SemiBold;
   font-size: 14px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 1;
-  position: relative;
-  letter-spacing: 0.3px;
-  
   a {
     text-decoration: none;
-    color: #c5c5c5;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    position: relative;
-    display: inline-block;
-    
-    &::after {
-      content: "";
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: linear-gradient(90deg, #FF9900, #FFB84D);
-      transition: width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      border-radius: 1px;
-    }
-    
+    color: rgb(89, 89, 89);
     &:hover {
-      color: #FFB84D;
-      transform: translateX(4px);
-      
-      &::after {
-        width: 100%;
-      }
+      color: vars.$primary;
+      border-bottom: 1px solid vars.$primary;
     }
   }
 }
 
 .Footer-text3 {
-  font-size: 14px;
+  font-size: 13px;
   font-family: vars.$Medium;
-  color: #b0b0b0;
-  line-height: 1.6;
-  letter-spacing: 0.3px;
-  z-index: 1;
-  position: relative;
+  color: #000;
 }
 
 .Footer-icon {
-  font-size: 32px;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 1;
-  position: relative;
-  
+  font-size: 28px;
   a {
     text-decoration: none;
-    color: #a0a0a0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: rgba(255, 153, 0, 0.12);
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border: 2px solid rgba(255, 153, 0, 0.25);
-    font-size: 20px;
-    
+    color: rgb(59, 59, 59);
     &:hover {
-      color: #FFB84D;
-      background: linear-gradient(135deg, rgba(255, 153, 0, 0.25), rgba(255, 184, 77, 0.15));
-      border-color: #FF9900;
-      transform: translateY(-6px) scale(1.15) rotate(10deg);
-      box-shadow: 0 12px 28px rgba(255, 153, 0, 0.4);
+      color: vars.$primary;
     }
   }
 }
 
 .Footer_icon2 {
-  height: 44px;
+  height: 40px;
   object-fit: contain;
-  border: 2px solid rgba(255, 153, 0, 0.15);
+  border: 1px solid rgb(224, 224, 224);
   width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: pointer;
-  
-  &:hover {
-    border-color: rgba(255, 153, 0, 0.5);
-    box-shadow: 0 6px 18px rgba(255, 153, 0, 0.25);
-    transform: translateY(-4px) scale(1.05);
-    background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-  }
-}
-
-.Footer-payment-methods {
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-.Footer-app-links {
-  gap: 10px;
-  margin-bottom: 20px;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #fff;
 }

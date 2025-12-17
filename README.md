@@ -34,3 +34,31 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+---
+
+## Environment variables ✅
+
+This project reads runtime configuration from environment variables. For local development, create a `.env.local` file (already added in your workspace) with the keys in `.env.example`.
+
+- Do NOT commit `.env.local` (it's already ignored by `.gitignore`).
+- Add secrets only to `.env.local` or your deployment provider's secret store.
+
+Quick steps:
+
+1. Copy the template:
+
+```bash
+cp .env.example .env.local
+# then edit .env.local with your values
+```
+
+2. After changing env values, restart the dev server so Next.js picks them up:
+
+```bash
+npm run dev
+```
+
+3. Verify server-side vars (e.g., `NEXTAUTH_SECRET`) are available in server code and client-facing ones have the `NEXT_PUBLIC_` prefix.
+
+---

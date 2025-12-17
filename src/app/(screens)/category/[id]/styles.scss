@@ -1,12 +1,9 @@
 @use "../../../../config/styleVariable.scss" as global;
-
 .productByCat-PageSider {
-  border-right: 2px solid rgba(255, 107, 44, 0.1);
+  border-right: 1px solid rgb(231, 231, 231);
   height: calc(100vh - 74px);
   overflow-y: auto;
   position: sticky;
-  background: linear-gradient(180deg, #ffffff 0%, #fafaf8 100%);
-  
   ::-webkit-scrollbar {
     display: none;
     width: 5x;
@@ -14,47 +11,62 @@
   scrollbar-width: none;
   position: -webkit-sticky;
   top: 0;
-  
   @media (max-width: 992px) {
     display: none;
   }
 }
 
 .productByCat-PageHeader {
-  padding-top: 20px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid rgba(255, 107, 44, 0.1);
-  margin-bottom: 20px;
-  animation: slideInDown 0.6s ease-out;
-  
+  padding-top: 10px;
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding-top: 12px;
+    padding-top: 10px;
   }
 }
 
 .productByCat-PageHeadertxt1 {
   font-family: global.$Bold;
-  font-size: 28px;
-  background: linear-gradient(135deg, global.$dark-green 0%, global.$orange 100%);
+  font-size: 22px;
+  background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 50%, #ff8c42 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  font-weight: 700;
-  
+  background-size: 200% auto;
+  animation: allProductsShimmer 4s linear infinite;
+  position: relative;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 50px;
+    height: 2px;
+    background: linear-gradient(90deg, #ff8c42, #ff6b35);
+    border-radius: 2px;
+    animation: allProductsUnderline 2.5s ease-in-out infinite;
+    box-shadow: 0 2px 8px rgba(255, 140, 66, 0.4);
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 20px;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-bottom: 0px;
+
+    &::after {
+      width: 50px;
+      height: 2px;
+    }
   }
 }
 
 .productByCat-PageHeadertxt2 {
-  font-family: global.$Medium;
-  color: #8a8a8a;
+  font-family: global.$SemiBold;
+  color: gray;
   font-size: 14px;
-  margin-top: 6px;
-  
   @media screen and (min-width: 320px) and (max-width: 768px) {
     padding-bottom: 5px;
-    font-size: 12px;
   }
 }
 
@@ -62,9 +74,6 @@
   display: flex;
   height: 100%;
   justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  
   @media screen and (min-width: 320px) and (max-width: 768px) {
     justify-content: flex-start;
   }
@@ -74,43 +83,28 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 12px 12px;
-  margin: 6px 0;
+  padding-bottom: 5px;
+  padding-top: 10px;
   font-family: global.$Medium;
   font-size: 14px;
+  padding-left: 2px;
   cursor: pointer;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  border-left: 3px solid transparent;
-  color: #4a4a4a;
-  
   &:hover {
-    color: global.$orange;
-    background: linear-gradient(135deg, rgba(255, 107, 44, 0.1) 0%, rgba(255, 107, 44, 0.05) 100%);
-    border-left-color: global.$orange;
-    transform: translateX(4px);
+    color: #cc0055;
+    background-color: rgb(241, 241, 241);
+    border-radius: 6px;
   }
-  
   &.active {
-    background: linear-gradient(135deg, rgba(255, 107, 44, 0.15) 0%, rgba(26, 77, 62, 0.1) 100%);
-    border-left-color: global.$orange;
-    color: global.$orange;
-    font-weight: 600;
+    background-color: rgb(241, 241, 241);
+    border-radius: 6px;
   }
 }
 
 .productByCat-img {
-  height: 44px;
-  width: 44px;
+  height: 40px;
+  width: 40px;
   object-fit: cover;
-  margin-right: 12px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #f8f6f3 0%, #fef9f3 100%);
-  border: 2px solid rgba(255, 107, 44, 0.1);
-  transition: all 0.3s ease;
-  
-  .productByCat-PageSiderItem:hover & {
-    border-color: global.$orange;
-    transform: scale(1.05);
-  }
+  margin-right: 10px;
+  border-radius: 100px;
+  background-color: rgb(231, 231, 231);
 }

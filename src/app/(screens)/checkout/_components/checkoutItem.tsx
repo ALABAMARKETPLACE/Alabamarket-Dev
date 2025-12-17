@@ -58,7 +58,7 @@ const CheckoutItem = (props: any) => {
               <div style={{ flex: 1 }} />
               <div className="Cart-txt4">
                 <span style={{ color: "grey", fontSize: 14 }}>
-                  {props?.Settings?.currency}&nbsp;
+                  ₦&nbsp;
                 </span>
                 {Number(productPrice * props?.data?.quantity).toFixed(2)}
               </div>

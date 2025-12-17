@@ -1,5 +1,4 @@
 "use client";
-export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Button, Form, Input, notification } from "antd";

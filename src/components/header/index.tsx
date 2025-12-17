@@ -18,13 +18,17 @@ import {
 import { BsShopWindow } from "react-icons/bs";
 
 import Search from "./search";
-import Location from "./location";
 import { Badge, Button, Popover } from "antd";
 import { reduxSettings } from "../../redux/slice/settingsSlice";
 import { signOut, useSession } from "next-auth/react";
 import { PiUserCircle } from "react-icons/pi";
 import ProfileMenu from "./profileMenu";
 import dynamic from "next/dynamic";
+
+const Location = dynamic(() => import("./location"), {
+  ssr: false,
+});
+
 const CateogreyList = dynamic(() => import("./categoryList"), {
   ssr: false,
 });
@@ -63,9 +67,8 @@ function Header() {
   return pathname?.includes("/auth") ? null : (
     <Container fluid className="Header-container">
       <header className="position-sticky top-0" style={{ zIndex: 1000 }}>
-        <div className="Header">
+        <div className="Header py-2 ">
           <div className="Header-Box">
-            {/* Logo Section */}
             <Link href={"/"} className="Header_logoBox">
               <div>
                 <Image
@@ -74,21 +77,23 @@ function Header() {
                   className="Header_logo"
                 />
               </div>
+              {/* <div style={{ marginTop: 5 }}>{CONFIG.NAME}</div> */}
             </Link>
-
-            {/* Location Section */}
             {Settings?.isLocation ? (
               <div className="Header-location desktop">
                 <Location />
               </div>
             ) : null}
-
-            {/* Search Section */}
             <div className="Header-search desktop">
               <Search type={"input"} />
             </div>
-
-            {/* Seller CTA Section */}
+            {/* <div className="Header-menu desktop">
+              <Button
+                size="large"
+                type="text"1
+                icon={<IoGlobeOutline size={25} color={"#262941"} />}
+              ></Button>
+            </div> */}
             {showSellerCta ? (
               <div className="Header-sellerCTA">
                 <Button
@@ -104,9 +109,20 @@ function Header() {
                 </Button>
               </div>
             ) : null}
-
-            {/* Profile Menu Section */}
             <div className="Header-menu">
+              {/* {user ? (
+                <div onClick={() => signOut()}>{user?.user?.first_name}</div>
+              ) : (
+                <Link href={"/login"}>
+                  <Button
+                    size="large"
+                    type="text"
+                    icon={<IoPersonOutline size={25} color={"#262941"} />}
+                  >
+                    <div className="Header-text3">Login</div>
+                  </Button>
+                </Link>
+              )} */}
               <Popover
                 placement="bottomRight"
                 trigger="click"
@@ -142,8 +158,6 @@ function Header() {
                 </div>
               </Popover>
             </div>
-
-            {/* Cart Section */}
             <div className="Header-menu">
               <Link href={"/cart"}>
                 <Button
@@ -159,8 +173,6 @@ function Header() {
               </Link>
             </div>
           </div>
-
-          {/* Responsive Search Sections */}
           <div className="Header-search tablet">
             <Search type={"box"} />
           </div>
@@ -169,6 +181,7 @@ function Header() {
           </div>
         </div>
         <div className="Header-sectionBox" />
+        {/* <CateogreyList /> */}
       </header>
     </Container>
   );

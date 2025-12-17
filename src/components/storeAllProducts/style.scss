@@ -82,11 +82,41 @@ $borderRadius: 12px;
 .store-All-Horizontal-viewButton {
   font-family: global.$Bold;
   margin-right: 16px;
-  font-size: 14px;
-  padding-top: 5px;
-  color: gray;
-  &:hover{
-    color: global.$primary;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 18px;
+  color: #ff8c42;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  position: relative;
+  transition: all 0.3s ease;
+  display: inline-block;
+  border: 2px solid #ff8c42;
+  border-radius: 30px;
+  background: white;
+
+  &::before {
+    content: '→';
+    position: absolute;
+    right: -22px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    color: #ff8c42;
+  }
+
+  &:hover {
+    transform: translateX(-6px) scale(1.05);
+    box-shadow: 0 5px 18px rgba(255, 140, 66, 0.45);
+    background: linear-gradient(135deg, #ff8c42, #ff6b35);
+    color: white;
+    border-color: #ff6b35;
+
+    &::before {
+      right: -28px;
+      opacity: 1;
+      color: #ff8c42;
+    }
   }
 }
 .product-search-multi-title {

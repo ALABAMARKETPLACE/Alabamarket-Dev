@@ -12,19 +12,6 @@ $grey7: #888888;
 $grey8: #e2e2e9;
 $grey9: #949191;
 $green: #003f4a;
-
-// Company colors - Orange & Dark Green
-$orange: #ff8c42;
-$orange-light: #ffa55c;
-$orange-dark: #ff6b2c;
-$orange-bright: #ff9d5c;
-
-// Dark green - company primary
-$dark-green: #1a4d3e;
-$dark-green-light: #2d6b5c;
-$dark-green-lighter: #3d8370;
-$dark-green-shade: #0f3430;
-
 //font
 $Regular: "DMSans-Regular";
 $Medium: "DMSans-Medium";
@@ -34,73 +21,3 @@ $Light: "DMSans-Thin";
 
 $sidebar_menu_color: #f0e9ed;
 $sidebar_menu_hover: #f0efef;
-
-// Animation keyframes
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes glowOrange {
-  0%, 100% {
-    box-shadow: 0 0 10px rgba(255, 140, 66, 0), 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(255, 140, 66, 0.3), 0 8px 20px rgba(0, 0, 0, 0.12);
-  }
-}
-
-@keyframes borderGlow {
-  0%, 100% {
-    border-color: #f1f1f1;
-  }
-  50% {
-    border-color: rgba(255, 140, 66, 0.4);
-  }
-}
-
-@keyframes pulseOrange {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-}
-
-@keyframes shimmerGreen {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-@keyframes glowGreen {
-  0%, 100% { box-shadow: 0 0 6px rgba(29,105,90,0); }
-  50% { box-shadow: 0 0 18px rgba(29,105,90,0.18); }
-}

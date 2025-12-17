@@ -28,7 +28,7 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Total Product Price</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt4">
-          {Settings?.currency} {Number(props?.total).toFixed(2)}
+          ₦ {Number(props?.total).toFixed(2)}
         </div>
       </div>
       <div style={{ margin: 15 }} />
@@ -36,21 +36,21 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Discount</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt4 text-success">
-          -{Settings?.currency} {Number(props?.discount).toFixed(2)}
+          -₦ {Number(props?.discount).toFixed(2)}
         </div>
       </div>
       <div style={{ margin: 15 }} />
       <div className="Cart-row">
         <div className="Cart-txt3">Tax</div>
         <div style={{ flex: 1 }} />
-        <div className="Cart-txt4">{Settings?.currency} 0.00</div>
+        <div className="Cart-txt4">₦ 0.00</div>
       </div>
       <div style={{ margin: 15 }} />
       <div className="Cart-row">
         <div className="Cart-txt3">Delivery Charges</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt4">
-          {Settings?.currency} {Number(props?.delivery_charge).toFixed(2)}
+          ₦ {Number(props?.delivery_charge).toFixed(2)}
         </div>
       </div>
       <div className="Cart-line2" />
@@ -59,7 +59,7 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Total :</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt7">
-          {Settings?.currency} {Number(props?.grand_total).toFixed(2)}
+          ₦ {Number(props?.grand_total).toFixed(2)}
         </div>
       </div>
       <div className="Cart-line2" />

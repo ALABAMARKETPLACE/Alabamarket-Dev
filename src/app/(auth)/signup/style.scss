@@ -1,187 +1,68 @@
 @use "../../../config/styleVariable.scss" as global;
-
-// ========================
-// Animations
-// ========================
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// ========================
-// Signup Screen Main Wrapper
-// ========================
-.Screen-box {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #ffffff 0%, #fffbf5 50%, #fff8f0 100%);
-  padding: 40px 20px;
-  position: relative;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    padding: 20px;
-    min-height: auto;
-  }
-}
-
-// ========================
-// Signup Page Header
-// ========================
 .signupScreen-txt1 {
   font-family: global.$Bold;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 24px;
   text-align: center;
-  color: #1a1a1a;
-  background: linear-gradient(135deg, #0d3d33 0%, #FF9900 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 8px;
-  letter-spacing: -0.5px;
-
-  @media (max-width: 768px) {
-    font-size: 24px;
-  }
 }
-
 .signupScreen-txt2 {
   font-family: global.$Medium;
-  font-size: 14px;
+  font-size: 16px;
   text-align: center;
-  line-height: 1.6;
-  color: #666;
-  margin-bottom: 24px;
-  letter-spacing: 0.3px;
+  line-height: 30px;
+  color: gray;
 }
-
 .signupScreen-box1 {
-  background: white;
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(255, 153, 0, 0.08);
-  padding: 40px;
-  border-top: 5px solid;
-  border-image: linear-gradient(90deg, #FF9900, #FFB84D) 1;
-  width: 100%;
-  max-width: 500px;
-  animation: fadeInUp 0.8s ease-out 0.2s both;
-
-  @media (max-width: 768px) {
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 12px 40px rgba(255, 153, 0, 0.06);
+  padding-left: 50px;
+  padding-right: 50px;
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
-
-// ========================
-// Form Inputs
-// ========================
-:deep(.ant-form-item) {
-  margin-bottom: 16px;
-
-  .ant-form-item-label > label {
-    color: #1a1a1a !important;
-    font-weight: 700 !important;
-    font-size: 12px !important;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    font-family: global.$Bold !important;
-  }
-}
-
-:deep(.ant-input),
-:deep(.ant-input-number),
-:deep(.ant-input-affix-wrapper) {
-  border: 2px solid #e8e8e8 !important;
-  border-radius: 12px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-size: 14px !important;
-  background: #fafafa !important;
-
-  &:hover {
-    border-color: rgba(255, 153, 0, 0.3) !important;
-    background: #ffffff !important;
-  }
-
-  &:focus,
-  &:focus-within {
-    border-color: #FF9900 !important;
-    box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1) !important;
-    background: #ffffff !important;
-  }
-}
-
-:deep(.ant-input-prefix) {
-  color: #FF9900 !important;
-}
-
-// ========================
-// Error Messages
-// ========================
-.signupScreen-errortxt,
-.text-danger {
-  font-family: global.$Medium;
-  color: #d32f2f !important;
-  font-size: 12px !important;
-  margin-bottom: 12px !important;
-  margin-top: -12px !important;
-  letter-spacing: 0.3px;
-}
-
-// ========================
-// Form Containers
-// ========================
-.SummaryCard {
-  border: 2px solid #e8e8e8;
-  padding: 12px 16px;
-  margin-bottom: 12px;
-  border-radius: 12px;
-  font-family: global.$Medium;
-  font-size: 13px;
-  background: #fafafa;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    border-color: rgba(255, 153, 0, 0.3);
-    background: #ffffff;
-  }
-}
-
-// ========================
-// Google Login Button
-// ========================
-.GmailLogin {
-  border: 2px solid #e8e8e8 !important;
-  border-radius: 12px !important;
-  padding: 14px 16px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+.signupScreen-txt3 {
+  font-family: global.$SemiBold;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
   cursor: pointer;
-  background: #fafafa !important;
-  margin-bottom: 0 !important;
-  animation: fadeInUp 0.8s ease-out 0.4s both;
-
-  &:hover {
-    border-color: rgba(255, 153, 0, 0.3) !important;
-    background: #ffffff !important;
-    box-shadow: 0 6px 16px rgba(255, 153, 0, 0.12) !important;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    justify-content: flex-end;
+    padding-bottom: 30px;
   }
 }
-
+.signupScreen-txt4 {
+  font-family: global.$SemiBold;
+  text-align: center;
+  font-size: 17px;
+  cursor: pointer;
+  color: grey;
+}
+.signupScreen-txt5 {
+  font-family: global.$Bold;
+  color: global.$primary;
+}
+.signupScreen-errortxt {
+  font-family: global.$Medium;
+  color: red;
+  font-size: 16px;
+  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+.SummaryCard {
+  border: 1px solid rgb(209, 209, 209);
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  font-family: global.$Medium;
+  font-size: 14px;
+}
+.GmailLogin {
+  border: 1px solid rgb(194, 194, 194);
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 4px;
+}
 .GmailLogin-row {
   font-family: global.$SemiBold;
   display: flex;
@@ -190,79 +71,9 @@
   justify-content: center;
   font-size: 16px;
   cursor: pointer;
-  gap: 12px;
-  color: #1a1a1a;
-  font-weight: 600;
 }
-
 .GmailLogin-txt1 {
   margin-bottom: -10px;
   font-family: global.$SemiBold;
   font-size: 17px;
-}
-
-// ========================
-// Buttons
-// ========================
-:deep(.ant-btn) {
-  &.ant-btn-primary {
-    height: 48px;
-    font-size: 15px;
-    font-weight: 700;
-    border-radius: 12px !important;
-    background: linear-gradient(135deg, #FF9900 0%, #FFB84D 100%) !important;
-    border: none !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    font-family: global.$Bold;
-    letter-spacing: 0.4px;
-    width: 100%;
-
-    &:hover {
-      box-shadow: 0 12px 24px rgba(255, 153, 0, 0.3) !important;
-      transform: translateY(-2px);
-    }
-
-    &:active {
-      transform: translateY(0);
-    }
-
-    &:disabled {
-      opacity: 0.6;
-    }
-  }
-}
-
-// ========================
-// Text Links
-// ========================
-.signupScreen-txt3,
-.signupScreen-txt4,
-.signupScreen-txt5 {
-  font-family: global.$SemiBold;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.signupScreen-txt3 {
-  color: #FF9900;
-  font-weight: 700;
-
-  &:hover {
-    color: #FF7B1C;
-  }
-}
-
-.signupScreen-txt4 {
-  color: #999;
-  text-align: center;
-}
-
-.signupScreen-txt5 {
-  color: #FF9900;
-  font-weight: 700;
-
-  &:hover {
-    color: #FF7B1C;
-  }
 }

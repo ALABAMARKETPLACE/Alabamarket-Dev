@@ -186,7 +186,7 @@ function SubstitutionModal({
                   <div className="d-flex justify-content-between">
                     {" "}
                     <p className="price fw-bold">
-                      {Settings.currency}
+                      ₦
                       {it?.retail_rate ?? 0}
                     </p>
                     <Button

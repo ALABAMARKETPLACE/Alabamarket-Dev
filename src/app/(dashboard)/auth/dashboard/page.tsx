@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Col, Row, Table } from "react-bootstrap";
 import { Button, Card, DatePicker } from "antd";
 
-import { LuUsers } from "react-icons/lu";
+import { LuUsers2 } from "react-icons/lu";
 import { FiPackage } from "react-icons/fi";
 import { TbUsersGroup } from "react-icons/tb";
 import { HiOutlineRectangleGroup } from "react-icons/hi2";
@@ -85,7 +85,7 @@ function DashboardAdmin() {
                     Title={"Users"}
                     Desc={"All Users"}
                     value={counts?.userCount ?? 0}
-                    icon={<LuUsers color="green" />}
+                    icon={<LuUsers2 color="green" />}
                     link="/auth/users"
                   />
                 </Col>

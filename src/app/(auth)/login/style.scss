@@ -1,355 +1,23 @@
 @use "../../../config/styleVariable.scss" as global;
-
-// ========================
-// Animations
-// ========================
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes blobAnimation1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-}
-
-@keyframes blobAnimation2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(-40px, 30px) scale(0.9);
-  }
-  66% {
-    transform: translate(20px, -40px) scale(1.1);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-// ========================
-// Main Layout
-// ========================
-.login-screen-wrapper {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #ffffff 0%, #fffbf5 50%, #fff8f0 100%);
-  padding: 20px;
-  position: relative;
-  overflow: hidden;
-
-  @media (max-width: 768px) {
-    padding: 16px;
-    min-height: auto;
-  }
-}
-
-.login-screen-container {
-  width: 100%;
-  max-width: 480px;
-  animation: fadeInUp 0.8s ease-out;
-
-  @media (max-width: 480px) {
-    max-width: 100%;
-  }
-}
-
-// ========================
-// Card & Background
-// ========================
-.login-screen-card {
-  background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 24px 48px rgba(13, 61, 51, 0.25), 0 12px 32px rgba(255, 153, 0, 0.1), 0 0 1px rgba(0, 0, 0, 0.1);
-  padding: 56px 40px;
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 153, 0, 0.08);
-
-  @media (max-width: 480px) {
-    border-radius: 20px;
-    padding: 36px 24px;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(90deg, #FF9900 0%, #FFB84D 50%, #FF9900 100%);
-    background-size: 200% 100%;
-    animation: shimmer 3s infinite;
-  }
-}
-
-// Animated background blobs
-.auth-bg-blob {
-  position: absolute;
-  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-  opacity: 0.08;
-  z-index: 0;
-  filter: blur(40px);
-
-  &.auth-bg-blob-1 {
-    width: 300px;
-    height: 300px;
-    background: #FF9900;
-    top: -100px;
-    right: -100px;
-    animation: blobAnimation1 8s infinite ease-in-out;
-  }
-
-  &.auth-bg-blob-2 {
-    width: 250px;
-    height: 250px;
-    background: #0d3d33;
-    bottom: -80px;
-    left: -80px;
-    animation: blobAnimation2 7s infinite ease-in-out;
-  }
-}
-
-// ========================
-// Content & Sections
-// ========================
-.login-screen-content {
-  position: relative;
-  z-index: 1;
-  opacity: 0;
-  animation: fadeInUp 0.8s ease-out forwards;
-  animation-delay: 0.2s;
-
-  &.loaded {
-    opacity: 1;
-  }
-}
-
-.login-screen-header {
-  text-align: center;
-  margin-bottom: 40px;
-  animation: slideInDown 0.8s ease-out 0.3s both;
-}
-
-.login-screen-title {
-  font-family: global.$Bold;
-  font-size: 36px;
-  color: #1a1a1a;
-  margin: 0 0 14px;
-  font-weight: 700;
-  letter-spacing: -0.6px;
-  background: linear-gradient(135deg, #0d3d33 0%, #FF9900 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-
-  @media (max-width: 480px) {
-    font-size: 28px;
-  }
-}
-
-.login-screen-subtitle {
-  font-family: global.$Medium;
-  font-size: 15px;
-  color: #666;
-  margin: 0;
-  line-height: 1.6;
-  letter-spacing: 0.3px;
-}
-
-// ========================
-// Forms Section
-// ========================
-.login-screen-forms {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  margin-bottom: 32px;
-
-  @media (max-width: 480px) {
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-}
-
-.form-wrapper {
-  animation: fadeInUp 0.8s ease-out forwards;
-
-  &.email-form-wrapper {
-    animation-delay: 0.4s;
-  }
-
-  &.gmail-form-wrapper {
-    animation-delay: 0.5s;
-  }
-
-  :deep(> *) {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:hover :deep(> *) {
-    transform: translateY(-2px);
-  }
-}
-
-// ========================
-// Divider
-// ========================
-.login-screen-divider {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin: 12px 0;
-  font-size: 13px;
-  color: #999;
-  font-family: global.$Medium;
-  letter-spacing: 0.3px;
-  animation: fadeInUp 0.8s ease-out 0.45s both;
-
-  &::before,
-  &::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
-  }
-}
-
-// ========================
-// Footer Section
-// ========================
-.login-screen-footer {
-  text-align: center;
-  padding-top: 28px;
-  border-top: 2px solid #f5f5f5;
-  animation: fadeInUp 0.8s ease-out 0.6s both;
-}
-
-.login-screen-footer-text {
-  font-family: global.$Medium;
-  font-size: 14px;
-  color: #666;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 5px;
-  letter-spacing: 0.3px;
-}
-
-.login-screen-signup-link {
-  font-family: global.$Bold;
-  color: #FF9900;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-size: 14px;
-  text-decoration: none;
-  font-weight: 700;
-  position: relative;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  letter-spacing: 0.4px;
-
-  &::after {
-    content: "";
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -2px;
-    left: 0;
-    background: linear-gradient(90deg, #FF9900, #FFB84D);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 2px;
-  }
-
-  &:hover {
-    color: #FF7B1C;
-
-    &::after {
-      width: 100%;
-    }
-  }
-
-  &:active {
-    transform: scale(0.98);
-  }
-}
-
-// ========================
-// Old Styles (Maintained for compatibility)
-// ========================
 .LoginScreen-txt1 {
   font-family: global.$Bold;
   font-size: 24px;
 }
-
 .LoginScreen-txt2 {
   font-family: global.$Medium;
   font-size: 15px;
   line-height: 30px;
   color: rgb(77, 77, 77);
 }
-
 .LoginScreen-txt3 {
   font-family: global.$SemiBold;
   font-size: 16px;
   cursor: pointer;
-
   @media screen and (min-width: 320px) and (max-width: 768px) {
     justify-content: flex-end;
     padding-bottom: 30px;
   }
 }
-
 .LoginScreen-txt4 {
   font-family: global.$SemiBold;
   text-align: center;
@@ -357,16 +25,15 @@
   cursor: pointer;
   color: grey;
 }
-
 .LoginScreen-txt5 {
   font-family: global.$Bold;
   color: global.$primary;
 }
-
 .LoginScreen-errortxt {
   font-family: global.$Medium;
   color: red;
   font-size: 16px;
+  margin-bottom: 10px;
   margin-bottom: 10px;
 }
 
@@ -377,14 +44,12 @@
   color: rgb(3, 76, 194);
   cursor: pointer;
 }
-
 .GmailLogin {
   border: 1px solid rgb(194, 194, 194);
   margin-bottom: 10px;
   padding: 8px;
   border-radius: 4px;
 }
-
 .GmailLogin-row {
   font-family: global.$SemiBold;
   display: flex;
@@ -394,178 +59,8 @@
   font-size: 16px;
   cursor: pointer;
 }
-
 .GmailLogin-txt1 {
   margin-bottom: -10px;
   font-family: global.$SemiBold;
   font-size: 17px;
-}
-
-// ========================
-// Enhanced Email Login Styles
-// ========================
-.email-login-container {
-  animation: fadeInUp 0.8s ease-out 0.4s both;
-}
-
-.email-login-subtitle {
-  font-size: 14px;
-  color: #666;
-  text-align: center;
-  margin-bottom: 28px;
-  line-height: 1.6;
-  letter-spacing: 0.3px;
-  font-family: global.$Medium;
-}
-
-.email-login-form {
-  :deep(.ant-form-item) {
-    margin-bottom: 18px;
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
-
-  :deep(.ant-form-item-label > label) {
-    color: #1a1a1a;
-    font-weight: 600;
-  }
-}
-
-.email-login-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: 0.3px;
-  text-transform: uppercase;
-  font-family: global.$Bold;
-}
-
-.email-login-input {
-  :deep(.ant-input),
-  :deep(.ant-input-affix-wrapper) {
-    border: 2px solid #e8e8e8;
-    border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-size: 15px;
-    background: #fafafa;
-
-    &:hover {
-      border-color: rgba(255, 153, 0, 0.3);
-      background: #ffffff;
-    }
-
-    &:focus,
-    &:focus-within {
-      border-color: #FF9900 !important;
-      box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1) !important;
-      background: #ffffff;
-    }
-  }
-
-  :deep(.ant-input-prefix) {
-    color: #FF9900;
-  }
-}
-
-.email-login-error {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  background: #fff5f5;
-  border: 1px solid #fcd7d7;
-  border-radius: 12px;
-  color: #d32f2f;
-  font-size: 13px;
-  margin-bottom: 16px;
-  font-family: global.$Medium;
-  letter-spacing: 0.3px;
-  animation: fadeInUp 0.3s ease-out;
-
-  svg {
-    min-width: 18px;
-    min-height: 18px;
-  }
-}
-
-.email-login-footer-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 24px;
-
-  @media (max-width: 480px) {
-    flex-direction: column;
-    gap: 12px;
-  }
-}
-
-.email-login-forgot-btn {
-  font-size: 13px;
-  color: #FF9900;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 8px 0;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: global.$SemiBold;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  flex-shrink: 0;
-
-  &:hover {
-    color: #FF7B1C;
-    text-decoration: underline;
-  }
-
-  @media (max-width: 480px) {
-    order: 2;
-  }
-}
-
-.email-login-btn {
-  flex: 1;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  font-family: global.$Bold !important;
-  letter-spacing: 0.4px !important;
-
-  @media (max-width: 480px) {
-    width: 100%;
-    order: 1;
-  }
-
-  &:hover {
-    box-shadow: 0 12px 24px rgba(255, 153, 0, 0.3) !important;
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-// ========================
-// Enhanced Google Login Styles
-// ========================
-.GmailLogin {
-  border: 2px solid #e8e8e8 !important;
-  border-radius: 12px;
-  padding: 14px 16px !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  background: #fafafa !important;
-
-  &:hover {
-    border-color: rgba(255, 153, 0, 0.3) !important;
-    background: #ffffff !important;
-    box-shadow: 0 6px 16px rgba(255, 153, 0, 0.12);
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
 }

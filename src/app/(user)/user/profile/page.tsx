@@ -1,4 +1,3 @@
-"use client";
 import ProfileDashboard from "./layout";
 
 async function page() {

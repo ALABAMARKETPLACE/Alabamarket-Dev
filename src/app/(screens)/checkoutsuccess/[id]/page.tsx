@@ -284,7 +284,7 @@ function Checkout() {
                     <div className="checkout-txt4">
                       Payment Type:{" "}
                       {responseData?.[0]?.orderPayment?.paymentType ?? ""}{" "}
-                      Amount: {Settings?.currency}{" "}
+                      Amount: ₦{" "}
                       {responseData?.[0]?.orderPayment?.amount ?? ""}
                     </div>
                   </div>
@@ -313,14 +313,14 @@ function Checkout() {
                     <div className="checkout-row">
                       <div>Total Product Price</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        ₦{" "}
                         {Number(responseData?.[0]?.newOrder?.total).toFixed(2)}
                       </div>
                     </div>
                     <div className="checkout-row">
                       <div>Discount</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        ₦{" "}
                         {Number(responseData?.[0]?.newOrder?.discount).toFixed(
                           2
                         )}
@@ -329,14 +329,14 @@ function Checkout() {
                     <div className="checkout-row">
                       <div>Tax</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        ₦{" "}
                         {Number(responseData?.[0]?.newOrder?.tax).toFixed(2)}
                       </div>
                     </div>
                     <div className="checkout-row">
                       <div>Delivery Charges</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        ₦{" "}
                         {Number(
                           responseData?.[0]?.newOrder?.deliveryCharge
                         ).toFixed(2)}
@@ -346,7 +346,7 @@ function Checkout() {
                     <div className="checkout-row">
                       <div>Total</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        ₦{" "}
                         {Number(
                           responseData?.[0]?.newOrder?.grandTotal
                         ).toFixed(2)}

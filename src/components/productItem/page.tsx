@@ -79,18 +79,10 @@ function ProductItem(props: any) {
         </Popover>
 
         <div className="ProductItem-txt3" onClick={() => openDetails()}>
-          {Settings?.currency === "NGN" ? (
-            <>
-              {'₦' + Number(props?.item?.retail_rate).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </>
-          ) : (
-            <>
-              {new Intl.NumberFormat("en-US", {
-                style: "currency",
-                currency: Settings?.currency,
-              }).format(props?.item?.retail_rate)}
-            </>
-          )}
+          ₦{new Intl.NumberFormat("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(props?.item?.retail_rate)}
           <span className="text-secondary"></span>
         </div>
         {props?.item?.unit <= 0 ? (

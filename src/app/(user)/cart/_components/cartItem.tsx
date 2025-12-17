@@ -57,7 +57,7 @@ const CartItem = (props: any) => {
             <div className="Cart-CartItem-txt2">
               Unit Price :{" "}
               <span style={{ color: "#000" }}>
-                {props?.Settings?.currency}{" "}
+                ₦{" "}
                 {Number(props?.data?.price).toFixed(2)}
               </span>
             </div>
@@ -101,7 +101,7 @@ const CartItem = (props: any) => {
               <div style={{ flex: 1 }}></div>
               <div className="Cart-CartItem-txt3">
                 <span style={{ color: "grey", fontSize: 14 }}>
-                  {props?.Settings?.currency}{" "}
+                  ₦{" "}
                 </span>
                 {Number(props?.data?.totalPrice).toFixed(2)}
               </div>

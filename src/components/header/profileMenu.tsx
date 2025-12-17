@@ -212,10 +212,21 @@ const ProfileMenu = (props: any) => {
         </Button>
         <Button
           size="large"
-          type="primary"
           block
           icon={<BsShopWindow size={18} />}
           onClick={handleSellerNavigation}
+          style={{
+            background: 'linear-gradient(135deg, #ff8c42 0%, #ff6b35 50%, #ff8c42 100%)',
+            border: 'none',
+            color: '#fff',
+            fontWeight: 'bold',
+            fontSize: '14px',
+            height: '40px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
+          }}
         >
           Become a seller
         </Button>

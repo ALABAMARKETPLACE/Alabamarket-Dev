@@ -1,5 +1,3 @@
-"use client";
-export const dynamic = "force-dynamic";
 import React, { useState } from "react";
 import { Button, Form, Input, Select, notification } from "antd";
 import { BiErrorCircle } from "react-icons/bi";
@@ -31,9 +29,7 @@ function PhoneLogin() {
   const dispatch = useAppDispatch();
   const checkuser = async () => {
     try {
-      const auth = Auth;
-      if (!auth) return;
-      let user: any = auth.currentUser;
+      let user: any = Auth.currentUser;
       if (user?.phoneNumber) {
         signOut(user);
       }
@@ -59,18 +55,11 @@ function PhoneLogin() {
       setIsLoading(true);
       checkuser();
       setError("");
-
-      const auth = Auth;
-      if (!auth) {
-        setError("Firebase is not initialized. Cannot send OTP.");
-        setIsLoading(false);
-        return;
-      }
-
-      const recaptchas = await new RecaptchaVerifier(auth, "recaptcha", {});
+  
+      const recaptchas = await new RecaptchaVerifier(Auth, "recaptcha", {});
       const phone = `${values.code}${values.phone}`;
-
-      const checkPhone: any = await signInWithPhoneNumber(auth, phone, recaptchas);
+  
+      const checkPhone: any = await signInWithPhoneNumber(Auth, phone, recaptchas);
       if (checkPhone?.verificationId) {
         setautho(checkPhone);
         setverification(true);
