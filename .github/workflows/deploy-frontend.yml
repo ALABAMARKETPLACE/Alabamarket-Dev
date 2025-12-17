@@ -34,7 +34,7 @@ jobs:
             git pull
 
             echo "📦 Install dependencies"
-            npm install
+            npm ci
 
             echo "🏗️ Build frontend"
             npm run build
