@@ -30,15 +30,8 @@ jobs:
 
             cd /home/alabamarketplace_user/alaba-marketplace/website
 
-            echo "📥 Pull latest frontend code"
-            git pull
-
-            echo "📦 Install dependencies"
             npm install --legacy-peer-deps
-
-            echo "🏗️ Build frontend"
             npm run build
 
-            echo "🔁 Restart frontend PM2 process"
-            pm2 restart alabamarketplace-website
+            /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 restart alabamarketplace-website
           EOF
