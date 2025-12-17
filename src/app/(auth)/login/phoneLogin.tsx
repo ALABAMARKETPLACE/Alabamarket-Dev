@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Button, Form, Input, Select, notification } from "antd";
 import { BiErrorCircle } from "react-icons/bi";
