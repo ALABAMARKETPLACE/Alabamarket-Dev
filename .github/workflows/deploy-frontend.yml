@@ -28,6 +28,10 @@ jobs:
           ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << 'EOF'
             set -e
 
+            # 🔑 Load NVM so node/npm/pm2 are available
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             cd /home/alabamarketplace_user/alaba-marketplace/website
 
             echo "📥 Pull latest code"
