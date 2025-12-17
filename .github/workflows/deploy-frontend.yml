@@ -34,7 +34,7 @@ jobs:
             git pull
 
             echo "📦 Install dependencies"
-            npm ci --legacy-peer-deps
+            npm install --legacy-peer-deps
 
             echo "🏗️ Build frontend"
             npm run build
