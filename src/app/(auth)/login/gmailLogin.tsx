@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { FcGoogle } from "react-icons/fc";
 import { Auth, GoogleProvide } from "@/util/firebaseProvider";
 import { signInWithPopup } from "firebase/auth";
