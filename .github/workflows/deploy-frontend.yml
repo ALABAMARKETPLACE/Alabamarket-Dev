@@ -11,7 +11,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: development
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -21,11 +21,11 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ vars.SERVER_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy Frontend Safely
         run: |
-          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} << 'EOF'
+          ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << 'EOF'
             set -e
 
             cd /home/alabamarketplace_user/alaba-marketplace/website
