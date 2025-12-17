@@ -1,0 +1,49 @@
+name: Deploy Frontend (Website)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show repository structure
+        run: |
+          pwd
+          ls -la
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install & Build
+        run: |
+          npm install --legacy-peer-deps
+          npm run build
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ vars.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy frontend
+        run: |
+          rsync -avz --delete \
+            ./ \
+            ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_user/alaba-marketplace/website/
+
+          ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << 'EOF'
+            ~/.nvm/versions/node/v20.19.6/bin/pm2 restart alabamarketplace-website
+          EOF
