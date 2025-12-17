@@ -2,9 +2,13 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../config/firebaseconfig";
 
-// Initialize Firebase
+let Auth: ReturnType<typeof getAuth> | null = null;
+let GoogleProvide: GoogleAuthProvider | null = null;
 
-const app = initializeApp(firebaseConfig);
-const Auth = getAuth(app);
-const GoogleProvide = new GoogleAuthProvider();
+if (typeof window !== "undefined") {
+	const app = initializeApp(firebaseConfig);
+	Auth = getAuth(app);
+	GoogleProvide = new GoogleAuthProvider();
+}
+
 export { Auth, GoogleProvide };

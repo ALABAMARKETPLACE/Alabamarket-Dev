@@ -22,7 +22,18 @@ function GmailLogin(props: any) {
   const loginGmail = async () => {
     try {
       setLoading(true);
-      const info = await signInWithPopup(Auth, GoogleProvide);
+      const auth = Auth;
+      const provider = GoogleProvide;
+      if (!auth || !provider) {
+        notificationApi.error({
+          message:
+            "Firebase is not initialized in this environment. Unable to continue.",
+        });
+        setLoading(false);
+        return;
+      }
+
+      const info = await signInWithPopup(auth, provider);
       const token = await info?.user?.getIdToken();
       const result: any = await signIn("google", {
         redirect: false,

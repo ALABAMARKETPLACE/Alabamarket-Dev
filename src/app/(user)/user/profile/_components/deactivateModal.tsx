@@ -34,7 +34,9 @@ const listItems2 = [
 ];
 const checkuser = async () => {
   try {
-    let user: any = Auth.currentUser;
+    const auth = Auth;
+    if (!auth) return;
+    let user: any = auth.currentUser;
     if (user?.phoneNumber) {
       signOut(user);
     }
@@ -57,13 +59,18 @@ function DeactivateModal(props: any) {
     try {
       setIsLoading(true);
       checkuser();
-      let recaptchas = new RecaptchaVerifier(Auth, "recaptcha", {});
+      const auth = Auth;
+      if (!auth) {
+        notificationApi.error({
+          message: "Firebase is not initialized. Cannot send OTP.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      let recaptchas = new RecaptchaVerifier(auth, "recaptcha", {});
       let phone = User?.countrycode + User?.phone;
-      let checkPhone: any = await signInWithPhoneNumber(
-        Auth,
-        phone,
-        recaptchas
-      );
+      let checkPhone: any = await signInWithPhoneNumber(auth, phone, recaptchas);
       if (checkPhone?.verificationId) {
         setautho(checkPhone);
         setverification(true);

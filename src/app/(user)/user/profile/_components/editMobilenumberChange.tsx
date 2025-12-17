@@ -28,7 +28,9 @@ function EditMobilenumberChange(props: any) {
 
   const checkUser = async () => {
     try {
-      let user: any = Auth.currentUser;
+      const auth = Auth;
+      if (!auth) return;
+      let user: any = auth.currentUser;
       if (user?.phoneNumber) {
         signOut(user);
       }
@@ -41,13 +43,16 @@ function EditMobilenumberChange(props: any) {
       setData(values);
       setIsLoading(true);
       checkUser();
-      let recaptchas = await new RecaptchaVerifier(Auth, "recaptcha", {});
+      const auth = Auth;
+      if (!auth) {
+        setError("Firebase is not initialized. Cannot send OTP.");
+        setIsLoading(false);
+        return;
+      }
+
+      let recaptchas = await new RecaptchaVerifier(auth, "recaptcha", {});
       let phone = `${values.code}${values.phone}`;
-      let checkPhone: any = await signInWithPhoneNumber(
-        Auth,
-        phone,
-        recaptchas
-      );
+      let checkPhone: any = await signInWithPhoneNumber(auth, phone, recaptchas);
       if (checkPhone?.verificationId) {
         setAutho(checkPhone);
         setotpModal(true);

@@ -23,7 +23,9 @@ function PhoneVerifyOtp(props: any) {
 
   const checkUser = async () => {
     try {
-      let user: any = Auth.currentUser;
+      const auth = Auth;
+      if (!auth) return;
+      let user: any = auth.currentUser;
       if (user?.phoneNumber) {
         signOut(user);
       }
@@ -36,13 +38,16 @@ function PhoneVerifyOtp(props: any) {
     try {
       setResendInitiated(true);
       checkUser();
-      let recaptchas = await new RecaptchaVerifier(Auth, "recaptcha", {});
+      const auth = Auth;
+      if (!auth) {
+        setError("Firebase is not initialized. Cannot resend OTP.");
+        setResendInitiated(false);
+        return;
+      }
+
+      let recaptchas = await new RecaptchaVerifier(auth, "recaptcha", {});
       let phone = `${data.countrycode}${data.phone}`;
-      let checkPhone: any = await signInWithPhoneNumber(
-        Auth,
-        phone,
-        recaptchas
-      );
+      let checkPhone: any = await signInWithPhoneNumber(auth, phone, recaptchas);
 
       if (checkPhone?.verificationId) {
         props.setAutho(checkPhone);
@@ -64,13 +69,16 @@ function PhoneVerifyOtp(props: any) {
       setData(values);
       setIsLoading(true);
       checkUser();
-      let recaptchas = await new RecaptchaVerifier(Auth, "recaptcha", {});
+      const auth = Auth;
+      if (!auth) {
+        setError("Firebase is not initialized. Cannot send OTP.");
+        setIsLoading(false);
+        return;
+      }
+
+      let recaptchas = await new RecaptchaVerifier(auth, "recaptcha", {});
       let phone = `${values.code}${values.phone}`;
-      let checkPhone: any = await signInWithPhoneNumber(
-        Auth,
-        phone,
-        recaptchas
-      );
+      let checkPhone: any = await signInWithPhoneNumber(auth, phone, recaptchas);
 
       if (checkPhone?.verificationId) {
         props.setAutho(checkPhone);

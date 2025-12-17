@@ -31,7 +31,9 @@ function PhoneLogin() {
   const dispatch = useAppDispatch();
   const checkuser = async () => {
     try {
-      let user: any = Auth.currentUser;
+      const auth = Auth;
+      if (!auth) return;
+      let user: any = auth.currentUser;
       if (user?.phoneNumber) {
         signOut(user);
       }
@@ -57,11 +59,18 @@ function PhoneLogin() {
       setIsLoading(true);
       checkuser();
       setError("");
-  
-      const recaptchas = await new RecaptchaVerifier(Auth, "recaptcha", {});
+
+      const auth = Auth;
+      if (!auth) {
+        setError("Firebase is not initialized. Cannot send OTP.");
+        setIsLoading(false);
+        return;
+      }
+
+      const recaptchas = await new RecaptchaVerifier(auth, "recaptcha", {});
       const phone = `${values.code}${values.phone}`;
-  
-      const checkPhone: any = await signInWithPhoneNumber(Auth, phone, recaptchas);
+
+      const checkPhone: any = await signInWithPhoneNumber(auth, phone, recaptchas);
       if (checkPhone?.verificationId) {
         setautho(checkPhone);
         setverification(true);
