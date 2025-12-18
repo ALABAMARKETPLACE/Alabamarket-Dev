@@ -29,7 +29,11 @@ jobs:
             --exclude node_modules \
             --exclude .next \
             --exclude .env \
-            ./website/ \
+            --exclude .git \
+            --exclude .github \
+            --exclude .gitignore \
+            --exclude public \
+            . \
             ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_user/alaba-marketplace/website/
 
       - name: Build & restart frontend on server
