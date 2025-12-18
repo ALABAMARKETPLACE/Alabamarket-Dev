@@ -60,29 +60,23 @@ function SubCategoryList(props: any) {
                   )}&type=${encodeURIComponent(item?.name)}`
                 );
               }}
+              title={item.name}
             >
-              <div className="category-strip-thumb">
-                <img src={item.image} alt={item.name} />
-              </div>
-              <div className="category-strip-label" title={item.name}>
-                {item.name}
-              </div>
+              {item.name}
             </div>
           ))}
         </div>
         <>
           {rightButtonClicked && (
             <button
-              className="Horizontal-btn1 position-absolute slider-btn-left"
-              style={{ marginTop: 10 }}
+              className="category-nav-btn category-nav-btn-left"
               onClick={() => scroll(-500)}
             >
               <MdArrowBack />
             </button>
           )}
           <button
-            className="Horizontal-btn2 slider-btn-right position-absolute"
-            style={{ marginTop: 10 }}
+            className="category-nav-btn category-nav-btn-right"
             onClick={() => scroll(500)}
           >
             <MdOutlineArrowForward />

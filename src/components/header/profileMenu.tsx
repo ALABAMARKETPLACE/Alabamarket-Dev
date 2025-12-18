@@ -216,7 +216,7 @@ const ProfileMenu = (props: any) => {
           icon={<BsShopWindow size={18} />}
           onClick={handleSellerNavigation}
           style={{
-            background: 'linear-gradient(135deg, #ff8c42 0%, #ff6b35 50%, #ff8c42 100%)',
+            background: 'linear-gradient(135deg, #22c55e 0%, #ff8c42 50%, #16a34a 100%)',
             border: 'none',
             color: '#fff',
             fontWeight: 'bold',
@@ -225,7 +225,18 @@ const ProfileMenu = (props: any) => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '8px'
+            gap: '8px',
+            transition: 'all 0.3s ease'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(135deg, #16a34a 0%, #ff7c32 50%, #15803d 100%)';
+            e.currentTarget.style.transform = 'scale(1.02)';
+            e.currentTarget.style.boxShadow = '0 8px 16px rgba(34, 197, 94, 0.3)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'linear-gradient(135deg, #22c55e 0%, #ff8c42 50%, #16a34a 100%)';
+            e.currentTarget.style.transform = 'scale(1)';
+            e.currentTarget.style.boxShadow = 'none';
           }}
         >
           Become a seller
