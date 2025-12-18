@@ -2,7 +2,7 @@ const API = {
   // BASE_URL: "https://alaba-server.semikolen.org/",
 
   BASE_URL: (process.env.NEXT_PUBLIC_BASE_URL ||
-    "http://20.56.132.97:3035/") as string,
+    "https://alaba-server.bairuhatech.com") as string,
 
   // BASE_URL: "http://localhost:8017/",
   //GOOGLE API
