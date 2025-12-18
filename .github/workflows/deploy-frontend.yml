@@ -29,7 +29,7 @@ jobs:
             --exclude node_modules \
             --exclude .next \
             --exclude .env \
-            ./ \
+            ./website/ \
             ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_user/alaba-marketplace/website/
 
       - name: Build & restart frontend on server
@@ -41,6 +41,8 @@ jobs:
             npm install --legacy-peer-deps
             npm run build
 
-            pm2 reload ecosystem.config.js --only alabamarketplace-website \
-              || pm2 start ../ecosystem.config.js
+            /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 reload \
+              ../ecosystem.config.js \
+              --only alabamarketplace-frontend \
+              || /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 start ../ecosystem.config.js
           EOF

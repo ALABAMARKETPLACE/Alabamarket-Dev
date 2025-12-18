@@ -10,9 +10,22 @@
   border-top: 4px solid transparent;
   border-image: linear-gradient(to right, #4caf50 0%, #4caf50 40%, #ff8c42 40%, #ff8c42 100%) 1;
   box-shadow: 0 -2px 10px rgba(255, 140, 66, 0.08);
+  animation: footerSlideUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  
   @media screen and (min-width: 320px) and (max-width: 768px) {
     padding: 10px;
     padding-top: 30px;
+  }
+}
+
+@keyframes footerSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -38,6 +51,16 @@
   font-family: vars.$Bold;
   color: #000;
   text-decoration: none;
+  animation: logoFadeIn 0.6s ease-out;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-3px);
+    
+    .Footer_logo {
+      transform: scale(1.05) rotate(-2deg);
+    }
+  }
 }
 
 .Footer_logo {
@@ -46,6 +69,7 @@
   object-fit: contain;
   border-radius: 5px;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .Footer_img {
@@ -63,6 +87,9 @@
   font-family: vars.$Bold;
   padding-bottom: 15px;
   padding-top: 10px;
+  animation: textSlideIn 0.6s ease-out 0.1s forwards;
+  opacity: 0;
+  
   @media screen and (min-width: 320px) and (max-width: 768px) {
     margin-top: 10px;
   }
@@ -72,12 +99,34 @@
   margin-bottom: 10px;
   font-family: vars.$SemiBold;
   font-size: 14px;
+  animation: textSlideIn 0.6s ease-out 0.15s forwards;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
   a {
     text-decoration: none;
     color: rgb(89, 89, 89);
+    position: relative;
+    transition: all 0.3s ease;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #22c55e, #ff8c42);
+      transition: width 0.3s ease;
+    }
+    
     &:hover {
       color: vars.$primary;
-      border-bottom: 1px solid vars.$primary;
+      transform: translateX(3px);
+      
+      &::after {
+        width: 100%;
+      }
     }
   }
 }
@@ -86,16 +135,40 @@
   font-size: 13px;
   font-family: vars.$Medium;
   color: #000;
+  animation: textFadeIn 0.7s ease-out 0.2s forwards;
+  opacity: 0;
+  line-height: 1.6;
 }
 
 .Footer-icon {
   font-size: 28px;
+  animation: iconBounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s forwards;
+  opacity: 0;
+  transform: scale(0.5);
+  
   a {
-    text-decoration: none;
-    color: rgb(59, 59, 59);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #555;
+    
     &:hover {
-      color: vars.$primary;
+      color: #22c55e;
+      transform: scale(1.3) rotate(10deg);
+      filter: drop-shadow(0 4px 8px rgba(34, 197, 94, 0.3));
     }
+  }
+}
+
+@keyframes iconBounceIn {
+  from {
+    opacity: 0;
+    transform: scale(0.3) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -107,4 +180,56 @@
   padding: 5px;
   border-radius: 10px;
   background-color: #fff;
+  animation: imageSlideIn 0.6s ease-out forwards;
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #22c55e;
+  }
+}
+
+// Footer Animation Keyframes
+@keyframes logoFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes textSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes textFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes imageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
