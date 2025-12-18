@@ -167,39 +167,5 @@ function LocationPicker({
     </Modal>
   );
 }
-        <AutoComplete
-          size="large"
-          className="w-100"
-          onChange={(v) => handleChange(v)}
-          options={options}
-          onSelect={(value, option) => getLocation(option?.key)}
-        >
-          <Input
-            prefix={
-              isLoading ? (
-                <Spin indicator={<LoadingOutlined spin />} size="small" />
-              ) : (
-                <IoSearchOutline size={20} />
-              )
-            }
-            size="large"
-            placeholder="Search for area or street name . . . "
-            style={{ padding: 10 }}
-          />
-        </AutoComplete>
-
-        <Button
-          type="primary"
-          size="large"
-          block
-          onClick={getCurrentLocation}
-          loading={loading}
-        >
-          Use Current Location
-        </Button>
-      </div>
-    </Modal>
-  );
-}
 
 export default LocationPicker;
