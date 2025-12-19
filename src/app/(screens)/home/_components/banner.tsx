@@ -19,6 +19,7 @@ function Banners(props: any) {
     <div className="HomeScreen-BannerBox mt-3">
       <Container fluid className="home-full-width">
         {props?.data?.length ? (
+          // @ts-ignore
           <Slider {...Slidesettings}>
             {props.data.map((bann: any) => {
               return (

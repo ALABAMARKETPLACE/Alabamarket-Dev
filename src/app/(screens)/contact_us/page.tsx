@@ -154,10 +154,11 @@ function ContactUs() {
                   </Form.Item>
                   <Form.Item>
                     <Button
-                      type="primary"
+                      // type="primary"
                       htmlType="submit"
                       loading={isLoading}
-                      className="btnclass"
+                      // className="btnclass"
+                      className="btn-clr"
                     >
                       Send Message
                     </Button>

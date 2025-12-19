@@ -101,130 +101,103 @@ function DetailsCard(props: any) {
     return div.textContent || div.innerText || "";
   };
 
+  console.log("lllnggthh", props);
   return (
-    <div className="product-details-page">
+    <div className="page-Box pt-3">
       <Container>
-        <Row className="product-details-container g-4">
-          {/* Product Images Section */}
+        <Row>
           <Col sm={6} md={6} xs={12} lg={5}>
-            <div className="product-images-wrapper">
-              <Images
-                coverImage={defaultImage}
-                images={props?.data?.productImages}
-                product_video={props?.data?.product_video}
-              />
-            </div>
+            <Images
+              coverImage={defaultImage}
+              images={props?.data?.productImages}
+              product_video={props?.data?.product_video}
+            />
           </Col>
-
-          {/* Product Information Section */}
           <Col md={6} xs={12} lg={7}>
-            <div className="product-info-wrapper">
-              {/* Brand Badge */}
-              {props?.data?.brand && (
-                <div className="product-brand-badge">
-                  {props?.data?.brand?.toUpperCase()}
-                </div>
-              )}
-
-              {/* Product Title */}
-              <h1 className="product-title">
-                {props?.data?.name} {getVariantCurrentName()}
-              </h1>
-
-              {/* Rating Section */}
-              <div className="product-rating-section">
-                <div className="rating-display">
-                  {props?.data?.averageRating ? (
-                    <span className="rating-value">
-                      {Number(props?.data?.averageRating).toFixed(1)}
-                    </span>
-                  ) : null}
-                  <Rate
-                    disabled
-                    allowHalf
-                    value={Number(props?.data?.averageRating)}
-                    className="rating-stars"
-                  />
-                  <span className="rating-count">
-                    ({props?.data?.averageRating || "No"} ratings)
-                  </span>
-                </div>
-              </div>
-
-              {/* Short Description */}
-              {props?.data?.description && (
-                <div className="product-short-desc">
-                  {props?.data?.description}
-                </div>
-              )}
-
-              {/* Seller Information */}
-              <div className="product-seller-info">
-                <span className="seller-label">Sold by:</span>
-                <span className="seller-name">
-                  {props?.data?.storeDetails?.store_name || "Alabamarket"}
-                </span>
-              </div>
-
-              {/* Variants Section */}
-              {props?.data?.productVariant?.length > 0 && (
-                <div className="product-variants-section">
-                  <div className="variants-title">Choose Options:</div>
-                  <Variants
-                    productVariant={props?.data?.productVariant}
-                    currentVariant={currentVariant}
-                    changeVaraintId={onChangeVariantId}
-                  />
-                </div>
-              )}
-
-              {/* Description Component with CTA */}
-              <div className="product-description-component">
-                <Description
-                  data={props?.data}
-                  currentVariant={currentVariant}
-                  handleBuyNow={handleBuyNow}
-                />
-              </div>
-
-              {/* Details Tabs */}
-              <div className="product-details-tabs">
-                <Tabs
-                  defaultActiveKey={"1"}
-                  items={items}
-                  onChange={onChange}
-                  className="product-tabs"
-                />
-              </div>
-
-              {/* Extended Specifications */}
-              {stripTags(props?.data?.specifications)?.trim().length > 0 ? (
-                <div className="product-specifications-section">
-                  <div className="specifications-title">Key Specifications</div>
-                  <p className="specifications-content">
-                    {showFullText
-                      ? stripTags(props?.data?.specifications)
-                      : `${stripTags(props?.data?.specifications).substring(
-                          0,
-                          150
-                        )}...`}
-                  </p>
-                  <button
-                    className="btn-read-more"
-                    onClick={toggleText}
-                  >
-                    {showFullText ? "Show Less ↑" : "Show More ↓"}
-                  </button>
-                </div>
+            <h1>
+              {props?.data?.name} {getVariantCurrentName()}
+            </h1>
+            <div> {props?.data?.brand?.toUpperCase() ?? ""}</div>
+            <div> {props?.data?.description}</div>
+            <div className="d-flex justify-content-start gap-2">
+              {" "}
+              {props?.data?.averageRating ? (
+                <div>{Number(props?.data?.averageRating).toFixed(1)}</div>
               ) : null}
+              <Rate
+                disabled
+                allowHalf
+                value={Number(props?.data?.averageRating)}
+              />
+              <div>{`${props?.data?.averageRating || "No"} Ratings`}</div>
             </div>
+            <div> Seller: {props?.data?.storeDetails?.store_name}</div>
+            <hr />
+            {/* <Description
+              data={props?.data}
+              currentVariant={currentVariant}
+              handleBuyNow={handleBuyNow}
+            /> */}
+            <Tabs
+              defaultActiveKey={"1"}
+              // defaultActiveKey={searchParams?.get("review") ?? "1"}
+              items={items}
+              onChange={onChange}
+              className="ps-0"
+            />
+            {props?.data?.productVariant?.length > 0 && (
+              <>
+                <Variants
+                  productVariant={props?.data?.productVariant}
+                  currentVariant={currentVariant}
+                  changeVaraintId={onChangeVariantId}
+                />
+                <hr />
+              </>
+            )}
+            {stripTags(props?.data?.specifications)?.trim().length > 0 ? (
+              <>
+                <hr />
+
+                <div className="fs-5">More Details</div>
+                <p>
+                  {showFullText
+                    ? stripTags(props?.data?.specifications)
+                    : `${stripTags(props?.data?.specifications).substring(
+                        0,
+                        100
+                      )}...`}
+                </p>
+                <button
+                  className="btn btn-link p-0"
+                  onClick={toggleText}
+                  style={{ textDecoration: "none" }}
+                >
+                  {showFullText ? "Read Less" : "Read More"}
+                </button>
+              </>
+            ) : null}
+
+            {/* <div
+              style={{
+                fontSize: "8px !important",
+                backgroundColor: "red",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "inherit",
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: props?.data?.specifications,
+                }}
+              />
+            </div> */}
+            {/* <hr /> */}
+            {/* <Reviews data={props?.data} /> */}
           </Col>
         </Row>
-
-        {/* Related Products Section */}
-        <div className="product-related-section">
-          <RelatedProducts data={props?.data} />
-        </div>
+        <RelatedProducts data={props?.data} />
       </Container>
     </div>
   );

@@ -488,8 +488,8 @@ function Description(props: Props) {
           </Button> */}
         {availableQuantity > 0 && (
           <Button
-            className="buybtn"
-            type="primary"
+            className="buybtn btn-clr"
+            // type="primary"
             onClick={() => {
               if (user) {
                 props?.handleBuyNow(quantity);

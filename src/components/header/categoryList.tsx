@@ -1,5 +1,3 @@
-"use client";
-
 import { Popover } from "antd";
 // import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";

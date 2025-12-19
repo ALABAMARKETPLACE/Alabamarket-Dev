@@ -48,7 +48,7 @@ function Page() {
     <div className="Screen-box">
       <br />
       <Container>
-        <Row>
+        {/* <Row>
           <Col sm={6} xs={12}>
             <br />
             <h4 className="sellerRegister-Heading">
@@ -70,7 +70,8 @@ function Page() {
 
               <Col md={5} className="mb-2 mb-md-0">
                 <Button
-                  type="primary"
+                  // type="primary"
+                  className="btn-clr"
                   size="large"
                   block
                   onClick={() => navigation.push("/seller/corporate")}
@@ -121,7 +122,31 @@ function Page() {
               style={{ maxWidth: "100%", height: "auto" }}
             />
           </Col>
+        </Row> */}
+
+        <Row className="seller-row" justify="center">
+          <Col md={12} sm={12}>
+            <div className="seller-option-card"  onClick={() => navigation.push("/signup")}>
+              <span>Register as Buyer</span>
+              <span className="arrow">›</span>
+            </div>
+          </Col>
+
+          <Col md={12} sm={12}>
+            <div className="seller-option-card" onClick={() => navigation.push("/seller/corporate")}>
+              <span>Become a Seller</span>
+              <span className="arrow">›</span>
+            </div>
+          </Col>
+
+          <Col md={12} sm={12}>
+            <div className="seller-option-card" onClick={() => navigation.push("/seller/delivery-partner")}>
+              <span>Register as Delivery Partner</span>
+              <span className="arrow">›</span>
+            </div>
+          </Col>
         </Row>
+
         <br />
         <div className="sellerRegister-box12">
           <Row>

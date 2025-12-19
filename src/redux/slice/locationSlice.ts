@@ -1,5 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "@/redux/createSlices";
+import { createSelector } from "@reduxjs/toolkit";
+
 interface initialState {
   location: any;
 }
@@ -19,22 +21,29 @@ export const LocationSlice = createAppSlice({
   },
   selectors: {
     reduxLocation: (location: initialState) => location?.location,
-    reduxLatLong: (
-      location: initialState
-    ): { latitude: number; longitude: number } => {
-      return {
-        latitude: location?.location?.latitude ?? null,
-        longitude: location?.location?.longitude ?? null,
-      };
-    },
-    reduxFullAddress: (location: initialState): { full_address: string } => ({
-      full_address:
-        location?.location?.full_address ?? location?.location?.postal_code,
-    }),
+    reduxLocationBase: (location: initialState) => location?.location,
   },
 });
 
 export const { storeLocation, clearLocation } = LocationSlice.actions;
 
-export const { reduxLocation, reduxFullAddress, reduxLatLong } =
-  LocationSlice.selectors;
+export const { reduxLocation, reduxLocationBase } = LocationSlice.selectors;
+
+// Memoized selector to prevent unnecessary re-renders and hydration issues
+export const reduxLatLong = createSelector(
+  [reduxLocationBase],
+  (location: any): { latitude: number | null; longitude: number | null } => {
+    return {
+      latitude: location?.latitude ?? null,
+      longitude: location?.longitude ?? null,
+    };
+  }
+);
+
+// Memoized selector to prevent unnecessary re-renders and hydration issues
+export const reduxFullAddress = createSelector(
+  [reduxLocationBase],
+  (location: any): { full_address: string | null } => ({
+    full_address: location?.full_address ?? location?.postal_code ?? null,
+  })
+);

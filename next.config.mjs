@@ -13,6 +13,11 @@ const nextConfig = {
     ],
   },
   staticPageGenerationTimeout: 600,
+  turbopack: {
+    resolveAlias: {
+      "@": "./src",
+    },
+  },
 };
 
 export default nextConfig;

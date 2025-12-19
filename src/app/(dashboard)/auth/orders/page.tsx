@@ -34,8 +34,7 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) =>
-      GET(API.ORDER_GET_BYSTORE, queryKey[1] as object),
+    queryFn: ({ queryKey }) => GET(API.ORDER_GET_BYSTORE, queryKey[1] as object),
     queryKey: ["admin_orders", orderQueryParams],
   });
 
@@ -65,17 +64,21 @@ function Page() {
       return <Error description={error?.message} />;
     }
 
+    const ordersData = Array.isArray(orders?.data) ? orders?.data : [];
+
     return (
-      <DataTable
-        data={Array.isArray(orders?.data) ? orders?.data : []}
-        count={orders?.meta?.itemCount}
-        setPage={(nextPage: number, nextTake: number) => {
-          setPage(nextPage);
-          setTake(nextTake);
-        }}
-        pageSize={take}
-        page={page}
-      />
+      <>
+        <DataTable
+          data={ordersData}
+          count={orders?.meta?.itemCount}
+          setPage={(nextPage: number, nextTake: number) => {
+            setPage(nextPage);
+            setTake(nextTake);
+          }}
+          pageSize={take}
+          page={page}
+        />
+      </>
     );
   };
 

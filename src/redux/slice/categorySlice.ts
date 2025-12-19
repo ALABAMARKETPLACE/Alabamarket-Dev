@@ -1,5 +1,7 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "@/redux/createSlices";
+import { createSelector } from "@reduxjs/toolkit";
+
 interface initialState {
   categries: any[];
 }
@@ -19,21 +21,27 @@ export const CategorySlice = createAppSlice({
   },
   selectors: {
     reduxCategoryItems: (items: initialState) => items?.categries ?? [],
-    reduxSubcategoryItems: (items: initialState) => {
-      if (!Array.isArray(items.categries)) return [];
-      const subcategories: any[] = [];
-      for (const item of items.categries) {
-        if (!Array.isArray(item?.sub_categories)) continue;
-        for (const ite of item?.sub_categories) {
-          subcategories.push(ite);
-        }
-      }
-      return subcategories;
-    },
+    reduxSubcategoryItemsBase: (items: initialState) => items?.categries ?? [],
   },
 });
 
 export const { storeCategory, clearCategory } = CategorySlice.actions;
 
-export const { reduxCategoryItems, reduxSubcategoryItems } =
+export const { reduxCategoryItems, reduxSubcategoryItemsBase } =
   CategorySlice.selectors;
+
+// Memoized selector to prevent unnecessary re-renders
+export const reduxSubcategoryItems = createSelector(
+  [reduxSubcategoryItemsBase],
+  (categories: any[]) => {
+    if (!Array.isArray(categories)) return [];
+    const subcategories: any[] = [];
+    for (const item of categories) {
+      if (!Array.isArray(item?.sub_categories)) continue;
+      for (const ite of item?.sub_categories) {
+        subcategories.push(ite);
+      }
+    }
+    return subcategories;
+  }
+);

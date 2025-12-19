@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import { MdArrowBack, MdOutlineArrowForward } from "react-icons/md";
 import React from "react";

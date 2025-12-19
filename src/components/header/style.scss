@@ -14,29 +14,11 @@
   flex-direction: column;
   align-items: stretch;
   width: 100%;
-  background: linear-gradient(to right, 
-    rgba(255, 140, 66, 0.25) 0%, 
-    rgba(255, 255, 255, 1) 25%, 
-    rgba(255, 255, 255, 1) 75%, 
-    rgba(76, 175, 80, 0.25) 100%);
-  border-bottom: 3px solid transparent;
-  border-image: linear-gradient(to right, #ff8c42 0%, #ff8c42 50%, #4caf50 50%, #4caf50 100%) 1;
+  background-color: #fff;
+  border-bottom: 1px solid vars.$grey3;
   padding: 8px 0;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.1);
-  animation: headerSlideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   @media (max-width: 767px) {
     padding: 10px 5px;
-  }
-}
-
-@keyframes headerSlideDown {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
   }
 }
 
@@ -127,6 +109,11 @@
   color: gray;
 }
 
+.btn-clr {
+  background: vars.$button_background_color;
+  color: #ffffff !important;
+}
+
 .Header-menu {
   display: flex;
   flex-direction: row;
@@ -177,49 +164,14 @@
   font-family: vars.$SemiBold;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  color: #ffffff !important;
   border-radius: 999px;
   justify-content: center;
   width: 100%;
-  background: linear-gradient(135deg, #22c55e 0%, #ff8c42 50%, #16a34a 100%);
-  border: none !important;
-  color: white !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    animation: buttonShimmer 3s infinite;
-  }
-  
-  &:hover {
-    background: linear-gradient(135deg, #16a34a 0%, #ff7c32 50%, #15803d 100%);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 12px 24px rgba(34, 197, 94, 0.3), 0 0 20px rgba(255, 140, 66, 0.2);
-  }
-  
-  &:active {
-    transform: translateY(0) scale(0.98);
-  }
-  
   @media (min-width: 768px) {
     width: auto;
   }
-}
-
-@keyframes buttonShimmer {
-  0% {
-    transform: translateX(-100%) translateY(-100%);
-  }
-  100% {
-    transform: translateX(100%) translateY(100%);
-  }
+  background: vars.$button_background_color;
 }
 
 .Header-sellerBtn-text {
@@ -341,7 +293,13 @@
   justify-content: center;
   text-align: center;
   font-size: 50px;
-  color: vars.$primary;
+  // color: vars.$primary;
+  color: #FF5F15;
+};
+
+.btn-clr {
+  background: vars.$button_background_color;
+  color: #ffffff !important;
 }
 
 .Header-deskCateogrey {
@@ -354,8 +312,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  border-top: 2px solid transparent;
-  border-image: linear-gradient(to right, #4caf50 0%, #ff8c42 100%) 1;
+  border-top: 1px solid rgb(244, 244, 244);
 }
 .Header-deskCatItem {
   display: flex;

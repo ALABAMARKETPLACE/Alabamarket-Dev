@@ -30,7 +30,15 @@ function ScreenLayout(props: any) {
 
   return (
     <Layout>
-      <Header data={props?.data} onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
+      <Header 
+        data={{
+          ...props?.data,
+          type: props?.data?.type || props?.data?.user?.type,
+          role: props?.data?.role || props?.data?.user?.role,
+        }} 
+        onMenuClick={toggleSidebar} 
+        sidebarOpen={sidebarOpen} 
+      />
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
@@ -46,7 +54,14 @@ function ScreenLayout(props: any) {
           height: "100vh",
         }}
       >
-        <SideBar data={props?.data} onRouteClick={closeSidebar} />
+        <SideBar 
+          data={{
+            ...props?.data,
+            type: props?.data?.type || props?.data?.user?.type,
+            role: props?.data?.role || props?.data?.user?.role,
+          }} 
+          onRouteClick={closeSidebar} 
+        />
       </Layout.Sider>
       <Layout>
         <Layout.Content>

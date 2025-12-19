@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./styles.scss";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -10,16 +10,12 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 function ProductItem(props: any) {
   const navigate = useRouter();
   const Settings = useSelector(reduxSettings);
-  const [differenceInSeconds, setDifferenceInSeconds] = useState<number | null>(null);
-
-  useEffect(() => {
-    const givenDate: any = new Date(props?.item?.createdAt);
-    const currentDate: any = new Date();
-    const differenceInMilliseconds = currentDate - givenDate;
-    setDifferenceInSeconds(
-      Math.floor(differenceInMilliseconds / 1000) ? Math.floor(differenceInMilliseconds / 1000) : null
-    );
-  }, [props?.item?.createdAt]);
+  const givenDate: any = new Date(props?.item?.createdAt); // Parse given date string
+  const currentDate: any = new Date(); // Get current date
+  const differenceInMilliseconds = currentDate - givenDate; // Calculate difference in milliseconds
+  const differenceInSeconds = Math.floor(differenceInMilliseconds / 1000)
+    ? Math.floor(differenceInMilliseconds / 1000)
+    : null;
 
   const openDetails = () => {
     navigate.push(`/${props?.item?.slug}/?pid=${props?.item?.pid}&review=2`);
@@ -83,9 +79,9 @@ function ProductItem(props: any) {
         </Popover>
 
         <div className="ProductItem-txt3" onClick={() => openDetails()}>
-          ₦{new Intl.NumberFormat("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: Settings?.currency,
           }).format(props?.item?.retail_rate)}
           <span className="text-secondary"></span>
         </div>
@@ -103,8 +99,8 @@ function ProductItem(props: any) {
               {` only ${props?.item?.unit} left`}
             </div>
           </div>
-        ) : typeof differenceInSeconds == "number" ? (
-          differenceInSeconds < 43 ? (
+        ) : typeof differenceInMilliseconds == "number" ? (
+          differenceInMilliseconds < 43000 ? (
             <div className="product_status_tag position-absolute">
               <div className="badge2 blue">New</div>
             </div>

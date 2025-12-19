@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import ProductItem from "../productItem/page";
 import { MdArrowBack, MdOutlineArrowForward } from "react-icons/md";

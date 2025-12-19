@@ -22,6 +22,7 @@ import Visa from "../../assets/images/visa.png";
 import Mastercard from "../../assets/images/mastercard.png";
 import Dinners from "../../assets/images/dinners.png";
 import samsungpay from "../../assets/images/samsungpay.png";
+import paystacklogo from "../../assets/images/paystack-logo.png";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -126,31 +127,38 @@ const Footer = () => {
             <Col sm={6} md={6} xs={12} lg={3}>
               <div className="Footer-text1">{t("payment_methrd")}</div>
               <Row>
-                <Col sm={3} xs={3}>
+                <Col sm={2} xs={2}>
                   <Image
                     alt="AlabaMarketplace"
                     src={Visa}
                     className="Footer_icon2"
                   />
                 </Col>
-                <Col sm={3} xs={3}>
+                <Col sm={2} xs={2}>
                   <Image
                     alt="AlabaMarketplace"
                     src={Mastercard}
                     className="Footer_icon2"
                   />
                 </Col>
-                <Col sm={3} xs={3}>
+                <Col sm={2} xs={2}>
                   <Image
                     alt="AlabaMarketplace"
                     src={Dinners}
                     className="Footer_icon2"
                   />
                 </Col>
-                <Col sm={3} xs={3}>
+                <Col sm={2} xs={2}>
                   <Image
                     alt="AlabaMarketplace"
                     src={samsungpay}
+                    className="Footer_icon2"
+                  />
+                </Col>
+                <Col sm={2} xs={2}>
+                  <Image
+                    alt="AlabaMarketplace"
+                    src={paystacklogo}
                     className="Footer_icon2"
                   />
                 </Col>
@@ -188,7 +196,7 @@ const Footer = () => {
       </I18nextProvider>
       <br />
       <div className="Footer-Box1">
-        COPYRIGHT © 2024 Alaba Marketplace LLC. ALL RIGHTS RESERVED
+        COPYRIGHT © 2025 Taxgoglobal Corporation. ALL RIGHTS RESERVED
       </div>
     </footer>
   );

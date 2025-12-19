@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import useIsClient from "@/shared/hook/useClient";
 import { initializeStore } from "@/redux/store/store";
 
 interface Props {
@@ -30,12 +31,16 @@ export const StoreProvider = ({ children }: Props) => {
       };
     }
   }, []);
-
+  const isClient = useIsClient();
   return (
     <Provider store={storeRef.current.store}>
-      <PersistGate loading={null} persistor={storeRef.current.persistor}>
-        {children}
-      </PersistGate>
+      {isClient ? (
+        <PersistGate loading={null} persistor={storeRef.current.persistor}>
+          {children}
+        </PersistGate>
+      ) : (
+        children
+      )}
     </Provider>
   );
 };

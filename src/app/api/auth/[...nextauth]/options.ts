@@ -3,21 +3,8 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import API from "@/config/API";
 
-// Generate a fallback secret if NEXTAUTH_SECRET is not set (should only happen in development)
-const getSecret = () => {
-  const secret = process.env.NEXTAUTH_SECRET;
-  if (!secret) {
-    console.warn(
-      "⚠️ NEXTAUTH_SECRET is not set. Using development fallback. This should NEVER happen in production!"
-    );
-    // Use a consistent fallback for development only
-    return "development-fallback-secret-change-in-production";
-  }
-  return secret;
-};
-
 export const options: NextAuthOptions = {
-  secret: getSecret(),
+  secret: process.env.NEXTAUTH_SECRET as string,
   pages: {
     signIn: "/login",
     signOut: "/signout",
@@ -194,6 +181,8 @@ export const options: NextAuthOptions = {
           phone: token?.user?.phone,
           countrycode: token?.user?.countrycode,
           type: token?.user?.type,
+          delivery_company_id: token?.user?.delivery_company_id,
+          driver_id: token?.user?.driver_id,
         };
       }
       return session;

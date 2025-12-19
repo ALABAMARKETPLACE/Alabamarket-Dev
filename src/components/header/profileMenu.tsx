@@ -1,5 +1,3 @@
-"use client";
-
 import { Badge, Button, notification } from "antd";
 import React, { useEffect, useState } from "react";
 import { MdFavoriteBorder } from "react-icons/md";
@@ -214,39 +212,19 @@ const ProfileMenu = (props: any) => {
         </Button>
         <Button
           size="large"
+          // type="primary"
           block
+          className="btn-clr"
           icon={<BsShopWindow size={18} />}
           onClick={handleSellerNavigation}
-          style={{
-            background: 'linear-gradient(135deg, #22c55e 0%, #ff8c42 50%, #16a34a 100%)',
-            border: 'none',
-            color: '#fff',
-            fontWeight: 'bold',
-            fontSize: '14px',
-            height: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            transition: 'all 0.3s ease'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #16a34a 0%, #ff7c32 50%, #15803d 100%)';
-            e.currentTarget.style.transform = 'scale(1.02)';
-            e.currentTarget.style.boxShadow = '0 8px 16px rgba(34, 197, 94, 0.3)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(135deg, #22c55e 0%, #ff8c42 50%, #16a34a 100%)';
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = 'none';
-          }}
         >
           Become a seller
         </Button>
       </div>
       <Button
         size="large"
-        type="primary"
+        // type="primary"
+        className="btn-clr"
         block
         onClick={() => logotFunction()}
         loading={loading}

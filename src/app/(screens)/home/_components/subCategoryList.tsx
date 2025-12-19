@@ -12,6 +12,7 @@ function SubCategoryList(props: any) {
   const router = useRouter();
   const [hasScrollBar, setHasScrollBar] = useState(false);
   const [rightButtonClicked, setRightButtonClicked] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
   const scroll = (ratio: number) => {
@@ -30,6 +31,7 @@ function SubCategoryList(props: any) {
   };
 
   useEffect(() => {
+    setIsMounted(true);
     function updateState() {
       const el = ref.current;
       el &&
@@ -60,27 +62,35 @@ function SubCategoryList(props: any) {
                   )}&type=${encodeURIComponent(item?.name)}`
                 );
               }}
-              title={item.name}
             >
-              {item.name}
+              <div className="category-strip-thumb">
+                <img src={item.image} alt={item.name} />
+              </div>
+              <div className="category-strip-label" title={item.name}>
+                {item.name}
+              </div>
             </div>
           ))}
         </div>
         <>
-          {rightButtonClicked && (
+          {isMounted && rightButtonClicked && (
             <button
-              className="category-nav-btn category-nav-btn-left"
+              className="Horizontal-btn1 position-absolute slider-btn-left"
+              style={{ marginTop: 10 }}
               onClick={() => scroll(-500)}
             >
               <MdArrowBack />
             </button>
           )}
-          <button
-            className="category-nav-btn category-nav-btn-right"
-            onClick={() => scroll(500)}
-          >
-            <MdOutlineArrowForward />
-          </button>
+          {isMounted && (
+            <button
+              className="Horizontal-btn2 slider-btn-right position-absolute"
+              style={{ marginTop: 10 }}
+              onClick={() => scroll(500)}
+            >
+              <MdOutlineArrowForward />
+            </button>
+          )}
         </>
       </div>
     </div>

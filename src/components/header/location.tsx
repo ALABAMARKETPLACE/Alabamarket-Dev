@@ -139,17 +139,15 @@ function Location() {
         >
           <div style={{ margin: 20 }} />
           <AutoComplete
-            size="large"
-            style={{ width: "100%" }}
+            style={{ width: "100%", fontSize: "16px", padding: "8px 11px" }}
             onSearch={(text) => searchLocation(text)}
             options={recommendation}
             onSelect={(value, option) => convertLocation(option)}
           >
             <Input
               prefix={<IoSearchOutline size={20} />}
-              size="large"
               placeholder="Search for area or street name . . . "
-              style={{ padding: 10 }}
+              style={{ padding: 10, fontSize: "16px" }}
             />
           </AutoComplete>
           <br /> <br />
@@ -174,8 +172,9 @@ function Location() {
             <br />
             <Button
               loading={loading}
-              type="primary"
+              // type="primary"
               size="large"
+              className="btn-clr"
               style={{ borderRadius: 100 }}
               onClick={() => geocdeLocation()}
             >
