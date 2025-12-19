@@ -35,7 +35,6 @@ const PrefixSelector = () => {
         showSearch={true}
         placeholder="Country Code"
         optionLabelProp="label"
-        suppressContentEditableWarning
         filterOption={(input, option) => {
           const code = (option?.value as string) || "";
           return code.toLowerCase().includes(input.toLowerCase());
