@@ -103,8 +103,8 @@ function ProductItem(props: any) {
               {` only ${props?.item?.unit} left`}
             </div>
           </div>
-        ) : typeof differenceInMilliseconds == "number" ? (
-          differenceInMilliseconds < 43000 ? (
+        ) : typeof differenceInSeconds == "number" ? (
+          differenceInSeconds < 43 ? (
             <div className="product_status_tag position-absolute">
               <div className="badge2 blue">New</div>
             </div>
