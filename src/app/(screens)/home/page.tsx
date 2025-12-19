@@ -40,9 +40,9 @@ function Home() {
   const getUserHistory = async () => {
     const url = API.USER_HISTORY;
     try {
-      let currentDate = new Date();
       if (!token) return;
       const decoded: any = jwtDecode(token);
+      const currentDate = new Date();
       if (decoded.exp && decoded.exp * 1000 + 10000 > currentDate.getTime()) {
         const response: any = await GET(url);
         if (response?.status) {

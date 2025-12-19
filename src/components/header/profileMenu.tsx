@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge, Button, notification } from "antd";
 import React, { useEffect, useState } from "react";
 import { MdFavoriteBorder } from "react-icons/md";

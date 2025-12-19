@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./styles.scss";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
@@ -10,12 +10,16 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 function ProductItem(props: any) {
   const navigate = useRouter();
   const Settings = useSelector(reduxSettings);
-  const givenDate: any = new Date(props?.item?.createdAt); // Parse given date string
-  const currentDate: any = new Date(); // Get current date
-  const differenceInMilliseconds = currentDate - givenDate; // Calculate difference in milliseconds
-  const differenceInSeconds = Math.floor(differenceInMilliseconds / 1000)
-    ? Math.floor(differenceInMilliseconds / 1000)
-    : null;
+  const [differenceInSeconds, setDifferenceInSeconds] = useState<number | null>(null);
+
+  useEffect(() => {
+    const givenDate: any = new Date(props?.item?.createdAt);
+    const currentDate: any = new Date();
+    const differenceInMilliseconds = currentDate - givenDate;
+    setDifferenceInSeconds(
+      Math.floor(differenceInMilliseconds / 1000) ? Math.floor(differenceInMilliseconds / 1000) : null
+    );
+  }, [props?.item?.createdAt]);
 
   const openDetails = () => {
     navigate.push(`/${props?.item?.slug}/?pid=${props?.item?.pid}&review=2`);

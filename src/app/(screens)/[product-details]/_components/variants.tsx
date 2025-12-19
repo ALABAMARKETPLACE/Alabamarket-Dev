@@ -53,19 +53,25 @@ function Variants(props: Props) {
   };
 
   return (
-    <div className="d-flex flex-column gap-2">
-      {getAllVaraints(props?.productVariant)?.map((item) => (
+    <div className="variants-container">
+      {getAllVaraints(props?.productVariant)?.map((item, index) => (
         <React.Fragment key={item.variant}>
-          <div>
-            {item?.variant} : {findSpecificVariantValue(item?.variant)}
+          <div className="variant-group">
+            <div className="variant-label">
+              <span className="variant-name">{item?.variant}</span>
+              <span className="variant-selected-value">
+                {findSpecificVariantValue(item?.variant) && `: ${findSpecificVariantValue(item?.variant)}`}
+              </span>
+            </div>
+            <Radio.Group
+              value={findSpecificVariantValue(item?.variant)}
+              onChange={(e) => handleVariantChange(e?.target?.value, item?.variant)}
+              buttonStyle="solid"
+              options={item?.values as string[]}
+              optionType="button"
+              className="variant-options"
+            />
           </div>
-          <Radio.Group
-            value={findSpecificVariantValue(item?.variant)}
-            onChange={(e) => handleVariantChange(e?.target?.value, item?.variant)}
-            buttonStyle="solid"
-            options={item?.values as string[]}
-            optionType="button"
-          />
         </React.Fragment>
       ))}
     </div>

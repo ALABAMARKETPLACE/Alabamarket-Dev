@@ -1,3 +1,5 @@
+"use client";
+
 import { Skeleton } from "antd";
 import React, { useMemo } from "react";
 import { Col, Row } from "react-bootstrap";

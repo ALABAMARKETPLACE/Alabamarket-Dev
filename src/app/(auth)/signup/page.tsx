@@ -226,7 +226,7 @@ export default function SignupScreen() {
                 <br />
                 <Form
                   onFinish={handleSignup}
-                  initialValues={{ code: "+971" }}
+                  initialValues={{ code: "+234" }}
                   layout="vertical"
                 >
                   <Row>
