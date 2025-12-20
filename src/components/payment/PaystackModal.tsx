@@ -118,7 +118,7 @@ const PaystackModal: React.FC<PaystackModalProps> = ({
             )}
             
             <Descriptions.Item label="Currency">
-              <Text>Nigerian Naira (₦)</Text>
+              <Text>Nigerian Naira (NGN)</Text>
             </Descriptions.Item>
             
             {paymentData.reference && (

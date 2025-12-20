@@ -108,5 +108,11 @@ const API_ADMIN = {
   BOOST_REQUESTS: "boost-requests/", //GET,POST,PUT,DELETE
   BOOST_REQUEST_APPROVE: "boost-requests/approve", //POST - Admin approve/reject
   BOOST_REQUEST_PRIORITY: "boost-requests/priority", //PUT - Admin update priority
+
+  //DELIVERY PARTNER API
+  DELIVERY_COMPANIES_ALL: "delivery/companies", //GET - All delivery companies
+  DELIVERY_COMPANY_UPDATE_STATUS: "delivery/company/", //PUT - Update company status
+  DRIVERS_ALL: "delivery/drivers", //GET - All drivers
+  DRIVER_UPDATE_STATUS: "delivery/driver/", //PUT - Update driver status
 } as const;
 export default API_ADMIN;

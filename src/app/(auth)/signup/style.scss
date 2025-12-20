@@ -11,6 +11,11 @@
   line-height: 30px;
   color: gray;
 }
+
+.btn-clr {
+  background: global.$button_background_color;
+  color: #ffffff !important;
+}
 .signupScreen-box1 {
   padding-left: 50px;
   padding-right: 50px;

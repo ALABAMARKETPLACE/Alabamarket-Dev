@@ -74,7 +74,13 @@ function Header(props: any) {
           <Image src={LogoBox} alt="logo" />
         </div>
         <div className="dashboard-HeaderPanelText">
-          {props?.data?.role === "admin" ? "Admin" : "Seller"} Panel
+          {props?.data?.role === "admin"
+            ? "Admin"
+            : props?.data?.role === "delivery_company" || props?.data?.type === "delivery_company"
+            ? "Delivery Company"
+            : props?.data?.role === "driver" || props?.data?.type === "driver"
+            ? "Driver"
+            : "Seller"} Panel
           <br />
           <div className="dashboard-Headertext3">V 1.0.0</div>
         </div>

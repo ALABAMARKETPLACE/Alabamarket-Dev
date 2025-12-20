@@ -12,6 +12,7 @@ function SubCategoryList(props: any) {
   const router = useRouter();
   const [hasScrollBar, setHasScrollBar] = useState(false);
   const [rightButtonClicked, setRightButtonClicked] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
   const scroll = (ratio: number) => {
@@ -30,6 +31,7 @@ function SubCategoryList(props: any) {
   };
 
   useEffect(() => {
+    setIsMounted(true);
     function updateState() {
       const el = ref.current;
       el &&
@@ -71,7 +73,7 @@ function SubCategoryList(props: any) {
           ))}
         </div>
         <>
-          {rightButtonClicked && (
+          {isMounted && rightButtonClicked && (
             <button
               className="Horizontal-btn1 position-absolute slider-btn-left"
               style={{ marginTop: 10 }}
@@ -80,13 +82,15 @@ function SubCategoryList(props: any) {
               <MdArrowBack />
             </button>
           )}
-          <button
-            className="Horizontal-btn2 slider-btn-right position-absolute"
-            style={{ marginTop: 10 }}
-            onClick={() => scroll(500)}
-          >
-            <MdOutlineArrowForward />
-          </button>
+          {isMounted && (
+            <button
+              className="Horizontal-btn2 slider-btn-right position-absolute"
+              style={{ marginTop: 10 }}
+              onClick={() => scroll(500)}
+            >
+              <MdOutlineArrowForward />
+            </button>
+          )}
         </>
       </div>
     </div>

@@ -6,7 +6,7 @@ import API from "@/config/API";
 import CONFIG from "@/config/configuration";
 import { getServerSession } from "next-auth/next";
 import { options } from "@/app/api/auth/[...nextauth]/options";
-import './style.scss'
+import "./style.scss";
 async function fetchData(id: string) {
   try {
     const session: any = await getServerSession(options);
@@ -26,7 +26,8 @@ async function fetchData(id: string) {
 export const generateMetadata = async ({
   searchParams,
 }: any): Promise<Metadata> => {
-  const data = await fetchData(searchParams?.pid);
+  const params = await searchParams;
+  const data = await fetchData(params?.pid);
   return {
     title: data?.name || "",
     description: data?.description || "",
@@ -36,7 +37,7 @@ export const generateMetadata = async ({
       type: "website",
       locale: "en_US",
       siteName: CONFIG.NAME,
-      url: `${CONFIG.WEBSITE}/${searchParams.slug}/?pid=${searchParams?.pid}&review=${searchParams?.review}`,
+      url: `${CONFIG.WEBSITE}/${params.slug}/?pid=${params?.pid}&review=${params?.review}`,
       images: {
         url: data?.image,
         alt: data?.name,
@@ -48,8 +49,9 @@ export const generateMetadata = async ({
 };
 
 async function ProductScreen({ searchParams }: any) {
-  const data = await fetchData(searchParams?.pid);
-  return <DetailsCard data={data} params={searchParams} />;
+  const params = await searchParams;
+  const data = await fetchData(params?.pid);
+  return <DetailsCard data={data} params={params} />;
 }
 
 export default ProductScreen;

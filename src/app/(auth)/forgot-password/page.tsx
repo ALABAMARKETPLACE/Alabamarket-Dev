@@ -67,10 +67,10 @@ function ForgotPassword() {
                   <Col sm={6} xs={12}></Col>
                   <Col sm={6} xs={12}>
                     <Button
-              
                       block
                       size="large"
-                      type="primary"
+                      // type="primary"
+                      className="btn-clr"
                       htmlType="submit"
                     >
                       Send Request

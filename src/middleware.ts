@@ -31,11 +31,17 @@ export async function middleware(req: NextRequest) {
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
-  //===============================admin or seller routes(/auth)
+  //===============================admin, seller, delivery_company, or driver routes(/auth)
+  const userType = token?.user?.type;
+  const userRole = token?.user?.role || role;
+  const allowedRoles = ["seller", "admin", "delivery_company", "driver"];
+  const allowedTypes = ["seller", "admin", "delivery_company", "driver"];
+  const isAllowed = allowedRoles.includes(userRole) || allowedTypes.includes(userType);
+  
   if (
     url.pathname.startsWith("/auth") &&
-    (!["seller", "admin"].includes(role) ||
-      (admin_only_routes.includes(url.pathname) && role !== "admin"))
+    (!isAllowed ||
+      (admin_only_routes.includes(url.pathname) && userRole !== "admin"))
   ) {
     url.pathname = "/";
     return NextResponse.redirect(url);

@@ -66,69 +66,15 @@ body {
 }
 
 .Horizontal-Heading1 {
-  font-size: 18px;
+  font-size: 28px;
   font-family: global.$Bold;
-  font-weight: 800;
-  background: linear-gradient(
-    135deg,
-    #ff8c42 0%,
-    #ff6b35 50%,
-    #ff8c42 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  background-size: 200% auto;
-  animation: allProductsShimmer 4s linear infinite;
-  position: relative;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  margin-bottom: 15px;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 50px;
-    height: 2px;
-    background: linear-gradient(90deg, #ff8c42, #ff6b35);
-    border-radius: 2px;
-    animation: allProductsUnderline 2.5s ease-in-out infinite;
-    box-shadow: 0 2px 8px rgba(255, 140, 66, 0.4);
-  }
-  
+  color: #000;
+
+  margin-bottom: 5px;
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 16px;
+    font-size: 20px;
     padding-left: 10px;
     padding-bottom: 0px;
-    
-    &::after {
-      width: 50px;
-      height: 2px;
-    }
-  }
-}
-
-@keyframes allProductsShimmer {
-  0% {
-    background-position: 0% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-@keyframes allProductsUnderline {
-  0%, 100% {
-    width: 80px;
-    opacity: 1;
-    transform: translateX(0);
-  }
-  50% {
-    width: 100px;
-    opacity: 0.9;
-    transform: translateX(10px);
   }
 }
 
@@ -206,50 +152,12 @@ body {
 .Horizontal-viewButton {
   font-family: global.$Bold;
   margin-right: 16px;
-  font-size: 13px;
-  font-weight: 700;
-  padding: 8px 18px;
-  color: #ff8c42;
+  font-size: 14px;
+  padding-top: 10px;
+  color: gray;
   cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  position: relative;
-  transition: all 0.3s ease;
-  display: inline-block;
-  border: 2px solid #ff8c42;
-  border-radius: 30px;
-  background: white;
-  
-  &::before {
-    content: '→';
-    position: absolute;
-    right: -22px;
-    opacity: 0;
-    transition: all 0.3s ease;
-    color: #ff8c42;
-  }
-  
   &:hover {
-    transform: translateX(-6px) scale(1.05);
-    box-shadow: 0 5px 18px rgba(255, 140, 66, 0.45);
-    background: linear-gradient(135deg, #ff8c42, #ff6b35);
-    color: white;
-    border-color: #ff6b35;
-    
-    &::before {
-      right: -28px;
-      opacity: 1;
-      color: #ff8c42;
-    }
-  }
-}
-
-@keyframes viewButtonPulse {
-  0%, 100% {
-    box-shadow: 0 3px 10px rgba(255, 140, 66, 0.25);
-  }
-  50% {
-    box-shadow: 0 5px 15px rgba(255, 140, 66, 0.45);
+    color: global.$primary;
   }
 }
 

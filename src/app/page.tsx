@@ -14,7 +14,9 @@ export const metadata: Metadata = {
     siteName: CONFIG.NAME,
   },
 };
+  
 
-export default async function page() {
+
+export default async function page() {  
   return <Home />;
 }

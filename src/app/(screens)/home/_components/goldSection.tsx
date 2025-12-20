@@ -57,6 +57,7 @@ function GoldSection({ products = [] }: GoldSectionProps) {
       <span
         role="button"
         tabIndex={0}
+        style={{ color: "#FF5F15" }}
         className="gold-section__see-more"
         onClick={handleSeeMore}
         onKeyDown={(event) => {

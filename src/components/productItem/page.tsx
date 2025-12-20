@@ -79,9 +79,9 @@ function ProductItem(props: any) {
         </Popover>
 
         <div className="ProductItem-txt3" onClick={() => openDetails()}>
-          ₦{new Intl.NumberFormat("en-US", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: Settings?.currency,
           }).format(props?.item?.retail_rate)}
           <span className="text-secondary"></span>
         </div>

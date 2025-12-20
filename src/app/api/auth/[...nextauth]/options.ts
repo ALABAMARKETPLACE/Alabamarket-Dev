@@ -181,6 +181,8 @@ export const options: NextAuthOptions = {
           phone: token?.user?.phone,
           countrycode: token?.user?.countrycode,
           type: token?.user?.type,
+          delivery_company_id: token?.user?.delivery_company_id,
+          driver_id: token?.user?.driver_id,
         };
       }
       return session;

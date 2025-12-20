@@ -13,6 +13,11 @@
   }
 }
 
+.btn-clr {
+  background: global.$button_background_color;
+  color: #ffffff !important;
+}
+
 .sellerRegister-banner-item {
   height: 100px;
   display: flex;
@@ -132,3 +137,57 @@
   padding: 10px;
   font-family: global.$SemiBold;
 }
+
+
+/* Wrapper to center everything on the page */
+.seller-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fafafa;
+  padding: 20px;
+}
+
+/* Column layout with vertical spacing */
+.seller-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;      /* Space between cards */
+  // width: 100%;
+}
+
+/* Card Styles */
+.seller-option-card {
+  width: 100%;
+  // max-width: 550px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  padding: 20px 25px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #222;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: all 0.25s ease-in-out;
+}
+
+/* Hover Effect */
+.seller-option-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  border-color: #ff8745;
+}
+
+/* Arrow Icon */
+.arrow {
+  font-size: 22px;
+  font-weight: 700;
+  color: #ff8745;
+}
+

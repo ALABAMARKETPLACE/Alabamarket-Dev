@@ -279,102 +279,20 @@
 
   &__title {
     font-family: global.$SemiBold;
-    font-size: 18px;
-    font-weight: 700;
-    background: linear-gradient(
-      135deg,
-      #ff8c42 0%,
-      #ff6b35 50%,
-      #ff8c42 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    background-size: 200% auto;
-    animation: titleShimmer 3s linear infinite;
-    position: relative;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 40px;
-      height: 2px;
-      background: linear-gradient(90deg, #ff8c42, #ff6b35);
-      border-radius: 2px;
-      animation: underlineGrow 2s ease-in-out infinite;
-    }
-  }
-  
-  @keyframes titleShimmer {
-    0% {
-      background-position: 0% center;
-    }
-    100% {
-      background-position: 200% center;
-    }
-  }
-  
-  @keyframes underlineGrow {
-    0%, 100% {
-      width: 60px;
-      opacity: 1;
-    }
-    50% {
-      width: 80px;
-      opacity: 0.8;
-    }
+    font-size: 24px;
+    color: #1d1d1d;
   }
 
   &__see-more {
     font-family: global.$Medium;
-    font-size: 13px;
-    font-weight: 700;
-    color: #ff8c42;
+    font-size: 14px;
+    color: global.$primary;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    position: relative;
-    transition: all 0.3s ease;
-    display: inline-block;
-    padding: 6px 14px;
-    border: 2px solid #ff8c42;
-    border-radius: 25px;
-    background: white;
-    
-    &::before {
-      content: '→';
-      position: absolute;
-      right: -20px;
-      opacity: 0;
-      transition: all 0.3s ease;
-      color: #ff8c42;
-    }
+    letter-spacing: 0.04em;
 
     &:hover {
-      transform: translateX(-5px) scale(1.05);
-      box-shadow: 0 4px 15px rgba(255, 140, 66, 0.4);
-      background: linear-gradient(135deg, #ff8c42, #ff6b35);
-      color: white;
-      border-color: #ff6b35;
-      
-      &::before {
-        right: -25px;
-        opacity: 1;
-        color: #ff8c42;
-      }
-    }
-  }
-  
-  @keyframes seeMorePulse {
-    0%, 100% {
-      box-shadow: 0 2px 8px rgba(255, 140, 66, 0.2);
-    }
-    50% {
-      box-shadow: 0 4px 12px rgba(255, 140, 66, 0.4);
+      text-decoration: underline;
     }
   }
 
@@ -476,29 +394,8 @@
 
   &__panel-title {
     font-family: global.$SemiBold;
-    font-size: 18px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 50%, #ff8c42 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    background-size: 200% auto;
-    animation: titleShimmer 3s linear infinite;
-    position: relative;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 40px;
-      height: 2px;
-      background: linear-gradient(90deg, #ff8c42, #ff6b35);
-      border-radius: 2px;
-      animation: underlineGrow 2s ease-in-out infinite;
-    }
+    font-size: 20px;
+    color: #1d1d1d;
   }
 
   &__panel-header {
@@ -548,40 +445,13 @@
   &__see-more {
     font-family: global.$Medium;
     font-size: 14px;
-    font-weight: 700;
-    color: #ff8c42;
+    color: global.$primary;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    position: relative;
-    transition: all 0.3s ease;
-    display: inline-block;
-    padding: 6px 14px;
-    border: 2px solid #ff8c42;
-    border-radius: 25px;
-    background: white;
-
-    &::before {
-      content: '→';
-      position: absolute;
-      right: -20px;
-      opacity: 0;
-      transition: all 0.3s ease;
-      color: #ff8c42;
-    }
+    letter-spacing: 0.04em;
 
     &:hover {
-      transform: translateX(-5px) scale(1.05);
-      box-shadow: 0 4px 15px rgba(255, 140, 66, 0.4);
-      background: linear-gradient(135deg, #ff8c42, #ff6b35);
-      color: white;
-      border-color: #ff6b35;
-
-      &::before {
-        right: -25px;
-        opacity: 1;
-        color: #ff8c42;
-      }
+      text-decoration: underline;
     }
   }
 
@@ -655,93 +525,20 @@
 
   &__panel-title {
     font-family: global.$SemiBold;
-    font-size: 17px;
-    font-weight: 700;
-    background: linear-gradient(
-      135deg,
-      #ff8c42 0%,
-      #ff6b35 50%,
-      #ff8c42 100%
-    );
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    background-size: 200% auto;
-    animation: silverShimmer 3s linear infinite;
-    position: relative;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      width: 45px;
-      height: 2px;
-      background: linear-gradient(90deg, #ff8c42, #ff6b35);
-      border-radius: 2px;
-      animation: silverUnderline 2s ease-in-out infinite;
-    }
-  }
-  
-  @keyframes silverShimmer {
-    0% {
-      background-position: 0% center;
-    }
-    100% {
-      background-position: 200% center;
-    }
-  }
-  
-  @keyframes silverUnderline {
-    0%, 100% {
-      width: 50px;
-      opacity: 1;
-    }
-    50% {
-      width: 65px;
-      opacity: 0.7;
-    }
+    font-size: 18px;
+    color: #1d1d1d;
   }
 
   &__see-more {
     font-family: global.$Medium;
-    font-size: 12px;
-    font-weight: 700;
-    color: #ff8c42;
+    font-size: 13px;
+    color: global.$primary;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 0.7px;
-    position: relative;
-    transition: all 0.3s ease;
-    display: inline-block;
-    padding: 5px 12px;
-    border: 2px solid #ff8c42;
-    border-radius: 20px;
-    background: white;
-    
-    &::before {
-      content: '→';
-      position: absolute;
-      right: -18px;
-      opacity: 0;
-      transition: all 0.3s ease;
-      color: #ff8c42;
-    }
+    letter-spacing: 0.04em;
 
     &:hover {
-      transform: translateX(-5px) scale(1.05);
-      box-shadow: 0 3px 12px rgba(255, 140, 66, 0.35);
-      background: linear-gradient(135deg, #ff8c42, #ff6b35);
-      color: white;
-      border-color: #ff6b35;
-      
-      &::before {
-        right: -23px;
-        opacity: 1;
-        color: #ff8c42;
-      }
+      text-decoration: underline;
     }
   }
 

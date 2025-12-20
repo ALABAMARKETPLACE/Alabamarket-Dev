@@ -2,7 +2,7 @@ const API = {
   // BASE_URL: "https://alaba-server.semikolen.org/",
 
   BASE_URL: (process.env.NEXT_PUBLIC_BASE_URL ||
-    "http://20.56.132.97:8000/") as string,
+    "https://development.alabamarketplace.ng/apis/") as string,
 
   // BASE_URL: "http://localhost:8017/",
   //GOOGLE API
@@ -261,5 +261,36 @@ const API = {
   ORDER_SUBSTITUTION_GETALL: "substitution/details/", //GET
   ORDER_SUBSTITUTION_SUBSTITUTE: "substitution/substitute/", //TO SUBSTITUTE ORDER USER PUT
   ORDER_SUBSTITUTION_UPDATEORDER: "substitution/update_order/", //TO SUBSTITUTE ORDER USER PUT
+
+  //DELIVERY PARTNERS
+  DELIVERY_COMPANY_REGISTER: "delivery/company/register", //POST
+  DRIVER_REGISTER: "delivery/driver/register", //POST
+  DELIVERY_COMPANIES_ALL: "delivery/companies", //GET
+  DELIVERY_COMPANIES_APPROVED: "delivery/companies/approved", //GET - Only approved companies
+  DELIVERY_COMPANY_DETAILS: "delivery/company/", //GET
+  DELIVERY_COMPANY_UPDATE_STATUS: "delivery/company/:id/status", //PUT
+  DRIVERS_ALL: "delivery/drivers", //GET
+  DRIVER_DETAILS: "delivery/driver/", //GET
+  DRIVER_UPDATE_STATUS: "delivery/driver/:id/status", //PUT
+  INVITATION_SEND: "delivery/invitation/send", //POST
+  INVITATION_ACCEPT: "delivery/invitation/", //POST - Accept invitation
+  INVITATION_REJECT: "delivery/invitation/", //POST - Reject invitation
+  INVITATION_DRIVER: "delivery/invitation/driver/", //GET - Get driver invitations
+  INVITATION_COMPANY: "delivery/invitation/company/", //GET - Get company invitations
+  DELIVERY_ORDERS_AVAILABLE: "delivery/orders/available", //GET - Available orders
+  DELIVERY_ORDER_ACCEPT: "delivery/order/", //POST - Accept order
+  DELIVERY_COMPANY_DRIVERS: "delivery/company/", //GET - Get company drivers
+  DELIVERY_COMPANY_DRIVERS_AVAILABLE: "delivery/company/", //GET - Available drivers for invitation
+  DELIVERY_COMPANY_ORDERS: "delivery/company/", //GET - Get company orders
+  DELIVERY_COMPANY_ORDERS_ACCEPTED: "delivery/company/", //GET - Get accepted orders
+  DELIVERY_COMPANY_ORDERS_ACCEPTED_WITH_DRIVERS: "delivery/company/", //GET - Get accepted orders with driver assignments
+  DELIVERY_ORDER_PICKUP: "delivery/order/", //POST - Confirm pickup
+  DELIVERY_DRIVER_ORDERS: "delivery/driver/", //GET - Get driver orders
+  DELIVERY_DRIVER_PENDING_ORDERS: "delivery/driver/", //GET - Get driver pending orders
+  DELIVERY_DRIVER_COMPLETED_ORDERS: "delivery/driver/", //GET - Get driver completed orders
+  DELIVERY_DRIVER_AVAILABLE_ORDERS: "delivery/driver/", //GET - Get driver available orders
+  DELIVERY_DRIVER_SELECT_ORDER: "delivery/driver/", //POST - Driver select order
+  DELIVERY_ORDER_DELIVER: "delivery/order/", //POST - Confirm delivery
+  DELIVERY_ORDERS_ALL: "delivery/orders/all", //GET - Get all orders
 } as const;
 export default API;

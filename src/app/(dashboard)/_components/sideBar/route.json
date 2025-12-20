@@ -134,6 +134,15 @@
         ]
       },
       {
+        "id": 26,
+        "menu": "Delivery Partner Approvals",
+        "icon": "TbTruckDelivery",
+        "route": "/auth/delivery-partner-approvals",
+        "role": [
+          "admin"
+        ]
+      },
+      {
         "id": 14,
         "menu": "Users",
         "icon": "HiUsers",
@@ -174,6 +183,64 @@
         "role": [
           "seller",
           "admin"
+        ]
+      }
+    ]
+  },
+  {
+    "section": "Delivery Management",
+    "routes": [
+      {
+        "id": 28,
+        "menu": "Orders",
+        "icon": "TbListDetails",
+        "route": "/auth/delivery-company-dashboard/orders",
+        "role": [
+          "delivery_company"
+        ],
+        "type": [
+          "delivery_company"
+        ]
+      },
+      {
+        "id": 29,
+        "menu": "Pickup",
+        "icon": "TbTruckDelivery",
+        "route": "/auth/delivery-company-dashboard/pickup",
+        "role": [
+          "delivery_company"
+        ],
+        "type": [
+          "delivery_company"
+        ]
+      },
+      {
+        "id": 30,
+        "menu": "Drivers",
+        "icon": "HiUsers",
+        "route": "/auth/delivery-company-dashboard/drivers",
+        "role": [
+          "delivery_company"
+        ],
+        "type": [
+          "delivery_company"
+        ]
+      }
+    ]
+  },
+  {
+    "section": "Driver Panel",
+    "routes": [
+      {
+        "id": 31,
+        "menu": "Dashboard",
+        "icon": "MdSpaceDashboard",
+        "route": "/auth/driver-dashboard",
+        "role": [
+          "driver"
+        ],
+        "type": [
+          "driver"
         ]
       }
     ]

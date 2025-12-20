@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.scss";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,19 +16,15 @@ import {
   IoPersonOutline,
 } from "react-icons/io5";
 import { BsShopWindow } from "react-icons/bs";
+import { PiUserCircle } from "react-icons/pi";
 
 import Search from "./search";
+import dynamic from "next/dynamic";
+const Location = dynamic(() => import("./location"), { ssr: false });
 import { Badge, Button, Popover } from "antd";
 import { reduxSettings } from "../../redux/slice/settingsSlice";
 import { signOut, useSession } from "next-auth/react";
-import { PiUserCircle } from "react-icons/pi";
 import ProfileMenu from "./profileMenu";
-import dynamic from "next/dynamic";
-
-const Location = dynamic(() => import("./location"), {
-  ssr: false,
-});
-
 const CateogreyList = dynamic(() => import("./categoryList"), {
   ssr: false,
 });
@@ -40,19 +36,25 @@ function Header() {
   const pathname = usePathname();
   const { data: user, status }: any = useSession();
   const [issharepopovervisible, setissharepopovervisible] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const navigation = useRouter();
 
   useGetSettings();
   useTokenExpiration();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const handlepopovervisiblechange = () => {
     setissharepopovervisible(!issharepopovervisible);
   };
   const showSellerCta =
-    Settings?.type === "multi" || user?.user?.role === "admin";
+    isMounted && (Settings?.type === "multi" || user?.user?.role === "admin");
   const sellerCtaLabel =
-    user?.user && user?.user?.type !== "user"
+    isMounted && user?.user && user?.user?.type !== "user"
       ? "Manage Store"
-      : "Become a seller";
+      : "Join Us";
   const handleSellerNavigation = () => {
     if (user?.user) {
       if (user?.user?.type === "user") {
@@ -79,11 +81,9 @@ function Header() {
               </div>
               {/* <div style={{ marginTop: 5 }}>{CONFIG.NAME}</div> */}
             </Link>
-            {Settings?.isLocation ? (
-              <div className="Header-location desktop">
-                <Location />
-              </div>
-            ) : null}
+            <div className="Header-location desktop">
+              {isMounted && Settings?.isLocation ? <Location /> : null}
+            </div>
             <div className="Header-search desktop">
               <Search type={"input"} />
             </div>
@@ -98,7 +98,7 @@ function Header() {
               <div className="Header-sellerCTA">
                 <Button
                   size="large"
-                  type="primary"
+                  // type="primary"
                   icon={<BsShopWindow size={18} />}
                   className="Header-sellerBtn"
                   onClick={handleSellerNavigation}
@@ -133,8 +133,8 @@ function Header() {
                   />
                 }
                 arrow={false}
-                visible={issharepopovervisible}
-                onVisibleChange={handlepopovervisiblechange}
+                open={issharepopovervisible}
+                onOpenChange={handlepopovervisiblechange}
               >
                 <div
                   className={
@@ -143,7 +143,9 @@ function Header() {
                       : "Header-desk-menu"
                   }
                 >
-                  <div>{user?.user?.first_name}</div>
+                  <div style={{ color: "#FF5F15" }}>
+                    {user?.user?.first_name}
+                  </div>
                   <div style={{ margin: 4 }} />
                   {user?.user?.image ? (
                     <img

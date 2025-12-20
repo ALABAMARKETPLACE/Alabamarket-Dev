@@ -92,7 +92,8 @@ function EmailLogin() {
               loading={isLoading}
               block
               size="large"
-              type="primary"
+              // type="primary"
+              className="btn-clr"
               htmlType="submit"
               style={{ height: 45 }}
             >

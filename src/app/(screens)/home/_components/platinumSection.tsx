@@ -41,6 +41,7 @@ function PlatinumSection({
               role="button"
               tabIndex={0}
               className="platinum-section__see-more"
+              style={{ color: "#FF5F15" }}
               onClick={() =>
                 router.push(`/products/view?type=featured&position=1`)
               }

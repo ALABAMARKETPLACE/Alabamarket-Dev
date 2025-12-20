@@ -36,15 +36,41 @@ function SideBar(props: any) {
     }
   };
 
+  const userRole = props?.data?.role;
+  const userType = props?.data?.type || props?.data?.user?.type;
+  const isDeliveryCompany = userRole === "delivery_company" || userType === "delivery_company";
+  const isDriver = userRole === "driver" || userType === "driver";
+
+  // Filter routes based on user role
+  let filteredRoutes = Routes;
+  if (isDeliveryCompany) {
+    // For delivery company, only show "Delivery Management" section
+    filteredRoutes = Routes.filter((item: any) => item?.section === "Delivery Management");
+  } else if (isDriver) {
+    // For driver, only show "Driver Panel" section
+    filteredRoutes = Routes.filter((item: any) => item?.section === "Driver Panel");
+  }
+
   return (
     <main className="dashboard-SideBar">
       <div className="dashboard-SideBarBox1">
-        {Routes.map((item: any, key) => (
-          <Fragment key={key}>
-            <div className="dashboard-SideBarDevider">{item?.section}</div>
-            {item?.routes
-              ?.filter((i: any) => i?.role?.includes(props?.data?.role))
-              .map((section: any) => (
+        {filteredRoutes.map((item: any, key) => {
+          // Filter routes within each section
+          const filteredSectionRoutes = item?.routes?.filter((i: any) => {
+            const roleMatch = i?.role?.includes(userRole);
+            const typeMatch = i?.type?.includes(userType);
+            return roleMatch || typeMatch;
+          });
+
+          // Only show section if it has matching routes
+          if (!filteredSectionRoutes || filteredSectionRoutes.length === 0) {
+            return null;
+          }
+
+          return (
+            <Fragment key={key}>
+              <div className="dashboard-SideBarDevider">{item?.section}</div>
+              {filteredSectionRoutes.map((section: any) => (
                 <div
                   key={section?.id}
                   className={`dashboard-SideBarItem ${
@@ -58,8 +84,9 @@ function SideBar(props: any) {
                   <div className="ashboard-SideBartext1">{section?.menu}</div>
                 </div>
               ))}
-          </Fragment>
-        ))}
+            </Fragment>
+          );
+        })}
       </div>
       {props?.data?.role == "admin" ? (
         <div

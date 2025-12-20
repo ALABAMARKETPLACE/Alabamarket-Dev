@@ -1,5 +1,6 @@
 //colors
-$primary: #a10244;
+$primary: #FF5F15;
+// $primary: #a10244;
 $primary2: #fff4f8;
 $backround: #ffffff;
 $grey1: #262941;
@@ -21,3 +22,9 @@ $Light: "DMSans-Thin";
 
 $sidebar_menu_color: #f0e9ed;
 $sidebar_menu_hover: #f0efef;
+
+$button_background_color: linear-gradient(to bottom,
+  #FFBF00 0%,
+  #FF5F15 40%,
+) !important;
+$button_text_color: #FF5F15;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@/styles/App.scss";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import "@/util/suppressAntdWarning";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 
