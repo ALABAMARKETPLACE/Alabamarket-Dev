@@ -34,6 +34,7 @@ const ProductByCategory = () => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const params = useParams();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [Notifications, contextHolder] = notification.useNotification();
@@ -210,7 +211,7 @@ const ProductByCategory = () => {
     window.scrollTo(0, 0);
     getProductsBySubCategory(1);
     setPage(1);
-  }, [categoryId]);
+  }, [categoryId, params.id]);
 
   return (
     <div className="Screen-box">

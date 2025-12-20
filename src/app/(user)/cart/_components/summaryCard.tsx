@@ -7,6 +7,13 @@ import { reduxSettings } from "../../../../redux/slice/settingsSlice";
 const SummaryCard = (props: any) => {
   const Settings = useSelector(reduxSettings);
 
+  const getCurrencySymbol = () => {
+    if (Settings?.currency === "NGN") {
+      return "₦";
+    }
+    return Settings?.currency || "$";
+  };
+
   const getTotalPrice = (cartt: any) => {
     let total = 0;
     if (Array.isArray(cartt?.items) == true) {
@@ -30,26 +37,26 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Total Product Price</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt4">
-          {Settings?.currency} {getTotalPrice(props?.Cart)}
+          {getCurrencySymbol()} {getTotalPrice(props?.Cart)}
         </div>
       </div>
       <br />
       <div className="Cart-row">
         <div className="Cart-txt3">Discount</div>
         <div style={{ flex: 1 }} />
-        <div className="Cart-txt4">{Settings?.currency} 0.00</div>
+        <div className="Cart-txt4">{getCurrencySymbol()} 0.00</div>
       </div>
       <br />
       <div className="Cart-row">
         <div className="Cart-txt3">Tax</div>
         <div style={{ flex: 1 }} />
-        <div className="Cart-txt4">{Settings?.currency} 0.00</div>
+        <div className="Cart-txt4">{getCurrencySymbol()} 0.00</div>
       </div>
       <br />
       <div className="Cart-row">
         <div className="Cart-txt3">Delivery Charges</div>
         <div style={{ flex: 1 }} />
-        <div className="Cart-txt4">{Settings?.currency} 0.00</div>
+        <div className="Cart-txt4">{getCurrencySymbol()} 0.00</div>
       </div>
       <div className="Cart-line2" />
       <br />
@@ -57,7 +64,7 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Total :</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt7">
-          {Settings?.currency} {getTotalPrice(props?.Cart)}
+          {getCurrencySymbol()} {getTotalPrice(props?.Cart)}
         </div>
       </div>
       <div className="Cart-line2" />

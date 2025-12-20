@@ -18,6 +18,13 @@ const CartItem = (props: any) => {
     stock = `Only ${props?.data?.unit} left`;
   }
 
+  const getCurrencySymbol = () => {
+    if (props?.Settings?.currency === "NGN") {
+      return "₦";
+    }
+    return props?.Settings?.currency || "$";
+  };
+
   function capitalizeFirstLetter(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1);
   }
@@ -35,7 +42,9 @@ const CartItem = (props: any) => {
     <div className="Cart-CartItem">
       <div
         onClick={() => {
-          router.push(`/${props?.data?.slug}/?pid=${props?.data?.pid}&review=2`);
+          router.push(
+            `/${props?.data?.slug}/?pid=${props?.data?.pid}&review=2`
+          );
           // router.push(
           //   `/product/${props?.data?.slug}?pid=${props?.data?.pid}${
           //     props?.data?.variantId ? `&vid=${props?.data?.variantId}` : ""
@@ -57,8 +66,7 @@ const CartItem = (props: any) => {
             <div className="Cart-CartItem-txt2">
               Unit Price :{" "}
               <span style={{ color: "#000" }}>
-                {props?.Settings?.currency}{" "}
-                {Number(props?.data?.price).toFixed(2)}
+                {getCurrencySymbol()} {Number(props?.data?.price).toFixed(2)}
               </span>
             </div>
             <div
@@ -77,7 +85,7 @@ const CartItem = (props: any) => {
               <div>
                 <Space.Compact block>
                   <Button
-                  disabled={props.data.quantity===1}
+                    disabled={props.data.quantity === 1}
                     onClick={() => {
                       if (props?.loading == false) {
                         props?.updateQuantity("reduce", props?.data);
@@ -101,7 +109,7 @@ const CartItem = (props: any) => {
               <div style={{ flex: 1 }}></div>
               <div className="Cart-CartItem-txt3">
                 <span style={{ color: "grey", fontSize: 14 }}>
-                  {props?.Settings?.currency}{" "}
+                  {getCurrencySymbol()}{" "}
                 </span>
                 {Number(props?.data?.totalPrice).toFixed(2)}
               </div>

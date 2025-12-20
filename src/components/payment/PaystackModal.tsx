@@ -1,10 +1,15 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { Modal, Button, Spin, Alert, Descriptions, Typography } from 'antd';
-import { CreditCardOutlined, LoadingOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { usePaystack } from '@/hooks/usePaystack';
-import { PaystackInitializeRequest } from '@/types/paystack.types';
-import { formatAmountDisplay } from '@/utils/paystackHelpers';
+import React, { useEffect, useState } from "react";
+import { Modal, Button, Spin, Alert, Descriptions, Typography } from "antd";
+import {
+  CreditCardOutlined,
+  LoadingOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons";
+import { usePaystack } from "@/hooks/usePaystack";
+import { PaystackInitializeRequest } from "@/types/paystack.types";
+import { formatAmountDisplay } from "@/utils/paystackHelpers";
 
 const { Title, Text } = Typography;
 
@@ -36,10 +41,10 @@ const PaystackModal: React.FC<PaystackModalProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    if (paymentStatus === 'success' && onSuccess) {
-      onSuccess(paymentData.reference || '');
-    } else if (paymentStatus === 'failed' && onError) {
-      onError(error || 'Payment failed');
+    if (paymentStatus === "success" && onSuccess) {
+      onSuccess(paymentData.reference || "");
+    } else if (paymentStatus === "failed" && onError) {
+      onError(error || "Payment failed");
     }
   }, [paymentStatus, onSuccess, onError, error, paymentData.reference]);
 
@@ -47,15 +52,15 @@ const PaystackModal: React.FC<PaystackModalProps> = ({
     try {
       setIsProcessing(true);
       const result = await initializePayment(paymentData);
-      
+
       if (result.status && result.data?.data?.authorization_url) {
         // Redirect to Paystack payment page
         window.location.href = result.data.data.authorization_url;
       }
     } catch (err: any) {
-      console.error('Payment initialization failed:', err);
+      console.error("Payment initialization failed:", err);
       if (onError) {
-        onError(err.message || 'Payment initialization failed');
+        onError(err.message || "Payment initialization failed");
       }
     } finally {
       setIsProcessing(false);
@@ -72,9 +77,11 @@ const PaystackModal: React.FC<PaystackModalProps> = ({
   return (
     <Modal
       title={
-        <div style={{ textAlign: 'center' }}>
-          <CreditCardOutlined style={{ fontSize: '24px', color: '#00C9A7', marginRight: '8px' }} />
-          <Title level={4} style={{ margin: 0, display: 'inline' }}>
+        <div style={{ textAlign: "center" }}>
+          <CreditCardOutlined
+            style={{ fontSize: "24px", color: "#00C9A7", marginRight: "8px" }}
+          />
+          <Title level={4} style={{ margin: 0, display: "inline" }}>
             Complete Payment
           </Title>
         </div>
@@ -87,40 +94,42 @@ const PaystackModal: React.FC<PaystackModalProps> = ({
       maskClosable={!isButtonLoading}
       closable={!isButtonLoading}
     >
-      <div style={{ padding: '20px 0' }}>
+      <div style={{ padding: "20px 0" }}>
         {/* Payment Summary */}
-        <div style={{ 
-          background: '#f8f9fa', 
-          padding: '20px', 
-          borderRadius: '8px', 
-          marginBottom: '20px',
-          border: '1px solid #e9ecef'
-        }}>
-          <Title level={5} style={{ marginBottom: '16px', color: '#495057' }}>
+        <div
+          style={{
+            background: "#f8f9fa",
+            padding: "20px",
+            borderRadius: "8px",
+            marginBottom: "20px",
+            border: "1px solid #e9ecef",
+          }}
+        >
+          <Title level={5} style={{ marginBottom: "16px", color: "#495057" }}>
             Payment Summary
           </Title>
-          
+
           <Descriptions column={1} size="small">
             <Descriptions.Item label="Amount">
-              <Text strong style={{ fontSize: '18px', color: '#00C9A7' }}>
+              <Text strong style={{ fontSize: "18px", color: "#00C9A7" }}>
                 {formatAmountDisplay(paymentData.amount)}
               </Text>
             </Descriptions.Item>
-            
+
             <Descriptions.Item label="Email">
               <Text>{paymentData.email}</Text>
             </Descriptions.Item>
-            
+
             {customerName && (
               <Descriptions.Item label="Customer">
                 <Text>{customerName}</Text>
               </Descriptions.Item>
             )}
-            
+
             <Descriptions.Item label="Currency">
-              <Text>Nigerian Naira (NGN)</Text>
+              <Text>Nigerian Naira (₦)</Text>
             </Descriptions.Item>
-            
+
             {paymentData.reference && (
               <Descriptions.Item label="Reference">
                 <Text code>{paymentData.reference}</Text>
@@ -130,36 +139,42 @@ const PaystackModal: React.FC<PaystackModalProps> = ({
         </div>
 
         {/* Payment Methods Info */}
-        <div style={{ marginBottom: '20px' }}>
-          <Title level={5} style={{ marginBottom: '12px' }}>
+        <div style={{ marginBottom: "20px" }}>
+          <Title level={5} style={{ marginBottom: "12px" }}>
             Accepted Payment Methods
           </Title>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-            <div style={{ 
-              background: '#fff', 
-              border: '1px solid #d9d9d9', 
-              borderRadius: '4px', 
-              padding: '8px 12px',
-              fontSize: '12px'
-            }}>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #d9d9d9",
+                borderRadius: "4px",
+                padding: "8px 12px",
+                fontSize: "12px",
+              }}
+            >
               💳 Debit/Credit Cards
             </div>
-            <div style={{ 
-              background: '#fff', 
-              border: '1px solid #d9d9d9', 
-              borderRadius: '4px', 
-              padding: '8px 12px',
-              fontSize: '12px'
-            }}>
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #d9d9d9",
+                borderRadius: "4px",
+                padding: "8px 12px",
+                fontSize: "12px",
+              }}
+            >
               🏦 Bank Transfer
             </div>
-            <div style={{ 
-              background: '#fff', 
-              border: '1px solid #d9d9d9', 
-              borderRadius: '4px', 
-              padding: '8px 12px',
-              fontSize: '12px'
-            }}>
+            <div
+              style={{
+                background: "#fff",
+                border: "1px solid #d9d9d9",
+                borderRadius: "4px",
+                padding: "8px 12px",
+                fontSize: "12px",
+              }}
+            >
               📱 USSD
             </div>
           </div>
@@ -172,75 +187,79 @@ const PaystackModal: React.FC<PaystackModalProps> = ({
             description={error}
             type="error"
             showIcon
-            style={{ marginBottom: '20px' }}
+            style={{ marginBottom: "20px" }}
           />
         )}
 
         {/* Success Display */}
-        {paymentStatus === 'success' && (
+        {paymentStatus === "success" && (
           <Alert
             message="Payment Successful"
             description="Your payment has been processed successfully."
             type="success"
             showIcon
             icon={<CheckCircleOutlined />}
-            style={{ marginBottom: '20px' }}
+            style={{ marginBottom: "20px" }}
           />
         )}
 
         {/* Failed Display */}
-        {paymentStatus === 'failed' && (
+        {paymentStatus === "failed" && (
           <Alert
             message="Payment Failed"
             description="Your payment could not be processed. Please try again."
             type="error"
             showIcon
             icon={<CloseCircleOutlined />}
-            style={{ marginBottom: '20px' }}
+            style={{ marginBottom: "20px" }}
           />
         )}
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+        <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
           <Button
             size="large"
             onClick={handleClose}
             disabled={isButtonLoading}
-            style={{ minWidth: '120px' }}
+            style={{ minWidth: "120px" }}
           >
             Cancel
           </Button>
-          
+
           <Button
             type="primary"
             size="large"
             onClick={handlePayNow}
             loading={isButtonLoading}
-            disabled={paymentStatus === 'success' || paymentStatus === 'failed'}
-            style={{ 
-              minWidth: '120px',
-              background: '#00C9A7',
-              borderColor: '#00C9A7'
+            disabled={paymentStatus === "success" || paymentStatus === "failed"}
+            style={{
+              minWidth: "120px",
+              background: "#00C9A7",
+              borderColor: "#00C9A7",
             }}
-            icon={isButtonLoading ? <LoadingOutlined /> : <CreditCardOutlined />}
+            icon={
+              isButtonLoading ? <LoadingOutlined /> : <CreditCardOutlined />
+            }
           >
-            {isButtonLoading ? 'Processing...' : `Pay ${formatAmountDisplay(paymentData.amount)}`}
+            {isButtonLoading
+              ? "Processing..."
+              : `Pay ${formatAmountDisplay(paymentData.amount)}`}
           </Button>
         </div>
 
         {/* Security Notice */}
-        <div style={{ 
-          marginTop: '20px', 
-          textAlign: 'center',
-          fontSize: '12px',
-          color: '#6c757d'
-        }}>
-          <div style={{ marginBottom: '8px' }}>
+        <div
+          style={{
+            marginTop: "20px",
+            textAlign: "center",
+            fontSize: "12px",
+            color: "#6c757d",
+          }}
+        >
+          <div style={{ marginBottom: "8px" }}>
             🔒 Your payment is secured by Paystack
           </div>
-          <div>
-            All transactions are encrypted and processed securely
-          </div>
+          <div>All transactions are encrypted and processed securely</div>
         </div>
       </div>
     </Modal>

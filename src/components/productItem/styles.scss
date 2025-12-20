@@ -1,4 +1,49 @@
 @use "../../config/styleVariable.scss" as global;
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes cardHover {
+  0% {
+    box-shadow: 0 4px 8px rgba(255, 149, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 16px 32px rgba(255, 149, 0, 0.25);
+  }
+  100% {
+    box-shadow: 0 20px 48px rgba(255, 149, 0, 0.2);
+  }
+}
+
+@keyframes orangeGlow {
+  0% {
+    border-color: rgba(255, 149, 0, 0.2);
+  }
+  50% {
+    border-color: rgba(255, 149, 0, 0.5);
+  }
+  100% {
+    border-color: rgba(255, 149, 0, 0.2);
+  }
+}
+
 .ProductItem {
   height: 100%;
   width: 100%;
@@ -6,39 +51,129 @@
   display: flex;
   flex-direction: column;
   min-width: 124px;
-  background-color: rgba(0, 0, 0, 0.1);
-  border-radius: 6px;
-  &:hover {
-    // cursor: pointer;
-    box-shadow: 0px 4px 6px 1px rgba(0, 0, 0, 0.1);
+  background: linear-gradient(135deg, #ffffff 0%, #fffbf8 100%);
+  border-radius: 18px;
+  border: 2px solid rgba(255, 149, 0, 0.15);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  animation: cardEnter 0.6s ease-out backwards;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(255, 149, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 149, 0, 0.2) 0%,
+      rgba(255, 184, 77, 0.1) 100%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 3;
   }
-  background-color: rgb(253, 253, 253);
-  border: 0.5px solid rgb(225, 225, 225);
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 149, 0, 0.15) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-16px) scale(1.05);
+    border-color: rgba(255, 149, 0, 0.4);
+    animation: cardHover 0.6s ease-out forwards;
+
+    &::before {
+      opacity: 1;
+    }
+
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  @for $i from 1 through 20 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.08}s;
+    }
+  }
 }
+
 .ProductItem-Box1 {
   flex: 0 0 auto;
   overflow: hidden;
-}
-.ProductItem-Box2 {
-  flex: 1 1 auto;
-  padding: 10px;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding: 8px;
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6) 0%,
+    rgba(255, 149, 0, 0.05) 100%
+  );
+  border-bottom: 3px solid rgba(255, 149, 0, 0.2);
+  transition: border-color 0.4s ease;
+
+  .ProductItem:hover & {
+    border-bottom-color: rgba(255, 149, 0, 0.4);
   }
 }
+
+.ProductItem-Box2 {
+  flex: 1 1 auto;
+  padding: 12px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 149, 0, 0.02) 100%
+  );
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    padding: 10px;
+  }
+}
+
 .ProductItem-img {
   display: block;
   width: 100%;
   height: 230px;
   object-fit: cover;
   object-position: center;
-  transition: scale 100ms;
-  background-color: #fff;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
   cursor: pointer;
-  border-bottom: 1px solid #f1f1f1;
+  border-bottom: 4px solid rgba(255, 149, 0, 0.15);
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.08);
+
   &:hover {
-    scale: 1.05;
+    transform: scale(1.15);
+    filter: brightness(1.05);
   }
+
   @media screen and (max-width: 768px) {
     height: 200px;
   }
@@ -46,44 +181,83 @@
     height: 170px;
   }
 }
+
 .ProductItem-txt1 {
-  font-family: global.$Medium;
+  font-family: global.$SemiBold;
   text-transform: capitalize;
-  font-size: 16px;
+  font-size: 14px;
   white-space: wrap;
   cursor: pointer;
+  color: #1f1f1f;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 14px;
+    font-size: 13px;
   }
+
   &:hover {
-    color: global.$primary;
+    background: linear-gradient(135deg, #ff9500 0%, #1abc9c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
+
 .ProductItem-txt2 {
   font-family: global.$Regular;
-  font-size: 13px;
-  color: rgb(92, 92, 92);
+  font-size: 12px;
+  color: #999;
   white-space: nowrap;
   overflow: hidden !important;
   text-overflow: ellipsis;
+  transition: color 0.3s ease;
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 .ProductItem-txt3 {
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
-  font-family: "DM Sans", sans-serif;
-  font-weight: bold;
+  font-family: global.$Bold;
+  font-weight: 700;
+  background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+  transition: all 0.3s ease;
+  display: inline-block;
+
   @media (max-width: 762px) {
     font-size: 16px;
   }
-}
-.ProductItem-txt5 {
-  font-size: 13px;
-  color: global.$green;
+
   &:hover {
-    color: global.$primary;
+    filter: brightness(1.2);
+    transform: scale(1.05);
+  }
+}
+
+.ProductItem-txt5 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1abc9c;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &:hover {
+    color: #ff9500;
+    transform: scale(1.05);
   }
 }
 .product_status_tag {

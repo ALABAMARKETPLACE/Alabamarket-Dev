@@ -17,6 +17,7 @@ import FeaturedPosition from "./_components/featuredPosition";
 import PlatinumSection from "./_components/platinumSection";
 import GoldSection from "./_components/goldSection";
 import SilverSection from "./_components/silverSection";
+import CategoryFeaturedProducts from "./_components/categoryFeaturedProducts";
 
 function Home() {
   const [Banner, setBanners] = useState([]);
@@ -89,8 +90,14 @@ function Home() {
   // Stagger the queries: Position 1 immediately, Position 2 after 200ms, Position 3 after 400ms
   useEffect(() => {
     setDelayedPositions([1]);
-    const timer2 = setTimeout(() => setDelayedPositions((prev) => [...prev, 2]), 200);
-    const timer3 = setTimeout(() => setDelayedPositions((prev) => [...prev, 3]), 400);
+    const timer2 = setTimeout(
+      () => setDelayedPositions((prev) => [...prev, 2]),
+      200
+    );
+    const timer3 = setTimeout(
+      () => setDelayedPositions((prev) => [...prev, 3]),
+      400
+    );
     return () => {
       clearTimeout(timer2);
       clearTimeout(timer3);
@@ -249,12 +256,7 @@ function Home() {
   return (
     <div className="page-Box">
       {/* FEATURED PRODUCTS - POSITION 1 (Top Featured Section - ABOVE Banner) */}
-      {subCategories?.length ? (
-        <>
-          <SubCategoryList data={subCategories} />
-          {/* <div className="HomeSCreen-space" /> */}
-        </>
-      ) : null}
+      {/* CategoryNav is now responsible for all category navigation and scrolling */}
 
       {Banner?.length ? (
         <>
@@ -284,6 +286,14 @@ function Home() {
       {showPosition3 && (
         <>
           <SilverSection products={position3Items} />
+          <div className="HomeSCreen-space" />
+        </>
+      )}
+
+      {/* Category Featured Products Section - Dynamic products by selected category */}
+      {subCategories?.length > 0 && (
+        <>
+          <CategoryFeaturedProducts categories={subCategories} />
           <div className="HomeSCreen-space" />
         </>
       )}

@@ -1,0 +1,211 @@
+.category-featured-wrapper {
+  padding: 20px 0;
+
+  .category-lines-section {
+    margin-bottom: 40px;
+
+    .category-lines-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      padding: 0 15px;
+    }
+
+    .category-lines-scroll {
+      position: relative;
+
+      .category-lines-container {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        padding: 0 15px;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
+        .category-line-item {
+          flex-shrink: 0;
+          cursor: pointer;
+          padding: 10px;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+          border: 2px solid transparent;
+          background-color: #f5f5f5;
+
+          &:hover {
+            background-color: #e8e8e8;
+            transform: translateY(-2px);
+          }
+
+          &.active {
+            background-color: #fff;
+            border-color: #ff6b35;
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.15);
+          }
+
+          .category-line-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            background-color: #fff;
+
+            img {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+          }
+
+          .category-line-label {
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 0 8px;
+          }
+        }
+      }
+    }
+  }
+
+  .category-products-section {
+    margin-top: 30px;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 0 15px;
+
+      .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .see-more-btn {
+        background-color: #ff6b35;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: #e55a25;
+          transform: translateY(-2px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+    }
+
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 200px;
+    }
+
+    .products-scroll {
+      position: relative;
+
+      .flex-parent {
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+          display: none;
+        }
+      }
+    }
+
+    .no-products {
+      text-align: center;
+      padding: 40px 15px;
+      color: #666;
+      font-size: 16px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .category-featured-wrapper {
+    .category-lines-section {
+      .category-lines-title {
+        font-size: 16px;
+        padding: 0 10px;
+      }
+
+      .category-lines-scroll {
+        .category-lines-container {
+          gap: 8px;
+          padding: 0 10px;
+
+          .category-line-item {
+            .category-line-image {
+              width: 90px;
+              height: 90px;
+            }
+
+            .category-line-label {
+              font-size: 11px;
+            }
+          }
+        }
+      }
+    }
+
+    .category-products-section {
+      .section-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 0 10px;
+
+        .section-title {
+          font-size: 16px;
+        }
+
+        .see-more-btn {
+          align-self: flex-end;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .category-featured-wrapper {
+    .category-lines-section {
+      .category-lines-scroll {
+        .category-lines-container {
+          .category-line-item {
+            .category-line-image {
+              width: 75px;
+              height: 75px;
+            }
+
+            .category-line-label {
+              font-size: 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

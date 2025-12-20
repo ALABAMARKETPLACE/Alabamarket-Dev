@@ -1,21 +1,64 @@
 @use "../../../config/styleVariable.scss" as global;
+
 .signupScreen-txt1 {
   font-family: global.$Bold;
-  font-size: 24px;
+  font-size: 28px;
   text-align: center;
+  background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+  animation: slideInDown 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  padding-bottom: 12px;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff9500 0%, #ffb84d 100%);
+    border-radius: 2px;
+    animation: underlineExpand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
 }
+
 .signupScreen-txt2 {
   font-family: global.$Medium;
-  font-size: 16px;
+  font-size: 15px;
   text-align: center;
   line-height: 30px;
-  color: gray;
+  color: #666;
+  margin-top: 20px;
 }
 
 .btn-clr {
-  background: global.$button_background_color;
+  background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
   color: #ffffff !important;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 16px;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 149, 0, 0.3);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:hover {
+    box-shadow: 0 10px 32px rgba(255, 149, 0, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
+
 .signupScreen-box1 {
   padding-left: 50px;
   padding-right: 50px;
@@ -24,61 +67,121 @@
     padding-right: 10px;
   }
 }
+
 .signupScreen-txt3 {
   font-family: global.$SemiBold;
   height: 100%;
   display: flex;
   align-items: center;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
+  color: #ff9500;
+  transition: color 0.3s;
+
+  &:hover {
+    color: #ffb84d;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     justify-content: flex-end;
     padding-bottom: 30px;
   }
 }
+
 .signupScreen-txt4 {
   font-family: global.$SemiBold;
   text-align: center;
-  font-size: 17px;
+  font-size: 15px;
   cursor: pointer;
-  color: grey;
+  color: #888;
+  margin: 20px 0;
 }
+
 .signupScreen-txt5 {
   font-family: global.$Bold;
-  color: global.$primary;
+  color: #ff9500;
+  font-weight: 700;
 }
+
 .signupScreen-errortxt {
   font-family: global.$Medium;
-  color: red;
-  font-size: 16px;
+  color: #e74c3c;
+  font-size: 14px;
   margin-bottom: 20px;
-  margin-bottom: 10px;
-}
-.SummaryCard {
-  border: 1px solid rgb(209, 209, 209);
   padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 4px;
+  background-color: #fadbd8;
+  border-radius: 8px;
+  border-left: 4px solid #e74c3c;
+}
+
+.SummaryCard {
+  border: 2px solid rgba(255, 149, 0, 0.15);
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
   font-family: global.$Medium;
   font-size: 14px;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbf8 100%);
+  box-shadow: 0 4px 12px rgba(255, 149, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:hover {
+    border-color: rgba(255, 149, 0, 0.25);
+    box-shadow: 0 6px 20px rgba(255, 149, 0, 0.12);
+  }
 }
+
 .GmailLogin {
-  border: 1px solid rgb(194, 194, 194);
-  margin-bottom: 10px;
-  padding: 8px;
-  border-radius: 4px;
+  border: 2px solid rgba(255, 149, 0, 0.15);
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbf8 100%);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+
+  &:hover {
+    border-color: rgba(255, 149, 0, 0.25);
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.1);
+    transform: translateY(-2px);
+  }
 }
+
 .GmailLogin-row {
   font-family: global.$SemiBold;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
+  color: #333;
 }
+
 .GmailLogin-txt1 {
   margin-bottom: -10px;
   font-family: global.$SemiBold;
-  font-size: 17px;
+  font-size: 15px;
+  color: #333;
+  font-weight: 600;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes underlineExpand {
+  from {
+    width: 0;
+  }
+  to {
+    width: 80px;
+  }
 }

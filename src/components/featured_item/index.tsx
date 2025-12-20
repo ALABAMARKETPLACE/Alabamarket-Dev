@@ -8,11 +8,14 @@ function FeaturedItem(props: any) {
     <div
       className={`${styles["card"]} rounded position-relative `}
       onClick={() => {
-        navigation.push(
-          `/category/${props?.data?.slug}?id=${window.btoa(
-            props?.data?._id
-          )}&type=${encodeURIComponent(props?.data?.name)}`
-        );
+        if (props?.data?._id) {
+          const encodedId = typeof window !== 'undefined' ? window.btoa(props?.data?._id) : props?.data?._id;
+          // Use slug if available, fallback to _id
+          const categoryPath = props?.data?.slug || props?.data?._id;
+          navigation.push(
+            `/category/${categoryPath}?id=${encodedId}&type=${encodeURIComponent(props?.data?.name)}&ogCategory=${encodeURIComponent(props?.data?.name)}`
+          );
+        }
       }}
     >
       <h6 className={`fw-bold position-absolute text-light ${styles["text"]}`}>

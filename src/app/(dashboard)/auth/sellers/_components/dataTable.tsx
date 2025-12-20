@@ -56,7 +56,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
       title: "Balance",
       dataIndex: "balance",
       key: "balance",
-      render: (item: string) => `${item} ${settings?.currency}`,
+      render: (item: string) => {
+        const currencySymbol =
+          settings?.currency === "NGN" ? "₦" : settings?.currency;
+        return `${item} ${currencySymbol}`;
+      },
     },
     {
       title: "Status",

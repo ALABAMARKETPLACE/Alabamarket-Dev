@@ -21,6 +21,7 @@ import { PiUserCircle } from "react-icons/pi";
 import Search from "./search";
 import dynamic from "next/dynamic";
 const Location = dynamic(() => import("./location"), { ssr: false });
+const CategoryNav = dynamic(() => import("./categoryNav"), { ssr: false });
 import { Badge, Button, Popover } from "antd";
 import { reduxSettings } from "../../redux/slice/settingsSlice";
 import { signOut, useSession } from "next-auth/react";
@@ -183,6 +184,7 @@ function Header() {
           </div>
         </div>
         <div className="Header-sectionBox" />
+        {pathname === "/" && <CategoryNav />}
         {/* <CateogreyList /> */}
       </header>
     </Container>

@@ -68,13 +68,33 @@ body {
 .Horizontal-Heading1 {
   font-size: 28px;
   font-family: global.$Bold;
-  color: #000;
+  background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  position: relative;
+  padding-bottom: 10px;
+  animation: slideInDown 0.7s ease-out;
 
-  margin-bottom: 5px;
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff9500 0%, #ffb84d 100%);
+    border-radius: 2px;
+    box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+    animation: underlineExpand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 20px;
     padding-left: 10px;
-    padding-bottom: 0px;
+    padding-bottom: 8px;
+    margin-bottom: 5px;
   }
 }
 

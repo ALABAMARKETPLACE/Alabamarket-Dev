@@ -1,23 +1,88 @@
 @use "../../config/styleVariable.scss" as vars;
 
 .Footer {
-  background-color: #f7f7f7;
-  padding-top: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f0fffe 40%, #fff8f3 100%);
+  padding-top: 40px;
+  border-top: 4px solid transparent;
+  border-image: linear-gradient(90deg, #1abc9c 0%, #ff9500 100%) 1;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.6s ease-out;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      #ff9500 25%,
+      #1abc9c 50%,
+      #ff9500 75%,
+      transparent
+    );
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        circle at 15% 50%,
+        rgba(26, 188, 156, 0.1) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 85% 50%,
+        rgba(255, 149, 0, 0.1) 0%,
+        transparent 50%
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding: 10px;
+    padding: 20px 10px;
     padding-top: 30px;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .Footer-container {
   padding: 0 10px;
+  position: relative;
+  z-index: 1;
 }
 
 .Footer-Box1 {
   text-align: center;
-  border-top: 1px solid rgb(230, 230, 230);
+  border-top: 2px solid transparent;
+  border-image: linear-gradient(90deg, transparent, #ff9500 50%, transparent) 1;
   font-size: 10px;
-  padding: 10px;
+  padding: 20px 10px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 149, 0, 0.02) 100%
+  );
+  color: #666;
+  transition: all 0.3s ease;
+  &:hover {
+    color: #ff9500;
+  }
 }
 
 .Footer_logoBox {
@@ -27,16 +92,29 @@
   gap: 10px;
   font-size: 30px;
   font-family: vars.$Bold;
-  color: #000;
+  background: linear-gradient(135deg, #ff9500 0%, #1abc9c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-decoration: none;
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: scale(1.03);
+  }
 }
 
 .Footer_logo {
   width: 50px;
   height: 50px;
   object-fit: contain;
-  border-radius: 5px;
+  border-radius: 8px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(26, 188, 156, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  &:hover {
+    transform: translateY(-2px) rotate(2deg);
+    box-shadow: 0 8px 20px rgba(255, 149, 0, 0.2);
+  }
 }
 
 .Footer_img {

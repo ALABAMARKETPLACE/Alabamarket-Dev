@@ -16,6 +16,14 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useSession } from "next-auth/react";
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
+
+function getCurrencySymbol(currency: string) {
+  if (currency === "NGN") {
+    return "₦";
+  }
+  return currency || "$";
+}
+
 function Checkout() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -40,9 +48,11 @@ function Checkout() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
+
     // Prevent duplicate order creation
-    const orderAlreadyCreated = localStorage.getItem("order_creation_completed");
+    const orderAlreadyCreated = localStorage.getItem(
+      "order_creation_completed"
+    );
     if (orderAlreadyCreated && !orderCreated) {
       // If order was already created, try to load existing data
       const existingOrderData = localStorage.getItem("last_order_response");
@@ -83,17 +93,17 @@ function Checkout() {
   const PlaceOrder = async () => {
     try {
       setOrderCreated(true); // Prevent multiple executions
-      
+
       let finalOrderData;
-      
+
       if (isCOD) {
         // COD Order Flow - No payment verification needed
         console.log("Processing COD order...");
-        
+
         finalOrderData = {
           payment: {
             ref: null,
-            type: "Cash On Delivery"
+            type: "Cash On Delivery",
           },
           cart: Checkout?.cart,
           address: Checkout?.address,
@@ -102,12 +112,12 @@ function Checkout() {
       } else if (isPaystack) {
         // Paystack Order Flow - Get payment reference and let backend verify
         console.log("Processing Paystack order...");
-        
+
         const paymentRef =
           searchParams.get("reference") ||
           searchParams.get("ref") ||
           localStorage.getItem("paystack_payment_reference");
-          
+
         console.log("Paystack payment reference:", paymentRef);
 
         if (!paymentRef || paymentRef === "null") {
@@ -121,7 +131,7 @@ function Checkout() {
         finalOrderData = orderData?.order_data || {
           payment: {
             ref: paymentRef,
-            type: "Pay Online"
+            type: "Pay Online",
           },
           cart: Checkout?.cart,
           address: Checkout?.address,
@@ -144,19 +154,23 @@ function Checkout() {
       // Create order (backend will handle payment verification)
       const response: any = await POST(API.ORDER, finalOrderData);
       console.log("Order creation response:", response);
-      
+
       if (response?.status) {
         getOrderItems(response?.data);
         setResponseData(response?.data);
-        
+
         // Store order response for duplicate prevention
-        localStorage.setItem("last_order_response", JSON.stringify(response?.data));
+        localStorage.setItem(
+          "last_order_response",
+          JSON.stringify(response?.data)
+        );
         localStorage.setItem("order_creation_completed", "true");
-        
+
         // Check order status
-        const isOrderSuccessful = response?.data?.[0]?.newOrder?.status !== "failed";
+        const isOrderSuccessful =
+          response?.data?.[0]?.newOrder?.status !== "failed";
         setOrderStatus(isOrderSuccessful);
-        
+
         // Clear stored payment data for successful orders
         if (isOrderSuccessful && isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
@@ -174,7 +188,7 @@ function Checkout() {
         setPaymentStatus(true);
         setOrderStatus(false);
       }
-      
+
       setIsLoading(false);
     } catch (err: any) {
       setPaymentStatus(true);
@@ -185,7 +199,8 @@ function Checkout() {
       console.error("Order creation error:", err);
       Notifications["error"]({
         message: "Order Processing Failed",
-        description: err.message || "Something went wrong while processing your order.",
+        description:
+          err.message || "Something went wrong while processing your order.",
       });
     }
   };
@@ -284,7 +299,7 @@ function Checkout() {
                     <div className="checkout-txt4">
                       Payment Type:{" "}
                       {responseData?.[0]?.orderPayment?.paymentType ?? ""}{" "}
-                      Amount: {Settings?.currency}{" "}
+                      Amount: {getCurrencySymbol(Settings?.currency)}{" "}
                       {responseData?.[0]?.orderPayment?.amount ?? ""}
                     </div>
                   </div>
@@ -313,14 +328,14 @@ function Checkout() {
                     <div className="checkout-row">
                       <div>Total Product Price</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(responseData?.[0]?.newOrder?.total).toFixed(2)}
                       </div>
                     </div>
                     <div className="checkout-row">
                       <div>Discount</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(responseData?.[0]?.newOrder?.discount).toFixed(
                           2
                         )}
@@ -329,14 +344,14 @@ function Checkout() {
                     <div className="checkout-row">
                       <div>Tax</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(responseData?.[0]?.newOrder?.tax).toFixed(2)}
                       </div>
                     </div>
                     <div className="checkout-row">
                       <div>Delivery Charges</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
                           responseData?.[0]?.newOrder?.deliveryCharge
                         ).toFixed(2)}
@@ -346,7 +361,7 @@ function Checkout() {
                     <div className="checkout-row">
                       <div>Total</div>
                       <div>
-                        {Settings?.currency}{" "}
+                        {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
                           responseData?.[0]?.newOrder?.grandTotal
                         ).toFixed(2)}

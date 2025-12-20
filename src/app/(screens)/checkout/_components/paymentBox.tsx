@@ -47,33 +47,37 @@ function PaymentBox(props: any) {
           <Row>
             <Col sm={6} xs={12}>
               <div className="Cart-txt3">Pay Online</div>
-              <div style={{ fontSize: "12px", color: "#6c757d", marginTop: "4px" }}>
+              <div
+                style={{ fontSize: "12px", color: "#6c757d", marginTop: "4px" }}
+              >
                 Secured by Paystack • Cards, Bank Transfer, USSD
               </div>
             </Col>
             <Col sm={6} xs={12}>
               <div className="Cart-row" style={{ justifyContent: "flex-end" }}>
                 <div style={{ marginRight: 10 }}>
-                  <Image src={Visa} height={30 }alt="Visa" />
+                  <Image src={Visa} height={30} alt="Visa" />
                 </div>
                 <div style={{ marginRight: 10 }}>
-                  <Image src={Mster} height={ 30} alt="Mastercard"/>
+                  <Image src={Mster} height={30} alt="Mastercard" />
                 </div>
                 <div style={{ marginRight: 10 }}>
-                  <Image src={Diners} height={30 } alt="Diners" />
+                  <Image src={Diners} height={30} alt="Diners" />
                 </div>
                 <div style={{ marginRight: 10 }}>
-                  <Image src={Samsu} height={30} alt="Samsung Pay"/>
+                  <Image src={Samsu} height={30} alt="Samsung Pay" />
                 </div>
-                <div style={{ 
-                  background: "#00C9A7", 
-                  color: "white", 
-                  padding: "4px 8px", 
-                  borderRadius: "4px",
-                  fontSize: "10px",
-                  fontWeight: "bold"
-                }}>
-                  NGN
+                <div
+                  style={{
+                    background: "#00C9A7",
+                    color: "white",
+                    padding: "4px 8px",
+                    borderRadius: "4px",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ₦
                 </div>
               </div>
             </Col>

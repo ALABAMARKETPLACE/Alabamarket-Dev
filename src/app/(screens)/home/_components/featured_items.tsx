@@ -46,44 +46,13 @@ function FeaturedItems() {
   useEffect(() => {
     getFeatured();
   }, []);
+  // --- OUR TOP OFFERS SECTION (commented out) ---
+  /*
   return (
     <Container fluid className="home-full-width">
-      {/*
-        ============================================================
-        ✨ "OUR TOP OFFERS" SECTION - FEATURED CATEGORIES DISPLAY
-        ============================================================
-
-        📌 PURPOSE:
-        Displays featured categories in a horizontal scrollable carousel
-
-        📊 DATA SOURCE:
-        - API Endpoint: "category/featured"
-        - Fetched from: getFeatured() function (line 36)
-        - Stored in: categories state (line 12)
-
-        🔧 TO MANAGE FEATURED ITEMS:
-        1. Login to Superadmin Dashboard
-        2. Navigate to: Dashboard → Categories
-        3. Click Edit (pencil icon) on any category
-        4. Check/Uncheck the "Featured" checkbox
-        5. Save changes
-
-        🎨 LAYOUT:
-        - Horizontal scrollable row
-        - Left/Right arrow navigation
-        - Responsive grid columns
-        - Hidden scrollbar for clean look
-
-        ============================================================
-      */}
-      {/*
-        🚫 "OUR TOP OFFERS" SECTION - TEMPORARILY HIDDEN
-        Uncomment the code below to show this section again
-      */}
-      {/* {categories?.length ? (
+      {categories?.length ? (
         <div>
           <div className="Horizontal-Heading1 mt-3">Our Top Offers</div>
-
           <div className="Horizontal-Pscroll position-relative">
             <Row
               className="flex-parent mx-0 ps-2 ps-md-0"
@@ -108,7 +77,6 @@ function FeaturedItems() {
                   })
                 : null}
             </Row>
-
             {hasScrollBar ? (
               <>
                 {rightButtonClicked && (
@@ -119,7 +87,6 @@ function FeaturedItems() {
                     <MdArrowBack />
                   </button>
                 )}
-
                 <button
                   className="Horizontal-btn2 slider-btn-right position-absolute"
                   onClick={() => scroll(800)}
@@ -130,10 +97,11 @@ function FeaturedItems() {
             ) : null}
           </div>
         </div>
-      ) : null} */}
-      {/* ============================================================ */}
+      ) : null}
     </Container>
   );
+  */
+  return null;
 }
 
 export default FeaturedItems;
