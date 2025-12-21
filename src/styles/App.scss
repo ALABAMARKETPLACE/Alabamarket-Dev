@@ -1,15 +1,29 @@
 @use "../config/styleVariable.scss" as global;
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap");
 
 html,
 body {
-  overflow-x: hidden;
+  font-family: "Poppins", "DM Sans", "Roboto", Arial, Helvetica, sans-serif;
   background: linear-gradient(135deg, #ffffff 0%, #fffbf7 50%, #ffffff 100%);
   background-attachment: fixed;
   min-height: 100vh;
-  position: relative;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+input,
+select,
+textarea {
+  font-family: "Poppins", "DM Sans", "Roboto", Arial, Helvetica, sans-serif;
 }
 
 html::before {

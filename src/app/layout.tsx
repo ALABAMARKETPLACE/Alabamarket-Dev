@@ -7,7 +7,7 @@ import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 
 import Footer from "@/components/footer";
-import Header from "@/components/header";
+import Header from "@/components/header/HeaderClientWrapper";
 
 import AuthProvider from "@/util/authProvider";
 import { StoreProvider } from "@/util/storeProvider";

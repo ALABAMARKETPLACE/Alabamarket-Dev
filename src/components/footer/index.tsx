@@ -12,6 +12,7 @@ import Image from "next/image";
 import { RiFacebookBoxFill } from "react-icons/ri";
 import { BiLogoInstagramAlt } from "react-icons/bi";
 import { FaSquareTwitter } from "react-icons/fa6";
+import { FaTiktok } from "react-icons/fa6";
 import { I18nextProvider, useTranslation } from "react-i18next";
 
 import Logo from "../../assets/images/new-logo.jpeg";
@@ -49,26 +50,38 @@ const Footer = () => {
               <Row>
                 <Col sm={2} xs={2} className="Footer-icon">
                   <a
-                    // href="https://www.facebook.com/"
+                    href="https://www.facebook.com/"
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <RiFacebookBoxFill />
                   </a>
                 </Col>
                 <Col sm={2} xs={2} className="Footer-icon">
                   <a
-                    // href="https://www.facebook.com/"
+                    href="https://www.instagram.com/alaba_marketplace"
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <BiLogoInstagramAlt />
                   </a>
                 </Col>
                 <Col sm={2} xs={2} className="Footer-icon">
                   <a
-                    // href="https://www.facebook.com/"
+                    href="https://www.twitter.com/"
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <FaSquareTwitter />
+                  </a>
+                </Col>
+                <Col sm={2} xs={2} className="Footer-icon">
+                  <a
+                    href="https://www.tiktok.com/@alabamarketplace"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <FaTiktok />
                   </a>
                 </Col>
               </Row>
@@ -113,6 +126,9 @@ const Footer = () => {
               <div className="Footer-text1">{t("contact_us")}</div>
               <div className="Footer-text2">
                 <Link href="/fa-questions">FAQ,S</Link>
+              </div>
+              <div className="Footer-text2">
+                <Link href="/about-us">About us</Link>
               </div>
               <div className="Footer-text2">
                 <Link href="contact_us">{t("contact")}</Link>

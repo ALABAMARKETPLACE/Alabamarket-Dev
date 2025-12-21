@@ -79,6 +79,7 @@ const ProductByCategory = () => {
     ? getCategoryId(searchParams.get("id"))
     : "";
   const ogcategory = searchParams.get("ogCategory");
+  const categoryIdParam = searchParams.get("categoryId");
 
   const updateSearchParams = useCallback(
     (updates: Record<string, string>) => {
@@ -133,11 +134,16 @@ const ProductByCategory = () => {
     params.set("price", price);
     params.set("order", order);
 
-    if (!ogcategory && categoryId) {
+    // If categoryIdParam exists, use it to fetch all products for that category
+    if (categoryIdParam) {
+      params.set("category", categoryIdParam);
+    } else if (!ogcategory && categoryId) {
+      // Otherwise use subCategory if available
       params.set("subCategory", categoryId);
     }
 
-    if (ogcategory) {
+    if (ogcategory && !categoryIdParam) {
+      // Legacy support for ogCategory
       params.set("category", ogcategory);
     }
 
@@ -146,7 +152,7 @@ const ProductByCategory = () => {
       params.set("search", searchQuery);
     }
 
-    if (!categoryId && !ogcategory) {
+    if (!categoryId && !ogcategory && !categoryIdParam) {
       Notifications["warning"]({ message: "Please select a Category" });
       return;
     }
@@ -211,20 +217,14 @@ const ProductByCategory = () => {
     window.scrollTo(0, 0);
     getProductsBySubCategory(1);
     setPage(1);
-  }, [categoryId, params.id]);
+  }, [categoryId, categoryIdParam, params.id]);
 
   return (
     <div className="Screen-box">
       {contextHolder}
       <Container fluid>
         <Row>
-          <Col lg={2} style={{ margin: 0, padding: 0 }}>
-            <div className="productByCat-PageSider">
-              <PageSider />
-              <br />
-            </div>
-          </Col>
-          <Col lg={10} style={{ margin: 0 }}>
+          <Col lg={12} style={{ margin: 0 }}>
             <PageHeader
               title={searchParams.get("type")}
               page={page}

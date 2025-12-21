@@ -1,0 +1,210 @@
+.aboutus-page {
+  background: linear-gradient(135deg, #fff 70%, #f8f9fa 100%);
+  min-height: 100vh;
+  font-family: "Poppins", "DM Sans", "Roboto", Arial, Helvetica, sans-serif;
+  color: #222;
+  padding-top: 48px;
+  padding-bottom: 48px;
+  position: relative;
+}
+
+.aboutus-hero {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ff5f15;
+    margin-bottom: 12px;
+    margin-top: 64px;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(255, 107, 53, 0.08);
+  }
+  .aboutus-subtitle {
+    font-size: 1.35rem;
+    color: #555;
+    margin-bottom: 0;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  &::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff5f15 60%, #ffe5c2 100%);
+    border-radius: 2px;
+    margin: 24px auto 0 auto;
+  }
+}
+
+.aboutus-section {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(255, 107, 53, 0.09);
+  margin-bottom: 36px;
+  padding: 40px 32px;
+  position: relative;
+  border: 1.5px solid #ffe5d0;
+  transition: box-shadow 0.2s;
+  &:hover {
+    box-shadow: 0 8px 32px rgba(255, 107, 53, 0.13);
+    border-color: #ffb98a;
+  }
+  h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ff5f15;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2::before {
+    content: "\1F4D6";
+    font-size: 1.3rem;
+    margin-right: 6px;
+    opacity: 0.7;
+  }
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 12px;
+    letter-spacing: 0.2px;
+  }
+  ul {
+    padding-left: 24px;
+    margin-bottom: 18px;
+    li {
+      font-size: 1.07rem;
+      margin-bottom: 12px;
+      line-height: 1.8;
+      position: relative;
+      padding-left: 18px;
+    }
+    li::before {
+      content: "\2022";
+      position: absolute;
+      left: 0;
+      color: #ff5f15;
+      font-size: 1.2rem;
+      top: 2px;
+    }
+  }
+  p {
+    font-size: 1.07rem;
+    color: #333;
+    margin-bottom: 0;
+    line-height: 1.8;
+  }
+  .aboutus-highlight {
+    background: #fff7f2;
+    border-left: 5px solid #ff5f15;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-size: 1.12rem;
+    color: #d35400;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(255, 107, 53, 0.07);
+    font-weight: 500;
+  }
+  &::after {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #ffe5c2 0%, #ff5f15 100%);
+    border-radius: 1px;
+    margin: 32px 0 0 0;
+    opacity: 0.15;
+  }
+}
+
+@media (max-width: 900px) {
+  .aboutus-section {
+    padding: 24px 12px;
+  }
+  .aboutus-hero h1 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .aboutus-section {
+    padding: 14px 2px;
+  }
+  .aboutus-hero h1 {
+    font-size: 1.5rem;
+  }
+}
+
+.aboutus-hero {
+  text-align: center;
+  margin-bottom: 32px;
+  h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #ff5f15;
+    margin-bottom: 10px;
+  }
+  .aboutus-subtitle {
+    font-size: 1.25rem;
+    color: #555;
+    margin-bottom: 0;
+  }
+}
+
+.aboutus-section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(255, 107, 53, 0.07);
+  margin-bottom: 32px;
+  padding: 32px 24px;
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #ff5f15;
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #222;
+    margin-bottom: 10px;
+  }
+  ul {
+    padding-left: 20px;
+    margin-bottom: 16px;
+    li {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      line-height: 1.7;
+    }
+  }
+  p {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0;
+    line-height: 1.7;
+  }
+  .aboutus-highlight {
+    background: #fff7f2;
+    border-left: 4px solid #ff5f15;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    color: #d35400;
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .aboutus-section {
+    padding: 18px 8px;
+  }
+  .aboutus-hero h1 {
+    font-size: 2rem;
+  }
+}
