@@ -213,15 +213,6 @@ function Checkout() {
       // };
 
 
-      if (!user?.user?.email) {
-        notificationApi.error({
-          message: "Login Required",
-          description: "Please log in to continue with payment.",
-        });
-        setIsLoading(false);
-        return;
-      }
-
       const paymentData = {
         email: user.user.email, // ✅ REAL user email ONLY
         amount: amountInKobo,

@@ -211,31 +211,15 @@ const Footer = () => {
                   </a>
                 </Col>
               </Row>
-            </Col>
-            <Col
-              sm={6}
-              md={6}
-              xs={12}
-              lg={1}
-              className="d-flex align-items-center justify-content-end"
-            >
-              <button
-                onClick={scrollToTop}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "36px",
-                  color: "inherit",
-                  padding: "10px",
-                }}
-                title="Back to top"
-              >
-                <MdKeyboardArrowUp />
-              </button>
+              <div className="back-to-top-container">
+                <button
+                  onClick={scrollToTop}
+                  className="back-to-top-btn"
+                  title="Back to top"
+                >
+                  <MdKeyboardArrowUp />
+                </button>
+              </div>
             </Col>
           </Row>
         </Container>
