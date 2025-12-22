@@ -195,7 +195,7 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: "";
     position: absolute;
@@ -211,7 +211,7 @@
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(255, 149, 0, 0.4);
-    
+
     &::before {
       left: 0;
     }

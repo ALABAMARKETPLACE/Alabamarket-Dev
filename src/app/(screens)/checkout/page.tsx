@@ -212,7 +212,6 @@ function Checkout() {
       //   },
       // };
 
-
       const paymentData = {
         email: user.user.email, // ✅ REAL user email ONLY
         amount: amountInKobo,
