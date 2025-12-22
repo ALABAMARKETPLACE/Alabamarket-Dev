@@ -68,7 +68,7 @@ function Header() {
       if (user?.user?.type === "user") {
         navigation.push("/seller");
       } else {
-        navigation.push("/dashboard");
+        navigation.push("/auth/dashboard");
       }
     } else {
       navigation.push("/seller");
