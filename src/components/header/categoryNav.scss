@@ -4,6 +4,23 @@
   overflow: visible !important;
   display: flex;
   align-items: center;
+
+  // Mobile adjustments
+  @media (max-width: 767px) {
+    min-height: 50px;
+    padding: 0 5px;
+  }
+
+  // Tablet adjustments
+  @media (min-width: 768px) and (max-width: 1023px) {
+    min-height: 55px;
+    padding: 0 10px;
+  }
+
+  // Desktop
+  @media (min-width: 1024px) {
+    min-height: 60px;
+  }
 }
 
 .category-nav-container {
@@ -11,6 +28,21 @@
   align-items: center;
   width: 100%;
   gap: 8px;
+
+  // Mobile: Reduce gap
+  @media (max-width: 767px) {
+    gap: 4px;
+  }
+
+  // Tablet: Medium gap
+  @media (min-width: 768px) and (max-width: 1023px) {
+    gap: 6px;
+  }
+
+  // Desktop: Default gap
+  @media (min-width: 1024px) {
+    gap: 8px;
+  }
 }
 
 .category-lines-scroll {
@@ -19,6 +51,21 @@
   flex: 1;
   height: 100%;
   min-height: 60px;
+
+  // Mobile adjustments
+  @media (max-width: 767px) {
+    min-height: 50px;
+  }
+
+  // Tablet adjustments
+  @media (min-width: 768px) and (max-width: 1023px) {
+    min-height: 55px;
+  }
+
+  // Desktop
+  @media (min-width: 1024px) {
+    min-height: 60px;
+  }
 
   .category-lines-container {
     display: flex;
@@ -29,6 +76,24 @@
     padding: 0 15px;
     overflow-y: hidden;
     height: 100%;
+
+    // Mobile: Reduce padding and gap
+    @media (max-width: 767px) {
+      gap: 8px;
+      padding: 0 10px;
+    }
+
+    // Tablet: Medium adjustments
+    @media (min-width: 768px) and (max-width: 1023px) {
+      gap: 10px;
+      padding: 0 12px;
+    }
+
+    // Desktop: Default
+    @media (min-width: 1024px) {
+      gap: 12px;
+      padding: 0 15px;
+    }
 
     &::-webkit-scrollbar {
       display: none;
@@ -55,6 +120,33 @@
       box-sizing: border-box;
       margin-top: 18px;
       position: relative;
+
+      // Mobile adjustments
+      @media (max-width: 767px) {
+        min-width: 120px;
+        max-width: 160px;
+        min-height: 35px;
+        padding: 6px 8px 4px 8px;
+        margin-top: 12px;
+      }
+
+      // Tablet adjustments
+      @media (min-width: 768px) and (max-width: 1023px) {
+        min-width: 130px;
+        max-width: 180px;
+        min-height: 38px;
+        padding: 7px 9px 5px 9px;
+        margin-top: 15px;
+      }
+
+      // Desktop
+      @media (min-width: 1024px) {
+        min-width: 150px;
+        max-width: 220px;
+        min-height: 40px;
+        padding: 8px 10px 6px 10px;
+        margin-top: 18px;
+      }
 
       &:hover {
         background: linear-gradient(135deg, #fff 70%, #ffe5d0 100%);
@@ -83,6 +175,33 @@
         min-height: 24px;
         max-width: 180px;
         letter-spacing: 0.1px;
+
+        // Mobile adjustments
+        @media (max-width: 767px) {
+          font-size: 13px;
+          padding: 0 8px;
+          min-width: 60px;
+          max-width: 120px;
+          min-height: 20px;
+        }
+
+        // Tablet adjustments
+        @media (min-width: 768px) and (max-width: 1023px) {
+          font-size: 14px;
+          padding: 0 10px;
+          min-width: 70px;
+          max-width: 140px;
+          min-height: 22px;
+        }
+
+        // Desktop
+        @media (min-width: 1024px) {
+          font-size: 15px;
+          padding: 0 12px;
+          min-width: 80px;
+          max-width: 180px;
+          min-height: 24px;
+        }
       }
 
       .category-line-decor {
@@ -92,6 +211,27 @@
         border-radius: 1px;
         background: #e0e0e0;
         margin-top: 6px;
+
+        // Mobile adjustments
+        @media (max-width: 767px) {
+          width: 24px;
+          height: 1.5px;
+          margin-top: 4px;
+        }
+
+        // Tablet adjustments
+        @media (min-width: 768px) and (max-width: 1023px) {
+          width: 28px;
+          height: 1.8px;
+          margin-top: 5px;
+        }
+
+        // Desktop
+        @media (min-width: 1024px) {
+          width: 32px;
+          height: 2px;
+          margin-top: 6px;
+        }
       }
     }
   }

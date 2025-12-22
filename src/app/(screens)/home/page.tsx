@@ -17,7 +17,7 @@ import FeaturedPosition from "./_components/featuredPosition";
 import PlatinumSection from "./_components/platinumSection";
 import GoldSection from "./_components/goldSection";
 import SilverSection from "./_components/silverSection";
-import CategoryFeaturedProducts from "./_components/categoryFeaturedProducts";
+// import CategoryFeaturedProducts from "./_components/categoryFeaturedProducts";
 
 function Home() {
   const [Banner, setBanners] = useState([]);
@@ -290,13 +290,13 @@ function Home() {
         </>
       )}
 
-      {/* Category Featured Products Section - Dynamic products by selected category */}
-      {subCategories?.length > 0 && (
+      {/* Category Featured Products Section - Removed as requested */}
+      {/* {subCategories?.length > 0 && (
         <>
           <CategoryFeaturedProducts categories={subCategories} />
           <div className="HomeSCreen-space" />
         </>
-      )}
+      )} */}
 
       <FeaturedItems />
       {Array.isArray(allProducts) && allProducts.length > 0 && (
