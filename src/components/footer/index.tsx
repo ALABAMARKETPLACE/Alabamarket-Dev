@@ -13,6 +13,7 @@ import { RiFacebookBoxFill } from "react-icons/ri";
 import { BiLogoInstagramAlt } from "react-icons/bi";
 import { FaSquareTwitter } from "react-icons/fa6";
 import { FaTiktok } from "react-icons/fa6";
+import { MdKeyboardArrowUp } from "react-icons/md";
 import { I18nextProvider, useTranslation } from "react-i18next";
 
 import Logo from "../../assets/images/new-logo.jpeg";
@@ -28,6 +29,10 @@ import paystacklogo from "../../assets/images/paystack-logo.png";
 const Footer = () => {
   const { t } = useTranslation();
   const pathname = usePathname();
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   return pathname?.includes("/auth") ? null : (
     <footer className="Footer">
       <I18nextProvider i18n={i18n}>
@@ -206,6 +211,25 @@ const Footer = () => {
                   </a>
                 </Col>
               </Row>
+            </Col>
+            <Col sm={6} md={6} xs={12} lg={1} className="d-flex align-items-center justify-content-end">
+              <button
+                onClick={scrollToTop}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "36px",
+                  color: "inherit",
+                  padding: "10px",
+                }}
+                title="Back to top"
+              >
+                <MdKeyboardArrowUp />
+              </button>
             </Col>
           </Row>
         </Container>

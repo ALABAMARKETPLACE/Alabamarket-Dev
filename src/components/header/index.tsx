@@ -83,13 +83,15 @@ function Header() {
         <header className="position-sticky top-0" style={{ zIndex: 1000 }}>
           <div className="Header py-2">
             <div className="Header-Box">
-              <div className="Header_logoBox" style={{ cursor: "pointer" }}>
-                <Image
-                  alt="AlabaMarketplace"
-                  src={Logo}
-                  className="Header_logo"
-                />
-              </div>
+              <Link href="/">
+                <div className="Header_logoBox" style={{ cursor: "pointer" }}>
+                  <Image
+                    alt="AlabaMarketplace"
+                    src={Logo}
+                    className="Header_logo"
+                  />
+                </div>
+              </Link>
               {/* <div style={{ marginTop: 5 }}>{CONFIG.NAME}</div> */}
               <div className="Header-location desktop">
                 {isMounted && Settings?.isLocation ? <Location /> : null}

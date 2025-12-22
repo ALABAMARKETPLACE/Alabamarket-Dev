@@ -110,7 +110,7 @@ function Checkout() {
           charges: Checkout?.charges,
         };
       } else if (isPaystack) {
-        // Paystack Order Flow - Get payment reference and let backend verify
+        // Paystack Order Flow - Verify payment first
         console.log("Processing Paystack order...");
 
         const paymentRef =
@@ -124,7 +124,22 @@ function Checkout() {
           throw new Error("Payment reference not found. Please try again.");
         }
 
-        // Get stored order data or use checkout state
+        // Verify payment with backend
+        console.log("Verifying payment with reference:", paymentRef);
+        const verificationResponse: any = await POST(API.PAYSTACK_VERIFY, {
+          reference: paymentRef,
+        });
+
+        console.log("Payment verification response:", verificationResponse);
+
+        if (!verificationResponse?.status) {
+          throw new Error(
+            verificationResponse?.message ||
+              "Payment verification failed. Please try again."
+          );
+        }
+
+        // Payment verified successfully, proceed with order
         const storedOrderData = localStorage.getItem("paystack_order_data");
         let orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
@@ -145,13 +160,34 @@ function Checkout() {
       console.log("Final order data:", finalOrderData);
 
       // Validate cart data
-      if (!finalOrderData?.cart?.length) {
-        console.log("No cart items, redirecting to orders");
-        router.push("/user/orders");
-        return;
+      if (
+        !finalOrderData?.cart ||
+        !Array.isArray(finalOrderData.cart) ||
+        finalOrderData.cart.length === 0
+      ) {
+        console.error("Invalid cart data:", finalOrderData?.cart);
+        throw new Error(
+          "Cart is empty. Unable to process order. Please start over."
+        );
       }
 
-      // Create order (backend will handle payment verification)
+      // Validate address data
+      if (!finalOrderData?.address || !finalOrderData.address.id) {
+        console.error("Invalid address data:", finalOrderData?.address);
+        throw new Error(
+          "Delivery address is invalid. Please go back and select a valid address."
+        );
+      }
+
+      // Validate charges data
+      if (!finalOrderData?.charges || !finalOrderData.charges.token) {
+        console.error("Invalid charges data:", finalOrderData?.charges);
+        throw new Error(
+          "Delivery charge calculation failed. Please go back and recalculate."
+        );
+      }
+
+      // Create order (payment already verified above for Paystack)
       const response: any = await POST(API.ORDER, finalOrderData);
       console.log("Order creation response:", response);
 
@@ -183,7 +219,7 @@ function Checkout() {
       } else {
         Notifications["error"]({
           message: response?.message ?? "Order creation failed",
-          description: "",
+          description: response?.description || "Please try again",
         });
         setPaymentStatus(true);
         setOrderStatus(false);
@@ -200,7 +236,9 @@ function Checkout() {
       Notifications["error"]({
         message: "Order Processing Failed",
         description:
-          err.message || "Something went wrong while processing your order.",
+          err?.message ||
+          err?.response?.data?.message ||
+          "Something went wrong while processing your order.",
       });
     }
   };
