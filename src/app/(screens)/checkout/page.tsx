@@ -21,7 +21,8 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 function Checkout() {
   const dispatch = useDispatch();
   const navigation = useRouter();
-  const { user }: any = useSession();
+  const { data: session } = useSession();
+  const user = session?.user;
   const Checkout = useSelector((state: any) => state?.Checkout);
   const Settings = useAppSelector(reduxSettings);
   const [notificationApi, contextHolder] = notification.useNotification();
@@ -43,7 +44,7 @@ function Checkout() {
     localStorage.removeItem("last_order_response");
   }, []);
 
-  console.log("user?.user ", user);
+  console.log("user ", user);
 
   useEffect(() => {
     CalculateDeliveryCharge();
@@ -213,19 +214,23 @@ function Checkout() {
       // };
 
       // Email validation - log warning but don't block payment
-      if (!user?.user?.email) {
+      if (!user?.email) {
         console.warn(
           "Warning: User email not found. Proceeding with payment using available user data."
         );
       }
 
       // Safely construct payment data with fallbacks
-      const customerName = user?.user
-        ? `${user.user.first_name || "Customer"} ${user.user.last_name || ""}`
+      const customerName = (user as any)
+        ? `${(user as any).first_name || "Customer"} ${
+            (user as any).last_name || ""
+          }`
         : "Customer";
       const customerEmail =
-        user?.user?.email || user?.user?.id || "customer@alabamarketplace.ng";
-      const customerId = user?.user?.id || null;
+        (user as any)?.email ||
+        (user as any)?.id ||
+        "customer@alabamarketplace.ng";
+      const customerId = (user as any)?.id || null;
 
       const paymentData = {
         email: customerEmail,
