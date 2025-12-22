@@ -180,22 +180,62 @@ function Checkout() {
         .substring(2, 8)
         .toUpperCase()}`;
 
+      // const paymentData = {
+      //   email: user?.user?.email || "test@gmail.com",
+      //   amount: amountInKobo,
+      //   currency: "NGN",
+      //   reference: reference,
+      //   callback_url: `${window.location.origin}/checkoutsuccess/2`,
+      //   metadata: {
+      //     order_id: reference,
+      //     customer_id: user?.user?.id || null,
+      //     custom_fields: [
+      //       {
+      //         display_name: "Customer Name",
+      //         variable_name: "customer_name",
+      //         value: user?.user
+      //           ? `${user?.user?.first_name} ${user?.user?.last_name}`
+      //           : "Guest Customer",
+      //       },
+      //       {
+      //         display_name: "Order Total",
+      //         variable_name: "order_total",
+      //         value: `₦${Number(grand_total).toFixed(2)}`,
+      //       },
+      //       {
+      //         display_name: "Delivery Charge",
+      //         variable_name: "delivery_charge",
+      //         value: `₦${Number(delivery_charge).toFixed(2)}`,
+      //       },
+      //     ],
+      //     cancel_url: `${window.location.origin}/checkout`,
+      //   },
+      // };
+
+
+      if (!user?.user?.email) {
+        notificationApi.error({
+          message: "Login Required",
+          description: "Please log in to continue with payment.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
       const paymentData = {
-        email: user?.user?.email || "test@gmail.com",
+        email: user.user.email, // ✅ REAL user email ONLY
         amount: amountInKobo,
         currency: "NGN",
         reference: reference,
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
         metadata: {
           order_id: reference,
-          customer_id: user?.user?.id || null,
+          customer_id: user.user.id,
           custom_fields: [
             {
               display_name: "Customer Name",
               variable_name: "customer_name",
-              value: user?.user
-                ? `${user?.user?.first_name} ${user?.user?.last_name}`
-                : "Guest Customer",
+              value: `${user.user.first_name} ${user.user.last_name}`,
             },
             {
               display_name: "Order Total",
@@ -211,7 +251,6 @@ function Checkout() {
           cancel_url: `${window.location.origin}/checkout`,
         },
       };
-
       const response: any = await POST(API.PAYSTACK_INITIALIZE, paymentData);
 
       if (response.status && response.data?.data?.authorization_url) {
