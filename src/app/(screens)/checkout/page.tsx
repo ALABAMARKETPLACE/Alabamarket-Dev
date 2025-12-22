@@ -212,20 +212,35 @@ function Checkout() {
       //   },
       // };
 
+      // Email validation - log warning but don't block payment
+      if (!user?.user?.email) {
+        console.warn(
+          "Warning: User email not found. Proceeding with payment using available user data."
+        );
+      }
+
+      // Safely construct payment data with fallbacks
+      const customerName = user?.user
+        ? `${user.user.first_name || "Customer"} ${user.user.last_name || ""}`
+        : "Customer";
+      const customerEmail =
+        user?.user?.email || user?.user?.id || "customer@alabamarketplace.ng";
+      const customerId = user?.user?.id || null;
+
       const paymentData = {
-        email: user.user.email, // ✅ REAL user email ONLY
+        email: customerEmail,
         amount: amountInKobo,
         currency: "NGN",
         reference: reference,
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
         metadata: {
           order_id: reference,
-          customer_id: user.user.id,
+          customer_id: customerId,
           custom_fields: [
             {
               display_name: "Customer Name",
               variable_name: "customer_name",
-              value: `${user.user.first_name} ${user.user.last_name}`,
+              value: customerName,
             },
             {
               display_name: "Order Total",
