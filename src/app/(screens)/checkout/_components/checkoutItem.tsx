@@ -5,6 +5,13 @@ import { Row, Col } from "react-bootstrap";
 const CheckoutItem = (props: any) => {
   const productPrice = Number(props?.data?.buyPrice);
 
+  const getCurrencySymbol = () => {
+    if (props?.Settings?.currency === "NGN") {
+      return "₦";
+    }
+    return props?.Settings?.currency || "$";
+  };
+
   let stock = "In Stock";
   if (Number(props?.data?.unit) == 0 || props?.data?.status == false) {
     stock = "Out of Stock";
@@ -33,8 +40,7 @@ const CheckoutItem = (props: any) => {
         <Row>
           <Col sm={8} xs={8}>
             <div className="Cart-CartItem-txt1">
-              {props?.data?.name}{" "}
-              {getActiveVariant(props?.data)}
+              {props?.data?.name} {getActiveVariant(props?.data)}
             </div>
             <div className="Cart-CartItem-txt2">
               Unit Price :{" "}
@@ -58,7 +64,7 @@ const CheckoutItem = (props: any) => {
               <div style={{ flex: 1 }} />
               <div className="Cart-txt4">
                 <span style={{ color: "grey", fontSize: 14 }}>
-                  {props?.Settings?.currency}&nbsp;
+                  {getCurrencySymbol()}&nbsp;
                 </span>
                 {Number(productPrice * props?.data?.quantity).toFixed(2)}
               </div>

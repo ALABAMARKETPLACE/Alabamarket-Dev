@@ -1,0 +1,98 @@
+.category-nav-wrapper {
+  width: 100%;
+  min-height: 60px;
+  overflow: visible !important;
+  display: flex;
+  align-items: center;
+}
+
+.category-nav-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+}
+
+.category-lines-scroll {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  height: 100%;
+  min-height: 60px;
+
+  .category-lines-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    padding: 0 15px;
+    overflow-y: hidden;
+    height: 100%;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    .category-line-item.beautiful.small-card {
+      pointer-events: auto;
+      flex-shrink: 0;
+      cursor: pointer;
+      padding: 8px 10px 6px 10px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background: #fff;
+      border: 1.5px solid #e0e0e0;
+      box-shadow: 0 2px 8px rgba(60, 60, 60, 0.06);
+      color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 150px;
+      min-height: 40px;
+      max-width: 220px;
+      box-sizing: border-box;
+      margin-top: 18px;
+      position: relative;
+
+      &:hover {
+        background: linear-gradient(135deg, #fff 70%, #ffe5d0 100%);
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.13);
+        border-color: #ffb98a;
+      }
+
+      &.active {
+        background: linear-gradient(135deg, #fff 70%, #ffe5d0 100%);
+        border-color: #ff6b35;
+        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+      }
+
+      .category-line-label {
+        pointer-events: none;
+        text-align: center;
+        font-size: 15px;
+        font-weight: 500;
+        color: #222;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: 0 12px;
+        min-width: 80px;
+        min-height: 24px;
+        max-width: 180px;
+        letter-spacing: 0.1px;
+      }
+
+      .category-line-decor {
+        pointer-events: none;
+        width: 32px;
+        height: 2px;
+        border-radius: 1px;
+        background: #e0e0e0;
+        margin-top: 6px;
+      }
+    }
+  }
+}

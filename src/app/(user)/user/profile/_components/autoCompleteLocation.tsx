@@ -6,7 +6,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import useDebounce from "@/shared/hook/useDebounce";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
-import Country from "@/shared/helpers/countryCode.json"
+import Country from "@/shared/helpers/countryCode.json";
 
 function AutoCompleteLocation(props: any) {
   const [options, setOptions] = useState<any[]>([]);
@@ -18,7 +18,9 @@ function AutoCompleteLocation(props: any) {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    locationAutoComplete(searchLocation);
+    if (typeof window !== "undefined") {
+      locationAutoComplete(searchLocation);
+    }
   }, [searchLocation]);
 
   const getAutoComplete = (value: string) => {
@@ -35,9 +37,7 @@ function AutoCompleteLocation(props: any) {
     try {
       if (value?.length < 2) return;
       setIsLoading(true);
-      const response: any = await GET(
-        API.AUTO_COMPLETE + `?query=${value}`
-      );
+      const response: any = await GET(API.AUTO_COMPLETE + `?query=${value}`);
       if (response?.status) {
         setOptions(response?.data);
       } else {
@@ -51,13 +51,22 @@ function AutoCompleteLocation(props: any) {
   };
 
   function handleLocationClick() {
+    if (typeof window === "undefined") return;
     setIsLoading(true);
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position: any) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        getCurrentLocation(latitude, longitude);
-      }, handleError);
+      navigator.geolocation.getCurrentPosition(
+        (position: any) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          getCurrentLocation(latitude, longitude);
+        },
+        (error: any) => {
+          setIsLoading(false);
+          notificationApi.error({
+            message: `Unable to get your Location. reason: ${error.message}`,
+          });
+        }
+      );
     } else {
       setIsLoading(false);
       notificationApi.error({ message: `GeoLocation not supported` });

@@ -453,10 +453,14 @@ function Description(props: Props) {
       <div className="d-flex align-items-center ">
         Total Price:{" "}
         <div className="fs-5 fw-bold pl-3 ms-3">
-          {new Intl.NumberFormat("en-US", {
-            style: "currency",
-            currency: settings.currency ?? "INR",
-          }).format(totalPrice)}
+          {(() => {
+            const formatted = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: settings.currency ?? "INR",
+            }).format(totalPrice);
+            // Replace NGN with naira symbol ₦
+            return formatted.replace(/NGN\s?/, "₦");
+          })()}
         </div>
       </div>
       <br />

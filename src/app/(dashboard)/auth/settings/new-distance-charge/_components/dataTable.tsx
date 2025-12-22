@@ -66,7 +66,7 @@ function DataTable({ data, page, take, count, setPage, setTake }: props) {
       dataIndex: "delivery_charge",
       key: "delivery_charge",
       width: 150,
-      render: (charge: number) => <div>NGN{charge?.toFixed(2)}</div>,
+      render: (charge: number) => <div>₦{charge?.toFixed(2)}</div>,
     },
     {
       title: "Action",
