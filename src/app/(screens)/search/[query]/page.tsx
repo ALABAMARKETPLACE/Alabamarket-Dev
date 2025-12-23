@@ -59,8 +59,10 @@ function Page() {
   const [initial, setInitial] = useState(true);
   const [selectedTags, setSelectedTags] = useState<any>(initialValues);
   const serchInput = params.query;
-  const lattitude = Settings.isLocation == true && Location.latitude ? Location.latitude : 0;
-  const longitude = Settings.isLocation == true && Location.longitude ? Location.longitude : 0;
+  const lattitude =
+    Settings.isLocation == true && Location.latitude ? Location.latitude : 0;
+  const longitude =
+    Settings.isLocation == true && Location.longitude ? Location.longitude : 0;
   const getProducts = async (page: number) => {
     const price =
       selectedTags[1].status == true

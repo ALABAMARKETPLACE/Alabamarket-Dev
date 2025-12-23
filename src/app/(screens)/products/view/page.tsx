@@ -29,8 +29,12 @@ function Page() {
   const [Notifications, contextHolder] = notification.useNotification();
   const Location = useSelector(reduxLocation);
   const Settings = useSelector(reduxSettings);
-  const lattitude = Settings?.isLocation === true && Location.latitude ? Location.latitude : 0;
-  const longitude = Settings?.isLocation === true && Location.longitude ? Location.longitude : 0;
+  const lattitude =
+    Settings?.isLocation === true && Location.latitude ? Location.latitude : 0;
+  const longitude =
+    Settings?.isLocation === true && Location.longitude
+      ? Location.longitude
+      : 0;
   const [loading, setLoading] = useState(true);
   const mediaQuery = useMediaQuery(762);
   const [meta, setMeta] = useState<any>({});
