@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import "react-quill/dist/quill.snow.css";
 import PageHeader from "../../../_components/pageHeader";
 import DetailsForm from "./_components/detailsForm";
 import ImageUpdate from "./_components/images";
@@ -11,7 +10,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE } from "@/util/apicall";
 import API from "@/config/API";
 import { Button, notification, Popconfirm, Steps } from "antd";
-
 
 function Page() {
   const [current, setCurrent] = useState(0);
@@ -38,23 +36,24 @@ function Page() {
   });
   return (
     <>
-    
       <PageHeader
         title={"Update Product"}
         bredcume={"Dashboard / Products / Update"}
-      ><Popconfirm
-      title="Delete the Product"
-      description="Are you sure to delete this Product? This operation cannot be undone!"
-      okText="Yes"
-      cancelText="No"
-      placement="bottomLeft"
-      okButtonProps={{ loading: mutationDelete.isPending }}
-      onConfirm={() => mutationDelete.mutate(params?.id as string)}
-    >
-      <Button type="primary" danger>
-        Delete Product
-      </Button>
-    </Popconfirm></PageHeader>
+      >
+        <Popconfirm
+          title="Delete the Product"
+          description="Are you sure to delete this Product? This operation cannot be undone!"
+          okText="Yes"
+          cancelText="No"
+          placement="bottomLeft"
+          okButtonProps={{ loading: mutationDelete.isPending }}
+          onConfirm={() => mutationDelete.mutate(params?.id as string)}
+        >
+          <Button type="primary" danger>
+            Delete Product
+          </Button>
+        </Popconfirm>
+      </PageHeader>
       <Steps
         current={current}
         onChange={(v) => setCurrent(v)}

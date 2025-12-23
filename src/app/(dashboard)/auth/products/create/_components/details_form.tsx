@@ -3,16 +3,14 @@ import { Button, Form, Input, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import React, { useMemo, useState } from "react";
 
-import "react-quill/dist/quill.snow.css";
 import API from "@/config/API_ADMIN";
-import dynamic from "next/dynamic";
+import QuillEditor from "./QuillEditor";
+
 interface props {
   onFinish: Function;
   formData: Record<string, string | number>;
 }
-const ReactQuill = dynamic(() => import("react-quill"), {
-  ssr: false,
-});
+
 function ProductDetails({ onFinish, formData }: props) {
   const [selectedC, setCategory] = useState<null | string | number>(
     formData?.category || null
@@ -380,12 +378,11 @@ function ProductDetails({ onFinish, formData }: props) {
           <p className="mb-2">Product Speicifications</p>
           <div style={{ backgroundColor: "white" }} className="h-100">
             <Form.Item name={"specifications"}>
-              <ReactQuill
-                theme="snow"
+              <QuillEditor
                 value={String(formData?.specifications || "")}
                 onChange={(v) => form.setFieldValue("specifications", v)}
                 style={{ backgroundColor: "white", height: "230px" }}
-              />{" "}
+              />
             </Form.Item>
           </div>
         </div>

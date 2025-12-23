@@ -3,12 +3,18 @@ import { useParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Input, Modal, notification, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import dynamic from "next/dynamic";
 import API from "@/config/API_ADMIN";
 import Loading from "../../../../_components/loading";
 import Error from "../../../../_components/error";
 import { PUT } from "@/util/apicall";
+
+const QuillEditor = dynamic(
+  () => import("../../../products/create/_components/QuillEditor"),
+  {
+    ssr: false,
+  }
+);
 
 type DetailsFormProps = {
   onContinue?: () => void;
@@ -436,12 +442,11 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
             <p className="mb-2">Product Speicifications</p>
             <div style={{ backgroundColor: "white" }} className="h-100">
               <Form.Item name={"specifications"}>
-                <ReactQuill
-                  theme="snow"
+                <QuillEditor
                   value={product?.specifications || ""}
                   onChange={(v) => form.setFieldValue("specifications", v)}
                   style={{ backgroundColor: "white", height: "230px" }}
-                />{" "}
+                />
               </Form.Item>
             </div>
           </div>
