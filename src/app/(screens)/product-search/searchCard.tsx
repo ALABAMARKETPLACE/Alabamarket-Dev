@@ -48,9 +48,13 @@ function SearchCard(props: any) {
       filterSubCategories(value);
       if (value?.length > 2) {
         setLoading(true);
-        var locaton = `&lattitude=${Number(
-          Location?.latitude
-        )}&longitude=${Number(Location?.longitude)}&radius=${Settings?.radius}`;
+        
+        // Use default location if latitude/longitude are not available
+        const latitude = Location?.latitude ? Number(Location?.latitude) : 0;
+        const longitude = Location?.longitude ? Number(Location?.longitude) : 0;
+        const radius = Settings?.radius || 100000;
+        
+        var locaton = `&lattitude=${latitude}&longitude=${longitude}&radius=${radius}`;
         var url = API.PRODUCT_SEARCH_AUTOCOMPLETE + "?query=" + value + locaton;
         var response: any = await GET(url);
         if (response?.status) {
