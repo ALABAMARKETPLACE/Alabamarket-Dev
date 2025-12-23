@@ -50,10 +50,22 @@
   flex-direction: row;
   align-items: center;
   gap: 10px;
+  flex-wrap: nowrap;
+
+  @media (max-width: 1024px) {
+    gap: 8px;
+  }
 
   @media (max-width: 768px) {
-    gap: 5px;
+    gap: 6px;
     flex-wrap: wrap;
+  }
+
+  @media (max-width: 480px) {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    width: 100%;
   }
 }
 
@@ -67,14 +79,45 @@
   justify-content: center;
   gap: 10px;
   cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
   img {
     width: 35px;
     height: 35px;
     border-radius: 10px;
     margin-left: 1px;
+    object-fit: cover;
   }
   &:hover {
     border: 1px solid rgb(0, 0, 0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  @media (max-width: 1024px) {
+    height: 36px;
+    gap: 8px;
+    padding: 1px 4px 0px 1px;
+  }
+
+  @media (max-width: 768px) {
+    height: 32px;
+    gap: 6px;
+    padding: 1px 3px 0px 1px;
+    img {
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    height: 32px;
+    gap: 4px;
+    padding: 0px 3px;
+    img {
+      width: 26px;
+      height: 26px;
+    }
   }
 }
 
@@ -82,14 +125,31 @@
   cursor: pointer;
   padding: 8px 15px;
   border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
   &:hover {
     background-color: rgb(244, 244, 244);
     color: vars.$primary;
   }
 
+  @media (max-width: 1024px) {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
   @media (max-width: 768px) {
-    padding: 6px 10px;
+    padding: 5px 10px;
     font-size: 12px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 8px;
   }
 }
 
@@ -102,10 +162,20 @@
   -ms-text-overflow: ellipsis;
   display: block;
   font-size: 14px;
+  flex-shrink: 0;
+
+  @media (max-width: 1024px) {
+    width: 60px;
+    font-size: 13px;
+  }
 
   @media (max-width: 768px) {
     width: 50px;
-    font-size: 12px;
+    font-size: 11px;
+  }
+
+  @media (max-width: 480px) {
+    display: none;
   }
 }
 
@@ -113,12 +183,30 @@
   font-size: 14px;
   line-height: 16px;
   font-family: vars.$SemiBold;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
 }
 
 .dashboard-Headertext2 {
   font-size: 10px;
   color: grey;
   font-weight: 100;
+  line-height: 12px;
+
+  @media (max-width: 768px) {
+    font-size: 9px;
+  }
+
+  @media (max-width: 480px) {
+    display: none;
+  }
 }
 
 .dashboard-HeaderBox5 {
@@ -200,15 +288,37 @@
 
 .dashboard-HeaderTag {
   margin-right: 5px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+
+  @media (max-width: 1024px) {
+    font-size: 11px;
+    padding: 3px 8px;
+    margin-right: 3px;
+  }
 
   @media (max-width: 768px) {
     font-size: 10px;
-    line-height: 1;
+    line-height: 1.2;
     padding: 2px 6px;
+    margin-right: 2px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 9px;
+    padding: 2px 5px;
+    margin-right: 1px;
   }
 }
 
 .dashboard-HeaderVerifyTag {
+  @media (max-width: 1024px) {
+    display: none !important;
+  }
+}
+
+.dashboard-HeaderRoleTag {
   @media (max-width: 768px) {
     display: none !important;
   }
@@ -919,16 +1029,30 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 5px;
+  align-items: center;
+  gap: 15px;
+  padding: 16px 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+
+  @media (max-width: 1024px) {
+    gap: 10px;
+    padding: 12px 0;
+  }
 
   @media (max-width: 768px) {
     flex-wrap: wrap;
-    gap: 3px;
+    gap: 8px;
+    padding: 10px 0;
+    align-items: flex-start;
   }
 
   @media (max-width: 480px) {
     flex-direction: column;
-    gap: 0;
+    gap: 10px;
+    padding: 8px 0;
+    width: 100%;
   }
 }
 
@@ -1049,4 +1173,72 @@
   margin-bottom: 5px;
   color: rgb(0, 0, 0);
   font-family: vars.$Medium;
+}
+
+// Header controls container styling
+.DashboardAdmin-Box > div:first-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
+  min-width: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+}
+
+.DashboardAdmin-Box > div:last-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: space-between;
+  }
+}
+
+.DashboardAdmin-Box .ant-picker {
+  width: auto;
+  min-width: 200px;
+
+  @media (max-width: 768px) {
+    min-width: 160px;
+  }
+
+  @media (max-width: 480px) {
+    min-width: 140px;
+    font-size: 12px;
+  }
+}
+
+.DashboardAdmin-Box .ant-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+
+  @media (max-width: 768px) {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
 }
