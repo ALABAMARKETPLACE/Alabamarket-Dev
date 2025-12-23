@@ -187,9 +187,15 @@ const COMPRESS_IMAGE = async (file: File) => {
     if (!file) return Promise.reject(new Error("No Image Is selected.."));
     const formData = new FormData();
     formData.append("file", file);
+    const token: any = store.getState()?.Auth?.token ?? " ";
+    
     const response = await fetch(`${API.BASE_URL}${API.IMAGE_COMPRESS}`, {
       method: "POST",
       body: formData,
+      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
     const data = await response.json();
     if (!response?.ok)
@@ -198,6 +204,12 @@ const COMPRESS_IMAGE = async (file: File) => {
       );
     return { ...data, url: data.Location, status: true };
   } catch (err: any) {
+    // Handle CORS errors
+    if (err.message.includes("CORS") || err.message.includes("Failed to fetch")) {
+      return Promise.reject(
+        new Error("Image upload service is unavailable. Please try again later.")
+      );
+    }
     return Promise.reject(new Error(err.message));
   }
 };
