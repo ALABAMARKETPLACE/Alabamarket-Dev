@@ -5,6 +5,12 @@
   display: flex;
   align-items: center;
 
+  // Mobile adjustments (small phones)
+  @media (max-width: 480px) {
+    min-height: 45px;
+    padding: 0 3px;
+  }
+
   // Mobile adjustments
   @media (max-width: 767px) {
     min-height: 50px;
@@ -29,6 +35,11 @@
   width: 100%;
   gap: 8px;
 
+  // Mobile (small phones): Reduce gap significantly
+  @media (max-width: 480px) {
+    gap: 2px;
+  }
+
   // Mobile: Reduce gap
   @media (max-width: 767px) {
     gap: 4px;
@@ -51,6 +62,11 @@
   flex: 1;
   height: 100%;
   min-height: 60px;
+
+  // Mobile (small phones) adjustments
+  @media (max-width: 480px) {
+    min-height: 45px;
+  }
 
   // Mobile adjustments
   @media (max-width: 767px) {
@@ -76,6 +92,12 @@
     padding: 0 15px;
     overflow-y: hidden;
     height: 100%;
+
+    // Mobile (small phones): Reduce padding and gap significantly
+    @media (max-width: 480px) {
+      gap: 4px;
+      padding: 0 5px;
+    }
 
     // Mobile: Reduce padding and gap
     @media (max-width: 767px) {

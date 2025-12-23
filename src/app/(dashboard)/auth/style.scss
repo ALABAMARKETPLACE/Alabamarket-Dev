@@ -140,7 +140,7 @@
   @media (max-width: 768px) {
     width: auto;
     font-size: 16px;
-    
+
     > div:last-child {
       display: none; // Hide version text on mobile
     }
@@ -218,7 +218,7 @@
 .dashboard-SideBarContainer {
   transition: transform 0.3s ease-in-out;
   padding-top: 8vh;
-  
+
   @media (max-width: 768px) {
     position: fixed !important;
     left: 0;
@@ -919,17 +919,43 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 5px; 
+  gap: 5px;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
 .DashboardAdmin-text1 {
   font-size: 22px;
   font-family: vars.$SemiBold;
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 }
 
 .DashboardAdmin-text2 {
   font-size: 14px;
   color: gray;
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 }
 
 .DashboardAdmin-card {
@@ -942,23 +968,57 @@
   justify-content: space-between; /* Space out card content */
   height: 100%; /* Make all cards the same height */
   min-height: 130px; /* Optional: Set a minimum height */
+
+  @media (max-width: 768px) {
+    padding: 8px;
+    min-height: 115px;
+  }
+
+  @media (max-width: 480px) {
+    min-height: 100px;
+    padding: 6px;
+  }
 }
 
 .DashboardAdmin-card-text1 {
   font-size: 15px;
   font-family: vars.$Regular;
   color: rgb(85, 85, 85);
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
 }
 
 .DashboardAdmin-card-text2 {
   font-size: 18px;
   font-family: vars.$Bold;
   color: #000;
+
+  @media (max-width: 768px) {
+    font-size: 16px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
 }
 
 .DashboardAdmin-card-text3 {
   font-size: 13px;
   color: gray;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
 }
 
 .DashboardAdmin-card-icons {
@@ -970,6 +1030,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 768px) {
+    height: 26px;
+    width: 26px;
+    font-size: 16px;
+  }
+
+  @media (max-width: 480px) {
+    height: 24px;
+    width: 24px;
+    font-size: 14px;
+  }
 }
 
 .form-lable {
