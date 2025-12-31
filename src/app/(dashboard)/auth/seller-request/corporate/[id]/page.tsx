@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
-import { Button, Card } from "antd";
+import { Button, Card, notification } from "antd";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { GET } from "@/util/apicall";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { GET, POST } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
@@ -16,6 +16,22 @@ function CorporateSeller() {
   const params = useParams();
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
+  const queryClient = useQueryClient();
+
+  const approveSubaccountMutation = useMutation({
+    mutationFn: (data: any) => POST(API.PAYSTACK_SUBACCOUNT_APPROVE, data),
+    onSuccess: () => {
+      notification.success({ message: "Subaccount approved successfully" });
+      queryClient.invalidateQueries({
+        queryKey: ["admin_corporate_seller_details"],
+      });
+    },
+    onError: (err: any) => {
+      notification.error({
+        message: err?.message || "Failed to approve subaccount",
+      });
+    },
+  });
   const {
     data: seller,
     isLoading,
@@ -93,6 +109,8 @@ function CorporateSeller() {
 
   const dates: any = {
     "Submited Date": moment(seller?.createdAt).format("MM/DD/YYYY"),
+    "Subaccount Code": seller?.paystack_subaccount_code || "Not Created",
+    "Subaccount Status": seller?.subaccount_status || "Pending",
   };
 
   const handleDownload = (imageUrl: any) => {
@@ -243,6 +261,22 @@ function CorporateSeller() {
                     <span>{dates[item]}</span>
                   </div>
                 ))}
+                {dates["Subaccount Code"] !== "Not Created" &&
+                  dates["Subaccount Status"] !== "active" && (
+                    <div className="mt-3 text-end">
+                      <Button
+                        type="primary"
+                        loading={approveSubaccountMutation.isPending}
+                        onClick={() =>
+                          approveSubaccountMutation.mutate({
+                            store_id: params?.id,
+                          })
+                        }
+                      >
+                        Approve Subaccount
+                      </Button>
+                    </div>
+                  )}
               </Card>
             </div>
           </div>

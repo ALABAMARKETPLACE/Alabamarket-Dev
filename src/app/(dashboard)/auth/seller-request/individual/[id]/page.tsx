@@ -1,9 +1,9 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
-import { Button, Card, Descriptions } from "antd";
-import { useQuery } from "@tanstack/react-query";
-import { GET } from "@/util/apicall";
+import { Button, Card, Descriptions, notification } from "antd";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { GET, POST } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import { useParams } from "next/navigation";
 import Loading from "@/app/(dashboard)/_components/loading";
@@ -16,6 +16,21 @@ function IndividualSeller() {
   const params = useParams();
   const [openRequest, setOpenRequest] = useState(false);
   const [openApprove, setOpenApprove] = useState(false);
+  const queryClient = useQueryClient();
+  const approveSubaccountMutation = useMutation({
+    mutationFn: (data: any) => POST(API.PAYSTACK_SUBACCOUNT_APPROVE, data),
+    onSuccess: () => {
+      notification.success({ message: "Subaccount approved successfully" });
+      queryClient.invalidateQueries({
+        queryKey: ["admin_individual_store_details"],
+      });
+    },
+    onError: (err: any) => {
+      notification.error({
+        message: err?.message || "Failed to approve subaccount",
+      });
+    },
+  });
   const {
     data: seller,
     isLoading,
@@ -74,6 +89,14 @@ function IndividualSeller() {
             : seller?.[item],
       }));
   }, [seller]);
+
+  const paymentDetails = {
+    "Bank Name": storeDetails?.bank_name,
+    "Account Number": storeDetails?.account_number,
+    "Account Name": storeDetails?.account_name,
+    "Subaccount Code": storeDetails?.paystack_subaccount_code || "Not Created",
+    "Subaccount Status": storeDetails?.subaccount_status || "Pending",
+  };
 
   return (
     <>
@@ -159,6 +182,37 @@ function IndividualSeller() {
                         : "No product boosts"}
                     </span>
                   </div>
+                </Card>
+              </div>
+              <div className="col-md-6">
+                <Card title="Bank Details" bordered={false} className="h-100">
+                  {Object.keys(paymentDetails).map((key) => (
+                    <div
+                      className="d-flex justify-content-between pb-2"
+                      key={key}
+                    >
+                      <span className="fw-bold">{key}:</span>
+                      <span>
+                        {paymentDetails[key as keyof typeof paymentDetails]}
+                      </span>
+                    </div>
+                  ))}
+                  {paymentDetails["Subaccount Code"] !== "Not Created" &&
+                    paymentDetails["Subaccount Status"] !== "active" && (
+                      <div className="mt-3 text-end">
+                        <Button
+                          type="primary"
+                          loading={approveSubaccountMutation.isPending}
+                          onClick={() =>
+                            approveSubaccountMutation.mutate({
+                              store_id: params?.id,
+                            })
+                          }
+                        >
+                          Approve Subaccount
+                        </Button>
+                      </div>
+                    )}
                 </Card>
               </div>
             </div>

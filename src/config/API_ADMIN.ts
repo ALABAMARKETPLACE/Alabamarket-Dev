@@ -114,5 +114,9 @@ const API_ADMIN = {
   DELIVERY_COMPANY_UPDATE_STATUS: "delivery/company/", //PUT - Update company status
   DRIVERS_ALL: "delivery/drivers", //GET - All drivers
   DRIVER_UPDATE_STATUS: "delivery/driver/", //PUT - Update driver status
+
+  //PAYMENT SPLITS
+  PAYSTACK_SUBACCOUNT_APPROVE: "paystack-subaccounts/approve", //POST
+  PAYMENT_SPLITS_STORE: "payment-splits/store", //GET payment splits for store
 } as const;
 export default API_ADMIN;
