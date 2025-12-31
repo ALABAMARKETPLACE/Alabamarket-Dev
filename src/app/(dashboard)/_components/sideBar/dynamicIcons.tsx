@@ -19,6 +19,7 @@ import {
   TbListDetails,
   TbCategory2,
   TbRocket,
+  TbTruckDelivery,
 } from "react-icons/tb";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { RiStore2Line, RiUserReceived2Line } from "react-icons/ri";
@@ -56,7 +57,8 @@ function DynamicIcon(props: any) {
     | "TbCategory2"
     | "MdOutlineCategory"
     | "TbRocket"
-    | "MdVerified";
+    | "MdVerified"
+    | "TbTruckDelivery";
 
   interface IconProps {
     iconName: IconName;
@@ -94,6 +96,7 @@ function DynamicIcon(props: any) {
       MdOutlineCategory: MdOutlineCategory,
       TbRocket: TbRocket,
       MdVerified: MdVerified,
+      TbTruckDelivery: TbTruckDelivery,
     };
     if (!icons.hasOwnProperty(iconName)) {
       console.warn(
