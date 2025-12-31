@@ -30,7 +30,7 @@ const getCategoryId = (cid: any): string => {
 };
 
 const ProductByCategory = () => {
-  const pageSize = 10;
+  const pageSize = 1000;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
