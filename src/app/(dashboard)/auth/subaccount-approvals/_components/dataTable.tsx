@@ -19,31 +19,46 @@ interface props {
 function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   const queryClient = useQueryClient();
   const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [actionType, setActionType] = useState<"approve" | "reject" | null>(null);
 
-  const approveSubaccountMutation = useMutation({
-    mutationFn: (data: any) => POST(API.PAYSTACK_SUBACCOUNT_APPROVE, data),
-    onSuccess: () => {
-      notification.success({ message: "Subaccount approved successfully" });
+  const actionSubaccountMutation = useMutation({
+    mutationFn: (data: { id: number; type: "approve" | "reject" }) => {
+      const url = `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.id}/${data.type}`;
+      return POST(url, {});
+    },
+    onSuccess: (_, variables) => {
+      notification.success({
+        message: `Subaccount ${
+          variables.type === "approve" ? "approved" : "rejected"
+        } successfully`,
+      });
       queryClient.invalidateQueries({
         queryKey: ["admin_paystack_subaccounts_pending"],
       });
       setLoadingId(null);
+      setActionType(null);
     },
-    onError: (err: any) => {
+    onError: (err: any, variables) => {
       notification.error({
-        message: err?.message || "Failed to approve subaccount",
+        message:
+          err?.message ||
+          `Failed to ${variables.type} subaccount`,
       });
       setLoadingId(null);
+      setActionType(null);
     },
   });
 
-  const handleApprove = (storeId: number) => {
+  const handleAction = (storeId: number, type: "approve" | "reject") => {
     Modal.confirm({
-      title: "Approve Subaccount",
-      content: "Are you sure you want to approve this Paystack subaccount?",
+      title: `${type === "approve" ? "Approve" : "Reject"} Subaccount`,
+      content: `Are you sure you want to ${type} this Paystack subaccount?`,
+      okText: type === "approve" ? "Approve" : "Reject",
+      okType: type === "approve" ? "primary" : "danger",
       onOk: () => {
         setLoadingId(storeId);
-        approveSubaccountMutation.mutate({ store_id: storeId });
+        setActionType(type);
+        actionSubaccountMutation.mutate({ id: storeId, type });
       },
     });
   };
@@ -93,14 +108,26 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "Action",
       key: "action",
       render: (_: any, record: any) => (
-        <Button
-          type="primary"
-          size="small"
-          loading={loadingId === record.id}
-          onClick={() => handleApprove(record.id)}
-        >
-          Approve
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="primary"
+            size="small"
+            loading={loadingId === record.id && actionType === "approve"}
+            onClick={() => handleAction(record.id, "approve")}
+            disabled={loadingId === record.id && actionType !== "approve"}
+          >
+            Approve
+          </Button>
+          <Button
+            danger
+            size="small"
+            loading={loadingId === record.id && actionType === "reject"}
+            onClick={() => handleAction(record.id, "reject")}
+            disabled={loadingId === record.id && actionType !== "reject"}
+          >
+            Reject
+          </Button>
+        </div>
       ),
     },
   ];
