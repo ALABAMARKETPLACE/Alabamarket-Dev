@@ -116,8 +116,8 @@ const API_ADMIN = {
   DRIVER_UPDATE_STATUS: "delivery/driver/", //PUT - Update driver status
 
   //PAYMENT SPLITS
-  PAYSTACK_SUBACCOUNT_APPROVE: "paystack-subaccounts/approve/", //POST
-  PAYSTACK_SUBACCOUNT_PENDING: "paystack-subaccounts/pending/", //GET
+  PAYSTACK_SUBACCOUNT_APPROVE: "https://apis.alabamarketplace.ng/apis/paystack-subaccounts/approve/", //POST
+  PAYSTACK_SUBACCOUNT_PENDING: "https://apis.alabamarketplace.ng/apis/paystack-subaccounts/pending/", //GET
   PAYMENT_SPLITS_STORE: "payment-splits/store", //GET payment splits for store
 } as const;
 export default API_ADMIN;

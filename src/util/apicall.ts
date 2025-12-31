@@ -3,6 +3,13 @@ import { store } from "@/redux/store/store";
 import { message } from "antd";
 import { useSession } from "next-auth/react";
 
+const getFullUrl = (url: string) => {
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  return API.BASE_URL + url;
+};
+
 const GET = async (
   url: string,
   params: Record<string, any> = {},
@@ -12,7 +19,7 @@ const GET = async (
     const token: any = store.getState()?.Auth?.token ?? " ";
     const queryParams = new URLSearchParams(params).toString();
     const URL = queryParams ? url + `?${queryParams}` : url;
-    const response = await fetch(API.BASE_URL + URL, {
+    const response = await fetch(getFullUrl(URL), {
       ...(signal && { signal }),
       method: "GET",
       headers: {
@@ -40,7 +47,7 @@ const POST = async (
 ) => {
   try {
     const token: any = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(API.BASE_URL + url, {
+    const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "POST",
       headers: {
@@ -69,7 +76,7 @@ const PUT = async (
 ) => {
   try {
     const token = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(API.BASE_URL + url, {
+    const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PUT",
       headers: {
@@ -98,7 +105,7 @@ const PATCH = async (
 ) => {
   try {
     const token: any = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(API.BASE_URL + url, {
+    const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PATCH",
       headers: {
@@ -162,7 +169,7 @@ const EXCEL_UPLOAD = async (
 const DELETE = async (url: string, signal: AbortSignal | null = null) => {
   try {
     const token = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(API.BASE_URL + url, {
+    const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "DELETE",
       headers: {
@@ -188,7 +195,7 @@ const COMPRESS_IMAGE = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
     const token: any = store.getState()?.Auth?.token ?? " ";
-    
+
     const response = await fetch(`${API.BASE_URL}${API.IMAGE_COMPRESS}`, {
       method: "POST",
       body: formData,
@@ -205,9 +212,14 @@ const COMPRESS_IMAGE = async (file: File) => {
     return { ...data, url: data.Location, status: true };
   } catch (err: any) {
     // Handle CORS errors
-    if (err.message.includes("CORS") || err.message.includes("Failed to fetch")) {
+    if (
+      err.message.includes("CORS") ||
+      err.message.includes("Failed to fetch")
+    ) {
       return Promise.reject(
-        new Error("Image upload service is unavailable. Please try again later.")
+        new Error(
+          "Image upload service is unavailable. Please try again later."
+        )
       );
     }
     return Promise.reject(new Error(err.message));

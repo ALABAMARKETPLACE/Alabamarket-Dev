@@ -207,8 +207,10 @@ const API = {
   PAYSTACK_SUCCESS: "paystack/success", //GET payment success callback
   PAYSTACK_CANCEL: "paystack/cancel", //GET payment cancellation callback
   PAYSTACK_FAILED: "paystack/failed", //GET payment failure callback
-  PAYSTACK_BANKS: "paystack-subaccounts/banks/supported", //GET supported banks list
-  PAYSTACK_RESOLVE_ACCOUNT: "paystack-subaccounts/banks/validate", //GET account verification
+  PAYSTACK_BANKS:
+    "https://apis.alabamarketplace.ng/apis/paystack-subaccounts/banks/supported", //GET supported banks list
+  PAYSTACK_RESOLVE_ACCOUNT:
+    "https://apis.alabamarketplace.ng/apis/paystack-subaccounts/banks/validate", //GET account verification
 
   //PAYMENT SPLITS
   PAYMENT_SPLITS_STORE: "payment-splits/store", //GET payment splits for store
