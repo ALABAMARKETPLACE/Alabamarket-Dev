@@ -18,7 +18,11 @@ function IndividualSeller() {
   const [openApprove, setOpenApprove] = useState(false);
   const queryClient = useQueryClient();
   const approveSubaccountMutation = useMutation({
-    mutationFn: (data: any) => POST(API.PAYSTACK_SUBACCOUNT_APPROVE, data),
+    mutationFn: (data: any) =>
+      POST(
+        `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.store_id}/approve`,
+        data
+      ),
     onSuccess: () => {
       notification.success({ message: "Subaccount approved successfully" });
       queryClient.invalidateQueries({
