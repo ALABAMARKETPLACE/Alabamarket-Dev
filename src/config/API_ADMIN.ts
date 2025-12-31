@@ -116,8 +116,8 @@ const API_ADMIN = {
   DRIVER_UPDATE_STATUS: "delivery/driver/", //PUT - Update driver status
 
   //PAYMENT SPLITS
-  PAYSTACK_SUBACCOUNT_APPROVE: "/api-proxy/paystack-subaccounts/approve/", //POST
-  PAYSTACK_SUBACCOUNT_PENDING: "/api-proxy/paystack-subaccounts/pending/", //GET
+  PAYSTACK_SUBACCOUNT_APPROVE: "/api-proxy/paystack-subaccounts/approve", //POST
+  PAYSTACK_SUBACCOUNT_PENDING: "/api-proxy/paystack-subaccounts/pending", //GET
   PAYMENT_SPLITS_STORE: "payment-splits/store", //GET payment splits for store
 } as const;
 export default API_ADMIN;

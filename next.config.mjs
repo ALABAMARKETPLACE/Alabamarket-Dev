@@ -23,7 +23,7 @@ const nextConfig = {
       {
         source: "/api-proxy/paystack-subaccounts/:path*",
         destination:
-          "https://apis.alabamarketplace.ng/apis/paystack-subaccounts/:path*",
+          "https://apis.alabamarketplace.ng/paystack-subaccounts/:path*",
       },
     ];
   },
