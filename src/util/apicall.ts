@@ -4,7 +4,11 @@ import { message } from "antd";
 import { useSession } from "next-auth/react";
 
 const getFullUrl = (url: string) => {
-  if (url.startsWith("http://") || url.startsWith("https://")) {
+  if (
+    url.startsWith("http://") ||
+    url.startsWith("https://") ||
+    url.startsWith("/")
+  ) {
     return url;
   }
   return API.BASE_URL + url;
