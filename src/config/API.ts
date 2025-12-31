@@ -2,7 +2,7 @@ const API = {
   // BASE_URL: "https://alaba-server.semikolen.org/",
 
   BASE_URL: (process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://apis.alabamarketplace.ng/") as string,
+    "https://apis.alabamarketplace.ng/apis/") as string,
 
   // BASE_URL: "http://localhost:8017/",
   //GOOGLE API
