@@ -9,7 +9,7 @@ import { LuLayoutDashboard } from "react-icons/lu";
 import { RiSettings5Fill } from "react-icons/ri";
 import { HiUsers } from "react-icons/hi2";
 import { FaWpforms, FaChartPie } from "react-icons/fa";
-import { MdSpaceDashboard } from "react-icons/md";
+import { MdSpaceDashboard, MdVerified } from "react-icons/md";
 import { IoStorefrontSharp, IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import { BsFileLock2Fill, BsFillGridFill } from "react-icons/bs";
 import { FaFileInvoice } from "react-icons/fa6";
@@ -55,7 +55,8 @@ function DynamicIcon(props: any) {
     | "LuBadgePercent"
     | "TbCategory2"
     | "MdOutlineCategory"
-    | "TbRocket";
+    | "TbRocket"
+    | "MdVerified";
 
   interface IconProps {
     iconName: IconName;
