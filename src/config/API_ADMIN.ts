@@ -117,6 +117,7 @@ const API_ADMIN = {
 
   //PAYMENT SPLITS
   PAYSTACK_SUBACCOUNT_APPROVE: "paystack-subaccounts/approve", //POST
+  PAYSTACK_SUBACCOUNT_PENDING: "paystack-subaccounts/pending", //GET
   PAYMENT_SPLITS_STORE: "payment-splits/store", //GET payment splits for store
 } as const;
 export default API_ADMIN;

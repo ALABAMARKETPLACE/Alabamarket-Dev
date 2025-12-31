@@ -134,6 +134,15 @@
         ]
       },
       {
+        "id": 32,
+        "menu": "Subaccount Approvals",
+        "icon": "MdVerified",
+        "route": "/auth/subaccount-approvals",
+        "role": [
+          "admin"
+        ]
+      },
+      {
         "id": 26,
         "menu": "Delivery Partner Approvals",
         "icon": "TbTruckDelivery",

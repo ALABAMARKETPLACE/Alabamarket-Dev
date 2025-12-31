@@ -92,6 +92,7 @@ function DynamicIcon(props: any) {
       TbCategory2: TbCategory2,
       MdOutlineCategory: MdOutlineCategory,
       TbRocket: TbRocket,
+      MdVerified: MdVerified,
     };
     if (!icons.hasOwnProperty(iconName)) {
       console.warn(
