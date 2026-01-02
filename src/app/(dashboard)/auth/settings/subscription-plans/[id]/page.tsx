@@ -33,7 +33,7 @@ const POSITION_LABELS: Record<
   1: { label: "Top Section", color: "gold", icon: "🏆" },
   2: { label: "Middle Section", color: "blue", icon: "🥈" },
   3: { label: "Lower Section", color: "orange", icon: "🥉" },
-  4: { label: "Extra Section", color: "purple", icon: "✨" },
+  4: { label: "Discounted Section", color: "purple", icon: "🏷️" },
 };
 
 function ViewSubscriptionPlan({ params }: Props) {
@@ -280,9 +280,9 @@ function ViewSubscriptionPlan({ params }: Props) {
                     value: 4,
                     label: (
                       <span>
-                        ✨ 4 - Extra Section{" "}
+                        🏷️ 4 - Discounted Section{" "}
                         <span style={{ color: "#888", fontSize: 12 }}>
-                          (Additional section)
+                          (Discounted deals)
                         </span>
                       </span>
                     ),

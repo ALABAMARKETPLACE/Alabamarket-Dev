@@ -1,5 +1,50 @@
 @use "../../../config/styleVariable.scss" as global;
 
+// ====== SEE MORE LINK MIXIN ======
+@mixin section-see-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: global.$SemiBold;
+  font-size: 13px;
+  color: #ff9500;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  border-radius: 30px;
+  background-color: rgba(255, 149, 0, 0.06);
+  border: 1px solid rgba(255, 149, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+
+  svg {
+    font-size: 16px;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  &:hover {
+    background-color: #ff9500;
+    color: #ffffff;
+    border-color: #ff9500;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.25);
+    transform: translateY(-1px);
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 6px rgba(255, 149, 0, 0.2);
+  }
+}
+
+.recommended-see-more {
+  @include section-see-more;
+}
+
 .Cart-box {
   @media screen and (min-width: 320px) and (max-width: 768px) {
     margin: 0px 0px;

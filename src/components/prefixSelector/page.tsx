@@ -21,7 +21,7 @@ const PrefixSelector: React.FC<PrefixSelectorProps> = ({
       noStyle
       rules={[{ required: true, message: "Please select countrycode" }]}
     >
-      <Select style={{ width: 85 }} size="large" showSearch={true}>
+      <Select style={{ width: 120 }} size="large" showSearch={true}>
         {Country?.map((item: any) => (
           <Select.Option key={item.dial_code} value={item.dial_code}>
             {item.dial_code}

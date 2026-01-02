@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
+import { TbArrowRight } from "react-icons/tb";
 
 interface SilverSectionProps {
   products: any[];
@@ -47,7 +48,6 @@ function SilverSection({ products = [] }: SilverSectionProps) {
               <span
                 role="button"
                 tabIndex={0}
-                style={{ color: "#FF5F15" }}
                 className="silver-section__see-more"
                 onClick={handleSeeMore}
                 onKeyDown={(event) => {
@@ -56,7 +56,7 @@ function SilverSection({ products = [] }: SilverSectionProps) {
                   }
                 }}
               >
-                See More
+                See More <TbArrowRight />
               </span>
             </div>
             {items.length ? (

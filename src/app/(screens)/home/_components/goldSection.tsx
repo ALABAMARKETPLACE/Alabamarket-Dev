@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import positionImage from "@/assets/images/position2.jpg";
+import { TbArrowRight } from "react-icons/tb";
 
 interface GoldSectionProps {
   products: any[];
@@ -57,7 +58,6 @@ function GoldSection({ products = [] }: GoldSectionProps) {
       <span
         role="button"
         tabIndex={0}
-        style={{ color: "#FF5F15" }}
         className="gold-section__see-more"
         onClick={handleSeeMore}
         onKeyDown={(event) => {
@@ -66,7 +66,7 @@ function GoldSection({ products = [] }: GoldSectionProps) {
           }
         }}
       >
-        See More
+        See More <TbArrowRight />
       </span>
     </div>
   );
@@ -97,7 +97,7 @@ function GoldSection({ products = [] }: GoldSectionProps) {
             fill
             sizes="(max-width: 991px) 100vw, 320px"
             priority={false}
-            style={{ objectFit: "cover" }}
+            style={{ objectFit: "fill" }}
           />
         </div>
       </div>

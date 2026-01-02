@@ -246,6 +246,7 @@ const API = {
   FEATURED_POSITION_1: "featured-products/position/1", //GET - Top section
   FEATURED_POSITION_2: "featured-products/position/2", //GET - Middle section
   FEATURED_POSITION_3: "featured-products/position/3", //GET - Lower section
+  FEATURED_POSITION_4: "featured-products/position/4", //GET - Discounted section
   FEATURED_POSITION_PRODUCTS: "featured-products/position", //GET - All products for a specific position
   FEATURED_ALL_PRODUCTS: "featured-products/products", //GET - All products with filters
 

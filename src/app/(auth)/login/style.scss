@@ -1,179 +1,263 @@
 @use "../../../config/styleVariable.scss" as global;
 
-// Modern login box style
-.LoginScreen-box1 {
-  background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 32px rgba(60, 60, 60, 0.07);
-  padding: 32px 28px 24px 28px;
-  margin-top: 24px;
-  margin-bottom: 24px;
-  border: 1.5px solid #f3f3f3;
+// Page Background
+.Screen-box {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../../../assets/images/position.jpg'); // Changed to position.jpg
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 20px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.25); // Reduced opacity for clearer image
+    z-index: 0;
+  }
 }
 
+// Centered Layout Container
+.auth-container {
+  display: flex;
+  width: 100%;
+  max-width: 480px; 
+  background: #ffffff; // Solid white background
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); // Softer shadow
+  overflow: hidden;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 576px) {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+}
+
+// Image Side (Hidden)
+.auth-image-side {
+  display: none; // Hide the side-by-side image
+}
+
+// Form Side (Full Width)
+.auth-form-side {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: transparent;
+
+  @media (max-width: 576px) {
+    padding: 30px 20px;
+  }
+}
+
+// Typography
 .LoginScreen-txt1 {
   font-family: global.$Bold;
   font-size: 28px;
-  background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-weight: 700;
-  animation: slideInDown 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-  position: relative;
-  padding-bottom: 12px;
-
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 80px;
-    height: 4px;
-    background: linear-gradient(90deg, #ff9500 0%, #ffb84d 100%);
-    border-radius: 2px;
-    animation: underlineExpand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #1a1a1a;
+  text-align: left; // Align left for split layout
+  margin-bottom: 8px;
+  
+  @media (max-width: 576px) {
+    font-size: 24px;
+    text-align: center;
   }
 }
 
 .LoginScreen-txt2 {
-  font-family: global.$Medium;
-  font-size: 16px;
-  line-height: 30px;
-  color: #555;
-  margin-top: 20px;
+  font-family: global.$Regular;
+  font-size: 15px;
+  color: #666;
+  text-align: left;
+  margin-bottom: 32px;
+  line-height: 1.5;
+
+  @media (max-width: 576px) {
+    text-align: center;
+  }
 }
 
+// Input Styling Override (Scoped to .auth-container)
+.auth-container {
+  .ant-input-affix-wrapper-lg,
+  .ant-input-lg,
+  .ant-input-password-lg { 
+    padding: 14px 20px !important;
+    border-radius: 100px !important;
+    border: 1.5px solid #f1f5f9 !important;
+    background-color: #f8fafc !important;
+    font-size: 16px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none !important;
+    
+    &:hover {
+      background-color: #fff !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    &:focus, &:focus-within {
+      background-color: #fff !important;
+      border-color: global.$primary !important;
+      box-shadow: 0 4px 12px rgba(255, 95, 21, 0.1) !important;
+      transform: translateY(-1px);
+    }
+    
+    input {
+      background-color: transparent !important;
+      height: 100% !important;
+    }
+    
+    // Icon styling within input
+    .ant-input-prefix, .ant-input-suffix {
+      color: #94a3b8;
+    }
+
+    // Ensure password input wrapper has transparent background to avoid double borders
+    &.ant-input-password {
+      input {
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+      }
+    }
+  }
+}
+
+// Links
 .LoginScreen-txt3 {
-  font-family: global.$SemiBold;
-  font-size: 15px;
+  font-family: global.$Medium;
+  font-size: 14px;
+  color: #64748b;
   cursor: pointer;
-  color: #ff9500;
-  transition: color 0.3s;
+  transition: all 0.2s;
+  text-align: right;
+  display: inline-block;
+  margin-top: 8px;
+  margin-bottom: 32px;
+  float: right;
 
   &:hover {
-    color: #ffb84d;
-  }
-
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    justify-content: flex-end;
-    padding-bottom: 30px;
+    color: global.$primary;
+    text-decoration: none;
+    transform: translateX(-2px);
   }
 }
 
+// Primary Button
+.btn-clr {
+  background: global.$primary !important;
+  border: none !important;
+  border-radius: 100px !important;
+  height: 58px !important; // Taller for better touch target
+  font-size: 16px !important;
+  font-family: global.$Bold !important;
+  color: white !important;
+  box-shadow: 0 10px 20px rgba(255, 95, 21, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: 100%;
+  margin-top: 12px;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(255, 95, 21, 0.3) !important;
+    background: darken(#FF5F15, 5%) !important;
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(255, 95, 21, 0.2) !important;
+  }
+  
+  span {
+    font-weight: 700;
+  }
+}
+
+// Divider / Footer Text
 .LoginScreen-txt4 {
-  font-family: global.$SemiBold;
   text-align: center;
   font-size: 15px;
-  cursor: pointer;
-  color: #888;
-  margin: 20px 0;
+  color: #64748b;
+  margin-top: 32px;
+  font-family: global.$Medium;
 }
 
 .LoginScreen-txt5 {
+  color: global.$primary;
   font-family: global.$Bold;
-  color: #ff9500;
-  font-weight: 700;
-}
-
-.LoginScreen-txt6 {
-  text-align: center;
-  font-family: global.$Bold;
-  font-size: 15px;
-  color: #ff9500;
   cursor: pointer;
-  transition: color 0.3s;
-
+  margin-left: 6px;
+  transition: color 0.2s;
+  
   &:hover {
-    color: #ffb84d;
+    color: darken(#FF5F15, 10%);
+    text-decoration: underline;
   }
 }
 
+// Error Message
 .LoginScreen-errortxt {
-  font-family: global.$Medium;
-  color: #e74c3c;
-  font-size: 14px;
-  margin-bottom: 15px;
-  padding: 10px;
-  background-color: #fadbd8;
-  border-radius: 8px;
-  border-left: 4px solid #e74c3c;
-}
-
-.btn-clr {
-  background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
-  color: #ffffff !important;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 20px;
-  font-weight: 600;
-  font-size: 16px;
-  font-family: "DM Sans", sans-serif;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(255, 149, 0, 0.3);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  &:hover {
-    box-shadow: 0 10px 32px rgba(255, 149, 0, 0.4);
-    transform: translateY(-2px);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-}
-
-.GmailLogin {
-  border: 2px solid rgba(255, 149, 0, 0.15);
-  margin-bottom: 15px;
+  background-color: #fff2f0;
+  border: 1px solid #ffccc7;
+  color: #ff4d4f;
   padding: 12px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #ffffff 0%, #fffbf8 100%);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
+// Social Login
+.GmailLogin {
+  width: 100%;
+  height: 58px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 100px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 24px;
+  gap: 12px;
+  
   &:hover {
-    border-color: rgba(255, 149, 0, 0.25);
-    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.1);
-    transform: translateY(-2px);
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
+  
+  // Assuming there's text inside or likely adding it via JS/Component
+  font-family: global.$SemiBold;
+  font-size: 16px;
+  color: #334155;
 }
 
 .GmailLogin-row {
-  font-family: global.$SemiBold;
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  font-size: 15px;
-  cursor: pointer;
-  color: #333;
-}
-
-.GmailLogin-txt1 {
-  margin-bottom: -10px;
+  gap: 12px;
   font-family: global.$SemiBold;
   font-size: 15px;
   color: #333;
-  font-weight: 600;
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes underlineExpand {
-  from {
-    width: 0;
-  }
-  to {
-    width: 80px;
-  }
 }

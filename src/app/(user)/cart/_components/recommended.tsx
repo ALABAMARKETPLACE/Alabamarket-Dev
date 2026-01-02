@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import ProductItem from "../../../../components/productItem/page";
 import { MdArrowBack, MdOutlineArrowForward } from "react-icons/md";
+import { TbArrowRight } from "react-icons/tb";
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { useRouter } from "next/navigation";
+import "../styles.scss";
 
 // import { useNavigate } from "react-router-dom";
 function RecomendedItems(props: any) {
@@ -45,19 +47,28 @@ function RecomendedItems(props: any) {
 
   return (
     <div className="Horizontal-Pscroll">
-      <div className="Horizontal-row">
+      <div className="Horizontal-row justify-content-between align-items-center mb-3">
         <div className="Horizontal-Heading1 ps-0 mt-3">{props?.title}</div>
         <div className="Horizontal-row" style={{ marginBottom: 10 }}>
-          <div
-            className="Horizontal-viewButton"
+          <span
+            role="button"
+            tabIndex={0}
+            className="recommended-see-more"
             onClick={() =>
               navigate.push(
                 `/products/view?${props?.type ? `type=${props?.type}` : ""}`
               )
             }
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                navigate.push(
+                  `/products/view?${props?.type ? `type=${props?.type}` : ""}`
+                );
+              }
+            }}
           >
-            See More
-          </div>
+            See More <TbArrowRight />
+          </span>
         </div>
       </div>
       <div style={{ margin: 5 }} />

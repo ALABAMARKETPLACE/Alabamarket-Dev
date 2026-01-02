@@ -45,9 +45,8 @@ function Sidebar() {
     <div>
       {routes.map((item: any, key: number) => {
         return (
-          <Link href={item.path} className="text-dark text-decoration-none">
+          <Link key={key} href={item.path} className="text-dark text-decoration-none">
             <div
-              key={key}
               className={`d-flex py-2 gap-2 sidebar-item ${
                 pathname?.includes(item.route) ? "profile-menu-selected" : "profile-menu"
               }`}

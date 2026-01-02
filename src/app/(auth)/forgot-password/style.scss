@@ -1,0 +1,163 @@
+@use "../../../config/styleVariable.scss" as global;
+
+// Page Background
+.Screen-box {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../../../assets/images/position.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 20px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.25);
+    z-index: 0;
+  }
+}
+
+// Centered Layout Container
+.auth-container {
+  display: flex;
+  width: 100%;
+  max-width: 480px; 
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 576px) {
+    max-width: 100%;
+    border-radius: 16px;
+  }
+}
+
+// Form Side (Full Width)
+.auth-form-side {
+  flex: 1;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: transparent;
+
+  @media (max-width: 576px) {
+    padding: 30px 20px;
+  }
+}
+
+// Typography
+.LoginScreen-txt1 {
+  font-family: global.$Bold;
+  font-size: 28px;
+  color: #1a1a1a;
+  text-align: left;
+  margin-bottom: 8px;
+  
+  @media (max-width: 576px) {
+    font-size: 24px;
+    text-align: center;
+  }
+}
+
+.LoginScreen-txt2 {
+  font-family: global.$Regular;
+  font-size: 15px;
+  color: #666;
+  text-align: left;
+  margin-bottom: 32px;
+  line-height: 1.5;
+
+  @media (max-width: 576px) {
+    text-align: center;
+  }
+}
+
+// Input Styling Override (Scoped to .auth-container)
+.auth-container {
+  .ant-input-affix-wrapper-lg,
+  .ant-input-lg { 
+    padding: 14px 20px !important;
+    border-radius: 100px !important;
+    border: 1.5px solid #f1f5f9 !important;
+    background-color: #f8fafc !important;
+    font-size: 16px !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: none !important;
+    
+    &:hover {
+      background-color: #fff !important;
+      border-color: #cbd5e1 !important;
+    }
+
+    &:focus, &:focus-within {
+      background-color: #fff !important;
+      border-color: global.$primary !important;
+      box-shadow: 0 4px 12px rgba(255, 95, 21, 0.1) !important;
+      transform: translateY(-1px);
+    }
+    
+    input {
+      background-color: transparent !important;
+      height: 100% !important;
+    }
+  }
+}
+
+// Primary Button
+.btn-clr {
+  background: global.$primary !important;
+  border: none !important;
+  border-radius: 100px !important;
+  height: 58px !important;
+  font-size: 16px !important;
+  font-family: global.$Bold !important;
+  color: white !important;
+  box-shadow: 0 10px 20px rgba(255, 95, 21, 0.2) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  width: 100%;
+  margin-top: 12px;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(255, 95, 21, 0.3) !important;
+    background: darken(#FF5F15, 5%) !important;
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 15px rgba(255, 95, 21, 0.2) !important;
+  }
+  
+  span {
+    font-weight: 700;
+  }
+}
+
+// Back Link
+.LoginScreen-txt4 {
+  text-align: center;
+  font-size: 15px;
+  color: #64748b;
+  margin-top: 32px;
+  font-family: global.$Medium;
+  cursor: pointer;
+  transition: color 0.2s;
+
+  &:hover {
+    color: global.$primary;
+  }
+}

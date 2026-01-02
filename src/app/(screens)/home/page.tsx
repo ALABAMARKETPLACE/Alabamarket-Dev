@@ -15,6 +15,7 @@ import { jwtDecode } from "jwt-decode";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import FeaturedPosition from "./_components/featuredPosition";
 import PlatinumSection from "./_components/platinumSection";
+import DiscountedDealsSection from "./_components/discountedDealsSection";
 import GoldSection from "./_components/goldSection";
 import SilverSection from "./_components/silverSection";
 // import CategoryFeaturedProducts from "./_components/categoryFeaturedProducts";
@@ -177,6 +178,39 @@ function Home() {
     gcTime: 10 * 60 * 1000,
   });
 
+  const { data: discountedDeals = [] } = useQuery({
+    queryKey: ["featured-discounted-deals"],
+    queryFn: async () => {
+      // 1. Try to fetch from Subscription-based Featured Position 4
+      try {
+        const subResponse: any = await GET(API.FEATURED_POSITION_4, {
+          take: 12,
+        });
+        if (
+          subResponse?.status &&
+          Array.isArray(subResponse?.data) &&
+          subResponse.data.length > 0
+        ) {
+          return subResponse.data;
+        }
+      } catch (err) {
+        console.log("No subscription deals found, falling back to tag search");
+      }
+
+      // 2. Fallback to generic Discounted Products (tag=discount)
+      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=12&tag=discount`;
+      const response: any = await GET(url);
+      if (response?.status && Array.isArray(response?.data)) {
+        return response.data;
+      }
+      return [];
+    },
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    gcTime: 10 * 60 * 1000,
+  });
+
   const { data: allProductsResponse } = useQuery({
     queryKey: ["featured-products-all"],
     queryFn: async () => {
@@ -264,6 +298,13 @@ function Home() {
           <div className="HomeSCreen-space" />
         </>
       ) : null}
+
+      {discountedDeals.length > 0 && (
+        <>
+          <DiscountedDealsSection products={discountedDeals} />
+          <div className="HomeSCreen-space" />
+        </>
+      )}
 
       {showPosition1 && (
         <>

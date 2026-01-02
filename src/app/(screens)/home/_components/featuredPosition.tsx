@@ -2,9 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 import ProductItem from "../../../../components/productItem/page";
 import { MdArrowBack, MdOutlineArrowForward } from "react-icons/md";
+import { TbArrowRight } from "react-icons/tb";
 import React from "react";
 import { Col, Row } from "react-bootstrap";
 import { useRouter } from "next/navigation";
+import "../style.scss";
 
 interface FeaturedPositionProps {
   position: 1 | 2 | 3 | 4;
@@ -12,7 +14,11 @@ interface FeaturedPositionProps {
   products: any[];
 }
 
-function FeaturedPosition({ position, title, products }: FeaturedPositionProps) {
+function FeaturedPosition({
+  position,
+  title,
+  products,
+}: FeaturedPositionProps) {
   const [hasScrollBar, setHasScrollBar] = useState(false);
   const [rightButtonClicked, setRightButtonClicked] = useState(false);
   const navigation = useRouter();
@@ -48,20 +54,27 @@ function FeaturedPosition({ position, title, products }: FeaturedPositionProps) 
 
   return (
     <div className="container-fluid home-full-width">
-      <div className="Horizontal-row">
-        <div className="Horizontal-Heading1 mt-3">{title}</div>
-        <div className="Horizontal-row">
-          <div
-            className="Horizontal-viewButton"
-            onClick={() =>
+      <div className="section-title-wrapper justify-content-between mb-3">
+        <div className="section-title" style={{ fontSize: "20px" }}>
+          {title}
+        </div>
+        <span
+          role="button"
+          tabIndex={0}
+          className="featured-position__see-more"
+          onClick={() =>
+            navigation.push(`/products/view?type=featured&position=${position}`)
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
               navigation.push(
                 `/products/view?type=featured&position=${position}`
-              )
+              );
             }
-          >
-            See More
-          </div>
-        </div>
+          }}
+        >
+          See More <TbArrowRight />
+        </span>
       </div>
       <div style={{ margin: 5 }} />
       <div className="Horizontal-Pscroll position-relative">
@@ -109,4 +122,3 @@ function FeaturedPosition({ position, title, products }: FeaturedPositionProps) 
 }
 
 export default FeaturedPosition;
-

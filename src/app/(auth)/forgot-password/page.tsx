@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Container, Row, Col } from "react-bootstrap";
 import { Button, Form, Input, notification } from "antd";
-import { POST } from "@/util/apicall";;
+import { POST } from "@/util/apicall";
 import { useRouter } from "next/navigation";
-import API  from "@/config/API_ADMIN";
+import API from "@/config/API_ADMIN";
+import "./style.scss";
 
 function ForgotPassword() {
   const [notificationApi, contextHolder] = notification.useNotification();
@@ -35,55 +35,50 @@ function ForgotPassword() {
       setIsLoading(false);
     }
   };
+
   return (
     <div className="Screen-box">
       {contextHolder}
-      <br /> <br />
-      <Container>
-        <Row>
-          <Col sm={4} xs={12}></Col>
-          <Col sm={4} xs={12}>
-            <h2 className="LoginScreen-txt1">Forgot Your Password ?</h2>
-            <div className="LoginScreen-txt2">
-              Please enter your email address to retrieve your password
-            </div>
-            <br />
-            <div className="LoginScreen-box1">
-              <Form onFinish={ForgotPassword}>
-                <Form.Item
-                  name={"email"}
-                  rules={[
-                    { required: true, message: "Please enter your email" },
-                    {
-                      type: "email",
-                      message: "The input is not valid E-mail!",
-                    },
-                  ]}
-                >
-                  <Input size="large" placeholder="Enter Email" />
-                </Form.Item>
+      <div className="auth-container">
+        <div className="auth-form-side">
+          <h2 className="LoginScreen-txt1">Forgot Password</h2>
+          <div className="LoginScreen-txt2">
+            Enter your email address to retrieve your password
+          </div>
+          
+          <Form onFinish={ForgotPassword} layout="vertical">
+            <Form.Item
+              name={"email"}
+              rules={[
+                { required: true, message: "Please enter your email" },
+                {
+                  type: "email",
+                  message: "The input is not valid E-mail!",
+                },
+              ]}
+            >
+              <Input size="large" placeholder="Enter Email" />
+            </Form.Item>
 
-                <Row>
-                  <Col sm={6} xs={12}></Col>
-                  <Col sm={6} xs={12}>
-                    <Button
-                      block
-                      size="large"
-                      // type="primary"
-                      className="btn-clr"
-                      htmlType="submit"
-                    >
-                      Send Request
-                    </Button>
-                  </Col>
-                </Row>
-              </Form>
+            <Button
+              block
+              size="large"
+              className="btn-clr"
+              htmlType="submit"
+              loading={isLoading}
+            >
+              Send Request
+            </Button>
+            
+            <div 
+              className="LoginScreen-txt4"
+              onClick={() => router.push("/login")}
+            >
+              Back to Login
             </div>
-            <br />
-          </Col>
-          <Col sm={4} xs={12}></Col>
-        </Row>
-      </Container>
+          </Form>
+        </div>
+      </div>
     </div>
   );
 }

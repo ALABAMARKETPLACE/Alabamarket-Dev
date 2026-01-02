@@ -8,12 +8,14 @@ import React, {
 } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { MdArrowBack, MdOutlineArrowForward } from "react-icons/md";
+import { TbArrowRight } from "react-icons/tb";
 import ProductItem from "../../../../components/productItem/page";
 import { GET } from "../../../../util/apicall";
 import API from "../../../../config/API";
 import { useRouter } from "next/navigation";
 import Loading from "../../../../components/loading";
 import "./categoryFeaturedProducts.scss";
+import "../style.scss"; // Ensure shared styles are available
 
 interface CategoryFeaturedProductsProps {
   categories: any[];
@@ -173,13 +175,23 @@ function CategoryFeaturedProducts({
       {/* Featured Products for Selected Category */}
       {selectedCategory && (
         <div className="category-products-section">
-          <div className="section-header">
-            <div className="section-title">
+          <div className="section-title-wrapper justify-content-between mb-3">
+            <div className="section-title" style={{ fontSize: "20px" }}>
               Featured {selectedCategory.name} Products
             </div>
-            <button className="see-more-btn" onClick={handleSeeMore}>
-              View All
-            </button>
+            <span
+              role="button"
+              tabIndex={0}
+              className="featured-position__see-more"
+              onClick={handleSeeMore}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  handleSeeMore();
+                }
+              }}
+            >
+              See More <TbArrowRight />
+            </span>
           </div>
 
           {/* Tags/Filters (sync with /category page) */}

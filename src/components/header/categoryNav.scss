@@ -1,31 +1,15 @@
+@use "../../config/styleVariable.scss" as vars;
+
 .category-nav-wrapper {
   width: 100%;
-  min-height: 60px;
-  overflow: visible !important;
+  min-height: 56px;
   display: flex;
   align-items: center;
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
 
-  // Mobile adjustments (small phones)
-  @media (max-width: 480px) {
-    min-height: 45px;
-    padding: 0 3px;
-  }
-
-  // Mobile adjustments
-  @media (max-width: 767px) {
+  @media (max-width: 768px) {
     min-height: 50px;
-    padding: 0 5px;
-  }
-
-  // Tablet adjustments
-  @media (min-width: 768px) and (max-width: 1023px) {
-    min-height: 55px;
-    padding: 0 10px;
-  }
-
-  // Desktop
-  @media (min-width: 1024px) {
-    min-height: 60px;
   }
 }
 
@@ -33,26 +17,13 @@
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 8px;
+  gap: 16px;
+  padding: 0;
+  max-width: 1400px;
+  margin: 0 auto;
 
-  // Mobile (small phones): Reduce gap significantly
-  @media (max-width: 480px) {
-    gap: 2px;
-  }
-
-  // Mobile: Reduce gap
-  @media (max-width: 767px) {
-    gap: 4px;
-  }
-
-  // Tablet: Medium gap
-  @media (min-width: 768px) and (max-width: 1023px) {
-    gap: 6px;
-  }
-
-  // Desktop: Default gap
-  @media (min-width: 1024px) {
-    gap: 8px;
+  @media (max-width: 768px) {
+    gap: 12px;
   }
 }
 
@@ -61,27 +32,10 @@
   overflow: hidden;
   flex: 1;
   height: 100%;
-  min-height: 60px;
-
-  // Mobile (small phones) adjustments
-  @media (max-width: 480px) {
-    min-height: 45px;
-  }
-
-  // Mobile adjustments
-  @media (max-width: 767px) {
-    min-height: 50px;
-  }
-
-  // Tablet adjustments
-  @media (min-width: 768px) and (max-width: 1023px) {
-    min-height: 55px;
-  }
-
-  // Desktop
-  @media (min-width: 1024px) {
-    min-height: 60px;
-  }
+  
+  // Mask for fade effect on sides
+  mask-image: linear-gradient(to right, transparent, black 20px, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black 95%, transparent);
 
   .category-lines-container {
     display: flex;
@@ -89,171 +43,55 @@
     overflow-x: auto;
     scroll-behavior: smooth;
     scrollbar-width: none;
-    padding: 0 15px;
-    overflow-y: hidden;
-    height: 100%;
-
-    // Mobile (small phones): Reduce padding and gap significantly
-    @media (max-width: 480px) {
-      gap: 4px;
-      padding: 0 5px;
-    }
-
-    // Mobile: Reduce padding and gap
-    @media (max-width: 767px) {
-      gap: 8px;
-      padding: 0 10px;
-    }
-
-    // Tablet: Medium adjustments
-    @media (min-width: 768px) and (max-width: 1023px) {
-      gap: 10px;
-      padding: 0 12px;
-    }
-
-    // Desktop: Default
-    @media (min-width: 1024px) {
-      gap: 12px;
-      padding: 0 15px;
-    }
+    padding: 10px 20px;
+    align-items: center;
 
     &::-webkit-scrollbar {
       display: none;
     }
 
-    .category-line-item.beautiful.small-card {
-      pointer-events: auto;
+    .category-line-item {
       flex-shrink: 0;
       cursor: pointer;
-      padding: 8px 10px 6px 10px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
-      background: #fff;
-      border: 1.5px solid #e0e0e0;
-      box-shadow: 0 2px 8px rgba(60, 60, 60, 0.06);
-      color: #222;
+      padding: 8px 18px;
+      border-radius: 100px;
+      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+      background: #f8f9fa;
+      border: 1px solid transparent;
+      color: #4b5563;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-width: 150px;
-      min-height: 40px;
-      max-width: 220px;
-      box-sizing: border-box;
-      margin-top: 18px;
-      position: relative;
-
-      // Mobile adjustments
-      @media (max-width: 767px) {
-        min-width: 120px;
-        max-width: 160px;
-        min-height: 35px;
-        padding: 6px 8px 4px 8px;
-        margin-top: 12px;
-      }
-
-      // Tablet adjustments
-      @media (min-width: 768px) and (max-width: 1023px) {
-        min-width: 130px;
-        max-width: 180px;
-        min-height: 38px;
-        padding: 7px 9px 5px 9px;
-        margin-top: 15px;
-      }
-
-      // Desktop
-      @media (min-width: 1024px) {
-        min-width: 150px;
-        max-width: 220px;
-        min-height: 40px;
-        padding: 8px 10px 6px 10px;
-        margin-top: 18px;
-      }
+      white-space: nowrap;
 
       &:hover {
-        background: linear-gradient(135deg, #fff 70%, #ffe5d0 100%);
-        transform: translateY(-2px) scale(1.03);
-        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.13);
-        border-color: #ffb98a;
+        background: #fff0e6; // Light orange background
+        color: vars.$primary;
+        transform: translateY(-1px);
+        border-color: rgba(255, 95, 21, 0.15);
       }
 
       &.active {
-        background: linear-gradient(135deg, #fff 70%, #ffe5d0 100%);
-        border-color: #ff6b35;
-        box-shadow: 0 4px 12px rgba(255, 107, 53, 0.15);
+        background: vars.$primary;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(255, 95, 21, 0.25);
       }
 
       .category-line-label {
-        pointer-events: none;
-        text-align: center;
-        font-size: 15px;
+        font-family: vars.$Medium;
+        font-size: 14px;
         font-weight: 500;
-        color: #222;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        padding: 0 12px;
-        min-width: 80px;
-        min-height: 24px;
-        max-width: 180px;
-        letter-spacing: 0.1px;
+        text-transform: capitalize;
+        letter-spacing: 0.2px;
 
-        // Mobile adjustments
-        @media (max-width: 767px) {
+        @media (max-width: 768px) {
           font-size: 13px;
-          padding: 0 8px;
-          min-width: 60px;
-          max-width: 120px;
-          min-height: 20px;
-        }
-
-        // Tablet adjustments
-        @media (min-width: 768px) and (max-width: 1023px) {
-          font-size: 14px;
-          padding: 0 10px;
-          min-width: 70px;
-          max-width: 140px;
-          min-height: 22px;
-        }
-
-        // Desktop
-        @media (min-width: 1024px) {
-          font-size: 15px;
-          padding: 0 12px;
-          min-width: 80px;
-          max-width: 180px;
-          min-height: 24px;
         }
       }
 
+      // Hide the old decor line
       .category-line-decor {
-        pointer-events: none;
-        width: 32px;
-        height: 2px;
-        border-radius: 1px;
-        background: #e0e0e0;
-        margin-top: 6px;
-
-        // Mobile adjustments
-        @media (max-width: 767px) {
-          width: 24px;
-          height: 1.5px;
-          margin-top: 4px;
-        }
-
-        // Tablet adjustments
-        @media (min-width: 768px) and (max-width: 1023px) {
-          width: 28px;
-          height: 1.8px;
-          margin-top: 5px;
-        }
-
-        // Desktop
-        @media (min-width: 1024px) {
-          width: 32px;
-          height: 2px;
-          margin-top: 6px;
-        }
+        display: none;
       }
     }
   }

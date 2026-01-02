@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import ProductItem from "../../../../components/productItem/page";
 import { MdArrowBack, MdOutlineArrowForward } from "react-icons/md";
+import { TbArrowRight } from "react-icons/tb";
 import React from "react";
 import { useRouter } from "next/navigation";
-// import { useNavigate } from "react-router-dom";
+import "../style.scss"; // Import to ensure styles are available
+
 function PopularItems(props: any) {
   const [Recent, setRecent] = useState([]);
   const [hasScrollBar, setHasScrollBar] = useState(false);
@@ -41,20 +43,27 @@ function PopularItems(props: any) {
 
   return (
     <div className="container-fluid home-full-width">
-      <div className="Horizontal-row">
-        <div className="Horizontal-Heading1 mt-3">{props?.title}</div>
-        <div className="Horizontal-row">
-          <div
-            className="Horizontal-viewButton"
-            onClick={() =>
+      <div className="section-title-wrapper justify-content-between mb-3">
+        <div className="section-title" style={{ fontSize: "20px" }}>{props?.title}</div>
+        <span
+          role="button"
+          tabIndex={0}
+          className="featured-position__see-more"
+          onClick={() =>
+            navigation.push(
+              `/products/view?${props?.type ? `type=${props?.type}` : ""}`
+            )
+          }
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
               navigation.push(
                 `/products/view?${props?.type ? `type=${props?.type}` : ""}`
-              )
+              );
             }
-          >
-            See More
-          </div>
-        </div>
+          }}
+        >
+          See More <TbArrowRight />
+        </span>
       </div>
       <div style={{ margin: 5 }} />
       <div className="Horizontal-Pscroll position-relative">

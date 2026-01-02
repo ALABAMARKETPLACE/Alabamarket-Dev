@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import platinumImage from "@/assets/images/postion1.jpg";
+import { TbArrowRight } from "react-icons/tb";
 
 interface PlatinumSectionProps {
   products: any[];
@@ -41,7 +42,6 @@ function PlatinumSection({
               role="button"
               tabIndex={0}
               className="platinum-section__see-more"
-              style={{ color: "#FF5F15" }}
               onClick={() =>
                 router.push(`/products/view?type=featured&position=1`)
               }
@@ -51,7 +51,7 @@ function PlatinumSection({
                 }
               }}
             >
-              See More
+              See More <TbArrowRight />
             </span>
           </div>
           <div className="platinum-section__grid">
@@ -78,7 +78,7 @@ function PlatinumSection({
               alt="Platinum spotlight"
               fill
               sizes="(max-width: 991px) 100vw, 260px"
-              style={{ objectFit: "cover" }}
+              style={{ objectFit: "fill" }}
               priority
             />
           </div>

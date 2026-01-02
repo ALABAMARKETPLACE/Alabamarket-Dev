@@ -48,9 +48,6 @@ function EmailLogin() {
   return (
     <div>
       {contextHolder}
-      <div className="LoginScreen-txt2 text-center">
-        Enter your email and we’ll check for you.
-      </div>
       <br />
       <Form onFinish={LoginEmail}>
         <Form.Item

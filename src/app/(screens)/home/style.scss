@@ -64,6 +64,47 @@
   }
 }
 
+// ====== SEE MORE LINK MIXIN ======
+@mixin section-see-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: global.$SemiBold;
+  font-size: 13px;
+  color: #ff9500;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  border-radius: 30px;
+  background-color: rgba(255, 149, 0, 0.06);
+  border: 1px solid rgba(255, 149, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+
+  svg {
+    font-size: 16px;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  &:hover {
+    background-color: #ff9500;
+    color: #ffffff;
+    border-color: #ff9500;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.25);
+    transform: translateY(-1px);
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 6px rgba(255, 149, 0, 0.2);
+  }
+}
+
 // ====== SECTION TITLE STYLES ======
 .section-title-wrapper {
   display: flex;
@@ -158,6 +199,7 @@
   &.popular-section,
   &.featured-section,
   &.platinum-section,
+  &.discounted-section,
   &.gold-section,
   &.silver-section {
     padding: 44px;
@@ -235,7 +277,7 @@
   gap: 20px;
   overflow-x: auto;
   scroll-behavior: smooth;
-  padding: 12px 0;
+  padding: 12px 0 16px 0; // Added bottom padding for hover effects
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
@@ -359,8 +401,13 @@
   height: 100%;
   background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0));
   z-index: -1;
+  @media (max-width: 1024px) {
+    width: 50%;
+  }
   @media (max-width: 768px) {
     width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.2)); // Better gradient for mobile
+    padding: 15px 20px;
   }
 }
 
@@ -396,14 +443,24 @@
   color: white;
   z-index: 2;
 
+  font-size: 32px; // Default desktop size
+
+  @media (max-width: 1024px) {
+    font-size: 24px;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 25px;
+    font-size: 20px;
   }
 }
 
 .HomeScreen-Bannertxt3 {
   font-family: global.$Medium;
   font-size: 20px;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
 
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 14px;
@@ -625,7 +682,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
   }
 
   &__title {
@@ -638,6 +696,12 @@
     position: relative;
     padding-bottom: 8px;
     animation: slideInDown 0.7s ease-out;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex: 1;
+    min-width: 0;
 
     &::after {
       content: "";
@@ -654,16 +718,9 @@
   }
 
   &__see-more {
-    font-family: global.$Medium;
-    font-size: 14px;
-    color: global.$primary;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    @include section-see-more;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   &__cta {
@@ -684,8 +741,9 @@
 
   &__grid {
     display: grid;
-    gap: 16px;
+    gap: 20px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 10px;
   }
 
   &__card {
@@ -714,10 +772,14 @@
       gap: 16px;
     }
 
-    &__content,
-    &__media {
+    &__content {
       grid-column: span 1;
       padding: 18px;
+    }
+
+    &__media {
+      grid-column: span 1;
+      padding: 0;
     }
 
     &__media-inner {
@@ -725,6 +787,131 @@
       max-width: 100%;
       min-width: 0;
       min-height: 200px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    &__title {
+      font-size: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    &__grid {
+      gap: 12px;
+    }
+  }
+}
+
+.discounted-section {
+  width: 100%;
+
+  &__wrapper {
+    display: block;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  &__content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    border: 1px solid #f1f1f1;
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+  }
+
+  &__title {
+    font-family: global.$SemiBold;
+    font-size: 24px;
+    background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+    padding-bottom: 8px;
+    animation: slideInDown 0.7s ease-out;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex: 1;
+    min-width: 0;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #ff9500 0%, #ffb84d 100%);
+      border-radius: 2px;
+      box-shadow: 0 0 12px rgba(255, 149, 0, 0.4);
+      animation: underlineExpand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  }
+
+  &__see-more {
+    @include section-see-more;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  &__cta {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 14px;
+    font-family: global.$Medium;
+    background: #111827;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    gap: 20px;
+    row-gap: 32px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 10px;
+  }
+
+  &__card {
+    width: 100%;
+
+    .ProductItem {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 768px) {
+    &__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    &__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
     }
   }
 
@@ -771,6 +958,10 @@
     position: relative;
     padding-bottom: 6px;
     animation: slideInDown 0.6s ease-out;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 
     &::after {
       content: "";
@@ -791,15 +982,18 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
   }
 
   &__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 20px;
+    row-gap: 32px; // Increased vertical gap to prevent hover overlap
     margin-top: 0;
     align-content: flex-start;
+    padding-top: 10px;
   }
 
   &__card {
@@ -811,13 +1005,13 @@
   }
 
   &__panel--media {
-    padding: 0;
-    position: relative;
-    overflow: hidden;
-    min-height: 320px;
-    flex: 0 0 28%;
-    min-width: 260px;
-  }
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      min-height: 320px;
+      flex: 0 0 28%;
+      min-width: 260px;
+    }
 
   &__empty {
     flex: 1;
@@ -831,16 +1025,9 @@
   }
 
   &__see-more {
-    font-family: global.$Medium;
-    font-size: 14px;
-    color: global.$primary;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    @include section-see-more;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   @media (max-width: 1199px) {
@@ -872,6 +1059,7 @@
 
     &__panel--media {
       min-height: 220px;
+      padding: 0;
     }
   }
 
@@ -908,7 +1096,8 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 8px;
   }
 
   &__panel-title {
@@ -921,6 +1110,12 @@
     position: relative;
     padding-bottom: 6px;
     animation: slideInDown 0.6s ease-out;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    flex: 1;
+    min-width: 0;
 
     &::after {
       content: "";
@@ -937,23 +1132,15 @@
   }
 
   &__see-more {
-    font-family: global.$Medium;
-    font-size: 13px;
-    color: global.$primary;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-
-    &:hover {
-      text-decoration: underline;
-    }
+    @include section-see-more;
   }
 
   &__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    gap: 20px;
     flex: 1;
+    padding-top: 10px;
   }
 
   &__card {
@@ -994,10 +1181,16 @@
   }
 }
 
+.featured-position {
+  &__see-more {
+    @include section-see-more;
+  }
+}
+
 .popularItems-row {
   display: flex;
-  gap: 12px;
-  padding: 0 8px;
+  gap: 20px;
+  padding: 10px 8px 16px 8px; // Added top/bottom padding for hover effects
   overflow-x: auto;
   scroll-behavior: smooth;
   scrollbar-width: none;
