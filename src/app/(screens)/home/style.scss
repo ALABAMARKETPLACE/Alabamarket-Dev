@@ -675,6 +675,15 @@
     width: 100%;
     height: 100%;
     min-height: 240px;
+
+    img {
+      object-fit: cover !important; // Prevent stretching
+      object-position: top center !important; // Focus on top part of image
+    }
+
+    @media (max-width: 991px) {
+      // Removed contain override to keep cover behavior
+    }
   }
 
   &__header {
@@ -786,7 +795,7 @@
       width: 100%;
       max-width: 100%;
       min-width: 0;
-      min-height: 200px;
+      min-height: 450px; // Increased height to show more of the image
     }
   }
 
@@ -1011,6 +1020,15 @@
       min-height: 320px;
       flex: 0 0 28%;
       min-width: 260px;
+
+      img {
+        object-fit: cover !important; // Prevent stretching
+        object-position: top center !important;
+      }
+
+      @media (max-width: 991px) {
+        // Removed contain override
+      }
     }
 
   &__empty {
@@ -1058,7 +1076,7 @@
     }
 
     &__panel--media {
-      min-height: 220px;
+      min-height: 450px; // Increased height to show more of the image
       padding: 0;
     }
   }
