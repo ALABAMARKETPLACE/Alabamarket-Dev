@@ -1,6 +1,6 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import { Button, Table, Pagination, Avatar } from "antd";
+import React, { useMemo } from "react";
+import { Button, Table, Pagination, Avatar, Card } from "antd";
 import { TbListDetails } from "react-icons/tb";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
@@ -20,18 +20,6 @@ interface props {
 function DataTable({ data, count, setPage, pageSize, page }: props) {
   const route = useRouter();
   const Settings = useAppSelector(reduxSettings);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const columnPaddingStyle = useMemo(() => ({ padding: "12px 16px" }), []);
 
   const columns = useMemo(
     () => [
@@ -39,23 +27,18 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         title: "",
         dataIndex: "image",
         key: "image",
+        width: 60,
         render: (img: string) => <Avatar size={35} src={img} shape="square" />,
-        onCell: () => ({ style: columnPaddingStyle }),
-        onHeaderCell: () => ({ style: columnPaddingStyle }),
       },
       {
         title: "OrderId",
         dataIndex: "order_id",
         key: "order_id",
-        onCell: () => ({ style: columnPaddingStyle }),
-        onHeaderCell: () => ({ style: columnPaddingStyle }),
       },
       {
         title: "User Name",
         dataIndex: "name",
         key: "userId",
-        onCell: () => ({ style: columnPaddingStyle }),
-        onHeaderCell: () => ({ style: columnPaddingStyle }),
       },
       {
         title: "OrderDate", //
@@ -64,8 +47,6 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         render: (item: any) => (
           <span>{moment(item).format("MMM Do YYYY")}</span>
         ),
-        onCell: () => ({ style: columnPaddingStyle }),
-        onHeaderCell: () => ({ style: columnPaddingStyle }),
       },
       {
         title: "Total", //
@@ -76,16 +57,12 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
             {Number(item)?.toFixed(2)} {Settings.currency}
           </span>
         ),
-        onCell: () => ({ style: columnPaddingStyle }),
-        onHeaderCell: () => ({ style: columnPaddingStyle }),
       },
       {
         title: "Status", //
         dataIndex: "status",
         key: "status",
         render: (item: string) => <span>{item}</span>,
-        onCell: () => ({ style: columnPaddingStyle }),
-        onHeaderCell: () => ({ style: columnPaddingStyle }),
       },
       {
         title: "Action",
@@ -101,87 +78,21 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
             </Button>
           </div>
         ),
-        onCell: () => ({ style: columnPaddingStyle }),
-        onHeaderCell: () => ({ style: columnPaddingStyle }),
       },
     ],
-    [route, Settings.currency, columnPaddingStyle]
+    [route, Settings.currency]
   );
-
-  const renderMobileCards = useMemo(() => {
-    if (!Array.isArray(data) || data.length === 0) {
-      return (
-        <div className="orders-tableMobileEmpty">
-          <TbListDetails size={40} />
-          <p>No Orders yet</p>
-        </div>
-      );
-    }
-
-    return data.map((record: any) => {
-      const orderId = record?.order_id ?? record?._id ?? record?.id;
-      const createdAt = record?.createdAt
-        ? moment(record.createdAt).format("MMM Do YYYY")
-        : "-";
-      const total =
-        typeof record?.grandTotal === "number"
-          ? `${Number(record?.grandTotal).toFixed(2)} ${
-              Settings?.currency ?? ""
-            }`
-          : "--";
-
-      return (
-        <div className="orders-tableMobileCard" key={orderId}>
-          <div className="orders-tableMobileHeader">
-            <Avatar
-              size={40}
-              src={record?.image}
-              shape="square"
-              className="orders-tableMobileAvatar"
-            />
-            <div className="orders-tableMobileTitle">
-              <div className="title">#{record?.order_id ?? "--"}</div>
-              <div className="sub">{record?.name ?? "Unknown user"}</div>
-            </div>
-            <div className="orders-tableMobileStatus">
-              {record?.status ?? "-"}
-            </div>
-          </div>
-          <div className="orders-tableMobileBody">
-            <div className="orders-tableMobileRow">
-              <span className="label">Date</span>
-              <span className="value">{createdAt}</span>
-            </div>
-            <div className="orders-tableMobileRow">
-              <span className="label">Total</span>
-              <span className="value">{total}</span>
-            </div>
-          </div>
-          <div className="orders-tableMobileActions">
-            <Button
-              type="primary"
-              ghost
-              icon={<FaEye size={16} color={CONFIG.COLOR} />}
-              size="small"
-              onClick={() => route.push("/auth/orders/" + record?.order_id)}
-            >
-              View
-            </Button>
-          </div>
-        </div>
-      );
-    });
-  }, [Settings?.currency, data, route]);
 
   return (
     <>
-      {!isMobile ? (
+      <Card className="shadow-sm" bordered={false}>
         <Table
           dataSource={data}
           columns={columns}
           pagination={false}
           size="small"
           rowKey={(record) => record?.order_id ?? record?._id ?? record?.id}
+          scroll={{ x: "max-content" }}
           locale={{
             emptyText: (
               <div
@@ -202,21 +113,19 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
             ),
           }}
         />
-      ) : (
-        <div className="orders-tableMobile">{renderMobileCards}</div>
-      )}
-      <div className="table-pagination">
-        <Pagination
-          showSizeChanger
-          pageSize={pageSize}
-          current={page}
-          total={count ?? 0}
-          showTotal={() => `Total ${count ?? 0} Orders`}
-          onChange={(nextPage, nextPageSize) => {
-            setPage(nextPage, nextPageSize);
-          }}
-        />
-      </div>
+        <div className="table-pagination mt-4 flex justify-end">
+          <Pagination
+            showSizeChanger
+            pageSize={pageSize}
+            current={page}
+            total={count ?? 0}
+            showTotal={() => `Total ${count ?? 0} Orders`}
+            onChange={(nextPage, nextPageSize) => {
+              setPage(nextPage, nextPageSize);
+            }}
+          />
+        </div>
+      </Card>
     </>
   );
 }

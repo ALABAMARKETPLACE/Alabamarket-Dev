@@ -30,7 +30,7 @@ const getCategoryId = (cid: any): string => {
 };
 
 const ProductByCategory = () => {
-  const pageSize = 1000;
+  const pageSize = 100;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -281,11 +281,12 @@ const ProductByCategory = () => {
               current={page}
               pageSize={pageSize}
               total={meta?.itemCount || 0}
+              showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
               defaultCurrent={1}
               responsive={true}
               defaultPageSize={pageSize}
               disabled={false}
-              hideOnSinglePage={true}
+              hideOnSinglePage={false}
               onChange={handlePageChange}
             />
             <br />
