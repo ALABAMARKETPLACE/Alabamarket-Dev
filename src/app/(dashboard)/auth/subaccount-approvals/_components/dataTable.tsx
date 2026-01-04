@@ -73,6 +73,22 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       ),
     },
     {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: 120,
+      render: (status: string) => {
+        let color = "blue";
+        if (status === "approved") color = "green";
+        if (status === "rejected") color = "red";
+        return (
+          <Tag color={color} style={{ textTransform: "capitalize" }}>
+            {status || "Pending"}
+          </Tag>
+        );
+      },
+    },
+    {
       title: "Date",
       dataIndex: "createdAt",
       key: "createdAt",
@@ -107,7 +123,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         pagination={false}
         size="small"
         rowKey="id"
-        scroll={{ x: 1300 }}
+        scroll={{ x: "max-content" }}
         locale={{
           emptyText: (
             <div className="py-5">
