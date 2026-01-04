@@ -68,45 +68,51 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "Store Name",
       dataIndex: "store_name",
       key: "store_name",
+      width: 150,
+      fixed: "left",
+      render: (text: string) => <span className="font-medium">{text}</span>,
     },
     {
       title: "Seller Name",
       dataIndex: "seller_name",
       key: "seller_name",
+      width: 150,
     },
     {
-      title: "Bank Name",
-      dataIndex: "settlement_bank",
-      key: "settlement_bank",
-    },
-    {
-      title: "Account Number",
-      dataIndex: "settlement_account_number",
-      key: "settlement_account_number",
-      render: (text: string, record: any) =>
-        text || record.account_number || "N/A",
-    },
-    {
-      title: "Account Name",
-      dataIndex: "settlement_account_name",
-      key: "settlement_account_name",
-      render: (text: string, record: any) =>
-        text || record.account_name_or_code || "N/A",
+      title: "Bank Details",
+      key: "bank_details",
+      width: 250,
+      render: (_: any, record: any) => (
+        <div className="flex flex-col text-xs">
+          <span className="font-semibold">{record.settlement_bank}</span>
+          <span>
+            {record.settlement_account_number || record.account_number || "N/A"}
+          </span>
+          <span className="text-gray-500 truncate" title={record.settlement_account_name || record.account_name_or_code}>
+            {record.settlement_account_name || record.account_name_or_code || "N/A"}
+          </span>
+        </div>
+      ),
     },
     {
       title: "Subaccount Code",
       dataIndex: "paystack_subaccount_code",
       key: "paystack_subaccount_code",
+      width: 150,
+      render: (text: string) => <Tag color="blue">{text}</Tag>,
     },
     {
       title: "Date",
       dataIndex: "createdAt",
       key: "createdAt",
+      width: 120,
       render: (date: string) => moment(date).format("DD/MM/YYYY"),
     },
     {
       title: "Action",
       key: "action",
+      width: 180,
+      fixed: "right",
       render: (_: any, record: any) => (
         <div className="flex gap-2">
           <Button
@@ -114,7 +120,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             size="small"
             loading={loadingId === record.id && actionType === "approve"}
             onClick={() => handleAction(record.id, "approve")}
-            disabled={loadingId === record.id && actionType !== "approve"}
+            disabled={loadingId !== null}
           >
             Approve
           </Button>
@@ -123,7 +129,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             size="small"
             loading={loadingId === record.id && actionType === "reject"}
             onClick={() => handleAction(record.id, "reject")}
-            disabled={loadingId === record.id && actionType !== "reject"}
+            disabled={loadingId !== null}
           >
             Reject
           </Button>
@@ -136,14 +142,15 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     <>
       <Table
         dataSource={data}
-        columns={columns}
+        columns={columns as any}
         pagination={false}
-        size="small"
+        size="middle"
         rowKey="id"
+        scroll={{ x: 1000 }}
         locale={{
           emptyText: (
-            <div className="py-5">
-              <MdHourglassEmpty size={40} />
+            <div className="py-10 flex flex-col items-center justify-center text-gray-400">
+              <MdHourglassEmpty size={40} className="mb-2" />
               <p>No pending subaccounts found</p>
             </div>
           ),
