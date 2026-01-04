@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Table, Pagination, Tag } from "antd";
-import { useQueryClient } from "@tanstack/react-query";
+import { Button, Table, Pagination, Tag, notification, Modal } from "antd";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { POST } from "@/util/apicall";
+import API from "@/config/API_ADMIN";
 import moment from "moment";
 import { MdHourglassEmpty } from "react-icons/md";
-import ActionModal from "./actionModal";
 
 interface props {
   data: any[];
@@ -17,17 +18,49 @@ interface props {
 
 function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   const queryClient = useQueryClient();
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedRecord, setSelectedRecord] = useState<any>(null);
+  const [loadingId, setLoadingId] = useState<number | null>(null);
+  const [actionType, setActionType] = useState<"approve" | "reject" | null>(null);
 
-  const handleAction = (record: any) => {
-    setSelectedRecord(record);
-    setOpenModal(true);
-  };
+  const actionSubaccountMutation = useMutation({
+    mutationFn: (data: { id: number; type: "approve" | "reject" }) => {
+      const url = `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.id}/${data.type}`;
+      return POST(url, {});
+    },
+    onSuccess: (_, variables) => {
+      notification.success({
+        message: `Subaccount ${
+          variables.type === "approve" ? "approved" : "rejected"
+        } successfully`,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["admin_paystack_subaccounts_pending"],
+      });
+      setLoadingId(null);
+      setActionType(null);
+    },
+    onError: (err: any, variables) => {
+      notification.error({
+        message:
+          err?.message ||
+          `Failed to ${variables.type} subaccount`,
+      });
+      setLoadingId(null);
+      setActionType(null);
+    },
+  });
 
-  const handleClose = () => {
-    setOpenModal(false);
-    setSelectedRecord(null);
+  const handleAction = (storeId: number, type: "approve" | "reject") => {
+    Modal.confirm({
+      title: `${type === "approve" ? "Approve" : "Reject"} Subaccount`,
+      content: `Are you sure you want to ${type} this Paystack subaccount?`,
+      okText: type === "approve" ? "Approve" : "Reject",
+      okType: type === "approve" ? "primary" : "danger",
+      onOk: () => {
+        setLoadingId(storeId);
+        setActionType(type);
+        actionSubaccountMutation.mutate({ id: storeId, type });
+      },
+    });
   };
 
   const columns = [
@@ -35,81 +68,64 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "Store Name",
       dataIndex: "store_name",
       key: "store_name",
-      width: 150,
-      fixed: "left",
-      render: (text: string, record: any) => (
-        <span className="font-medium">
-          {text || record.store?.store_name || "N/A"}
-        </span>
-      ),
     },
     {
       title: "Seller Name",
       dataIndex: "seller_name",
       key: "seller_name",
-      width: 150,
-      render: (text: string, record: any) =>
-        text ||
-        record.seller_name ||
-        record.store?.seller_name ||
-        record.store?.name ||
-        record.store?.user?.name ||
-        "N/A",
     },
     {
-      title: "Bank Details",
-      key: "bank_details",
-      width: 250,
-      render: (_: any, record: any) => (
-        <div className="flex flex-col text-xs">
-          <span className="font-semibold">
-            {record.settlement_bank || record.bank_name}
-          </span>
-          <span>
-            {record.settlement_account_number || record.account_number || "N/A"}
-          </span>
-          <span
-            className="text-gray-500 truncate"
-            title={
-              record.settlement_account_name || record.account_name_or_code
-            }
-          >
-            {record.settlement_account_name ||
-              record.account_name_or_code ||
-              "N/A"}
-          </span>
-        </div>
-      ),
+      title: "Bank Name",
+      dataIndex: "settlement_bank",
+      key: "settlement_bank",
+    },
+    {
+      title: "Account Number",
+      dataIndex: "settlement_account_number",
+      key: "settlement_account_number",
+      render: (text: string, record: any) =>
+        text || record.account_number || "N/A",
+    },
+    {
+      title: "Account Name",
+      dataIndex: "settlement_account_name",
+      key: "settlement_account_name",
+      render: (text: string, record: any) =>
+        text || record.account_name_or_code || "N/A",
     },
     {
       title: "Subaccount Code",
       dataIndex: "paystack_subaccount_code",
       key: "paystack_subaccount_code",
-      width: 150,
-      render: (text: string, record: any) => (
-        <Tag color="blue">{text || record.subaccount_code || "N/A"}</Tag>
-      ),
     },
     {
       title: "Date",
       dataIndex: "createdAt",
       key: "createdAt",
-      width: 120,
       render: (date: string) => moment(date).format("DD/MM/YYYY"),
     },
     {
       title: "Action",
       key: "action",
-      width: 150,
-      fixed: "right",
       render: (_: any, record: any) => (
         <div className="flex gap-2">
           <Button
             type="primary"
             size="small"
-            onClick={() => handleAction(record)}
+            loading={loadingId === record.id && actionType === "approve"}
+            onClick={() => handleAction(record.id, "approve")}
+            disabled={loadingId === record.id && actionType !== "approve"}
           >
-            Approve/Reject
+            Approve
+          </Button>
+          <Button
+            danger
+            size="small"
+            loading={loadingId === record.id && actionType === "reject"}
+            onClick={() => handleAction(record.id, "reject")}
+            disabled={loadingId === record.id && actionType !== "reject"}
+          >
+            Reject
           </Button>
         </div>
       ),
@@ -120,15 +136,14 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     <>
       <Table
         dataSource={data}
-        columns={columns as any}
+        columns={columns}
         pagination={false}
-        size="middle"
+        size="small"
         rowKey="id"
-        scroll={{ x: 1000 }}
         locale={{
           emptyText: (
-            <div className="py-10 flex flex-col items-center justify-center text-gray-400">
-              <MdHourglassEmpty size={40} className="mb-2" />
+            <div className="py-5">
+              <MdHourglassEmpty size={40} />
               <p>No pending subaccounts found</p>
             </div>
           ),
@@ -147,9 +162,6 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           }}
         />
       </div>
-      {openModal && (
-        <ActionModal open={openModal} close={handleClose} data={selectedRecord} />
-      )}
     </>
   );
 }
