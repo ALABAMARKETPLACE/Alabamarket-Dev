@@ -18,17 +18,6 @@ const nextConfig = {
       "@": "./src",
     },
   },
-  async rewrites() {
-    return [
-      {
-        source: "/api-proxy/paystack-subaccounts/:path*",
-        destination: `${
-          process.env.NEXT_PUBLIC_PAYSTACK_SUBACCOUNTS_API ||
-          "https://apis.alabamarketplace.ng"
-        }/paystack-subaccounts/:path*`,
-      },
-    ];
-  },
 };
 
 export default nextConfig;
