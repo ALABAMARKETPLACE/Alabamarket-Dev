@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button, Table, Pagination, Tag, notification, Modal } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { POST } from "@/util/apicall";
+import { PUT } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import moment from "moment";
 import { MdHourglassEmpty } from "react-icons/md";
@@ -24,7 +24,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   const actionSubaccountMutation = useMutation({
     mutationFn: (data: { id: number; type: "approve" | "reject" }) => {
       const url = `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.id}/${data.type}`;
-      return POST(url, {});
+      return PUT(url, {});
     },
     onSuccess: (_, variables) => {
       notification.success({
@@ -120,7 +120,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             size="small"
             loading={loadingId === record.id && actionType === "approve"}
             onClick={() => handleAction(record.id, "approve")}
-            disabled={loadingId !== null}
+            disabled={loadingId !== null && loadingId !== record.id}
           >
             Approve
           </Button>
@@ -129,7 +129,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             size="small"
             loading={loadingId === record.id && actionType === "reject"}
             onClick={() => handleAction(record.id, "reject")}
-            disabled={loadingId !== null}
+            disabled={loadingId !== null && loadingId !== record.id}
           >
             Reject
           </Button>
