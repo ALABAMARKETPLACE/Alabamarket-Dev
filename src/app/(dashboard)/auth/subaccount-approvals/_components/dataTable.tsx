@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Table, Pagination, Tag } from "antd";
+import { Button, Table, Pagination, Tag, Card } from "antd";
 import moment from "moment";
 import { MdHourglassEmpty } from "react-icons/md";
 import ActionModal from "./actionModal";
@@ -24,7 +24,6 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "store_name",
       key: "store_name",
       width: 150,
-      fixed: "left",
       render: (text: string, record: any) => (
         <span className="font-medium">{text || record.store?.store_name || "N/A"}</span>
       ),
@@ -99,7 +98,6 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "Action",
       key: "action",
       width: 150,
-      fixed: "right",
       render: (_: any, record: any) => (
         <Button
           type="primary"
@@ -117,35 +115,37 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
 
   return (
     <>
-      <Table
-        dataSource={data}
-        columns={columns as any}
-        pagination={false}
-        size="small"
-        rowKey="id"
-        scroll={{ x: "max-content" }}
-        locale={{
-          emptyText: (
-            <div className="py-5">
-              <MdHourglassEmpty size={40} />
-              <p>No pending subaccounts found</p>
-            </div>
-          ),
-        }}
-      />
-      <div className="table-pagination">
-        <Pagination
-          showSizeChanger
-          pageSize={pageSize}
-          current={page}
-          total={count ?? 0}
-          showTotal={(total: any) => `Total ${count ?? 0} Pending Approvals`}
-          onChange={(page, pageSize) => {
-            setPage(page);
-            setTake(pageSize);
+      <Card className="shadow-sm" bordered={false}>
+        <Table
+          dataSource={data}
+          columns={columns as any}
+          pagination={false}
+          size="small"
+          rowKey="id"
+          scroll={{ x: "max-content" }}
+          locale={{
+            emptyText: (
+              <div className="py-5">
+                <MdHourglassEmpty size={40} />
+                <p>No pending subaccounts found</p>
+              </div>
+            ),
           }}
         />
-      </div>
+        <div className="table-pagination mt-4 flex justify-end">
+          <Pagination
+            showSizeChanger
+            pageSize={pageSize}
+            current={page}
+            total={count ?? 0}
+            showTotal={(total: any) => `Total ${count ?? 0} Pending Approvals`}
+            onChange={(page, pageSize) => {
+              setPage(page);
+              setTake(pageSize);
+            }}
+          />
+        </div>
+      </Card>
       <ActionModal
         open={openModal}
         close={() => setOpenModal(false)}

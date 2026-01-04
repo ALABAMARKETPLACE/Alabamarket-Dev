@@ -16,7 +16,7 @@ const SummaryCard = (props: any) => {
     if (Settings?.currency === "NGN") {
       return "₦";
     }
-    return Settings?.currency || "$";
+    return Settings?.currency || "₦";
   };
 
   return (

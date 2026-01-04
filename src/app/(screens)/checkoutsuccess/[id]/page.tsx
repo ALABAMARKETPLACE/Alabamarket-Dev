@@ -21,7 +21,7 @@ function getCurrencySymbol(currency: string) {
   if (currency === "NGN") {
     return "₦";
   }
-  return currency || "$";
+  return currency || "₦";
 }
 
 function Checkout() {

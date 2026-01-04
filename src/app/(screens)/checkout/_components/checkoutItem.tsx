@@ -9,7 +9,7 @@ const CheckoutItem = (props: any) => {
     if (props?.Settings?.currency === "NGN") {
       return "₦";
     }
-    return props?.Settings?.currency || "$";
+    return props?.Settings?.currency || "₦";
   };
 
   let stock = "In Stock";
