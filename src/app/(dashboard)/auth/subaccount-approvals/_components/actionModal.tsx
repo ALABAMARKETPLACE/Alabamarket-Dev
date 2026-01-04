@@ -19,13 +19,20 @@ function ActionModal({ open, close, data }: Props) {
 
   const mutationUpdate = useMutation({
     mutationFn: (values: { status: "approved" | "rejected"; status_remark?: string }) => {
+      if (!data?.id) {
+        throw new Error("Subaccount ID is missing");
+      }
       // Determine endpoint based on status
       const type = values.status === "approved" ? "approve" : "reject";
       const url = `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.id}/${type}`;
       
-      // We send the remark in the body, although the API might not use it, 
-      // it's good practice if we want to mimic the seller request modal structure.
-      return PUT(url, { status_remark: values.status_remark });
+      console.log("Subaccount Action Request:", { url, body: values });
+
+      // We send the remark and status in the body
+      return PUT(url, { 
+        status: values.status,
+        status_remark: values.status_remark 
+      });
     },
     onError: (error: any) => {
       api.error({
