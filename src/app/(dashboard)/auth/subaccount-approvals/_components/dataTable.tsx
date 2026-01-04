@@ -1,11 +1,10 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Table, Pagination, Tag, notification, Modal } from "antd";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PUT } from "@/util/apicall";
-import API from "@/config/API_ADMIN";
+import { Button, Table, Pagination, Tag } from "antd";
+import { useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { MdHourglassEmpty } from "react-icons/md";
+import ActionModal from "./actionModal";
 
 interface props {
   data: any[];
@@ -18,49 +17,17 @@ interface props {
 
 function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   const queryClient = useQueryClient();
-  const [loadingId, setLoadingId] = useState<number | null>(null);
-  const [actionType, setActionType] = useState<"approve" | "reject" | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRecord, setSelectedRecord] = useState<any>(null);
 
-  const actionSubaccountMutation = useMutation({
-    mutationFn: (data: { id: number; type: "approve" | "reject" }) => {
-      const url = `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.id}/${data.type}`;
-      return PUT(url, {});
-    },
-    onSuccess: (_, variables) => {
-      notification.success({
-        message: `Subaccount ${
-          variables.type === "approve" ? "approved" : "rejected"
-        } successfully`,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["admin_paystack_subaccounts_pending"],
-      });
-      setLoadingId(null);
-      setActionType(null);
-    },
-    onError: (err: any, variables) => {
-      notification.error({
-        message:
-          err?.message ||
-          `Failed to ${variables.type} subaccount`,
-      });
-      setLoadingId(null);
-      setActionType(null);
-    },
-  });
+  const handleAction = (record: any) => {
+    setSelectedRecord(record);
+    setOpenModal(true);
+  };
 
-  const handleAction = (storeId: number, type: "approve" | "reject") => {
-    Modal.confirm({
-      title: `${type === "approve" ? "Approve" : "Reject"} Subaccount`,
-      content: `Are you sure you want to ${type} this Paystack subaccount?`,
-      okText: type === "approve" ? "Approve" : "Reject",
-      okType: type === "approve" ? "primary" : "danger",
-      onOk: () => {
-        setLoadingId(storeId);
-        setActionType(type);
-        actionSubaccountMutation.mutate({ id: storeId, type });
-      },
-    });
+  const handleClose = () => {
+    setOpenModal(false);
+    setSelectedRecord(null);
   };
 
   const columns = [
@@ -133,27 +100,16 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     {
       title: "Action",
       key: "action",
-      width: 180,
+      width: 150,
       fixed: "right",
       render: (_: any, record: any) => (
         <div className="flex gap-2">
           <Button
             type="primary"
             size="small"
-            loading={loadingId === record.id && actionType === "approve"}
-            onClick={() => handleAction(record.id, "approve")}
-            disabled={loadingId !== null && loadingId !== record.id}
+            onClick={() => handleAction(record)}
           >
-            Approve
-          </Button>
-          <Button
-            danger
-            size="small"
-            loading={loadingId === record.id && actionType === "reject"}
-            onClick={() => handleAction(record.id, "reject")}
-            disabled={loadingId !== null && loadingId !== record.id}
-          >
-            Reject
+            Approve/Reject
           </Button>
         </div>
       ),
@@ -191,6 +147,9 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           }}
         />
       </div>
+      {openModal && (
+        <ActionModal open={openModal} close={handleClose} data={selectedRecord} />
+      )}
     </>
   );
 }
