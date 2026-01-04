@@ -70,13 +70,24 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "store_name",
       width: 150,
       fixed: "left",
-      render: (text: string) => <span className="font-medium">{text}</span>,
+      render: (text: string, record: any) => (
+        <span className="font-medium">
+          {text || record.store?.store_name || "N/A"}
+        </span>
+      ),
     },
     {
       title: "Seller Name",
       dataIndex: "seller_name",
       key: "seller_name",
       width: 150,
+      render: (text: string, record: any) =>
+        text ||
+        record.seller_name ||
+        record.store?.seller_name ||
+        record.store?.name ||
+        record.store?.user?.name ||
+        "N/A",
     },
     {
       title: "Bank Details",
@@ -84,12 +95,21 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       width: 250,
       render: (_: any, record: any) => (
         <div className="flex flex-col text-xs">
-          <span className="font-semibold">{record.settlement_bank}</span>
+          <span className="font-semibold">
+            {record.settlement_bank || record.bank_name}
+          </span>
           <span>
             {record.settlement_account_number || record.account_number || "N/A"}
           </span>
-          <span className="text-gray-500 truncate" title={record.settlement_account_name || record.account_name_or_code}>
-            {record.settlement_account_name || record.account_name_or_code || "N/A"}
+          <span
+            className="text-gray-500 truncate"
+            title={
+              record.settlement_account_name || record.account_name_or_code
+            }
+          >
+            {record.settlement_account_name ||
+              record.account_name_or_code ||
+              "N/A"}
           </span>
         </div>
       ),
@@ -99,7 +119,9 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "paystack_subaccount_code",
       key: "paystack_subaccount_code",
       width: 150,
-      render: (text: string) => <Tag color="blue">{text}</Tag>,
+      render: (text: string, record: any) => (
+        <Tag color="blue">{text || record.subaccount_code || "N/A"}</Tag>
+      ),
     },
     {
       title: "Date",
