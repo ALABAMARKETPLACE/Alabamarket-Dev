@@ -44,10 +44,18 @@ function RequestForm({
       GET(API_ADMIN.PRODUCTS_BYSTORE, { status: "active" }, signal),
   });
 
+  // Helper to extract plans array
+  const getPlansArray = (data: any) => {
+    if (Array.isArray(data?.data?.data)) return data.data.data;
+    if (Array.isArray(data?.data)) return data.data;
+    return [];
+  };
+
   // Set initial form values for edit mode
   useEffect(() => {
-    if (initialData && plansData?.data && mode === "edit") {
-      const plan = plansData.data.find(
+    const plansList = getPlansArray(plansData);
+    if (initialData && plansList.length > 0 && mode === "edit") {
+      const plan = plansList.find(
         (p: any) => p.id === initialData.plan_id
       );
       setSelectedPlan(plan);
@@ -72,7 +80,8 @@ function RequestForm({
   };
 
   const handlePlanChange = (planId: number) => {
-    const plan = plansData?.data?.find((p: any) => p.id === planId);
+    const plansList = getPlansArray(plansData);
+    const plan = plansList.find((p: any) => p.id === planId);
     setSelectedPlan(plan);
     setSelectedProducts([]);
     form.setFieldsValue({ product_ids: [] });
@@ -89,11 +98,7 @@ function RequestForm({
 
   if (plansLoading || productsLoading) return <Loading />;
 
-  const plans = Array.isArray(plansData?.data?.data)
-    ? (plansData?.data?.data as any[]).filter((p: any) => p?.is_active)
-    : Array.isArray(plansData?.data)
-    ? (plansData?.data as any[]).filter((p: any) => p?.is_active)
-    : [];
+  const plans = getPlansArray(plansData).filter((p: any) => p?.is_active);
   const products = Array.isArray(productsData?.data) ? productsData.data : [];
 
   return (
