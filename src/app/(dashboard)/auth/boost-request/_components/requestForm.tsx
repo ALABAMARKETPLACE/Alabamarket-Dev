@@ -32,7 +32,9 @@ function RequestForm({
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-active"],
     queryFn: ({ signal }) =>
-      GET(API_ADMIN.SUBSCRIPTION_PLANS + "active", {}, signal),
+      GET(API_ADMIN.SUBSCRIPTION_PLANS.slice(0, -1), { page: 1, limit: 100 }, signal),
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
   });
 
   // Fetch seller's products
@@ -87,7 +89,11 @@ function RequestForm({
 
   if (plansLoading || productsLoading) return <Loading />;
 
-  const plans = plansData?.data || [];
+  const plans = Array.isArray(plansData?.data?.data)
+    ? (plansData?.data?.data as any[]).filter((p: any) => p?.is_active)
+    : Array.isArray(plansData?.data)
+    ? (plansData?.data as any[]).filter((p: any) => p?.is_active)
+    : [];
   const products = Array.isArray(productsData?.data) ? productsData.data : [];
 
   return (
@@ -113,6 +119,9 @@ function RequestForm({
               placeholder="Choose a plan"
               size="large"
               onChange={handlePlanChange}
+              getPopupContainer={(trigger) =>
+                (trigger?.parentElement as HTMLElement) || document.body
+              }
               options={plans.map((plan: any) => ({
                 value: plan.id,
                 label: `${plan.name} (${plan.min_products}-${
@@ -169,6 +178,9 @@ function RequestForm({
               onChange={setSelectedProducts}
               optionFilterProp="label"
               maxCount={selectedPlan?.max_products}
+              getPopupContainer={(trigger) =>
+                (trigger?.parentElement as HTMLElement) || document.body
+              }
               options={products.map((product: any) => ({
                 value: product._id,
                 label: `${product.name} (₦${product.price})`,
