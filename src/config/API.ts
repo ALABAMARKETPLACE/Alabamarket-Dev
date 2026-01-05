@@ -101,6 +101,8 @@ const API = {
   USER_LOGOUT: "auth/signout/", //to signout.//GET
   USER_LOGOUTALL: "auth/signoutall/", //user will be signedout from all devices//GET
 
+  SUBSCRIPTION_PLANS_ACTIVE: "subscription-plans/public/active", //GET
+
   CART_GET_ALL: "cart/all",
   CART: "cart/", //post,put,delete
   // CART_GET: "cart/user/", //get byuserID

@@ -4,6 +4,7 @@ import { Button, Form, Select, Card, Input } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
+import API from "@/config/API";
 import Loading from "@/app/(dashboard)/_components/loading";
 import "../styles.scss";
 
@@ -32,7 +33,7 @@ function RequestForm({
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-active"],
     queryFn: ({ signal }) =>
-      GET(API_ADMIN.SUBSCRIPTION_PLANS.slice(0, -1), { page: 1, limit: 100 }, signal),
+      GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
@@ -71,12 +72,12 @@ function RequestForm({
 
   // Helper to get plan duration
   const getPlanDuration = (plan: any) => {
-    return Number(plan?.duration_days ?? 0);
+    return Number(plan?.duration_days || plan?.duration || 0);
   };
 
   // Helper to get plan price
   const getPlanPrice = (plan: any) => {
-    return Number(plan?.price ?? 0);
+    return Number(plan?.price || plan?.price_per_day || 0);
   };
 
   const handlePlanChange = (planId: number) => {
