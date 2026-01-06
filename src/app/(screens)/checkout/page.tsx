@@ -73,6 +73,9 @@ function Checkout() {
           id: Checkout?.address?.id, // Include actual address ID for token validation
           country_id: Checkout?.address?.country_id || null,
           state_id: Checkout?.address?.state_id || null,
+          state: Checkout?.address?.state,
+          country: Checkout?.address?.country,
+          city: Checkout?.address?.city,
         };
 
         let obj = {
@@ -80,21 +83,25 @@ function Checkout() {
           address: addressData,
         };
 
+        console.log("Calculating delivery with payload:", obj);
+
         const response: any = await POST(
           API.NEW_CALCULATE_DELIVERY_CHARGE,
           obj
         );
+        console.log("Delivery calculation response:", response);
 
         if (response?.status) {
           setDeliveryToken(response?.token);
-          let delivery = Number(response?.details?.totalCharge);
+          let delivery = Number(response?.details?.totalCharge || 0);
+          let discountVal = Number(response?.data?.discount || 0);
           let gTotal =
             Number(totals) +
             Number(delivery) -
-            Number(response?.data?.discount);
+            discountVal;
           setDelivery_charge(delivery);
           setGrand_total(gTotal);
-          setDiscount(response?.data?.discount);
+          setDiscount(discountVal);
         } else {
           // Clean up error message (remove @@ suffix if present)
           const cleanMessage = (response?.message ?? "").replace(/@@$/, "");
@@ -336,7 +343,7 @@ function Checkout() {
   };
 
   return (
-    <div className="Screen-box">
+    <div className="Screen-box" style={{ backgroundImage: "none" }}>
       {contextHolder}
       <br />
       <Container fluid style={{ minHeight: "80vh" }}>
