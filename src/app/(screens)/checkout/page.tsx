@@ -289,6 +289,8 @@ function Checkout() {
               charges: {
                 token: deliveryToken,
               },
+              user_id: (user as any)?.id,
+              user: user,
             },
           })
         );

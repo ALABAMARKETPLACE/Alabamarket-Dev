@@ -245,7 +245,8 @@ function Checkout() {
 
   const loadCartItems = async () => {
     try {
-      if (User?.data?.id) {
+      const userId = (User as any)?.data?.id || (User as any)?.id;
+      if (userId) {
         const cartItems: any = await GET(API.CART_GET_ALL);
         if (cartItems.status) {
           dispatch(storeCart(cartItems.data));
