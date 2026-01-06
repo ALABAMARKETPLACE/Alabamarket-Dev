@@ -50,10 +50,10 @@ function NewAddressForm(props: any) {
       };
 
       // Validate at least one of country or state is selected
-      if (!obj.country_id && !obj.state_id) {
+      if (!obj.state_id) {
         Notifications["error"]({
           message: "Validation Error",
-          description: "Please select either a Country or a State",
+          description: "Please select a State",
         });
         setIsLoading(false);
         return;
@@ -185,7 +185,8 @@ function NewAddressForm(props: any) {
             </Form.Item>
           </Col>
 
-          {/* Country Field - Hidden if State is selected */}
+          {/* Country Field - Commented out as per request */}
+          {/*
           {!stateId && (
             <Col sm={6} xs={12}>
               <div className="input-form-label">Country</div>
@@ -226,17 +227,17 @@ function NewAddressForm(props: any) {
               </Form.Item>
             </Col>
           )}
-
-          {/* State Field - Hidden if Country is selected */}
-          {!countryId && (
+          */}
+          
+          {/* State Field - Always Visible (since country is disabled) */}
             <Col sm={6} xs={12}>
               <div className="input-form-label">State</div>
               <Form.Item
                 name="state_id"
                 rules={[
                   {
-                    required: !countryId,
-                    message: "Please select a state or country",
+                    required: true,
+                    message: "Please select a state",
                   },
                 ]}
               >
@@ -259,20 +260,14 @@ function NewAddressForm(props: any) {
                         }))
                       : []
                   }
-                  onChange={(value) => {
-                    if (value) {
-                      form.setFieldValue("country_id", undefined);
-                    }
-                  }}
                 />
               </Form.Item>
             </Col>
-          )}
 
           {/* Info Message */}
           <Col sm={12}>
             <p className="text-muted" style={{ fontSize: "12px" }}>
-              <i>Note: Select either Country or State (not both)</i>
+              <i>Note: Please ensure all address fields are filled correctly</i>
             </p>
           </Col>
 
