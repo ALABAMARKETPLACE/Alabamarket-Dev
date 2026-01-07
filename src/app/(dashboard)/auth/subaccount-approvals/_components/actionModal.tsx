@@ -18,10 +18,17 @@ function ActionModal({ open, close, data }: Props) {
   const queryClient = useQueryClient();
 
   const mutationUpdate = useMutation({
-    mutationFn: (values: { status: "approved" | "rejected"; status_remark?: string }) => {
+    mutationFn: (values: {
+      status: "approved" | "rejected";
+      status_remark?: string;
+    }) => {
       const type = values.status === "approved" ? "approve" : "reject";
       const url = `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.id}/${type}`;
-      return PUT(url, { status_remark: values.status_remark });
+      const payload =
+        values.status === "rejected"
+          ? { status_remark: values.status_remark }
+          : {};
+      return PUT(url, payload);
     },
     onError: (error: any) => {
       api.error({
@@ -77,11 +84,22 @@ function ActionModal({ open, close, data }: Props) {
         </Form.Item>
 
         <Form.Item
-          label="Remark"
-          name="status_remark"
-          rules={[{ required: true, message: "Please Enter Remark" }]}
+          noStyle
+          shouldUpdate={(prevValues, currentValues) =>
+            prevValues.status !== currentValues.status
+          }
         >
-          <TextArea rows={4} placeholder="Remark" />
+          {({ getFieldValue }) =>
+            getFieldValue("status") === "rejected" ? (
+              <Form.Item
+                label="Remark"
+                name="status_remark"
+                rules={[{ required: true, message: "Please Enter Remark" }]}
+              >
+                <TextArea rows={4} placeholder="Remark" />
+              </Form.Item>
+            ) : null
+          }
         </Form.Item>
       </Form>
     </Modal>
