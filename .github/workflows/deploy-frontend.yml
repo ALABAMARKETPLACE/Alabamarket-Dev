@@ -1,11 +1,10 @@
-name: Deploy Frontend (Website)
+name: Deploy Frontend (Production Website)
 
 on:
   push:
     branches:
-      - main
       - master
-      - dev
+      - main
 
 jobs:
   deploy:
@@ -23,7 +22,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ vars.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Sync frontend source only
+      - name: Sync frontend source (production)
         run: |
           rsync -avz --delete \
             --exclude node_modules \
@@ -32,16 +31,33 @@ jobs:
             --exclude .git \
             --exclude .github \
             --exclude .gitignore \
-            --exclude public \
             . \
-            ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_user/alaba-marketplace/website/
+            ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_prod_user/alaba-marketplace-production/website/
 
-      - name: Build & restart frontend on server
+      - name: Build & restart frontend (PM2, no ecosystem)
         run: |
           ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << 'EOF'
           set -e
-          cd /home/alabamarketplace_user/alaba-marketplace/website
+
+          # ---- LOAD NVM (CRITICAL) ----
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+          nvm use 20.19.6
+
+          cd /home/alabamarketplace_prod_user/alaba-marketplace-production/website
+
           npm install --legacy-peer-deps
           npm run build
-          /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 reload ../ecosystem.config.js --only alabamarketplace-frontend || /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 start ../ecosystem.config.js
+
+          PM2="$HOME/.nvm/versions/node/v20.19.6/bin/pm2"
+
+          $PM2 delete alabamarketplace || true
+
+          # ---- NEXT.JS PRODUCTION START ----
+          $PM2 start npm \
+            --name alabamarketplace \
+            -- start
+
+          $PM2 save
           EOF
