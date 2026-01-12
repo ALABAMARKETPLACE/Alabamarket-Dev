@@ -4,11 +4,13 @@ import "./styles.scss";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { FaStar } from "react-icons/fa6";
-import { Popover, Rate } from "antd";
+import { IoCartOutline, IoHeartOutline, IoEyeOutline } from "react-icons/io5";
+import { Popover, Rate, App } from "antd";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 
 function ProductItem(props: any) {
   const navigate = useRouter();
+  const { message } = App.useApp();
   const Settings = useSelector(reduxSettings);
   const givenDate: any = new Date(props?.item?.createdAt); // Parse given date string
   const currentDate: any = new Date(); // Get current date
@@ -54,6 +56,38 @@ function ProductItem(props: any) {
           alt="ProductItem-img"
           onClick={() => openDetails()}
         />
+        <div className="action-overlay">
+          <div
+            className="action-btn"
+            title="Add to Cart"
+            onClick={(e) => {
+              e.stopPropagation();
+              message.success("Added to Cart");
+            }}
+          >
+            <IoCartOutline />
+          </div>
+          <div
+            className="action-btn"
+            title="Quick View"
+            onClick={(e) => {
+              e.stopPropagation();
+              openDetails();
+            }}
+          >
+            <IoEyeOutline />
+          </div>
+          <div
+            className="action-btn"
+            title="Add to Wishlist"
+            onClick={(e) => {
+              e.stopPropagation();
+              message.success("Added to Wishlist");
+            }}
+          >
+            <IoHeartOutline />
+          </div>
+        </div>
       </div>
 
       <div className="ProductItem-Box2">
@@ -109,7 +143,7 @@ function ProductItem(props: any) {
             </div>
           </div>
         ) : typeof differenceInMilliseconds == "number" ? (
-          differenceInMilliseconds < 43000 ? (
+          differenceInMilliseconds < 604800000 ? (
             <div className="product_status_tag position-absolute">
               <div className="badge2 blue">New</div>
             </div>

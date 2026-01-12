@@ -4,7 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "@/util/suppressAntdWarning";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, App } from "antd";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header/HeaderClientWrapper";
@@ -85,13 +85,15 @@ export default function RootLayout({
           <ReactQueryProvider>
             <AntdRegistry>
               <ConfigProvider theme={theme}>
-                <StoreProvider>
-                  <div className="layout-container">
-                    <Header />
-                    <main className="layout-main">{children}</main>
-                    <Footer />
-                  </div>
-                </StoreProvider>
+                <App>
+                  <StoreProvider>
+                    <div className="layout-container">
+                      <Header />
+                      <main className="layout-main">{children}</main>
+                      <Footer />
+                    </div>
+                  </StoreProvider>
+                </App>
               </ConfigProvider>
             </AntdRegistry>
           </ReactQueryProvider>
