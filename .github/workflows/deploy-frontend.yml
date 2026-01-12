@@ -3,25 +3,91 @@ name: Deploy Frontend (Website)
 on:
   push:
     branches:
+      - dev
       - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: development
+    environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # -----------------------------
+      # Set environment based on branch
+      # -----------------------------
+      - name: Set deployment environment
+        run: |
+          if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
+            echo "SERVER_HOST=${{ vars.PROD_SERVER_HOST }}" >> $GITHUB_ENV
+            echo "SERVER_USER=${{ vars.PROD_SERVER_USER }}" >> $GITHUB_ENV
+            echo "APP_DIR=/home/${{ vars.PROD_SERVER_USER }}/alaba-marketplace-production/website" >> $GITHUB_ENV
+            echo "APP_NAME=alabamarketplace" >> $GITHUB_ENV
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "SERVER_HOST=${{ vars.DEV_SERVER_HOST }}" >> $GITHUB_ENV
+            echo "SERVER_USER=${{ vars.DEV_SERVER_USER }}" >> $GITHUB_ENV
+            echo "APP_DIR=/home/${{ vars.DEV_SERVER_USER }}/alaba-marketplace/website" >> $GITHUB_ENV
+            echo "APP_NAME=alabamarketplace-frontend" >> $GITHUB_ENV
+            echo "ENVIRONMENT=development" >> $GITHUB_ENV
+
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.DEV_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          fi
+
+      # -----------------------------
+      # 🐛 DEBUG / BUG PRINT (SAFE)
+      # -----------------------------
+      - name: Debug deployment variables
+        run: |
+          echo "===== DEBUG INFO ====="
+          echo "Branch        : $GITHUB_REF_NAME"
+          echo "Environment   : $ENVIRONMENT"
+          echo "SERVER_HOST   : ${SERVER_HOST:-<EMPTY>}"
+          echo "SERVER_USER   : ${SERVER_USER:-<EMPTY>}"
+          echo "APP_DIR       : ${APP_DIR:-<EMPTY>}"
+
+          if [[ -z "$SSH_KEY" ]]; then
+            echo "SSH_KEY       : ❌ MISSING"
+          else
+            echo "SSH_KEY       : ✅ SET"
+          fi
+
+          echo "======================"
+
+          if [[ -z "$SERVER_HOST" || -z "$SERVER_USER" || -z "$SSH_KEY" ]]; then
+            echo "❌ Required environment variables are missing. Aborting."
+            exit 1
+          fi
+
+      # -----------------------------
+      # Setup SSH
+      # -----------------------------
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ vars.SERVER_HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
 
-      - name: Sync frontend source only
+      # -----------------------------
+      # Ensure target directory exists
+      # -----------------------------
+      - name: Ensure target directory exists
+        run: |
+          ssh $SERVER_USER@$SERVER_HOST "mkdir -p $APP_DIR"
+
+      # -----------------------------
+      # Sync frontend files
+      # -----------------------------
+      - name: Sync frontend source
         run: |
           rsync -avz --delete \
             --exclude node_modules \
@@ -32,19 +98,44 @@ jobs:
             --exclude .gitignore \
             --exclude public \
             . \
-            ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_user/alaba-marketplace/website/
+            $SERVER_USER@$SERVER_HOST:$APP_DIR/
 
-      - name: Build & restart frontend on server
+      # -----------------------------
+      # Build & restart frontend
+      # -----------------------------
+      - name: Build & restart frontend
         run: |
-          ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << 'EOF'
+          ssh $SERVER_USER@$SERVER_HOST << EOF
             set -e
-            cd /home/alabamarketplace_user/alaba-marketplace/website
+
+            export NVM_DIR="\$HOME/.nvm"
+            [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
+            nvm use 20.19.6
+
+            cd $APP_DIR
 
             npm install --legacy-peer-deps
             npm run build
 
-            /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 reload \
-              ../ecosystem.config.js \
-              --only alabamarketplace-frontend \
-              || /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 start ../ecosystem.config.js
+            PM2="\$HOME/.nvm/versions/node/v20.19.6/bin/pm2"
+
+            if [[ "$ENVIRONMENT" == "production" ]]; then
+              \$PM2 delete $APP_NAME || true
+              \$PM2 start npm --name $APP_NAME -- start
+            else
+              \$PM2 reload ../ecosystem.config.js --only $APP_NAME || \
+              \$PM2 start ../ecosystem.config.js
+            fi
+
+            \$PM2 save
           EOF
+
+      # -----------------------------
+      # Deployment summary
+      # -----------------------------
+      - name: Deployment info
+        run: |
+          echo "✅ Branch: $GITHUB_REF_NAME"
+          echo "🌍 Environment: $ENVIRONMENT"
+          echo "🖥️ Server: $SERVER_USER@$SERVER_HOST"
+          echo "📁 Directory: $APP_DIR"
