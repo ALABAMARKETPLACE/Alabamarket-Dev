@@ -21,6 +21,10 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ vars.SERVER_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Ensure target directory exists
+        run: |
+          ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} "mkdir -p /home/alabamarketplace_user/alaba-marketplace/website"
+
       - name: Sync frontend source only
         run: |
           rsync -avz --delete \
