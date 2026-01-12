@@ -29,11 +29,17 @@ function RequestForm({
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
 
-  // Fetch active subscription plans
+  // Fetch all subscription plans
   const { data: plansData, isLoading: plansLoading } = useQuery({
-    queryKey: ["subscription-plans-active"],
+    queryKey: ["subscription-plans-all"],
     queryFn: ({ signal }) =>
-      GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
+      GET(
+        API_ADMIN.SUBSCRIPTION_PLANS.endsWith("/")
+          ? API_ADMIN.SUBSCRIPTION_PLANS.slice(0, -1)
+          : API_ADMIN.SUBSCRIPTION_PLANS,
+        { limit: 100 },
+        signal
+      ),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });

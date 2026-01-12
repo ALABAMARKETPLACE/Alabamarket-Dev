@@ -152,6 +152,23 @@ function Checkout() {
           address: Checkout?.address,
           charges: Checkout?.charges,
         };
+
+        // Ensure user information is captured
+        if (!finalOrderData.user_id && User?.id) {
+          finalOrderData.user_id = User.id;
+        }
+        
+        // Also add userId as camelCase fallback
+        if (!finalOrderData.userId && finalOrderData.user_id) {
+          finalOrderData.userId = finalOrderData.user_id;
+        }
+
+        if (!finalOrderData.user && User) {
+          finalOrderData.user = User;
+        }
+
+        console.log("Final Order Payload:", finalOrderData);
+
       } else {
         // Unknown route
         throw new Error("Invalid checkout route. Please try again.");
