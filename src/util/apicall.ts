@@ -4,14 +4,17 @@ import { message } from "antd";
 import { useSession } from "next-auth/react";
 
 const getFullUrl = (url: string) => {
-  if (
-    url.startsWith("http://") ||
-    url.startsWith("https://") ||
-    url.startsWith("/")
-  ) {
-    return url;
+  if (!url) return "";
+  try {
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      return url;
+    }
+    const baseUrl = API.BASE_URL.endsWith("/") ? API.BASE_URL : `${API.BASE_URL}/`;
+    return new URL(url, baseUrl).toString();
+  } catch {
+    const baseUrl = API.BASE_URL.endsWith("/") ? API.BASE_URL : `${API.BASE_URL}/`;
+    return baseUrl + url;
   }
-  return API.BASE_URL + url;
 };
 
 const GET = async (
@@ -28,13 +31,23 @@ const GET = async (
       method: "GET",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = parsed?.message || messageText;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as any).status = response.status;
       throw error;
     }

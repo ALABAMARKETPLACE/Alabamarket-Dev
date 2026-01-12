@@ -1,9 +1,8 @@
-name: Deploy Frontend (Production Website)
+name: Deploy Frontend (Website)
 
 on:
   push:
     branches:
-      - master
       - main
 
 jobs:
@@ -22,7 +21,7 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H ${{ vars.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Sync frontend source (production)
+      - name: Sync frontend source only
         run: |
           rsync -avz --delete \
             --exclude node_modules \
@@ -31,33 +30,21 @@ jobs:
             --exclude .git \
             --exclude .github \
             --exclude .gitignore \
+            --exclude public \
             . \
-            ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_prod_user/alaba-marketplace-production/website/
+            ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }}:/home/alabamarketplace_user/alaba-marketplace/website/
 
-      - name: Build & restart frontend (PM2, no ecosystem)
+      - name: Build & restart frontend on server
         run: |
           ssh ${{ vars.SERVER_USER }}@${{ vars.SERVER_HOST }} << 'EOF'
-          set -e
+            set -e
+            cd /home/alabamarketplace_user/alaba-marketplace/website
 
-          # ---- LOAD NVM (CRITICAL) ----
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+            npm install --legacy-peer-deps
+            npm run build
 
-          nvm use 20.19.6
-
-          cd /home/alabamarketplace_prod_user/alaba-marketplace-production/website
-
-          npm install --legacy-peer-deps
-          npm run build
-
-          PM2="$HOME/.nvm/versions/node/v20.19.6/bin/pm2"
-
-          $PM2 delete alabamarketplace || true
-
-          # ---- NEXT.JS PRODUCTION START ----
-          $PM2 start npm \
-            --name alabamarketplace \
-            -- start
-
-          $PM2 save
+            /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 reload \
+              ../ecosystem.config.js \
+              --only alabamarketplace-frontend \
+              || /home/alabamarketplace_user/.nvm/versions/node/v20.19.6/bin/pm2 start ../ecosystem.config.js
           EOF
