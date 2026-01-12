@@ -3,7 +3,7 @@ name: Deploy Frontend (Website)
 on:
   push:
     branches:
-      - dev
+      - main
 
 jobs:
   deploy:
