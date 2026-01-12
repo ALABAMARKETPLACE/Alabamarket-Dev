@@ -57,7 +57,7 @@ function RequestForm({
     const plansList = getPlansArray(plansData);
     if (initialData && plansList.length > 0 && mode === "edit") {
       const plan = plansList.find(
-        (p: any) => p.id === initialData.plan_id
+        (p: any) => (p.id || p._id) === initialData.plan_id
       );
       setSelectedPlan(plan);
       setSelectedProducts(initialData.product_ids || []);
@@ -72,17 +72,19 @@ function RequestForm({
 
   // Helper to get plan duration
   const getPlanDuration = (plan: any) => {
-    return Number(plan?.duration_days || plan?.duration || 0);
+    const days = Number(plan?.duration_days || plan?.duration);
+    return isNaN(days) ? 0 : days;
   };
 
   // Helper to get plan price
   const getPlanPrice = (plan: any) => {
-    return Number(plan?.price || plan?.price_per_day || 0);
+    const price = Number(plan?.price || plan?.price_per_day);
+    return isNaN(price) ? 0 : price;
   };
 
   const handlePlanChange = (planId: number) => {
     const plansList = getPlansArray(plansData);
-    const plan = plansList.find((p: any) => p.id === planId);
+    const plan = plansList.find((p: any) => (p.id || p._id) === planId);
     setSelectedPlan(plan);
     setSelectedProducts([]);
     form.setFieldsValue({ product_ids: [] });
@@ -99,7 +101,7 @@ function RequestForm({
 
   if (plansLoading || productsLoading) return <Loading />;
 
-  const plans = getPlansArray(plansData).filter((p: any) => p?.is_active);
+  const plans = getPlansArray(plansData);
   const products = Array.isArray(productsData?.data) ? productsData.data : [];
 
   return (
@@ -129,7 +131,7 @@ function RequestForm({
                 (trigger?.parentElement as HTMLElement) || document.body
               }
               options={plans.map((plan: any) => ({
-                value: plan.id,
+                value: plan.id || plan._id,
                 label: `${plan.name} (${plan.min_products}-${
                   plan.max_products
                 } products, ${getPlanDuration(plan)} days, ₦${getPlanPrice(
