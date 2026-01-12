@@ -5,7 +5,7 @@ import { storeCart } from "@/redux/slice/cartSlice";
 import { useEffect } from "react";
 import { storeSettings } from "@/redux/slice/settingsSlice";
 import { jwtDecode } from "jwt-decode";
-import { message } from "antd";
+import { App } from "antd";
 import { signOut, useSession } from "next-auth/react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { clearReduxData } from "@/lib/clear_redux";
@@ -40,6 +40,7 @@ export const useGetSettings = () => {
 };
 
 export const useTokenExpiration = () => {
+  const { message } = App.useApp();
   const dispatch = useAppDispatch();
   const accessToken = useAppSelector(reduxAccessToken);
   const refresh = useAppSelector(reduxRefreshToken);

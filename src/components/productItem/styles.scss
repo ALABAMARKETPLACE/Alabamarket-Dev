@@ -98,10 +98,9 @@
   }
 
   &:hover {
-    transform: translateY(-16px) scale(1.05);
-    border-color: rgba(255, 149, 0, 0.4);
-    animation: cardHover 0.6s ease-out forwards;
-    z-index: 10;
+    transform: translateY(-8px);
+    box-shadow: 0 20px 48px rgba(255, 95, 21, 0.15);
+    border-color: rgba(255, 95, 21, 0.3);
 
     &::before {
       opacity: 1;
@@ -109,31 +108,72 @@
 
     &::after {
       opacity: 1;
+      animation: shimmer 2s infinite linear;
     }
-  }
 
-  @for $i from 1 through 20 {
-    &:nth-child(#{$i}) {
-      animation-delay: #{$i * 0.08}s;
+    .ProductItem-img {
+      transform: scale(1.08);
+    }
+
+    .action-overlay {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 }
 
 .ProductItem-Box1 {
-  flex: 0 0 auto;
-  overflow: hidden;
+  height: 200px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
   position: relative;
-  z-index: 2;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.6) 0%,
-    rgba(255, 149, 0, 0.05) 100%
-  );
-  border-bottom: 3px solid rgba(255, 149, 0, 0.2);
-  transition: border-color 0.4s ease;
+  overflow: hidden; // Keep image contained
+}
 
-  .ProductItem:hover & {
-    border-bottom-color: rgba(255, 149, 0, 0.4);
+.ProductItem-img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.action-overlay {
+  position: absolute;
+  bottom: 15px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 5;
+}
+
+.action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #444;
+  font-size: 18px;
+
+  &:hover {
+    background: global.$primary;
+    color: white;
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 8px 20px rgba(255, 95, 21, 0.3);
   }
 }
 

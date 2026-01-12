@@ -17,11 +17,23 @@ import { GET, PUT } from "@/util/apicall";
 import API from "@/config/API";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import SubscriptionTab from "./_components/subscriptionTab";
+import { useSearchParams } from "next/navigation";
+
 const tabKey = "account-details";
 
 function AccountSettingsPage() {
   const [form] = Form.useForm();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = React.useState(tabKey);
+
+  React.useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "subscription") {
+      setActiveTab("subscription");
+    }
+  }, [searchParams]);
 
   const {
     data: accountResponse,
@@ -103,7 +115,7 @@ function AccountSettingsPage() {
     <div>
       <PageHeader title="Settings" bredcume="Dashboard / Settings / Account" />
       <Card loading={isLoading}>
-        <Tabs defaultActiveKey={tabKey}>
+        <Tabs activeKey={activeTab} onChange={setActiveTab}>
           <Tabs.TabPane
             tab={
               <span>{accountResponse?.store_name ?? "Account Details"}</span>
@@ -184,6 +196,9 @@ function AccountSettingsPage() {
                 </Form>
               </Card>
             </div>
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Subscription Plan" key="subscription">
+            <SubscriptionTab />
           </Tabs.TabPane>
         </Tabs>
       </Card>
