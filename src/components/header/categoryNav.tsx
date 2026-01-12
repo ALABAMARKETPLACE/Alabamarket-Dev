@@ -15,10 +15,6 @@ function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
 
-  if (!categories || categories.length === 0) {
-    return null;
-  }
-
   // Auto-scroll functionality
   useEffect(() => {
     const container = containerRef.current;
@@ -94,6 +90,10 @@ function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
 
     router.push(navUrl);
   };
+
+  if (!categories || categories.length === 0) {
+    return null;
+  }
 
   return (
     <div className="category-nav-wrapper">

@@ -101,6 +101,23 @@ function CreateProduct() {
         ...details,
         category: Number(details?.category),
         subCategory: Number(details?.subCategory),
+        purchase_rate: Number(details?.purchase_rate),
+        retail_rate: Number(details?.retail_rate),
+        unit: Number(details?.unit),
+        units: Number(details?.units),
+        product_weight: Number(details?.product_weight),
+        bulk_order:
+          details?.bulk_order === "accept"
+            ? true
+            : details?.bulk_order === "notaccept"
+            ? false
+            : Boolean(details?.bulk_order),
+        status:
+          details?.status === "available"
+            ? true
+            : details?.status === "notavailable"
+            ? false
+            : Boolean(details?.status),
       };
       if (!coverImage?.url) {
         Notifications["error"]({
@@ -109,16 +126,20 @@ function CreateProduct() {
         });
         return;
       }
-      info.image = images[0]?.url; //first image
+      // set main image from cover image
+      info.image = coverImage.url;
       const imagess = await uploadImageFiles();
-      const variants = await uploadVariantsImage();
+      // const variants = await uploadVariantsImage();
       const videoUpload = await uploadProductVideo();
 
       const obj = {
         information: info,
-        images: imagess,
-        variants: variants,
-        coverImage,
+        images: Array.isArray(imagess)
+          ? imagess
+              .map((it: any) => it?.url)
+              .filter((url: any) => typeof url === "string" && url.length > 0)
+          : [],
+        coverImage: coverImage.url,
         product_video: videoUpload?.url || null,
       };
       return await POST(API.PRODUCTS_CREATE, obj);
