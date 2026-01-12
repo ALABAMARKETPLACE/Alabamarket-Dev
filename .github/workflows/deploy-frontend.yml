@@ -36,6 +36,32 @@ jobs:
           fi
 
       # -----------------------------
+      # 🐛 DEBUG / BUG PRINT (SAFE)
+      # -----------------------------
+      - name: Debug deployment variables
+        run: |
+          echo "===== DEBUG INFO ====="
+          echo "Branch        : $GITHUB_REF_NAME"
+          echo "Environment   : $ENVIRONMENT"
+          echo "SERVER_HOST   : ${SERVER_HOST:-<EMPTY>}"
+          echo "SERVER_USER   : ${SERVER_USER:-<EMPTY>}"
+          echo "APP_DIR       : ${APP_DIR:-<EMPTY>}"
+
+          if [[ -z "$SSH_KEY" ]]; then
+            echo "SSH_KEY       : ❌ MISSING"
+          else
+            echo "SSH_KEY       : ✅ SET"
+          fi
+
+          echo "======================"
+
+          # Fail early if anything critical is missing
+          if [[ -z "$SERVER_HOST" || -z "$SERVER_USER" || -z "$SSH_KEY" ]]; then
+            echo "❌ Required environment variables are missing. Aborting."
+            exit 1
+          fi
+
+      # -----------------------------
       # Setup SSH (branch-aware key)
       # -----------------------------
       - name: Setup SSH
@@ -76,7 +102,6 @@ jobs:
           ssh $SERVER_USER@$SERVER_HOST << EOF
             set -e
 
-            # ---- Load NVM (non-interactive SSH fix) ----
             export NVM_DIR="\$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
             nvm use 20.19.6
@@ -89,11 +114,9 @@ jobs:
             PM2="\$HOME/.nvm/versions/node/v20.19.6/bin/pm2"
 
             if [[ "$ENVIRONMENT" == "production" ]]; then
-              # ---- Production: clean restart ----
               \$PM2 delete $APP_NAME || true
               \$PM2 start npm --name $APP_NAME -- start
             else
-              # ---- Development: ecosystem ----
               \$PM2 reload ../ecosystem.config.js --only $APP_NAME || \
               \$PM2 start ../ecosystem.config.js
             fi
