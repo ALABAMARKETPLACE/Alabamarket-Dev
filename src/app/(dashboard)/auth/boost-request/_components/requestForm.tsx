@@ -42,11 +42,17 @@ function RequestForm({
   const { data: productsData, isLoading: productsLoading } = useQuery({
     queryKey: ["seller-products"],
     queryFn: ({ signal }) =>
-      GET(API_ADMIN.PRODUCTS_BYSTORE, { status: "active" }, signal),
+      GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS, {}, signal),
   });
 
   // Helper to extract plans array
   const getPlansArray = (data: any) => {
+    if (Array.isArray(data?.data?.data)) return data.data.data;
+    if (Array.isArray(data?.data)) return data.data;
+    return [];
+  };
+
+  const getProductsArray = (data: any) => {
     if (Array.isArray(data?.data?.data)) return data.data.data;
     if (Array.isArray(data?.data)) return data.data;
     return [];
@@ -91,10 +97,14 @@ function RequestForm({
   };
 
   const handleSubmit = (values: any) => {
+    // Calculate total price based on selected plan
+    const price = getPlanPrice(selectedPlan);
+
     const payload = {
       plan_id: values.plan_id,
       product_ids: values.product_ids,
       remarks: values.remarks,
+      amount: price,
     };
     onSubmit(payload);
   };
@@ -102,7 +112,7 @@ function RequestForm({
   if (plansLoading || productsLoading) return <Loading />;
 
   const plans = getPlansArray(plansData);
-  const products = Array.isArray(productsData?.data) ? productsData.data : [];
+  const products = getProductsArray(productsData);
 
   return (
     <div className="boostRequests-formWrapper">

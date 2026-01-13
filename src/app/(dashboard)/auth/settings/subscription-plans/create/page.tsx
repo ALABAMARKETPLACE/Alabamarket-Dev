@@ -24,7 +24,10 @@ function CreateSubscriptionPlan() {
   const mutationCreate = useMutation({
     mutationFn: (body: any) => {
       // Ensure numeric fields are sent as numbers
-      const payload = { ...body };
+      const payload = { 
+        ...body,
+        featured_position: 0
+      };
 
       if (payload.price !== undefined && payload.price !== null) {
         payload.price = Number(payload.price);
