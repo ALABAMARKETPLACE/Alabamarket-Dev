@@ -73,12 +73,14 @@ function CreateBoostRequest() {
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
-      // The initializePayment hook handles the redirect if successful
-      // but we can show a notification here as well
+    onSuccess: (data: any, variables, context) => {
       Notifications["success"]({
         message: `Boost Request Created. Redirecting to payment...`,
       });
+
+      if (data?.data?.data?.authorization_url) {
+        window.location.href = data.data.data.authorization_url;
+      }
     },
   });
 
