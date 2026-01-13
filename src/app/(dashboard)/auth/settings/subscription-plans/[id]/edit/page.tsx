@@ -45,12 +45,15 @@ function EditSubscriptionPlan({ params }: Props) {
     enabled: !!params.id,
   });
 
+  const plan = data?.data?.data ?? data?.data;
+
   const mutationUpdate = useMutation({
     mutationFn: (body: any) => {
       // Ensure numeric fields are sent as numbers
       const payload = {
         id: Number(params.id),
         ...body,
+        featured_position: plan?.featured_position ?? 0,
       };
 
       if (payload.price !== undefined && payload.price !== null) {
@@ -60,7 +63,7 @@ function EditSubscriptionPlan({ params }: Props) {
         payload.duration_days = Number(payload.duration_days);
       }
 
-      return PUT(`${API_ADMIN.SUBSCRIPTION_PLANS}/${params.id}`, payload);
+      return PUT(API_ADMIN.SUBSCRIPTION_PLANS, payload);
     },
     onError: (error, variables, context) => {
       Notifications["error"]({
@@ -82,7 +85,6 @@ function EditSubscriptionPlan({ params }: Props) {
   });
 
   useEffect(() => {
-    const plan = data?.data?.data ?? data?.data;
     if (plan) {
       form.setFieldsValue({
         name: plan.name,
