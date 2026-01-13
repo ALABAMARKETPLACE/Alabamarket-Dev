@@ -61,24 +61,11 @@ function Checkout() {
           const orderData = JSON.parse(existingOrderData);
           setResponseData(orderData);
           getOrderItems(orderData);
-          const paymentState = String(
-            orderData?.[0]?.orderPayment?.status ?? ""
-          ).toLowerCase();
-          const orderState = String(
-            orderData?.[0]?.newOrder?.status ?? ""
-          ).toLowerCase();
-          const successful =
-            paymentState === "success" ||
-            paymentState === "completed" ||
-            paymentState === "paid" ||
-            orderState !== "failed";
-          setOrderStatus(successful);
+          setOrderStatus(true);
           setPaymentStatus(true);
           setIsLoading(false);
           return;
-        } catch (e) {
-          // If parsing fails, proceed with new order creation
-        }
+        } catch (e) {}
       }
     }
 
@@ -170,14 +157,19 @@ function Checkout() {
           user: User ?? Checkout?.user ?? null,
         };
 
-        // Ensure user information is captured
-        if (!finalOrderData.user_id && User?.id) {
-          finalOrderData.user_id = User.id;
-        }
-        
-        // Also add userId as camelCase fallback
-        if (!finalOrderData.userId && finalOrderData.user_id) {
-          finalOrderData.userId = finalOrderData.user_id;
+        const resolvedUserId =
+          finalOrderData.user_id ??
+          finalOrderData.userId ??
+          (finalOrderData.user as any)?.id ??
+          Checkout?.user_id ??
+          Checkout?.address?.user_id ??
+          User?.id ??
+          null;
+
+        finalOrderData.user_id = resolvedUserId;
+
+        if (!finalOrderData.userId && resolvedUserId) {
+          finalOrderData.userId = resolvedUserId;
         }
 
         if (!finalOrderData.user && User) {
@@ -236,22 +228,10 @@ function Checkout() {
         );
         localStorage.setItem("order_creation_completed", "true");
 
-        // Check order status
-        const pState = String(
-          response?.data?.[0]?.orderPayment?.status ?? ""
-        ).toLowerCase();
-        const oState = String(
-          response?.data?.[0]?.newOrder?.status ?? ""
-        ).toLowerCase();
-        const isOrderSuccessful =
-          pState === "success" ||
-          pState === "completed" ||
-          pState === "paid" ||
-          oState !== "failed";
-        setOrderStatus(isOrderSuccessful);
+        setOrderStatus(true);
 
         // Clear stored payment data for successful orders
-        if (isOrderSuccessful && isPaystack) {
+        if (isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
           localStorage.removeItem("paystack_order_data");
         }
