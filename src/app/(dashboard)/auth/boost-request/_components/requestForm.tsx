@@ -97,10 +97,14 @@ function RequestForm({
   };
 
   const handleSubmit = (values: any) => {
+    // Calculate total price based on selected plan
+    const price = getPlanPrice(selectedPlan);
+
     const payload = {
       plan_id: values.plan_id,
       product_ids: values.product_ids,
       remarks: values.remarks,
+      amount: price,
     };
     onSubmit(payload);
   };
