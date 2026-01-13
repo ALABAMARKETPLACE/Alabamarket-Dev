@@ -101,7 +101,7 @@ const API_ADMIN = {
   USER_FORGOT_PASSWORD: "auth/forgot-password", //post forgot password request
 
   //SUBSCRIPTION PLANS API
-  SUBSCRIPTION_PLANS: "subscription-plans", //GET,POST,PUT,DELETE (no trailing slash to avoid /undefined)
+  SUBSCRIPTION_PLANS: "subscription-plans", //GET,POST,PUT,DELETE
   SUBSCRIPTION_PLANS_FEATURED_POSITION: "subscription-plans/featured-position", //PUT - Update featured position
 
   //BOOST REQUESTS API

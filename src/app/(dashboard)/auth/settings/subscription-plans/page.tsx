@@ -5,7 +5,7 @@ import API_ADMIN from "@/config/API_ADMIN";
 import { Button, Input } from "antd";
 import { IoIosAdd } from "react-icons/io";
 import Loading from "@/app/(dashboard)/_components/loading";
-import Error from "@/app/(dashboard)/_components/error";
+import ErrorComponent from "@/app/(dashboard)/_components/error";
 import DataTable from "./_components/dataTable";
 import { useRouter } from "next/navigation";
 import useDebounceQuery from "@/shared/hook/useDebounceQuery";
@@ -27,21 +27,43 @@ function SubscriptionPlansPage() {
     error,
   } = useQuery<any>({
     queryKey: ["subscription-plans", { page, limit: take, search: query }],
-    queryFn: ({ queryKey, signal }) => {
+    queryFn: async ({ queryKey, signal }) => {
       const params = queryKey[1] as any;
-      // Remove empty values to avoid API issues
       const filteredParams = Object.fromEntries(
         Object.entries(params).filter(([_, v]) => v !== "" && v !== undefined)
       );
-      return GET(
-        API_ADMIN.SUBSCRIPTION_PLANS,
-        filteredParams,
-        signal
-      );
+      const res: any = await GET(API_ADMIN.SUBSCRIPTION_PLANS, filteredParams, signal);
+      if (res?.status === false) {
+        throw new globalThis.Error(res?.message || "Failed to fetch subscription plans");
+      }
+      return res;
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
+
+  const plansArray = (() => {
+    const payload = plans?.data;
+    if (Array.isArray(payload?.data)) return payload.data;
+    if (Array.isArray(payload)) return payload;
+    if (Array.isArray(payload?.items)) return payload.items;
+    if (Array.isArray(payload?.rows)) return payload.rows;
+    return [];
+  })();
+
+  const plansCount = (() => {
+    const payload = plans?.data;
+    const total =
+      payload?.pagination?.total ??
+      payload?.pagination?.totalItems ??
+      payload?.pagination?.itemCount ??
+      payload?.meta?.itemCount ??
+      payload?.meta?.totalItems ??
+      payload?.meta?.total ??
+      payload?.count;
+    if (typeof total === "number") return total;
+    return Array.isArray(plansArray) ? plansArray.length : 0;
+  })();
 
   return (
     <div>
@@ -80,13 +102,13 @@ function SubscriptionPlansPage() {
       {isLoading ? (
         <Loading />
       ) : isError ? (
-        <Error description={error?.message} />
+        <ErrorComponent description={error?.message} />
       ) : (
         <DataTable
-          data={plans?.data?.data || []}
+          data={plansArray}
           page={page}
           take={take}
-          count={plans?.data?.pagination?.total || 0}
+          count={plansCount}
           setPage={setPage}
           setTake={setTake}
         />
