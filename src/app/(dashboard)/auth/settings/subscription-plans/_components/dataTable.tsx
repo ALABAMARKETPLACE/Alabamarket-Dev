@@ -10,7 +10,7 @@ import API_ADMIN from "@/config/API_ADMIN";
 
 interface PopconfirmState {
   open: boolean;
-  id: number;
+  id: number | string;
 }
 
 interface props {
@@ -133,7 +133,10 @@ function DataTable({ data, page, take, count, setPage, setTake }: props) {
               if (id === undefined || id === null) return;
               mutationDelete.mutate(id);
             }}
-            open={deletePopconfirm?.open && record?.id === deletePopconfirm?.id}
+            open={
+              deletePopconfirm?.open &&
+              (record?.id ?? record?._id) === deletePopconfirm?.id
+            }
             okButtonProps={{ loading: mutationDelete.isPending }}
           >
             <Button
@@ -157,8 +160,8 @@ function DataTable({ data, page, take, count, setPage, setTake }: props) {
   const queryClient = useQueryClient();
 
   const mutationDelete = useMutation({
-    mutationFn: (id: number) => {
-      return DELETE(API_ADMIN.SUBSCRIPTION_PLANS + id);
+    mutationFn: (id: number | string) => {
+      return DELETE(`${API_ADMIN.SUBSCRIPTION_PLANS}/${id}`);
     },
     onError: (error, variables, context) => {
       Notifications["error"]({
@@ -180,6 +183,7 @@ function DataTable({ data, page, take, count, setPage, setTake }: props) {
       <Table
         dataSource={data}
         columns={columns}
+        rowKey={(record, index) => String(record?.id ?? record?._id ?? index)}
         size="small"
         scroll={{ x: 800 }}
         pagination={{

@@ -15,7 +15,7 @@ import API_ADMIN from "@/config/API_ADMIN";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
-import Error from "@/app/(dashboard)/_components/error";
+import ErrorComponent from "@/app/(dashboard)/_components/error";
 
 interface Props {
   params: {
@@ -31,8 +31,17 @@ function EditSubscriptionPlan({ params }: Props) {
 
   const { data, isLoading, isError, error } = useQuery<any>({
     queryKey: ["subscription-plan", params.id],
-    queryFn: ({ signal }) =>
-      GET(`${API_ADMIN.SUBSCRIPTION_PLANS}/${params.id}`, {}, signal),
+    queryFn: async ({ signal }) => {
+      const res: any = await GET(
+        `${API_ADMIN.SUBSCRIPTION_PLANS}/${params.id}`,
+        {},
+        signal
+      );
+      if (res?.status === false) {
+        throw new globalThis.Error(res?.message || "Failed to fetch subscription plan");
+      }
+      return res;
+    },
     enabled: !!params.id,
   });
 
@@ -73,20 +82,21 @@ function EditSubscriptionPlan({ params }: Props) {
   });
 
   useEffect(() => {
-    if (data?.data) {
+    const plan = data?.data?.data ?? data?.data;
+    if (plan) {
       form.setFieldsValue({
-        name: data.data.name,
-        min_products: Number(data.data.min_products),
-        max_products: Number(data.data.max_products),
-        duration_days: Number(data.data.duration_days),
-        price: Number(data.data.price),
-        is_active: data.data.is_active,
+        name: plan.name,
+        min_products: Number(plan.min_products),
+        max_products: Number(plan.max_products),
+        duration_days: Number(plan.duration_days),
+        price: Number(plan.price),
+        is_active: plan.is_active,
       });
     }
   }, [data, form]);
 
   if (isLoading) return <Loading />;
-  if (isError) return <Error description={error?.message} />;
+  if (isError) return <ErrorComponent description={error?.message} />;
 
   return (
     <div>

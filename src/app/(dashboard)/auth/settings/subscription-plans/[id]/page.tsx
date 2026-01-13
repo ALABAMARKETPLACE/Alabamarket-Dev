@@ -12,7 +12,7 @@ import {
   notification,
 } from "antd";
 import Loading from "@/app/(dashboard)/_components/loading";
-import Error from "@/app/(dashboard)/_components/error";
+import ErrorComponent from "@/app/(dashboard)/_components/error";
 import { useRouter } from "next/navigation";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import { GET, PUT } from "@/util/apicall";
@@ -44,12 +44,21 @@ function ViewSubscriptionPlan({ params }: Props) {
 
   const { data, isLoading, isError, error } = useQuery<any>({
     queryKey: ["subscription-plan", params.id],
-    queryFn: ({ signal }) =>
-      GET(`${API_ADMIN.SUBSCRIPTION_PLANS}/${params.id}`, {}, signal),
+    queryFn: async ({ signal }) => {
+      const res: any = await GET(
+        `${API_ADMIN.SUBSCRIPTION_PLANS}/${params.id}`,
+        {},
+        signal
+      );
+      if (res?.status === false) {
+        throw new globalThis.Error(res?.message || "Failed to fetch subscription plan");
+      }
+      return res;
+    },
     enabled: !!params.id,
   });
 
-  const plan = data?.data;
+  const plan = data?.data?.data ?? data?.data;
 
   // Mutation for updating featured position
   const mutationUpdatePosition = useMutation({
@@ -84,7 +93,7 @@ function ViewSubscriptionPlan({ params }: Props) {
   };
 
   if (isLoading) return <Loading />;
-  if (isError) return <Error description={error?.message} />;
+  if (isError) return <ErrorComponent description={error?.message} />;
 
   const currentPositionInfo =
     POSITION_LABELS[plan?.featured_position ?? 0] || POSITION_LABELS[0];
@@ -150,11 +159,11 @@ function ViewSubscriptionPlan({ params }: Props) {
             </Descriptions.Item>
 
             <Descriptions.Item label="Created At">
-              {new Date(plan?.created_at).toLocaleString()}
+              {new Date(plan?.created_at ?? plan?.createdAt).toLocaleString()}
             </Descriptions.Item>
 
             <Descriptions.Item label="Last Updated">
-              {new Date(plan?.updated_at).toLocaleString()}
+              {new Date(plan?.updated_at ?? plan?.updatedAt).toLocaleString()}
             </Descriptions.Item>
           </Descriptions>
         </Card>
