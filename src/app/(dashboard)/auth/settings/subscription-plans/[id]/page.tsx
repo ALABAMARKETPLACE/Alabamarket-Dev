@@ -13,16 +13,10 @@ import {
 } from "antd";
 import Loading from "@/app/(dashboard)/_components/loading";
 import ErrorComponent from "@/app/(dashboard)/_components/error";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import { GET, PUT } from "@/util/apicall";
 import { TbEdit } from "react-icons/tb";
-
-interface Props {
-  params: {
-    id: string;
-  };
-}
 
 // Position labels mapping
 const POSITION_LABELS: Record<
@@ -36,7 +30,8 @@ const POSITION_LABELS: Record<
   4: { label: "Discounted Section", color: "purple", icon: "🏷️" },
 };
 
-function ViewSubscriptionPlan({ params }: Props) {
+function ViewSubscriptionPlan() {
+  const params = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [Notifications, contextHolder] = notification.useNotification();
