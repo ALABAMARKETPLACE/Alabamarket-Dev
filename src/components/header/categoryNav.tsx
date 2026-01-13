@@ -1,15 +1,17 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import "./categoryNav.scss";
 import { reduxCategoryItems } from "@/redux/slice/categorySlice";
+import { setSideMenuOpen } from "@/redux/slice/layoutSlice";
 import dynamic from "next/dynamic";
 
 const HamburgerIcon = dynamic(() => import("./HamburgerIcon"), { ssr: false });
 
 function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
   const router = useRouter();
+  const dispatch = useDispatch();
   const categories = useSelector(reduxCategoryItems);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -99,7 +101,9 @@ function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
     <div className="category-nav-wrapper">
       <div className="category-nav-container">
         <div style={{ marginRight: 8 }}>
-          <HamburgerIcon onClick={onOpenMenu || (() => {})} />
+          <HamburgerIcon
+            onClick={onOpenMenu || (() => dispatch(setSideMenuOpen(true)))}
+          />
         </div>
 
         <div className="category-lines-scroll" ref={containerRef}>

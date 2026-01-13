@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PageHeader from "./_components/pageHeader";
-import { Pagination, Space, Tag, notification } from "antd";
+import { Space, Tag, notification, Button } from "antd";
 import { useSelector } from "react-redux";
 import PageSider from "./_components/pageSider";
 import { GET } from "@/util/apicall";
@@ -20,6 +20,7 @@ import {
 } from "next/navigation";
 import "./styles.scss";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
+import CategoryNav from "@/components/header/categoryNav";
 
 const getCategoryId = (cid: any): string => {
   try {
@@ -74,6 +75,14 @@ const ProductByCategory = () => {
     }
     return Array.isArray(products) ? products.length : 0;
   }, [shouldUseMultiLayout, groupedProducts, products]);
+
+  const hasNextPage = useMemo(() => {
+    if (typeof meta?.hasNextPage === "boolean") return meta.hasNextPage;
+    if (meta?.pageCount) return page < meta.pageCount;
+    if (meta?.totalPages) return page < meta.totalPages;
+    if (meta?.itemCount) return page * pageSize < meta.itemCount;
+    return false;
+  }, [meta, page, pageSize]);
 
   const categoryId = searchParams.get("id")
     ? getCategoryId(searchParams.get("id"))
@@ -222,6 +231,9 @@ const ProductByCategory = () => {
   return (
     <div className="Screen-box">
       {contextHolder}
+      <div className="category-nav-section" style={{ padding: "10px 0" }}>
+        <CategoryNav />
+      </div>
       <Container fluid>
         <Row>
           <Col lg={12} style={{ margin: 0 }}>
@@ -277,18 +289,27 @@ const ProductByCategory = () => {
                 }"`}
               />
             )}
-            <Pagination
-              current={page}
-              pageSize={pageSize}
-              total={meta?.itemCount || 0}
-              showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-              defaultCurrent={1}
-              responsive={true}
-              defaultPageSize={pageSize}
-              disabled={false}
-              hideOnSinglePage={false}
-              onChange={handlePageChange}
-            />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginTop: 20,
+                gap: "10px",
+              }}
+            >
+              <Button
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page <= 1 || loading}
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={() => handlePageChange(page + 1)}
+                disabled={!hasNextPage || loading}
+              >
+                Next
+              </Button>
+            </div>
             <br />
           </Col>
         </Row>
