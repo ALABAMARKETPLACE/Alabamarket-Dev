@@ -46,6 +46,7 @@ function ViewSubscriptionPlan({ params }: Props) {
     queryKey: ["subscription-plan", params.id],
     queryFn: ({ signal }) =>
       GET(API_ADMIN.SUBSCRIPTION_PLANS + params.id, {}, signal),
+    enabled: !!params.id,
   });
 
   const plan = data?.data;

@@ -34,9 +34,7 @@ function RequestForm({
     queryKey: ["subscription-plans-all"],
     queryFn: ({ signal }) =>
       GET(
-        API_ADMIN.SUBSCRIPTION_PLANS.endsWith("/")
-          ? API_ADMIN.SUBSCRIPTION_PLANS.slice(0, -1)
-          : API_ADMIN.SUBSCRIPTION_PLANS,
+        "subscription-plans",
         { limit: 100 },
         signal
       ),
