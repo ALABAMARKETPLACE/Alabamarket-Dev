@@ -166,6 +166,7 @@ export const options: NextAuthOptions = {
         session.role = token?.user?.role;
         session.type = token?.user?.type;
         session.user = {
+          id: token?.user?.id,
           name: token?.user?.name,
           email: token?.user?.email,
           image: token?.user?.image,

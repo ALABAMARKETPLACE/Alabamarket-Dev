@@ -108,6 +108,8 @@ function Checkout() {
           cart: Checkout?.cart,
           address: Checkout?.address,
           charges: Checkout?.charges,
+          user_id: User?.id ?? Checkout?.user_id ?? null,
+          user: User ?? Checkout?.user ?? null,
         };
       } else if (isPaystack) {
         // Paystack Order Flow - Verify payment first
@@ -151,6 +153,8 @@ function Checkout() {
           cart: Checkout?.cart,
           address: Checkout?.address,
           charges: Checkout?.charges,
+          user_id: User?.id ?? Checkout?.user_id ?? null,
+          user: User ?? Checkout?.user ?? null,
         };
 
         // Ensure user information is captured
