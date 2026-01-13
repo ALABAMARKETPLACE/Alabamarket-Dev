@@ -33,11 +33,7 @@ function RequestForm({
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-all"],
     queryFn: ({ signal }) =>
-      GET(
-        "subscription-plans",
-        { limit: 100 },
-        signal
-      ),
+      GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });

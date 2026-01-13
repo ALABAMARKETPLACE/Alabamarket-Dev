@@ -51,7 +51,7 @@ function EditSubscriptionPlan({ params }: Props) {
         payload.duration_days = Number(payload.duration_days);
       }
 
-      return PUT(API_ADMIN.SUBSCRIPTION_PLANS, payload);
+      return PUT(API_ADMIN.SUBSCRIPTION_PLANS + params.id, payload);
     },
     onError: (error, variables, context) => {
       Notifications["error"]({
