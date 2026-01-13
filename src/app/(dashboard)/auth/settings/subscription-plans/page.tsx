@@ -45,24 +45,14 @@ function SubscriptionPlansPage() {
   const plansArray = (() => {
     const payload = plans?.data;
     if (Array.isArray(payload?.data)) return payload.data;
-    if (Array.isArray(payload)) return payload;
-    if (Array.isArray(payload?.items)) return payload.items;
-    if (Array.isArray(payload?.rows)) return payload.rows;
     return [];
   })();
 
   const plansCount = (() => {
     const payload = plans?.data;
-    const total =
-      payload?.pagination?.total ??
-      payload?.pagination?.totalItems ??
-      payload?.pagination?.itemCount ??
-      payload?.meta?.itemCount ??
-      payload?.meta?.totalItems ??
-      payload?.meta?.total ??
-      payload?.count;
+    const total = payload?.pagination?.total;
     if (typeof total === "number") return total;
-    return Array.isArray(plansArray) ? plansArray.length : 0;
+    return 0;
   })();
 
   return (
