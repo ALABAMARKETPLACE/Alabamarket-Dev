@@ -104,6 +104,8 @@ const API_ADMIN = {
   SUBSCRIPTION_PLANS: "subscription-plans", //GET,POST,PUT,DELETE
   SUBSCRIPTION_PLANS_FEATURED_POSITION: "subscription-plans/featured-position", //PUT - Update featured position
 
+  FEATURED_PRODUCTS_PRODUCTS: "featured-products/products", // GET - Products eligible for boost/featured
+
   //BOOST REQUESTS API
   BOOST_REQUESTS: "boost-requests/", //GET,POST,PUT,DELETE
   BOOST_REQUEST_APPROVE: "boost-requests/approve", //POST - Admin approve/reject
