@@ -33,11 +33,7 @@ function SubscriptionPlansPage() {
       const filteredParams = Object.fromEntries(
         Object.entries(params).filter(([_, v]) => v !== "" && v !== undefined)
       );
-      return GET(
-        API_ADMIN.SUBSCRIPTION_PLANS,
-        filteredParams,
-        signal
-      );
+      return GET(API_ADMIN.SUBSCRIPTION_PLANS, filteredParams, signal);
     },
     staleTime: 30000,
     refetchOnWindowFocus: false,

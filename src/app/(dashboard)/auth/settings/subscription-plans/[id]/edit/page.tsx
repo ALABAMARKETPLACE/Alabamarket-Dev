@@ -32,7 +32,7 @@ function EditSubscriptionPlan({ params }: Props) {
   const { data, isLoading, isError, error } = useQuery<any>({
     queryKey: ["subscription-plan", params.id],
     queryFn: ({ signal }) =>
-      GET(API_ADMIN.SUBSCRIPTION_PLANS + params.id, {}, signal),
+      GET(`${API_ADMIN.SUBSCRIPTION_PLANS}/${params.id}`, {}, signal),
     enabled: !!params.id,
   });
 
@@ -51,7 +51,7 @@ function EditSubscriptionPlan({ params }: Props) {
         payload.duration_days = Number(payload.duration_days);
       }
 
-      return PUT(API_ADMIN.SUBSCRIPTION_PLANS + params.id, payload);
+      return PUT(`${API_ADMIN.SUBSCRIPTION_PLANS}/${params.id}`, payload);
     },
     onError: (error, variables, context) => {
       Notifications["error"]({
