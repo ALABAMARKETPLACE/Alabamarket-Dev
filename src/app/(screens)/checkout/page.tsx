@@ -23,6 +23,7 @@ function Checkout() {
   const navigation = useRouter();
   const { data: session } = useSession();
   const user = session?.user;
+  const customerId = (user as any)?.id || null;
   const Checkout = useSelector((state: any) => state?.Checkout);
   const Settings = useAppSelector(reduxSettings);
   const [notificationApi, contextHolder] = notification.useNotification();
@@ -147,6 +148,8 @@ function Checkout() {
           charges: {
             token: deliveryToken,
           },
+          user_id: customerId,
+          user: user,
         };
         dispatch(storeFinal(obj));
         if (payment_method === "Pay Online") {
@@ -289,7 +292,7 @@ function Checkout() {
               charges: {
                 token: deliveryToken,
               },
-              user_id: (user as any)?.id,
+              user_id: customerId,
               user: user,
             },
           })

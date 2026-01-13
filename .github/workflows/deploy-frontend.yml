@@ -10,6 +10,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -25,14 +26,20 @@ jobs:
             echo "APP_DIR=/home/${{ vars.PROD_SERVER_USER }}/alaba-marketplace-production/website" >> $GITHUB_ENV
             echo "APP_NAME=alabamarketplace" >> $GITHUB_ENV
             echo "ENVIRONMENT=production" >> $GITHUB_ENV
-            echo "SSH_KEY=${{ secrets.PROD_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
           else
             echo "SERVER_HOST=${{ vars.DEV_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.DEV_SERVER_USER }}" >> $GITHUB_ENV
             echo "APP_DIR=/home/${{ vars.DEV_SERVER_USER }}/alaba-marketplace/website" >> $GITHUB_ENV
             echo "APP_NAME=alabamarketplace-frontend" >> $GITHUB_ENV
             echo "ENVIRONMENT=development" >> $GITHUB_ENV
-            echo "SSH_KEY=${{ secrets.DEV_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+
+            echo "SSH_KEY<<EOF" >> $GITHUB_ENV
+            echo "${{ secrets.DEV_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
           fi
 
       # -----------------------------
@@ -55,14 +62,13 @@ jobs:
 
           echo "======================"
 
-          # Fail early if anything critical is missing
           if [[ -z "$SERVER_HOST" || -z "$SERVER_USER" || -z "$SSH_KEY" ]]; then
             echo "❌ Required environment variables are missing. Aborting."
             exit 1
           fi
 
       # -----------------------------
-      # Setup SSH (branch-aware key)
+      # Setup SSH
       # -----------------------------
       - name: Setup SSH
         run: |
