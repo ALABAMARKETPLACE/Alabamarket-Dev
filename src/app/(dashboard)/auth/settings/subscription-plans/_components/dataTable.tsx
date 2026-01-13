@@ -101,20 +101,22 @@ function DataTable({ data, page, take, count, setPage, setTake }: props) {
           <Button
             type="text"
             size="small"
-            onClick={() =>
-              router.push(`/auth/settings/subscription-plans/${record?.id}`)
-            }
+            onClick={() => {
+              const id = record?.id ?? record?._id;
+              if (id === undefined || id === null) return;
+              router.push(`/auth/settings/subscription-plans/${id}`);
+            }}
           >
             <TbEye size={22} color="blue" />
           </Button>
           <Button
             type="text"
             size="small"
-            onClick={() =>
-              router.push(
-                `/auth/settings/subscription-plans/${record?.id}/edit`
-              )
-            }
+            onClick={() => {
+              const id = record?.id ?? record?._id;
+              if (id === undefined || id === null) return;
+              router.push(`/auth/settings/subscription-plans/${id}/edit`);
+            }}
           >
             <TbEdit size={22} color="orange" />
           </Button>
@@ -126,16 +128,22 @@ function DataTable({ data, page, take, count, setPage, setTake }: props) {
             cancelText="No"
             onCancel={() => setDeletePopconfirm({ type: "close" })}
             placement="bottomLeft"
-            onConfirm={() => mutationDelete.mutate(record?.id)}
+            onConfirm={() => {
+              const id = record?.id ?? record?._id;
+              if (id === undefined || id === null) return;
+              mutationDelete.mutate(id);
+            }}
             open={deletePopconfirm?.open && record?.id === deletePopconfirm?.id}
             okButtonProps={{ loading: mutationDelete.isPending }}
           >
             <Button
               type="text"
               size="small"
-              onClick={() =>
-                setDeletePopconfirm({ type: "open", id: record?.id })
-              }
+              onClick={() => {
+                const id = record?.id ?? record?._id;
+                if (id === undefined || id === null) return;
+                setDeletePopconfirm({ type: "open", id });
+              }}
             >
               <MdDeleteOutline size={22} color="red" />
             </Button>
