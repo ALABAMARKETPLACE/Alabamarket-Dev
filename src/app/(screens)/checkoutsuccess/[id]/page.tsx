@@ -61,7 +61,18 @@ function Checkout() {
           const orderData = JSON.parse(existingOrderData);
           setResponseData(orderData);
           getOrderItems(orderData);
-          setOrderStatus(orderData?.[0]?.newOrder?.status !== "failed");
+          const paymentState = String(
+            orderData?.[0]?.orderPayment?.status ?? ""
+          ).toLowerCase();
+          const orderState = String(
+            orderData?.[0]?.newOrder?.status ?? ""
+          ).toLowerCase();
+          const successful =
+            paymentState === "success" ||
+            paymentState === "completed" ||
+            paymentState === "paid" ||
+            orderState !== "failed";
+          setOrderStatus(successful);
           setPaymentStatus(true);
           setIsLoading(false);
           return;
@@ -108,7 +119,8 @@ function Checkout() {
           cart: Checkout?.cart,
           address: Checkout?.address,
           charges: Checkout?.charges,
-          user_id: User?.id ?? Checkout?.user_id ?? null,
+          user_id:
+            User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
           user: User ?? Checkout?.user ?? null,
         };
       } else if (isPaystack) {
@@ -153,7 +165,8 @@ function Checkout() {
           cart: Checkout?.cart,
           address: Checkout?.address,
           charges: Checkout?.charges,
-          user_id: User?.id ?? Checkout?.user_id ?? null,
+          user_id:
+            User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
           user: User ?? Checkout?.user ?? null,
         };
 
@@ -224,8 +237,17 @@ function Checkout() {
         localStorage.setItem("order_creation_completed", "true");
 
         // Check order status
+        const pState = String(
+          response?.data?.[0]?.orderPayment?.status ?? ""
+        ).toLowerCase();
+        const oState = String(
+          response?.data?.[0]?.newOrder?.status ?? ""
+        ).toLowerCase();
         const isOrderSuccessful =
-          response?.data?.[0]?.newOrder?.status !== "failed";
+          pState === "success" ||
+          pState === "completed" ||
+          pState === "paid" ||
+          oState !== "failed";
         setOrderStatus(isOrderSuccessful);
 
         // Clear stored payment data for successful orders
