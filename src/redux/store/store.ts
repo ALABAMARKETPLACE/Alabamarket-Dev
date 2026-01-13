@@ -11,6 +11,7 @@ import { AuthSlice } from "@/redux/slice/authSlice";
 import { CheckoutSlice } from "@/redux/slice/checkoutSlice";
 import { UserSlice } from "@/redux/slice/userSlice";
 import { paystackSlice } from "@/redux/slice/paystackSlice";
+import { LayoutSlice } from "@/redux/slice/layoutSlice";
 
 const rootReducer = combineSlices(
   CartSlice,
@@ -21,7 +22,8 @@ const rootReducer = combineSlices(
   AuthSlice,
   CheckoutSlice,
   UserSlice,
-  paystackSlice
+  paystackSlice,
+  LayoutSlice
 );
 
 const persistConfig = {

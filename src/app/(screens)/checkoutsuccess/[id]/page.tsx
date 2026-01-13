@@ -61,13 +61,11 @@ function Checkout() {
           const orderData = JSON.parse(existingOrderData);
           setResponseData(orderData);
           getOrderItems(orderData);
-          setOrderStatus(orderData?.[0]?.newOrder?.status !== "failed");
+          setOrderStatus(true);
           setPaymentStatus(true);
           setIsLoading(false);
           return;
-        } catch (e) {
-          // If parsing fails, proceed with new order creation
-        }
+        } catch (e) {}
       }
     }
 
@@ -108,6 +106,9 @@ function Checkout() {
           cart: Checkout?.cart,
           address: Checkout?.address,
           charges: Checkout?.charges,
+          user_id:
+            User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
+          user: User ?? Checkout?.user ?? null,
         };
       } else if (isPaystack) {
         // Paystack Order Flow - Verify payment first
@@ -151,16 +152,24 @@ function Checkout() {
           cart: Checkout?.cart,
           address: Checkout?.address,
           charges: Checkout?.charges,
+          user_id:
+            User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
+          user: User ?? Checkout?.user ?? null,
         };
 
-        // Ensure user information is captured
-        if (!finalOrderData.user_id && User?.id) {
-          finalOrderData.user_id = User.id;
-        }
-        
-        // Also add userId as camelCase fallback
-        if (!finalOrderData.userId && finalOrderData.user_id) {
-          finalOrderData.userId = finalOrderData.user_id;
+        const resolvedUserId =
+          finalOrderData.user_id ??
+          finalOrderData.userId ??
+          (finalOrderData.user as any)?.id ??
+          Checkout?.user_id ??
+          Checkout?.address?.user_id ??
+          User?.id ??
+          null;
+
+        finalOrderData.user_id = resolvedUserId;
+
+        if (!finalOrderData.userId && resolvedUserId) {
+          finalOrderData.userId = resolvedUserId;
         }
 
         if (!finalOrderData.user && User) {
@@ -219,13 +228,10 @@ function Checkout() {
         );
         localStorage.setItem("order_creation_completed", "true");
 
-        // Check order status
-        const isOrderSuccessful =
-          response?.data?.[0]?.newOrder?.status !== "failed";
-        setOrderStatus(isOrderSuccessful);
+        setOrderStatus(true);
 
         // Clear stored payment data for successful orders
-        if (isOrderSuccessful && isPaystack) {
+        if (isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
           localStorage.removeItem("paystack_order_data");
         }

@@ -34,7 +34,7 @@ function SubscriptionPlansPage() {
         Object.entries(params).filter(([_, v]) => v !== "" && v !== undefined)
       );
       return GET(
-        API_ADMIN.SUBSCRIPTION_PLANS.slice(0, -1),
+        API_ADMIN.SUBSCRIPTION_PLANS,
         filteredParams,
         signal
       );

@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import "./style.scss";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { reduxIsSideMenuOpen, setSideMenuOpen } from "@/redux/slice/layoutSlice";
 import CONFIG from "@/config/configuration";
 import { useGetSettings, useTokenExpiration } from "./services";
 import { usePathname, useRouter } from "next/navigation";
@@ -34,7 +35,8 @@ const CateogreyList = dynamic(() => import("./categoryList"), {
 // Add these imports - adjust paths as needed
 
 function Header() {
-  const [sideMenuOpen, setSideMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const sideMenuOpen = useSelector(reduxIsSideMenuOpen);
   const Settings = useSelector(reduxSettings);
   const cart = useSelector((state: any) => state.Cart);
   const location = useSelector((state: any) => state?.Location);
@@ -78,7 +80,10 @@ function Header() {
   // Show SideMenu on all pages except /auth
   return pathname?.includes("/auth") ? null : (
     <>
-      <SideMenu open={sideMenuOpen} onClose={() => setSideMenuOpen(false)} />
+      <SideMenu
+        open={sideMenuOpen}
+        onClose={() => dispatch(setSideMenuOpen(false))}
+      />
       <Container fluid className="Header-container">
         <header className="position-sticky top-0" style={{ zIndex: 1000 }}>
           <div className="Header py-2">
@@ -175,7 +180,7 @@ function Header() {
           </div>
           {pathname === "/" && (
             <div className="Header-sectionBox">
-              <CategoryNav onOpenMenu={() => setSideMenuOpen(true)} />
+              <CategoryNav onOpenMenu={() => dispatch(setSideMenuOpen(true))} />
             </div>
           )}
         </header>
