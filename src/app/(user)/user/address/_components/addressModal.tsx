@@ -45,7 +45,7 @@ const AddressModal = (props: any) => {
       type == update ? API.ADDRESS + props?.selected?.id : API.ADDRESS;
     const obj = {
       flat: values?.flat,
-      pin_code: values?.pincode,
+      pin_code: "000000",
       state: values?.state,
       city: values?.city,
       street: values?.street,

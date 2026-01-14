@@ -36,7 +36,7 @@ function AddressForm(props: any) {
       const obj = {
         userId: user?.user?.data._id,
         flat: values?.flat,
-        pin_code: values?.pin_code,
+        pin_code: "000000",
         state: values?.state,
         city: values?.city,
         street: values?.street,

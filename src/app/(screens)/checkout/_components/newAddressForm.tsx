@@ -93,7 +93,7 @@ function NewAddressForm(props: any) {
       const obj = {
         address_type: values.address_type,
         full_address: values.full_address,
-        pincode: values.pincode,
+        pincode: "000000",
         phone_no: values.phone_no,
         country_code: values?.code ?? "+234",
         country_id: values.country_id || null,
