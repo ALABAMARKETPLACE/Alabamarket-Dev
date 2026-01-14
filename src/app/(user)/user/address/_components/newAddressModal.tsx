@@ -86,9 +86,9 @@ const NewAddressModal = (props: NewAddressModalProps) => {
   const mainStateSelection = Form.useWatch("main_state_selection", form);
   
   // Update visibility based on selection
-  useEffect(() => {
-    setIsLagosGroupSelected(mainStateSelection === "LAGOS_GROUP");
-  }, [mainStateSelection]);
+  // useEffect(() => {
+  //   setIsLagosGroupSelected(mainStateSelection === "LAGOS_GROUP");
+  // }, [mainStateSelection]);
 
   useEffect(() => {
     if (type === update && props?.selected) {
@@ -411,8 +411,10 @@ const NewAddressModal = (props: NewAddressModalProps) => {
                       form.setFieldValue("country_id", undefined);
                     }
                     if (value === "LAGOS_GROUP") {
+                      setIsLagosGroupSelected(true);
                       form.setFieldValue("state_id", undefined); // Reset specific state selection
                     } else {
+                      setIsLagosGroupSelected(false);
                       form.setFieldValue("state_id", value); // Sync state_id with selection
                     }
                   }}

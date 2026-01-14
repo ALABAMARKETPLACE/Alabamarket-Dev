@@ -327,8 +327,10 @@ function NewAddressForm(props: any) {
                   ].sort((a, b) => a.label.localeCompare(b.label))}
                   onChange={(value) => {
                     if (value === "LAGOS_GROUP") {
+                      setIsLagosGroupSelected(true);
                       form.setFieldValue("state_id", undefined); // Reset specific state selection
                     } else {
+                      setIsLagosGroupSelected(false);
                       form.setFieldValue("state_id", value); // Sync state_id with selection
                     }
                   }}
