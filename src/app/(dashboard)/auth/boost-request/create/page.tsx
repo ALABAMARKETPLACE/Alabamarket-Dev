@@ -148,6 +148,7 @@ function CreateBoostRequest() {
         onSubmit={(payload) => mutationPay.mutate(payload)}
         loading={mutationPay.isPending}
         onCancel={() => router.push("/auth/boost-request")}
+        storeId={sellerId}
       />
     </div>
   );

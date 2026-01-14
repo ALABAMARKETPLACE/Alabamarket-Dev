@@ -194,7 +194,7 @@ const NewAddressModal = (props: NewAddressModalProps) => {
             </Form.Item>
           </Col>
 
-          <Col md={6}>
+          {/* <Col md={6}>
             <Form.Item
               label="Pincode"
               name="pincode"
@@ -215,7 +215,7 @@ const NewAddressModal = (props: NewAddressModalProps) => {
             >
               <Input placeholder="Pincode" size="large" />
             </Form.Item>
-          </Col>
+          </Col> */}
 
           <Col md={6}>
             <Form.Item

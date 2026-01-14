@@ -84,107 +84,107 @@ function Header() {
         open={sideMenuOpen}
         onClose={() => dispatch(setSideMenuOpen(false))}
       />
-      <Container fluid className="Header-container">
-        <header className="position-sticky top-0" style={{ zIndex: 1000 }}>
-          <div className="Header py-2">
-            <div className="Header-Box">
-              <Link href="/">
-                <div className="Header_logoBox" style={{ cursor: "pointer" }}>
-                  <Image
-                    alt="AlabaMarketplace"
-                    src={Logo}
-                    className="Header_logo"
-                  />
+      <div className="Header-wrapper position-sticky top-0" style={{ zIndex: 1000 }}>
+        <Container fluid className="Header-container">
+          <header className="Header">
+            <div className="Header-top">
+              {/* Left Section: Logo & Location */}
+              <div className="Header-left">
+                <Link href="/">
+                  <div className="Header_logoBox">
+                    <Image
+                      alt="AlabaMarketplace"
+                      src={Logo}
+                      className="Header_logo"
+                      priority
+                    />
+                  </div>
+                </Link>
+                <div className="Header-location d-none d-lg-block">
+                  {isMounted && Settings?.isLocation ? <Location /> : null}
                 </div>
-              </Link>
-              {/* <div style={{ marginTop: 5 }}>{CONFIG.NAME}</div> */}
-              <div className="Header-location desktop">
-                {isMounted && Settings?.isLocation ? <Location /> : null}
               </div>
-              <div className="Header-search desktop">
+
+              {/* Center Section: Search (Desktop) */}
+              <div className="Header-center d-none d-lg-block">
                 <Search type={"input"} />
               </div>
-              {showSellerCta ? (
-                <div className="Header-sellerCTA">
-                  <Button
-                    size="large"
-                    icon={<BsShopWindow size={18} />}
-                    className="Header-sellerBtn"
-                    onClick={handleSellerNavigation}
-                  >
-                    <span className="Header-sellerBtn-text">
-                      {sellerCtaLabel}
-                    </span>
-                  </Button>
-                </div>
-              ) : null}
-              <div className="Header-menu">
-                <Popover
-                  placement="bottomRight"
-                  trigger="click"
-                  content={
-                    <ProfileMenu
-                      close={handlepopovervisiblechange}
-                      isVisible={issharepopovervisible}
-                    />
-                  }
-                  arrow={false}
-                  open={issharepopovervisible}
-                  onOpenChange={handlepopovervisiblechange}
-                >
-                  <div
-                    className={
-                      user?.user
-                        ? "Header-desk-menu Header-deskactive border"
-                        : "Header-desk-menu"
-                    }
-                  >
-                    <div style={{ color: "#FF5F15" }}>
-                      {user?.user?.first_name}
-                    </div>
-                    <div style={{ margin: 4 }} />
-                    {user?.user?.image ? (
-                      <img
-                        style={{ marginTop: -4, marginBottom: -4 }}
-                        src={user?.user?.image}
-                        className="Header-ProfileImag"
-                        alt="profile"
-                      />
-                    ) : (
-                      <PiUserCircle size={25} color="grey" />
-                    )}
+
+              {/* Right Section: CTA, Account, Cart */}
+              <div className="Header-right">
+                {showSellerCta ? (
+                  <div className="Header-sellerCTA d-none d-md-block">
+                    <Button
+                      size="large"
+                      icon={<BsShopWindow size={18} />}
+                      className="Header-sellerBtn"
+                      onClick={handleSellerNavigation}
+                    >
+                      <span className="Header-sellerBtn-text">
+                        {sellerCtaLabel}
+                      </span>
+                    </Button>
                   </div>
-                </Popover>
-              </div>
-              <div className="Header-menu">
-                <Link href={"/cart"}>
-                  <Button
-                    size="large"
-                    icon={
-                      <Badge count={cart.items.length} size="small">
-                        <IoCartOutline size={20} color={"#262941"} />
-                      </Badge>
+                ) : null}
+
+                <div className="Header-actions">
+                  <Popover
+                    placement="bottomRight"
+                    trigger="click"
+                    content={
+                      <ProfileMenu
+                        close={handlepopovervisiblechange}
+                        isVisible={issharepopovervisible}
+                      />
                     }
+                    arrow={false}
+                    open={issharepopovervisible}
+                    onOpenChange={handlepopovervisiblechange}
                   >
-                    <div className="Header-text3">Cart</div>
-                  </Button>
-                </Link>
+                    <div className="Header-action-item user-profile">
+                      {user?.user?.image ? (
+                        <img
+                          src={user?.user?.image}
+                          className="Header-ProfileImag"
+                          alt="profile"
+                        />
+                      ) : (
+                        <PiUserCircle size={28} color="#475569" />
+                      )}
+                      <span className="d-none d-xl-block ms-2 text-dark fw-medium">
+                         {user?.user ? `Hi, ${user.user.first_name}` : 'Account'}
+                      </span>
+                    </div>
+                  </Popover>
+
+                  <Link href={"/cart"}>
+                    <div className="Header-action-item">
+                      <Badge count={cart.items.length} size="small" offset={[0, -5]}>
+                        <IoCartOutline size={28} color={"#475569"} />
+                      </Badge>
+                      <span className="d-none d-xl-block ms-2 text-dark fw-medium">Cart</span>
+                    </div>
+                  </Link>
+                </div>
               </div>
             </div>
-            <div className="Header-search tablet">
+
+            {/* Mobile/Tablet Search Row */}
+            <div className="Header-bottom d-lg-none py-2">
               <Search type={"box"} />
             </div>
-            <div className="Header-search mobile">
-              <Search type={"box"} />
-            </div>
+          </header>
+        </Container>
+
+        {/* Category Navigation Bar */}
+        {pathname === "/" && (
+          <div className="Header-nav-bar">
+             <Container fluid className="Header-container">
+               <CategoryNav onOpenMenu={() => dispatch(setSideMenuOpen(true))} />
+             </Container>
           </div>
-          {pathname === "/" && (
-            <div className="Header-sectionBox">
-              <CategoryNav onOpenMenu={() => dispatch(setSideMenuOpen(true))} />
-            </div>
-          )}
-        </header>
-      </Container>
+        )}
+      </div>
     </>
   );
 }

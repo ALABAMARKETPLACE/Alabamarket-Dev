@@ -148,76 +148,76 @@ function Page() {
     }
   };
   return (
-    <div className="Screen-box">
-      <br />
+    <div className="seller-screen-box">
       <Container>
-        <div className="sellerRegister-row">
-          <div>
-            <h4 className="sellerRegister-Heading">
-              Create Your Seller Account
-            </h4>
+        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
+          <div className="sellerRegister-Heading">
+            Create Your Seller Account
           </div>
           <div
-            className="sellerRegister-text2"
-            style={{ color: "blue" }}
-            onClick={() => navigation.push("/seller/individual")}
+            className="text-center mb-5"
+            style={{ fontSize: "16px", color: "#64748b" }}
           >
-            Individual
+            Join our community of sellers and start growing your business today.
+            <br />
+            <span
+              style={{ color: "#FF5F15", cursor: "pointer", fontWeight: 600 }}
+              onClick={() => navigation.push("/seller/individual")}
+            >
+              Register as an Individual instead?
+            </span>
+          </div>
+
+          <Steps className="sellerRegister-steps" current={currentStep}>
+            <Step title={"Profile"} description={"Personal Info"} />
+            <Step title={"Business"} description={"Company Details"} />
+            <Step title={"Details"} description={"Seller Identity"} />
+            <Step title={"Documents"} description={"Upload Proofs"} />
+            <Step title={"Complete"} description={"Review & Submit"} />
+          </Steps>
+
+          <div className="mt-5">
+            {currentStep === 0 ? (
+              <Step1
+                moveToNextStep={moveToNextStep}
+                formData={formData.step1Data}
+              />
+            ) : null}
+            {currentStep === 1 && (
+              <Step2
+                businessType={businessType}
+                formData={formData.step2Data}
+                moveToNextStep={moveToNextStep}
+                goBack={goBack}
+              />
+            )}
+            {currentStep === 2 && (
+              <Step3
+                moveToNextStep={moveToNextStep}
+                goBack={goBack}
+                formData={formData.step3Data}
+              />
+            )}
+            {currentStep === 3 && (
+              <Step4
+                moveToNextStep={moveToNextStep}
+                goBack={goBack}
+                formData={formData.step4Data}
+              />
+            )}
+            {currentStep === 4 && (
+              <Step5
+                loading={loading}
+                success={success}
+                phoneNumber={phone}
+                formData={formData}
+                register={register}
+                goBack={goBack}
+              />
+            )}
           </div>
         </div>
-        <br />
-        <Steps className="sellerRegister-steps" current={currentStep}>
-          <Step title={"Profile"} description={"Enter email,phone etc..."} />
-          <Step title={"Business Info"} description={"Name, Location etc..."} />
-          <Step title={"Seller Details"} description={"Owner Details etc..."} />
-          <Step
-            title={"Upload Documents"}
-            description={"ID, Business Registration etc..."}
-          />
-        </Steps>
-        <br />
-        <div>
-          {currentStep === 0 ? (
-            <Step1
-              moveToNextStep={moveToNextStep}
-              formData={formData.step1Data}
-            />
-          ) : null}
-          {currentStep === 1 && (
-            <Step2
-              businessType={businessType}
-              formData={formData.step2Data}
-              moveToNextStep={moveToNextStep}
-              goBack={goBack}
-            />
-          )}
-          {currentStep === 2 && (
-            <Step3
-              moveToNextStep={moveToNextStep}
-              goBack={goBack}
-              formData={formData.step3Data}
-            />
-          )}
-          {currentStep === 3 && (
-            <Step4
-              moveToNextStep={moveToNextStep}
-              goBack={goBack}
-              formData={formData.step4Data}
-            />
-          )}
-          {currentStep === 4 && (
-            <Step5
-              loading={loading}
-              success={success}
-              phoneNumber={phone}
-              formData={formData}
-              register={register}
-              goBack={goBack}
-            />
-          )}
-        </div>
       </Container>
-      <br />
     </div>
   );
 }

@@ -171,7 +171,7 @@ function NewAddressForm(props: any) {
             </Form.Item>
           </Col>
 
-          <Col sm={6} xs={12}>
+          {/* <Col sm={6} xs={12}>
             <div className="input-form-label">Pincode</div>
             <Form.Item
               name="pincode"
@@ -183,7 +183,7 @@ function NewAddressForm(props: any) {
             >
               <Input placeholder="Pincode" size="large" />
             </Form.Item>
-          </Col>
+          </Col> */}
 
           {/* Country Field - Commented out as per request */}
           {/*

@@ -129,289 +129,234 @@ function Step2({ businessType, formData, moveToNextStep, goBack }: any) {
     <div className="sellerRegister-stepbox">
       {contextHolder}
       <Container>
-        <Row>
-          <Col md={4}>
-            <Form
-              form={form}
-              onFinish={onFinish}
-              initialValues={{
-                store_name: formData?.store_name,
-                business_address: formData?.business_address,
-                business_location: formData?.business_location,
-                business_types: formData?.business_types,
-                trn_number: formData?.trn_number,
-                trade_licencse_no: formData?.trade_licencse_no,
-                upscs: formData?.upscs,
-                manufacture: formData?.manufacture,
-                agreement: formData?.agreement,
-                account_name_or_code: formData?.account_name_or_code,
-                account_number: formData?.account_number,
-                settlement_bank: formData?.settlement_bank,
-              }}
-            >
-              <div className="input-form-label">Store Name</div>
-              <Form.Item
-                name="store_name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter your Store Name",
-                  },
-                  {
-                    max: 50,
-                    message: "Store Name is too long",
-                  },
-                ]}
+        <Row className="justify-content-center">
+          <Col md={8}>
+            <div className="seller-card">
+              <h5 className="sellerRegister-subHeading mb-4">Business Information</h5>
+              <Form
+                form={form}
+                onFinish={onFinish}
+                layout="vertical"
+                initialValues={{
+                  store_name: formData?.store_name,
+                  business_address: formData?.business_address,
+                  business_location: formData?.business_location,
+                  business_types: formData?.business_types,
+                  trn_number: formData?.trn_number,
+                  trade_licencse_no: formData?.trade_licencse_no,
+                  upscs: formData?.upscs,
+                  manufacture: formData?.manufacture,
+                  agreement: formData?.agreement,
+                  account_name_or_code: formData?.account_name_or_code,
+                  account_number: formData?.account_number,
+                  settlement_bank: formData?.settlement_bank,
+                }}
               >
-                <Input placeholder="Store Name" size="large" />
-              </Form.Item>
-              <div className="input-form-label">Business Location</div>
-              <Form.Item
-                name="business_address"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter Business Location",
-                  },
-                  {
-                    max: 200,
-                    message: "Business Location is too long",
-                  },
-                ]}
-              >
-                <Input.TextArea
-                  placeholder="Enter your Business Location"
-                  size="large"
-                  rows={3}
-                />
-              </Form.Item>
-              <div className="input-form-label">
-                <Checkbox
-                  checked={useManualLocation}
-                  onChange={(e) => setUseManualLocation(e.target.checked)}
+                <Row>
+                  <Col md={12}>
+                    <Form.Item
+                      label={<span className="input-form-label">Store Name</span>}
+                      name="store_name"
+                      rules={[
+                        { required: true, message: "Please enter your Store Name" },
+                        { max: 50, message: "Store Name is too long" },
+                      ]}
+                    >
+                      <Input placeholder="Store Name" size="large" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <Form.Item
+                  label={<span className="input-form-label">Business Location</span>}
+                  name="business_address"
+                  rules={[
+                    { required: true, message: "Please enter Business Location" },
+                    { max: 200, message: "Business Location is too long" },
+                  ]}
                 >
-                  Enter location manually (if Google Maps is not accurate)
-                </Checkbox>
-              </div>
-              {!useManualLocation ? (
-                <>
-                  <div className="input-form-label">Locate your Business</div>
+                  <Input.TextArea
+                    placeholder="Enter your Business Location"
+                    size="large"
+                    rows={3}
+                  />
+                </Form.Item>
+
+                <Form.Item>
+                  <Checkbox
+                    checked={useManualLocation}
+                    onChange={(e) => setUseManualLocation(e.target.checked)}
+                  >
+                    Enter location manually (if Google Maps is not accurate)
+                  </Checkbox>
+                </Form.Item>
+
+                {!useManualLocation ? (
                   <Form.Item
+                    label={<span className="input-form-label">Locate your Business</span>}
                     name="business_location"
                     rules={[
-                      {
-                        required: !useManualLocation,
-                        message: "Please locate your Business",
-                      },
-                      {
-                        max: 100,
-                        message: "Location is too long",
-                      },
+                      { required: !useManualLocation, message: "Please locate your Business" },
+                      { max: 100, message: "Location is too long" },
                     ]}
                   >
                     <Input
-                      placeholder="Store Location"
+                      placeholder="Click to set Store Location"
                       size="large"
                       onClick={() => setOpenPicker(true)}
+                      readOnly
+                      suffix={<span style={{fontSize: 18}}>📍</span>}
                     />
                   </Form.Item>
-                </>
-              ) : (
-                <>
-                  <div className="input-form-label">Manual Location Entry</div>
+                ) : (
+                  <div className="p-3 mb-3" style={{ background: '#f8fafc', borderRadius: 8 }}>
+                    <div className="input-form-label mb-2">Manual Location Entry</div>
+                    <Row>
+                      <Col md={6}>
+                        <Form.Item name="manual_lat" label="Latitude (Optional)">
+                          <Input placeholder="e.g., 6.5244" size="large" type="number" step="any" />
+                        </Form.Item>
+                      </Col>
+                      <Col md={6}>
+                        <Form.Item name="manual_lng" label="Longitude (Optional)">
+                          <Input placeholder="e.g., 3.3792" size="large" type="number" step="any" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+                )}
+
+                <Form.Item
+                  label={<span className="input-form-label">Business Type</span>}
+                  name="business_types"
+                  rules={[{ required: true, message: "Please select Business Type" }]}
+                >
+                  <Select
+                    mode="multiple"
+                    allowClear
+                    size="large"
+                    style={{ width: "100%" }}
+                    placeholder="Select business types"
+                    options={array}
+                  />
+                </Form.Item>
+
+                <Row>
+                  <Col md={6}>
+                    <Form.Item
+                      label={<span className="input-form-label">Business Registration Number</span>}
+                      name="trn_number"
+                      rules={[
+                        { required: true, message: "Required" },
+                        { max: 30, message: "Too long" },
+                      ]}
+                    >
+                      <Input placeholder="Registration Number" size="large" />
+                    </Form.Item>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Item
+                      label={<span className="input-form-label">Union Membership Number</span>}
+                      name={"trade_licencse_no"}
+                      rules={[
+                        { required: true, message: "Required" },
+                        { max: 30, message: "Too long" },
+                      ]}
+                    >
+                      <Input placeholder="Membership Number" size="large" />
+                    </Form.Item>
+                  </Col>
+                </Row>
+
+                <div className="p-3 mb-4" style={{ border: '1px solid #e2e8f0', borderRadius: 8 }}>
+                  <h6 className="mb-3" style={{ color: '#475569' }}>Bank Details</h6>
                   <Row>
-                    <Col md={12}>
-                      <Form.Item name="manual_lat" label="Latitude (Optional)">
-                        <Input
-                          placeholder="Enter Latitude (e.g., 6.5244)"
+                    <Col md={6}>
+                      <Form.Item
+                        label={<span className="input-form-label">Select Bank</span>}
+                        name="settlement_bank"
+                        rules={[{ required: true, message: "Please select your bank" }]}
+                      >
+                        <Select
+                          placeholder="Select Bank"
                           size="large"
-                          type="number"
-                          step="any"
+                          loading={loadingBanks}
+                          showSearch
+                          filterOption={(input, option) =>
+                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                          }
+                          options={banks.map(bank => ({ label: bank.name, value: bank.code }))}
+                          onChange={(bankCode) => {
+                            const accountNumber = form.getFieldValue('account_number');
+                            if (accountNumber) validateAccountNumber(accountNumber, bankCode);
+                          }}
                         />
                       </Form.Item>
                     </Col>
-                    <Col md={12}>
-                      <Form.Item name="manual_lng" label="Longitude (Optional)">
+                    <Col md={6}>
+                      <Form.Item
+                        label={<span className="input-form-label">Account Number</span>}
+                        name="account_number"
+                        rules={[
+                          { required: true, message: "Required" },
+                          { pattern: /^\d{10}$/, message: "Must be 10 digits" },
+                        ]}
+                      >
                         <Input
-                          placeholder="Enter Longitude (e.g., 3.3792)"
+                          placeholder="10-digit Account Number"
                           size="large"
-                          type="number"
-                          step="any"
+                          maxLength={10}
+                          onChange={(e) => {
+                            const accountNumber = e.target.value;
+                            const bankCode = form.getFieldValue('settlement_bank');
+                            if (accountNumber.length === 10 && bankCode) {
+                              validateAccountNumber(accountNumber, bankCode);
+                            } else {
+                              setBankDetails(null);
+                              form.setFieldValue('account_name_or_code', '');
+                            }
+                          }}
                         />
                       </Form.Item>
                     </Col>
                   </Row>
-                  <p style={{ fontSize: 12, color: "#666" }}>
-                    Note: You can leave coordinates empty and update them later
-                    in your store settings.
-                  </p>
-                </>
-              )}
-              <div className="input-form-label">Business Type</div>
-              <Form.Item
-                name="business_types"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select Business Type",
-                  },
-                ]}
-              >
-                <Select
-                  mode="multiple"
-                  allowClear
-                  size="large"
-                  style={{ width: "100%" }}
-                  placeholder="Please select"
-                  options={array}
-                />
-              </Form.Item>
-              <div className="input-form-label">
-                Business Registration Number
-              </div>
-              <Form.Item
-                name="trn_number"
-                rules={[
-                  {
-                    required: true,
-                    message: "Business Registration Number is required",
-                  },
-                  {
-                    max: 30,
-                    message: "Business Registration Number is too long",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Enter Business Registration Number"
-                  size="large"
-                />
-              </Form.Item>
-              <div className="input-form-label">Union Membership Number</div>
-              <Form.Item
-                name={"trade_licencse_no"}
-                rules={[
-                  {
-                    required: true,
-                    message: "Union Membership Number is required",
-                  },
-                  {
-                    max: 30,
-                    message: "Union Membership Number is too long",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Enter Union Membership Number"
-                  size="large"
-                />
-              </Form.Item>
-              <div className="input-form-label">Select Bank</div>
-              <Form.Item
-                name="settlement_bank"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please select your bank",
-                  },
-                ]}
-              >
-                <Select
-                  placeholder="Select your bank"
-                  size="large"
-                  loading={loadingBanks}
-                  showSearch
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                  }
-                  options={banks.map(bank => ({
-                    label: bank.name,
-                    value: bank.code
-                  }))}
-                  onChange={(bankCode) => {
-                    const accountNumber = form.getFieldValue('account_number');
-                    if (accountNumber) {
-                      validateAccountNumber(accountNumber, bankCode);
-                    }
-                  }}
-                />
-              </Form.Item>
-              <div className="input-form-label">Account Number</div>
-              <Form.Item
-                name="account_number"
-                rules={[
-                  {
-                    required: true,
-                    message: "Account Number is required",
-                  },
-                  {
-                    pattern: /^\d{10}$/,
-                    message: "Account Number must be exactly 10 digits",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder="Enter 10-digit Account Number"
-                  size="large"
-                  maxLength={10}
-                  onChange={(e) => {
-                    const accountNumber = e.target.value;
-                    const bankCode = form.getFieldValue('settlement_bank');
-                    if (accountNumber.length === 10 && bankCode) {
-                      validateAccountNumber(accountNumber, bankCode);
-                    } else {
-                      setBankDetails(null);
-                      form.setFieldValue('account_name_or_code', '');
-                    }
-                  }}
-                />
-              </Form.Item>
-              <div className="input-form-label">Account Name</div>
-              <Form.Item
-                name="account_name_or_code"
-                rules={[
-                  {
-                    required: true,
-                    message: "Account verification is required",
-                  },
-                ]}
-              >
-                <Input
-                  placeholder={bankDetails ? "Account name verified" : "Enter account number and select bank to verify"}
-                  size="large"
-                  disabled
-                  value={bankDetails?.account_name || ''}
-                  style={{
-                    backgroundColor: bankDetails ? '#f6ffed' : '#f5f5f5',
-                    borderColor: bankDetails ? '#52c41a' : undefined
-                  }}
-                />
-              </Form.Item>
-              {validatingAccount && (
-                <div style={{ marginBottom: '16px', padding: '8px 12px', backgroundColor: '#fff7e6', border: '1px solid #ffa940', borderRadius: '6px' }}>
-                  <span style={{ color: '#ffa940', fontSize: '14px' }}>Verifying account...</span>
-                </div>
-              )}
-              {bankDetails && (
-                <div style={{ marginBottom: '16px', padding: '8px 12px', backgroundColor: '#f6ffed', border: '1px solid #52c41a', borderRadius: '6px' }}>
-                  <span style={{ color: '#52c41a', fontSize: '14px' }}>✓ Account verified: {bankDetails.account_name}</span>
-                </div>
-              )}
-              <Row>
-                <Col md="6" xs={6}>
-                  <Button onClick={() => goBack()} block size="large">
-                    Back
-                  </Button>
-                </Col>
-                <Col md="6" xs={6}>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" block size="large">
-                      Continue
-                    </Button>
+                  
+                  <Form.Item
+                    label={<span className="input-form-label">Account Name</span>}
+                    name="account_name_or_code"
+                    rules={[{ required: true, message: "Verification required" }]}
+                  >
+                    <Input
+                      placeholder={bankDetails ? "Account name verified" : "Enter details to verify"}
+                      size="large"
+                      disabled
+                      value={bankDetails?.account_name || ''}
+                      style={{
+                        backgroundColor: bankDetails ? '#f6ffed' : '#f5f5f5',
+                        borderColor: bankDetails ? '#52c41a' : undefined,
+                        color: bankDetails ? '#52c41a' : undefined,
+                        fontWeight: bankDetails ? 600 : 400
+                      }}
+                    />
                   </Form.Item>
-                </Col>
-              </Row>
-            </Form>
+                </div>
+
+                <Row className="mt-4">
+                  <Col md={6} xs={6}>
+                    <Button onClick={() => goBack()} block size="large" className="btn-secondary-custom">
+                      Back
+                    </Button>
+                  </Col>
+                  <Col md={6} xs={6}>
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit" block size="large" className="btn-primary-custom">
+                        Continue
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Form>
+            </div>
           </Col>
         </Row>
       </Container>

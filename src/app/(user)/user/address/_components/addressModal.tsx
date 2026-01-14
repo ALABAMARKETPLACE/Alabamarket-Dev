@@ -192,7 +192,7 @@ const AddressModal = (props: any) => {
             </Form.Item>
           </Col>
 
-          <Col md="6">
+          {/* <Col md="6">
             <Form.Item
               label="PinCode"
               name="pincode"
@@ -213,7 +213,7 @@ const AddressModal = (props: any) => {
             >
               <Input placeholder="Pincode" size="large" />
             </Form.Item>
-          </Col>
+          </Col> */}
           <Col md="6">
             <Form.Item
               label="State"

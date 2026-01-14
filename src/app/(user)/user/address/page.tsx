@@ -101,11 +101,11 @@ function UserAddress() {
                         {item?.full_address}
                       </div>
 
-                      <div className="d-flex gap-3 mb-2">
+                      {/* <div className="d-flex gap-3 mb-2">
                         <span className="fw-bold">
                           Pincode: {item?.pincode}
                         </span>
-                      </div>
+                      </div> */}
 
                       {item?.countryDetails && (
                         <div className="text-muted small">

@@ -97,7 +97,7 @@ function AutoCompleteLocation(props: any) {
         );
         let obj = {
           code: countryCode?.dial_code,
-          pincode: locationData?.postal_code,
+          // pincode: locationData?.postal_code,
           state: locationData?.state,
           street: locationData?.subLocality || locationData?.district,
           city: locationData?.taluk || locationData?.district,

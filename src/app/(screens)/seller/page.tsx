@@ -41,88 +41,21 @@ function Page() {
     {
       icon: <GiCrystalGrowth size={30} color={API.COLOR} />,
       title: "Growth for Every Supplier",
-      description: `From small to large and unbranded to branded, and now open for Sellers who don't have a Regular GSTIN too, ${API.NAME} fuels growth for all suppliers.`,
+      description: `From small to large and unbranded to branded, and now open for Sellers who don't have a formal Business Registration too, ${API.NAME} fuels growth for all suppliers.`,
     },
   ];
   return (
-    <div className="Screen-box">
-      <br />
+    <div className="seller-screen-box">
       <Container>
-        {/* <Row>
-          <Col sm={6} xs={12}>
-            <br />
-            <h4 className="sellerRegister-Heading">
-              Begin your selling journey on {API.NAME}
-            </h4>
-            <br />
-            <Row>
-              {!user ? (
-                <Col md={3} className="mb-2 mb-md-0">
-                  <Button
-                    size="large"
-                    block
-                    onClick={() => navigation.push("/login")}
-                  >
-                    Login
-                  </Button>
-                </Col>
-              ) : null}
-
-              <Col md={5} className="mb-2 mb-md-0">
-                <Button
-                  // type="primary"
-                  className="btn-clr"
-                  size="large"
-                  block
-                  onClick={() => navigation.push("/seller/corporate")}
-                >
-                  Register Now
-                </Button>
-              </Col>
-            </Row>
-            <br />
-            <div>
-              <p className="sellerRegister-text2">
-                <FaLongArrowAltRight color={API.COLOR} size={20} />
-                &nbsp; Individual
-              </p>
-              <p className="sellerRegister-text1">
-                As an individual user on {API.NAME}, you gain access to a host
-                of features designed to enhance your waitlisting experience.
-                Receive instant updates on your wait time, allowing you to plan
-                your activities with precision. The app ensures that you make
-                the most of your valuable time, all while enjoying the
-                convenience of being virtually in line.
-              </p>
-
-              <p className="sellerRegister-text1">
-                You want to &nbsp; Start Doing Business with us &nbsp; as
-                individual seller.{" "}
-                <span
-                  className="text-primary"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => navigation.push("/seller/individual")}
-                >
-                  Click here
-                </span>
-              </p>
-              <p
-                className="sellerRegister-text2"
-                onClick={() => navigation.push("/seller/individual_info")}
-              >
-                More Info &nbsp;
-                <BsFillPatchQuestionFill color={API.COLOR} size={16} />
-              </p>
-            </div>
-          </Col>
-          <Col sm={6} xs={12}>
-            <Image
-              src={sellerimg}
-              alt="Seller Image"
-              style={{ maxWidth: "100%", height: "auto" }}
-            />
-          </Col>
-        </Row> */}
+        <div className="seller-hero-section">
+          <h1>
+            Start Your Business on <span>{API.NAME}</span>
+          </h1>
+          <p>
+            Join thousands of sellers and reach millions of customers across Nigeria.
+            Zero commission, fast payments, and dedicated support.
+          </p>
+        </div>
 
         <Row className="seller-row" justify="center">
           <Col md={12} sm={12}>
@@ -147,69 +80,62 @@ function Page() {
           </Col>
         </Row>
 
-        <br />
         <div className="sellerRegister-box12">
           <Row>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcConferenceCall size={50} />
+                <FcConferenceCall size={32} />
                 <span className="sellerRegister-text2">
-                  Thousands of {API.NAME} customers
+                  Thousands of customers
                 </span>
               </div>
-              <br />
             </Col>
 
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcBearish size={50} />
+                <FcBearish size={32} />
                 <span className="sellerRegister-text2">
-                  Low cost of doing business
+                  Low cost of business
                 </span>
               </div>
-              <br />
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcMoneyTransfer size={50} />
+                <FcMoneyTransfer size={32} />
                 <span className="sellerRegister-text2">
-                  7* days secure & regular payments
+                  Secure & regular payments
                 </span>
               </div>
-              <br />
             </Col>
 
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcCustomerSupport size={50} />
+                <FcCustomerSupport size={32} />
                 <span className="sellerRegister-text2">
-                  One click Seller Support
+                  One click Support
                 </span>
               </div>
-              <br />
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcInTransit size={50} />
+                <FcInTransit size={32} />
                 <span className="sellerRegister-text2">
-                  Faster shipping across the country
+                  Faster shipping
                 </span>
               </div>
-              <br />
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcBriefcase size={50} />
+                <FcBriefcase size={32} />
                 <span className="sellerRegister-text2">
-                  Acces to shopping Festivals
+                  Shopping Festivals
                 </span>
               </div>
-              <br />
             </Col>
           </Row>
         </div>
-        <br />
-        <Row>
+
+        <Row className="g-3">
           <Col md={6}>
             <div className="sellerRegister-box4">
               <h4 className="sellerRegister-subHeading">
@@ -227,11 +153,11 @@ function Page() {
           <Col md={6}>
             <div className="sellerRegister-box5">
               {sellerFeatures.map((feature, index) => (
-                <div key={index} style={{ display: "flex" }}>
-                  <div style={{ marginRight: "15px" }}>{feature.icon}</div>
+                <div key={index} style={{ display: "flex", marginBottom: index === sellerFeatures.length - 1 ? 0 : 15 }}>
+                  <div style={{ marginRight: "12px" }}>{feature.icon}</div>
                   <div>
-                    <p className="sellerRegister-text2">{feature.title}</p>
-                    <p className="sellerRegister-text1">
+                    <p className="sellerRegister-text2" style={{marginBottom: 4}}>{feature.title}</p>
+                    <p className="sellerRegister-text1" style={{marginBottom: 0}}>
                       {feature.description}
                     </p>
                   </div>
@@ -240,14 +166,7 @@ function Page() {
             </div>
           </Col>
         </Row>
-        <br />
       </Container>
-      {/* {isLoginModalVisible ? (
-        <SellerLoginModal
-          open={isLoginModalVisible}
-          onCancel={() => setIsLoginModalVisible(false)}
-        />
-      ) : null} */}
     </div>
   );
 }

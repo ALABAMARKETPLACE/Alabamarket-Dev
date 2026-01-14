@@ -127,10 +127,10 @@ function AddressForm(props: any) {
             </Form.Item>
           </Col>
           <Col sm={6} xs={12}>
-            <div className="input-form-label">PinCode</div>
+            {/* <div className="input-form-label">PinCode</div>
             <Form.Item name={"pin_code"} rules={[{ required: true }]}>
               <Input size="large" placeholder="Eg : 12b skyline" />
-            </Form.Item>
+            </Form.Item> */}
             <div className="input-form-label">Street</div>
             <Form.Item name={"street"} rules={[{ required: true }]}>
               <Input size="large" placeholder="Eg : 12b skyline" />

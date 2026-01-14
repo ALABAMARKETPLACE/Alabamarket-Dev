@@ -132,17 +132,23 @@ const ProfileMenu = (props: any) => {
             src={User?.user?.image}
             className="Header-ProfileImag"
             alt="profile"
+            style={{ width: 50, height: 50 }}
           />
         ) : (
-          <HiOutlineUserCircle size={45} color="#d9d9d9" />
+          <HiOutlineUserCircle size={50} color="#d9d9d9" />
         )}
-        <div style={{ marginTop: 5, marginBottom: 5, fontWeight: "900" }}>
+        <div style={{ marginTop: 8, marginBottom: 4, fontWeight: "600", fontSize: 16 }}>
           {User?.user?.first_name || "Guest User"}
+        </div>
+        <div style={{ fontSize: 12, color: "#666" }}>
+          {User?.user?.email || "Welcome to Alabamarket"}
         </div>
       </div>
 
+      <hr style={{ margin: "10px 0", borderColor: "#f0f0f0" }} />
+
       {User?.user && (
-        <>
+        <div style={{ padding: "0 4px" }}>
           <div
             className="profileMenu-Box2"
             onClick={() => OpenLink("/user/profile")}
@@ -150,7 +156,7 @@ const ProfileMenu = (props: any) => {
             <div>
               <FiUser size={iconSize} className="profileMenu-Img1" />
             </div>
-            <div className="profileMenu-Txt1">Profile</div>
+            <div className="profileMenu-Txt1">My Profile</div>
           </div>
           <div
             className="profileMenu-Box2"
@@ -159,7 +165,7 @@ const ProfileMenu = (props: any) => {
             <div>
               <RiListUnordered size={iconSize} className="profileMenu-Img1" />
             </div>
-            <div className="profileMenu-Txt1">Orders</div>
+            <div className="profileMenu-Txt1">My Orders</div>
           </div>
           <div
             className="profileMenu-Box2"
@@ -168,13 +174,16 @@ const ProfileMenu = (props: any) => {
             <div>
               <MdFavoriteBorder size={iconSize} className="profileMenu-Img1" />
             </div>
-            <Badge
-              count={User?.user?.wishlist ?? ""}
-              size="small"
-              color={API.COLOR}
-            >
-              <div className="profileMenu-Txt1">favourite</div>
-            </Badge>
+            <div className="d-flex justify-content-between w-100 align-items-center">
+              <div className="profileMenu-Txt1">Wishlist</div>
+              {User?.user?.wishlist > 0 && (
+                <Badge
+                  count={User?.user?.wishlist}
+                  size="small"
+                  color={API.COLOR}
+                />
+              )}
+            </div>
           </div>
           <div
             className="profileMenu-Box2"
@@ -183,7 +192,7 @@ const ProfileMenu = (props: any) => {
             <div>
               <PiAddressBook size={iconSize} className="profileMenu-Img1" />
             </div>
-            <div className="profileMenu-Txt1">Address</div>
+            <div className="profileMenu-Txt1">Saved Addresses</div>
           </div>
           <div
             className="profileMenu-Box2"
@@ -195,54 +204,71 @@ const ProfileMenu = (props: any) => {
                 className="profileMenu-Img1"
               />
             </div>
-            <Badge
-              count={User?.user?.notifications ?? ""}
-              size="small"
-              color={API.COLOR}
-            >
+            <div className="d-flex justify-content-between w-100 align-items-center">
               <div className="profileMenu-Txt1">Notifications</div>
-            </Badge>
+              {User?.user?.notifications > 0 && (
+                <Badge
+                  count={User?.user?.notifications}
+                  size="small"
+                  color={API.COLOR}
+                />
+              )}
+            </div>
           </div>
-        </>
+        </div>
       )}
-      <div style={{ margin: 5 }} />
+
+      <div style={{ margin: "10px 0" }} />
+      
       <div className="profileMenu-mobileCTA">
-        <Button size="large" block onClick={handleBecomeUser}>
-          {User?.user ? "View user profile" : "Become a user"}
-        </Button>
+        {!User?.user && (
+           <Button 
+             size="large" 
+             block 
+             onClick={() => navigation.push("/signup")} 
+             className="profileMenu-btn profileMenu-btn-outline"
+             style={{marginBottom: 8}}
+           >
+             Create Account
+           </Button>
+        )}
+        {User?.user?.type !== "user" && (
+          <Button
+            size="large"
+            block
+            className="profileMenu-btn profileMenu-btn-primary"
+            icon={<BsShopWindow size={18} />}
+            onClick={handleSellerNavigation}
+          >
+            Manage Store
+          </Button>
+        )}
+      </div>
+
+      <div style={{ padding: "0 4px" }}>
         <Button
           size="large"
-          // type="primary"
-          block
-          className="btn-clr"
-          icon={<BsShopWindow size={18} />}
-          onClick={handleSellerNavigation}
+          className={User?.user ? "profileMenu-btn profileMenu-btn-danger w-100 mt-2" : "profileMenu-btn profileMenu-btn-primary w-100 mt-2"}
+          onClick={() => logotFunction()}
+          loading={loading}
         >
-          Become a seller
+          {User?.user ? "Logout" : "Login"}
         </Button>
       </div>
-      <Button
-        size="large"
-        // type="primary"
-        className="btn-clr"
-        block
-        onClick={() => logotFunction()}
-        loading={loading}
-      >
-        {User?.user ? "Logout" : "Login"}
-      </Button>
-      {User?.user ? null : (
-        <div style={{ marginTop: "10px" }}>
-          New Customer? &nbsp;&nbsp;
+
+      {!User?.user && (
+        <div style={{ marginTop: "12px", textAlign: "center", fontSize: 13, color: "#666" }}>
+          New customer?{" "}
           <Link
             href="/signup"
+            style={{ color: API.COLOR, fontWeight: 600 }}
             onClick={() => {
               if (typeof props.close === "function") {
                 props.close();
               }
             }}
           >
-            Sign Up
+            Start here
           </Link>
         </div>
       )}
