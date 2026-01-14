@@ -83,6 +83,13 @@ const NewAddressModal = (props: NewAddressModalProps) => {
     }
   }, [states]);
 
+  const mainStateSelection = Form.useWatch("main_state_selection", form);
+  
+  // Update visibility based on selection
+  useEffect(() => {
+    setIsLagosGroupSelected(mainStateSelection === "LAGOS_GROUP");
+  }, [mainStateSelection]);
+
   useEffect(() => {
     if (type === update && props?.selected) {
       // Check if the selected state is one of the Lagos states
@@ -92,16 +99,13 @@ const NewAddressModal = (props: NewAddressModalProps) => {
           s.name.toLowerCase().includes("lagos")
       );
       
-      setIsLagosGroupSelected(!!isLagos);
+      // We don't need to manually set isLagosGroupSelected here anymore 
+      // because setting main_state_selection will trigger the watcher
 
       // If it's Lagos, try to find the city that matches the stateId to pre-fill the city dropdown
       let selectedCity = undefined;
       if (isLagos) {
-        // This is a bit tricky since multiple cities map to one stateId. 
-        // We might not be able to perfectly restore the "City" selection without storing it.
-        // But we don't need to restore it perfectly, just ensuring state_id is set is enough.
-        // However, for UX, if we can find a city in the address that matches, we could set it.
-        // For now, we'll leave the city dropdown empty or let the user re-select if they edit.
+          // Logic to find city can be added here if needed
       }
 
       form.setFieldsValue({
@@ -112,15 +116,15 @@ const NewAddressModal = (props: NewAddressModalProps) => {
         country_id: props.selected.country_id,
         state_id: props.selected.state_id,
         code: props.selected.code || "+971",
-        // If it's a Lagos state, we still set state_id correctly, 
-        // but we need to manage the UI selection state separately if we want the main dropdown to show "Lagos"
         main_state_selection: isLagos ? "LAGOS_GROUP" : props.selected.state_id,
+        // We also need to set lagos_city if it's an edit and it was a lagos state
+        lagos_city: isLagos ? lagosCities.find(c => c.stateId === props.selected.state_id)?.value : undefined
       });
     } else {
       form.resetFields();
-      setIsLagosGroupSelected(false);
+      // setIsLagosGroupSelected(false); // Handled by watcher
     }
-  }, [type, props.selected, form, states]);
+  }, [type, props.selected, form, states, lagosCities]); // Added lagosCities dependency
 
   // Handle City Selection
   const handleCityChange = (value: string, option: any) => {
@@ -407,10 +411,8 @@ const NewAddressModal = (props: NewAddressModalProps) => {
                       form.setFieldValue("country_id", undefined);
                     }
                     if (value === "LAGOS_GROUP") {
-                      setIsLagosGroupSelected(true);
                       form.setFieldValue("state_id", undefined); // Reset specific state selection
                     } else {
-                      setIsLagosGroupSelected(false);
                       form.setFieldValue("state_id", value); // Sync state_id with selection
                     }
                   }}
