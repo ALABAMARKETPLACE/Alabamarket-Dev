@@ -35,9 +35,60 @@ function NewAddressForm(props: any) {
     refetchOnWindowFocus: false,
   });
 
+  const [lagosStates, setLagosStates] = useState<any[]>([]);
+  const [otherStates, setOtherStates] = useState<any[]>([]);
+  const [isLagosGroupSelected, setIsLagosGroupSelected] = useState(false);
+
+  React.useEffect(() => {
+    if (Array.isArray(states)) {
+      const lagos = states.filter((s: any) =>
+        s.name.toLowerCase().includes("lagos")
+      );
+      const others = states.filter(
+        (s: any) => !s.name.toLowerCase().includes("lagos")
+      );
+      setLagosStates(lagos);
+      setOtherStates(others);
+    }
+  }, [states]);
+
+  const fullAddress = Form.useWatch("full_address", form);
+  const mainStateSelection = Form.useWatch("main_state_selection", form);
+
+  // Auto-detect Lagos area based on address
+  React.useEffect(() => {
+    if (mainStateSelection === "LAGOS_GROUP" && fullAddress && lagosStates.length > 0) {
+      const lowerAddress = fullAddress.toLowerCase();
+      
+      const matchedState = lagosStates.find((state) => {
+        const description = (state.description || "").toLowerCase();
+        const keywords = description.split(',').map((k: string) => k.trim()).filter((k: string) => k);
+        
+        return keywords.some((keyword: string) => lowerAddress.includes(keyword)) || 
+               (description && lowerAddress.includes(description));
+      });
+
+      if (matchedState) {
+        form.setFieldValue("state_id", matchedState.id);
+      }
+    }
+  }, [fullAddress, mainStateSelection, lagosStates, form]);
+
   const submit = async (values: any) => {
     try {
       setIsLoading(true);
+
+      // Ensure we have a valid state ID
+      if (values.main_state_selection === "LAGOS_GROUP" && !values.state_id) {
+        Notifications["error"]({
+          message: "Validation Error",
+          description: "We couldn't detect your specific area in Lagos from your address. Please ensure you include your town/city (e.g. Ikeja, Lekki, Yaba) in the address field.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const finalStateId = values.main_state_selection === "LAGOS_GROUP" ? values.state_id : values.main_state_selection;
 
       const obj = {
         address_type: values.address_type,
@@ -46,7 +97,7 @@ function NewAddressForm(props: any) {
         phone_no: values.phone_no,
         country_code: values?.code ?? "+234",
         country_id: values.country_id || null,
-        state_id: values.state_id || null,
+        state_id: finalStateId || null,
       };
 
       // Validate at least one of country or state is selected
@@ -233,7 +284,7 @@ function NewAddressForm(props: any) {
             <Col sm={6} xs={12}>
               <div className="input-form-label">State</div>
               <Form.Item
-                name="state_id"
+                name="main_state_selection"
                 rules={[
                   {
                     required: true,
@@ -252,17 +303,33 @@ function NewAddressForm(props: any) {
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
-                  options={
-                    Array.isArray(states)
-                      ? states.map((s: any) => ({
-                          value: s.id,
-                          label: s.name,
-                        }))
-                      : []
-                  }
+                  options={[
+                    ...otherStates.map((s: any) => ({
+                      value: s.id,
+                      label: s.name,
+                    })),
+                    // Add grouped Lagos option if any Lagos states exist
+                    ...(lagosStates.length > 0
+                      ? [{ value: "LAGOS_GROUP", label: "Lagos" }]
+                      : []),
+                  ].sort((a, b) => a.label.localeCompare(b.label))}
+                  onChange={(value) => {
+                    if (value === "LAGOS_GROUP") {
+                      setIsLagosGroupSelected(true);
+                      form.setFieldValue("state_id", undefined); // Reset specific state selection
+                    } else {
+                      setIsLagosGroupSelected(false);
+                      form.setFieldValue("state_id", value); // Sync state_id with selection
+                    }
+                  }}
                 />
               </Form.Item>
             </Col>
+
+            {/* Hidden State ID field for Lagos */}
+            <Form.Item name="state_id" hidden>
+              <Input />
+            </Form.Item>
 
           {/* Info Message */}
           <Col sm={12}>
