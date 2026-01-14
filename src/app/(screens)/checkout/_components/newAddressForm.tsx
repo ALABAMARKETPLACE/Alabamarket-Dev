@@ -37,6 +37,7 @@ function NewAddressForm(props: any) {
 
   const [lagosStates, setLagosStates] = useState<any[]>([]);
   const [otherStates, setOtherStates] = useState<any[]>([]);
+  const [lagosCities, setLagosCities] = useState<any[]>([]);
   const [isLagosGroupSelected, setIsLagosGroupSelected] = useState(false);
 
   React.useEffect(() => {
@@ -49,30 +50,36 @@ function NewAddressForm(props: any) {
       );
       setLagosStates(lagos);
       setOtherStates(others);
+
+      // Parse cities from Lagos states descriptions
+      const cities: any[] = [];
+      lagos.forEach((state: any) => {
+        if (state.description) {
+          const stateCities = state.description.split(',').map((c: string) => c.trim());
+          stateCities.forEach((city: string) => {
+            if (city) {
+              cities.push({
+                label: city,
+                value: city,
+                stateId: state.id
+              });
+            }
+          });
+        }
+      });
+      cities.sort((a, b) => a.label.localeCompare(b.label));
+      setLagosCities(cities);
     }
   }, [states]);
 
-  const fullAddress = Form.useWatch("full_address", form);
   const mainStateSelection = Form.useWatch("main_state_selection", form);
 
-  // Auto-detect Lagos area based on address
-  React.useEffect(() => {
-    if (mainStateSelection === "LAGOS_GROUP" && fullAddress && lagosStates.length > 0) {
-      const lowerAddress = fullAddress.toLowerCase();
-      
-      const matchedState = lagosStates.find((state) => {
-        const description = (state.description || "").toLowerCase();
-        const keywords = description.split(',').map((k: string) => k.trim()).filter((k: string) => k);
-        
-        return keywords.some((keyword: string) => lowerAddress.includes(keyword)) || 
-               (description && lowerAddress.includes(description));
-      });
-
-      if (matchedState) {
-        form.setFieldValue("state_id", matchedState.id);
-      }
+  // Handle City Selection
+  const handleCityChange = (value: string, option: any) => {
+    if (option && option.stateId) {
+      form.setFieldValue("state_id", option.stateId);
     }
-  }, [fullAddress, mainStateSelection, lagosStates, form]);
+  };
 
   const submit = async (values: any) => {
     try {
@@ -82,7 +89,7 @@ function NewAddressForm(props: any) {
       if (values.main_state_selection === "LAGOS_GROUP" && !values.state_id) {
         Notifications["error"]({
           message: "Validation Error",
-          description: "We couldn't detect your specific area in Lagos from your address. Please ensure you include your town/city (e.g. Ikeja, Lekki, Yaba) in the address field.",
+          description: "Please select your City/Area in Lagos.",
         });
         setIsLoading(false);
         return;
@@ -330,6 +337,35 @@ function NewAddressForm(props: any) {
             <Form.Item name="state_id" hidden>
               <Input />
             </Form.Item>
+
+            {/* Lagos City Dropdown */}
+            {isLagosGroupSelected && (
+              <Col sm={12} xs={12}>
+                <div className="input-form-label">City</div>
+                <Form.Item
+                  name="lagos_city"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your city",
+                    },
+                  ]}
+                  help={<span className="text-muted" style={{fontSize: "12px"}}>If you reside in Lagos, please select your specific city or area here to determine delivery charges.</span>}
+                >
+                  <Select
+                    placeholder="Select City in Lagos"
+                    size="large"
+                    showSearch
+                    allowClear
+                    options={lagosCities}
+                    onChange={handleCityChange}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+              </Col>
+            )}
 
           {/* Info Message */}
           <Col sm={12}>

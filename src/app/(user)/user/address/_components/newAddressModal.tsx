@@ -48,6 +48,7 @@ const NewAddressModal = (props: NewAddressModalProps) => {
 
   const [lagosStates, setLagosStates] = useState<any[]>([]);
   const [otherStates, setOtherStates] = useState<any[]>([]);
+  const [lagosCities, setLagosCities] = useState<any[]>([]);
   const [isLagosGroupSelected, setIsLagosGroupSelected] = useState(false);
 
   useEffect(() => {
@@ -60,6 +61,25 @@ const NewAddressModal = (props: NewAddressModalProps) => {
       );
       setLagosStates(lagos);
       setOtherStates(others);
+
+      // Parse cities from Lagos states descriptions
+      const cities: any[] = [];
+      lagos.forEach((state: any) => {
+        if (state.description) {
+          const stateCities = state.description.split(',').map((c: string) => c.trim());
+          stateCities.forEach((city: string) => {
+            if (city) {
+              cities.push({
+                label: city,
+                value: city,
+                stateId: state.id
+              });
+            }
+          });
+        }
+      });
+      cities.sort((a, b) => a.label.localeCompare(b.label));
+      setLagosCities(cities);
     }
   }, [states]);
 
@@ -73,6 +93,16 @@ const NewAddressModal = (props: NewAddressModalProps) => {
       );
       
       setIsLagosGroupSelected(!!isLagos);
+
+      // If it's Lagos, try to find the city that matches the stateId to pre-fill the city dropdown
+      let selectedCity = undefined;
+      if (isLagos) {
+        // This is a bit tricky since multiple cities map to one stateId. 
+        // We might not be able to perfectly restore the "City" selection without storing it.
+        // But we don't need to restore it perfectly, just ensuring state_id is set is enough.
+        // However, for UX, if we can find a city in the address that matches, we could set it.
+        // For now, we'll leave the city dropdown empty or let the user re-select if they edit.
+      }
 
       form.setFieldsValue({
         address_type: props.selected.address_type,
@@ -92,35 +122,12 @@ const NewAddressModal = (props: NewAddressModalProps) => {
     }
   }, [type, props.selected, form, states]);
 
-  const fullAddress = Form.useWatch("full_address", form);
-  const mainStateSelection = Form.useWatch("main_state_selection", form);
-
-  // Auto-detect Lagos area based on address
-  useEffect(() => {
-    if (mainStateSelection === "LAGOS_GROUP" && fullAddress && lagosStates.length > 0) {
-      const lowerAddress = fullAddress.toLowerCase();
-      
-      // Sort lagosStates by description length (descending) to match longer/more specific phrases first
-      // or just iterate.
-      // We look for a match in the description
-      const matchedState = lagosStates.find((state) => {
-        const description = (state.description || "").toLowerCase();
-        const keywords = description.split(',').map((k: string) => k.trim()).filter((k: string) => k);
-        
-        // Check if any keyword in the description exists in the user's address
-        // OR if the user's address contains the description text itself (if not comma separated)
-        return keywords.some((keyword: string) => lowerAddress.includes(keyword)) || 
-               (description && lowerAddress.includes(description));
-      });
-
-      if (matchedState) {
-        form.setFieldValue("state_id", matchedState.id);
-      } else {
-         // Optional: clear state_id if no match found, or leave it to trigger validation error
-         // form.setFieldValue("state_id", undefined);
-      }
+  // Handle City Selection
+  const handleCityChange = (value: string, option: any) => {
+    if (option && option.stateId) {
+      form.setFieldValue("state_id", option.stateId);
     }
-  }, [fullAddress, mainStateSelection, lagosStates, form]);
+  };
 
   const formSubmitHandler = async (values: any) => {
     const url =
@@ -132,7 +139,7 @@ const NewAddressModal = (props: NewAddressModalProps) => {
     if (values.main_state_selection === "LAGOS_GROUP" && !values.state_id) {
        Notifications["error"]({
         message: "Validation Error",
-        description: "We couldn't detect your specific area in Lagos from your address. Please ensure you include your town/city (e.g. Ikeja, Lekki, Yaba) in the address field.",
+        description: "Please select your City/Area in Lagos.",
       });
       return;
     }
@@ -412,32 +419,34 @@ const NewAddressModal = (props: NewAddressModalProps) => {
             </Col>
           )}
 
-          {/* Secondary Dropdown for Lagos Areas - HIDDEN as per requirements, auto-detected instead */}
-          {/* {isLagosGroupSelected && (
+          {/* Lagos City Dropdown */}
+          {isLagosGroupSelected && (
             <Col md={12}>
               <Form.Item
-                label="Select Area"
-                name="state_id"
+                label="City"
+                name="lagos_city"
                 rules={[
                   {
                     required: true,
-                    message: "Please select your area",
+                    message: "Please select your city",
                   },
                 ]}
+                help={<span className="text-muted" style={{fontSize: "12px"}}>If you reside in Lagos, please select your specific city or area here to determine delivery charges.</span>}
               >
                 <Select
-                  placeholder="Select Area in Lagos"
+                  placeholder="Select City in Lagos"
                   size="large"
                   showSearch
                   allowClear
-                  options={lagosStates.map((s: any) => ({
-                    value: s.id,
-                    label: s.description || s.name, // Use description if available
-                  }))}
+                  options={lagosCities}
+                  onChange={handleCityChange}
+                  filterOption={(input, option) =>
+                    (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </Col>
-          )} */}
+          )}
 
           {/* Info Message */}
           <Col md={12}>
