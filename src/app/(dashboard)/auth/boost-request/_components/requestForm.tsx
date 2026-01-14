@@ -16,7 +16,6 @@ interface RequestFormProps {
   loading?: boolean;
   mode: "create" | "edit";
   onCancel: () => void;
-  storeId?: number | string | null;
 }
 
 function RequestForm({
@@ -25,7 +24,6 @@ function RequestForm({
   loading = false,
   mode,
   onCancel,
-  storeId,
 }: RequestFormProps) {
   const [form] = Form.useForm();
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
@@ -42,10 +40,9 @@ function RequestForm({
 
   // Fetch seller's products
   const { data: productsData, isLoading: productsLoading } = useQuery({
-    queryKey: ["seller-products", storeId],
+    queryKey: ["seller-products"],
     queryFn: ({ signal }) =>
-      GET(`${API.PRODUCTS_BYSTORE}/${storeId}`, {}, signal),
-    enabled: !!storeId,
+      GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS, {}, signal),
   });
 
   // Helper to extract plans array

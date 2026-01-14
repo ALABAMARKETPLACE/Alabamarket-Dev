@@ -111,7 +111,6 @@ function EditBoostRequest({ params }: Props) {
         onSubmit={(payload) => mutationUpdate.mutate(payload)}
         loading={mutationUpdate.isPending}
         onCancel={() => router.push(`/auth/boost-request/${params.id}`)}
-        storeId={sellerId}
       />
     </div>
   );
