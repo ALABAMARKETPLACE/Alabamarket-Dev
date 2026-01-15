@@ -150,7 +150,7 @@ const API = {
 
   //orders
   ORDER: "order/", //post
-  ORDER_GET: "order/all", //get all orders for a user and admin
+  ORDER_GET: "order/getall", //get all orders for a user and admin
   // ORDER_GETONE: "order/get_one/", //get one
   ORDER_GET_BYSTORE: "order/store/",
   ORDER_GET_USER: "order/user/", //to get all orders for a user only for admin
@@ -162,7 +162,7 @@ const API = {
   ORDER_GETONE_USER: "order/get_one/user/", //get details of an order for user.
   ORDER_GETONE_ADMIN: "order/get_one/admin/", //get details of an order for user.
   ORDER_GETCOUNT: "order/getall/", //get all orders count for a store only for seller
-  COMPLETE_PAYMENT: "order/update_payment/", //get update payment for seller only
+  COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
 
   PAYMENT_GET: "payments/all/",
   //PRODUCTS
