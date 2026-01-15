@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Form, Input, Button, Select, notification } from "antd";
 import { POST, GET } from "@/util/apicall";
@@ -35,18 +35,81 @@ function NewAddressForm(props: any) {
     refetchOnWindowFocus: false,
   });
 
+  const [lagosStates, setLagosStates] = useState<any[]>([]);
+  const [otherStates, setOtherStates] = useState<any[]>([]);
+  const [lagosCities, setLagosCities] = useState<any[]>([]);
+  const [isLagosGroupSelected, setIsLagosGroupSelected] = useState(false);
+
+  React.useEffect(() => {
+    if (Array.isArray(states)) {
+      const lagos = states.filter((s: any) =>
+        s.name.toLowerCase().includes("lagos")
+      );
+      const others = states.filter(
+        (s: any) => !s.name.toLowerCase().includes("lagos")
+      );
+      setLagosStates(lagos);
+      setOtherStates(others);
+
+      // Parse cities from Lagos states descriptions
+      const cities: any[] = [];
+      lagos.forEach((state: any) => {
+        if (state.description) {
+          const stateCities = state.description.split(',').map((c: string) => c.trim());
+          stateCities.forEach((city: string) => {
+            if (city) {
+              cities.push({
+                label: city,
+                value: city,
+                stateId: state.id
+              });
+            }
+          });
+        }
+      });
+      cities.sort((a, b) => a.label.localeCompare(b.label));
+      setLagosCities(cities);
+    }
+  }, [states]);
+
+  const mainStateSelection = Form.useWatch("main_state_selection", form);
+
+  // Update visibility based on selection
+  useEffect(() => {
+    setIsLagosGroupSelected(mainStateSelection === "LAGOS_GROUP");
+  }, [mainStateSelection]);
+
+  // Handle City Selection
+  const handleCityChange = (value: string, option: any) => {
+    if (option && option.stateId) {
+      form.setFieldValue("state_id", option.stateId);
+    }
+  };
+
   const submit = async (values: any) => {
     try {
       setIsLoading(true);
 
+      // Ensure we have a valid state ID
+      if (values.main_state_selection === "LAGOS_GROUP" && !values.state_id) {
+        Notifications["error"]({
+          message: "Validation Error",
+          description: "Please select your City/Area in Lagos.",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      const finalStateId = values.main_state_selection === "LAGOS_GROUP" ? values.state_id : values.main_state_selection;
+
       const obj = {
         address_type: values.address_type,
         full_address: values.full_address,
-        pincode: values.pincode,
+        pincode: "000000",
         phone_no: values.phone_no,
         country_code: values?.code ?? "+234",
         country_id: values.country_id || null,
-        state_id: values.state_id || null,
+        state_id: finalStateId || null,
       };
 
       // Validate at least one of country or state is selected
@@ -171,7 +234,7 @@ function NewAddressForm(props: any) {
             </Form.Item>
           </Col>
 
-          <Col sm={6} xs={12}>
+          {/* <Col sm={6} xs={12}>
             <div className="input-form-label">Pincode</div>
             <Form.Item
               name="pincode"
@@ -183,7 +246,7 @@ function NewAddressForm(props: any) {
             >
               <Input placeholder="Pincode" size="large" />
             </Form.Item>
-          </Col>
+          </Col> */}
 
           {/* Country Field - Commented out as per request */}
           {/*
@@ -233,7 +296,7 @@ function NewAddressForm(props: any) {
             <Col sm={6} xs={12}>
               <div className="input-form-label">State</div>
               <Form.Item
-                name="state_id"
+                name="main_state_selection"
                 rules={[
                   {
                     required: true,
@@ -252,17 +315,62 @@ function NewAddressForm(props: any) {
                       .toLowerCase()
                       .includes(input.toLowerCase())
                   }
-                  options={
-                    Array.isArray(states)
-                      ? states.map((s: any) => ({
-                          value: s.id,
-                          label: s.name,
-                        }))
-                      : []
-                  }
+                  options={[
+                    ...otherStates.map((s: any) => ({
+                      value: s.id,
+                      label: s.name,
+                    })),
+                    // Add grouped Lagos option if any Lagos states exist
+                    ...(lagosStates.length > 0
+                      ? [{ value: "LAGOS_GROUP", label: "Lagos" }]
+                      : []),
+                  ].sort((a, b) => a.label.localeCompare(b.label))}
+                  onChange={(value) => {
+                    if (value === "LAGOS_GROUP") {
+                      setIsLagosGroupSelected(true);
+                      form.setFieldValue("state_id", undefined); // Reset specific state selection
+                    } else {
+                      setIsLagosGroupSelected(false);
+                      form.setFieldValue("state_id", value); // Sync state_id with selection
+                    }
+                  }}
                 />
               </Form.Item>
             </Col>
+
+            {/* Hidden State ID field for Lagos */}
+            <Form.Item name="state_id" hidden>
+              <Input />
+            </Form.Item>
+
+            {/* Lagos City Dropdown */}
+            {isLagosGroupSelected && (
+              <Col sm={12} xs={12}>
+                <div className="input-form-label">City</div>
+                <Form.Item
+                  name="lagos_city"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please select your city",
+                    },
+                  ]}
+                  help={<span className="text-muted" style={{fontSize: "12px"}}>If you reside in Lagos, please select your specific city or area here to determine delivery charges.</span>}
+                >
+                  <Select
+                    placeholder="Select City in Lagos"
+                    size="large"
+                    showSearch
+                    allowClear
+                    options={lagosCities}
+                    onChange={handleCityChange}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                    }
+                  />
+                </Form.Item>
+              </Col>
+            )}
 
           {/* Info Message */}
           <Col sm={12}>

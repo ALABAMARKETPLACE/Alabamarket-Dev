@@ -137,7 +137,7 @@ function IndividualStep1({
             <Form
               form={form}
               onFinish={handleSubmit}
-              initialValues={{ code: "+971" }}
+              initialValues={{ code: "+234" }}
             >
               <div className="input-form-label">Enter Name</div>
               <Form.Item
@@ -251,12 +251,12 @@ function IndividualStep1({
                   ))}
                 </Select>
               </Form.Item>
-              <div className="input-form-label">Emirates</div>
+              <div className="input-form-label">State</div>
               <Form.Item
                 name={"business_location"}
                 rules={[{ required: true, message: "Location is required" }]}
               >
-                <Select placeholder="States" size="large">
+                <Select placeholder="Select State" size="large">
                   {states?.map((item: any) => {
                     return (
                       <Select.Option key={item.id} value={item.name}>
@@ -267,14 +267,14 @@ function IndividualStep1({
                 </Select>
               </Form.Item>
 
-              <div className="input-form-label">Visa Status</div>
+              <div className="input-form-label">Residency Status</div>
               <Form.Item
                 name={"visa_status"}
-                rules={[{ required: true, message: "Visa Status is required" }]}
+                rules={[{ required: true, message: "Residency Status is required" }]}
               >
-                <Select placeholder="Select Visa Status" size="large">
-                  <Select.Option value="active">Active</Select.Option>
-                  <Select.Option value="expired">Expired</Select.Option>
+                <Select placeholder="Select Status" size="large">
+                  <Select.Option value="citizen">Citizen</Select.Option>
+                  <Select.Option value="resident">Resident</Select.Option>
                 </Select>
               </Form.Item>
 
@@ -374,14 +374,14 @@ const data = [
   {
     id: "unique_id_1",
     icon: <FaUsersGear size={20} color="grey" />,
-    count: "50,000+ AED",
+    count: "Millions in Sales",
     text: "Suppliers are selling commission-free",
   },
   {
     id: "unique_id_2",
     icon: <FaLocationDot size={20} color="grey" />,
-    count: "19000+",
-    text: "Pincodes supported for delivery",
+    count: "36 States",
+    text: "Locations supported for delivery",
   },
   {
     id: "unique_id_3",
@@ -392,8 +392,8 @@ const data = [
   {
     id: "unique_id_4",
     icon: <IoEarthSharp size={20} color="grey" />,
-    count: "Crore of",
-    text: "Customers buy across world",
+    count: "Millions of",
+    text: "Customers buy across Nigeria",
   },
 ];
 

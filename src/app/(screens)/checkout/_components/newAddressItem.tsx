@@ -25,9 +25,9 @@ function NewAddressItem(props: any) {
             {props?.item?.full_address}
           </div>
 
-          <div className="Cart-txt5 mt-1">
+          {/* <div className="Cart-txt5 mt-1">
             <strong>Pincode:</strong> {props?.item?.pincode}
-          </div>
+          </div> */}
 
           {props?.item?.countryDetails && (
             <div className="Cart-txt8 text-muted">

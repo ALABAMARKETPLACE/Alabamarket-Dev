@@ -35,6 +35,7 @@ function EmailLogin() {
         );
         navigation.replace("/auth");
       } else {
+        setIsLoading(false);
         notificationApi.error({
           message: result.error || "something went wrong.",
         });

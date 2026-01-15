@@ -88,6 +88,27 @@ function ProductItem(props: any) {
             <IoHeartOutline />
           </div>
         </div>
+        {props?.item?.unit <= 0 ? (
+          <div className="product_status_tag position-absolute">
+            <div className="badge2 grey">Soldout</div>
+          </div>
+        ) : props?.item?.status == false ? (
+          <div className="product_status_tag position-absolute">
+            <div className="badge2 red">not available</div>
+          </div>
+        ) : props?.item?.unit <= 5 ? (
+          <div className="product_status_tag position-absolute">
+            <div className="badge2 orange">
+              {` only ${props?.item?.unit} left`}
+            </div>
+          </div>
+        ) : typeof differenceInMilliseconds == "number" ? (
+          differenceInMilliseconds < 604800000 ? (
+            <div className="product_status_tag position-absolute">
+              <div className="badge2 blue">New</div>
+            </div>
+          ) : null
+        ) : null}
       </div>
 
       <div className="ProductItem-Box2">
@@ -128,27 +149,6 @@ function ProductItem(props: any) {
           })()}
           <span className="text-secondary"></span>
         </div>
-        {props?.item?.unit <= 0 ? (
-          <div className="product_status_tag position-absolute">
-            <div className="badge2 grey">Soldout</div>
-          </div>
-        ) : props?.item?.status == false ? (
-          <div className="product_status_tag position-absolute">
-            <div className="badge2 red">not available</div>
-          </div>
-        ) : props?.item?.unit <= 5 ? (
-          <div className="product_status_tag position-absolute">
-            <div className="badge2 orange">
-              {` only ${props?.item?.unit} left`}
-            </div>
-          </div>
-        ) : typeof differenceInMilliseconds == "number" ? (
-          differenceInMilliseconds < 604800000 ? (
-            <div className="product_status_tag position-absolute">
-              <div className="badge2 blue">New</div>
-            </div>
-          ) : null
-        ) : null}
       </div>
     </div>
   );

@@ -105,238 +105,162 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
   return (
     <div className="sellerRegister-stepbox">
       <Container>
-        <Row>
-          <Col md={4}>
-            <Form
-              form={form}
-              onFinish={onFinish}
-              initialValues={{
-                id_type: formData?.id_type,
-                id_proof: formData?.id_proof,
-              }}
-            >
-              <div className="input-form-label">ID Proof Documents</div>
-              <Form.Item name="id_proof">
-                <FilePicker onSubmit={handleFileUpload} fileName={file?.file} />
-              </Form.Item>
-              <div className="input-form-label">
-                Business Registration Document
-              </div>
-              <Form.Item
-                name={"trn_upload"}
-                rules={[
-                  {
-                    //  required: true,
-                    message: "Business Registration Number is required",
-                  },
-                ]}
+        <Row className="gy-4">
+          <Col md={7}>
+            <div className="seller-card">
+              <h5 className="sellerRegister-subHeading mb-4">Upload Documents</h5>
+              <Form
+                form={form}
+                onFinish={onFinish}
+                initialValues={{
+                  id_type: formData?.id_type,
+                  id_proof: formData?.id_proof,
+                }}
               >
-                <FilePicker
-                  onSubmit={handleFileUpload2}
-                  fileName={file2?.file}
-                />
-              </Form.Item>
-
-              {/* Subscription Plan Selection */}
-              <div
-                className="input-form-label"
-                style={{ marginTop: 30, fontSize: 16, fontWeight: 600 }}
-              >
-                Choose Your Subscription Plan
-              </div>
-              <Radio.Group
-                value={selectedPlan}
-                onChange={(e) => setSelectedPlan(e.target.value)}
-                style={{ width: "100%" }}
-              >
-                <Row style={{ marginBottom: 20 }}>
-                  {plans.map((plan) => (
-                    <Col md={6} key={plan.id} style={{ marginBottom: 15 }}>
-                      <Card
-                        style={{
-                          height: "100%",
-                          border:
-                            selectedPlan === plan.id
-                              ? `2px solid ${plan.color}`
-                              : "1px solid #d9d9d9",
-                          cursor: "pointer",
-                          position: "relative",
-                        }}
-                        onClick={() => setSelectedPlan(plan.id)}
-                        hoverable
-                      >
-                        {plan.popular && (
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: -10,
-                              right: 20,
-                              background: plan.color,
-                              color: "#fff",
-                              padding: "4px 12px",
-                              borderRadius: 4,
-                              fontSize: 11,
-                              fontWeight: 600,
-                              zIndex: 1,
-                            }}
-                          >
-                            POPULAR
-                          </div>
-                        )}
-                        <Radio value={plan.id} style={{ width: "100%" }}>
-                          <div>
-                            <div
-                              style={{
-                                fontSize: 16,
-                                fontWeight: 600,
-                                color: plan.color,
-                                marginBottom: 8,
-                              }}
-                            >
-                              {plan.name}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: 22,
-                                fontWeight: 700,
-                                color: "#000",
-                                marginBottom: 5,
-                              }}
-                            >
-                              {plan.currency}
-                              {plan.price.toLocaleString()}
-                              <span
-                                style={{
-                                  fontSize: 13,
-                                  fontWeight: 400,
-                                  color: "#666",
-                                }}
-                              >
-                                {" "}
-                                / {plan.duration}
-                              </span>
-                            </div>
-                            <div
-                              style={{
-                                fontSize: 12,
-                                color: "#666",
-                                marginBottom: 8,
-                              }}
-                            >
-                              {plan.description}
-                            </div>
-                            <div
-                              style={{
-                                fontSize: 12,
-                                fontWeight: 600,
-                                color: plan.color,
-                                marginBottom: 10,
-                              }}
-                            >
-                              Pricing model: per day
-                            </div>
-                            <div
-                              style={{
-                                fontSize: 12,
-                                fontWeight: 600,
-                                color: "#333",
-                                marginBottom: 10,
-                              }}
-                            >
-                              Products: {plan.min_products} –{" "}
-                              {plan.max_products}
-                            </div>
-                            <ul
-                              style={{
-                                paddingLeft: 20,
-                                fontSize: 11,
-                                margin: 0,
-                              }}
-                            >
-                              {plan.features
-                                .slice(0, 3)
-                                .map((feature: string, idx: number) => (
-                                  <li
-                                    key={idx}
-                                    style={{ color: "#333", marginBottom: 2 }}
-                                  >
-                                    {feature}
-                                  </li>
-                                ))}
-                            </ul>
-                          </div>
-                        </Radio>
-                        {selectedPlan === plan.id && (
-                          <CheckCircleOutlined
-                            style={{
-                              position: "absolute",
-                              top: 15,
-                              right: 15,
-                              fontSize: 20,
-                              color: plan.color,
-                            }}
-                          />
-                        )}
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
-              </Radio.Group>
-
-              <Alert
-                description={
-                  <div>
-                    Please ensure that the documents are thoroughly verified
-                    before uploading. If there are any issues with the uploaded
-                    documents, your account registration will not be processed.
-                  </div>
-                }
-                type="warning"
-                closable
-              />
-              <br />
-              {error ? (
-                <>
-                  <Alert
-                    description={
-                      <h6 style={{ color: "red" }}>
-                        Please select required documents
-                      </h6>
-                    }
-                    type="error"
-                  />
-                  <br />
-                </>
-              ) : null}
-
-              <Row>
-                <Col md={6} xs={6}>
-                  <Button block onClick={() => goBack()} size="large">
-                    Back
-                  </Button>
-                </Col>
-                <Col md={6} xs={6}>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" block size="large">
-                      Continue
-                    </Button>
+                <div className="mb-4">
+                  <div className="input-form-label mb-2">ID Proof Document</div>
+                  <Form.Item name="id_proof">
+                    <FilePicker onSubmit={handleFileUpload} fileName={file?.file} />
                   </Form.Item>
-                </Col>
-              </Row>
-            </Form>
+                </div>
+
+                <div className="mb-4">
+                  <div className="input-form-label mb-2">Business Registration Document</div>
+                  <Form.Item
+                    name={"trn_upload"}
+                    rules={[
+                      {
+                        message: "Business Registration Number is required",
+                      },
+                    ]}
+                  >
+                    <FilePicker
+                      onSubmit={handleFileUpload2}
+                      fileName={file2?.file}
+                    />
+                  </Form.Item>
+                </div>
+
+                <hr className="my-4" style={{borderColor: '#e2e8f0'}} />
+
+                {/* Subscription Plan Selection */}
+                <h5 className="sellerRegister-subHeading mb-3" style={{ fontSize: 18 }}>
+                  Choose Subscription Plan
+                </h5>
+                
+                <Radio.Group
+                  value={selectedPlan}
+                  onChange={(e) => setSelectedPlan(e.target.value)}
+                  style={{ width: "100%" }}
+                >
+                  <Row className="g-3">
+                    {plans.map((plan) => (
+                      <Col md={12} key={plan.id}>
+                        <div
+                          className={`p-3 ${selectedPlan === plan.id ? 'bg-orange-50' : 'bg-white'}`}
+                          style={{
+                            border: selectedPlan === plan.id ? `2px solid ${plan.color}` : '1px solid #e2e8f0',
+                            borderRadius: 12,
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                          onClick={() => setSelectedPlan(plan.id)}
+                        >
+                          <div className="d-flex align-items-center">
+                            <Radio value={plan.id} className="me-3" />
+                            <div className="flex-grow-1">
+                              <div className="d-flex justify-content-between align-items-center mb-1">
+                                <span style={{ fontWeight: 600, fontSize: 16, color: plan.color }}>{plan.name}</span>
+                                <span style={{ fontWeight: 700, fontSize: 18 }}>
+                                  {plan.currency}{plan.price.toLocaleString()}
+                                  <small style={{ fontWeight: 400, fontSize: 12, color: '#64748b' }}>/{plan.duration}</small>
+                                </span>
+                              </div>
+                              <div style={{ fontSize: 13, color: '#64748b' }}>{plan.description}</div>
+                              <div className="mt-2 d-flex flex-wrap gap-2">
+                                {plan.features.slice(0, 3).map((f: string, i: number) => (
+                                  <span key={i} style={{ fontSize: 11, background: '#f1f5f9', padding: '2px 8px', borderRadius: 4, color: '#475569' }}>
+                                    {f}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                            {plan.popular && (
+                              <div className="ms-2" style={{ background: plan.color, color: '#fff', fontSize: 10, padding: '2px 6px', borderRadius: 4, fontWeight: 600 }}>
+                                POPULAR
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </Col>
+                    ))}
+                  </Row>
+                </Radio.Group>
+
+                <div className="mt-4">
+                  <Alert
+                    message="Verification Required"
+                    description="Please ensure all documents are clear and readable. Blurred or cropped documents will lead to rejection."
+                    type="info"
+                    showIcon
+                    className="mb-3"
+                  />
+                  
+                  {error && (
+                    <Alert
+                      message="Missing Documents"
+                      description="Please upload both ID Proof and Business Registration documents to continue."
+                      type="error"
+                      showIcon
+                      className="mb-3"
+                    />
+                  )}
+                </div>
+
+                <Row className="mt-4">
+                  <Col md={6} xs={6}>
+                    <Button block onClick={() => goBack()} size="large" className="btn-secondary-custom">
+                      Back
+                    </Button>
+                  </Col>
+                  <Col md={6} xs={6}>
+                    <Form.Item>
+                      <Button type="primary" htmlType="submit" block size="large" className="btn-primary-custom">
+                        Continue
+                      </Button>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Form>
+            </div>
           </Col>
-          <Col md={8}>
-            <div className="sellerRegister-box2">
-              <h4 className="sellerRegister-subHeading">4. Upload Documents</h4>
+          <Col md={5}>
+            <div className="seller-info-panel">
+              <h4 className="sellerRegister-subHeading">Document Guidelines</h4>
               <div className="sellerRegister-text1">
-                <b>ID Proof:</b> Upload the ID Proof which you have selected in
-                Step3. you can upload an Image or Pdf of the same. make sure the
-                data is clear and readable. if you are uploding image, upload
-                good quality images.
-                <br /> <br />
-                <b>Business Registration Number: </b>Upload Your Business
-                Registration Document. if you have. you can also upload an image
-                or pdf. <br />
+                <div className="mb-4">
+                  <strong style={{color: '#334155', display: 'block', marginBottom: 8}}>ID Proof Requirements</strong>
+                  <ul style={{paddingLeft: 20}}>
+                    <li>Must be a government-issued ID (Passport, NIN, Driver's License)</li>
+                    <li>Must be valid (not expired)</li>
+                    <li>Photo and text must be clearly visible</li>
+                    <li>Upload full document (front and back if applicable)</li>
+                  </ul>
+                </div>
+
+                <div className="mb-4">
+                  <strong style={{color: '#334155', display: 'block', marginBottom: 8}}>Business Registration</strong>
+                  <ul style={{paddingLeft: 20}}>
+                    <li>Upload your official Certificate of Incorporation or Business Registration certificate</li>
+                    <li>Must clearly show the Business Name and Registration Number</li>
+                    <li>Document must be active and valid</li>
+                  </ul>
+                </div>
+
+                <div className="p-3" style={{background: '#fff', borderRadius: 8, border: '1px dashed #cbd5e1'}}>
+                  <strong style={{color: '#334155'}}>Accepted Formats</strong>
+                  <p className="mt-1 mb-0">JPG, PNG, PDF (Max 5MB)</p>
+                </div>
               </div>
             </div>
           </Col>

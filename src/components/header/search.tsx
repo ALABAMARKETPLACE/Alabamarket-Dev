@@ -65,7 +65,13 @@ function Search(props: any) {
                 style={{ marginRight: 10 }}
               />
             }
-            style={{ backgroundColor: "#f8f8f8", padding: 9 }}
+            style={{
+              backgroundColor: "#f1f5f9",
+              padding: "8px 16px",
+              borderRadius: "50px",
+              border: "1px solid transparent",
+              fontSize: "14px",
+            }}
           ></Input>
         </Form.Item>
       </Form>

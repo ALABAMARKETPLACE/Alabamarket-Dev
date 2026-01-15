@@ -27,7 +27,7 @@ const IndividualInfo = () => {
   ];
 
   return (
-    <div className="Screen-box">
+    <div className="seller-screen-box">
       <br />
       <Container>
         <Row>

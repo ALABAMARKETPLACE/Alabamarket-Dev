@@ -10,7 +10,7 @@ function DeliveryPartnerSelection() {
   const navigation = useRouter();
 
   return (
-    <div className="Screen-box">
+    <div className="seller-screen-box">
       <br />
       <Container>
         <div className="sellerRegister-row">

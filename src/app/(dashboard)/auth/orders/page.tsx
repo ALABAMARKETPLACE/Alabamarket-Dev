@@ -5,7 +5,7 @@ import Loading from "@/app/(dashboard)/_components/loading";
 import DataTable from "./_components/dataTable";
 import { GET } from "@/util/apicall";
 import { useQuery } from "@tanstack/react-query";
-import API from "@/config/API_ADMIN";
+import API from "@/config/API";
 import Error from "@/app/(dashboard)/_components/error";
 import OrdersFilterBar from "./_components/OrdersFilterBar";
 import useOrdersFilters from "./_hooks/useOrdersFilters";
@@ -34,7 +34,7 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) => GET(API.ORDER_GET_BYSTORE, queryKey[1] as object),
+    queryFn: ({ queryKey }) => GET(API.ORDER_GET, queryKey[1] as object),
     queryKey: ["admin_orders", orderQueryParams],
   });
 

@@ -76,7 +76,7 @@ function DeliveryCompanyRegistration() {
   };
 
   return (
-    <div className="Screen-box">
+    <div className="seller-screen-box">
       <br />
       <Container>
         <div className="sellerRegister-row">
@@ -91,7 +91,7 @@ function DeliveryCompanyRegistration() {
               form={form}
               onFinish={handleSubmit}
               layout="vertical"
-              initialValues={{ code: "+971" }}
+              initialValues={{ code: "+234" }}
             >
               <h5 className="mb-3">Business Information</h5>
 

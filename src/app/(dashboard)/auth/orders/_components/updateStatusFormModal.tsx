@@ -18,8 +18,16 @@ export default function UpdateStatusFormModal(props: Props) {
   const [Notifications, contextHolder] = notification.useNotification();
   const queryClient = useQueryClient();
   const mutationUpdate = useMutation({
-    mutationFn: async (body: object) => {
-      return PUT(API.ORDER_STATUS_UPDATE + props?.id, body);
+    mutationFn: async (body: any) => {
+      // Ensure the payload matches the expected structure:
+      // { "status": "string", "remark": "string", "delivery_date": "string" }
+      const payload = {
+        status: body.status,
+        remark: body.remark,
+        // Ensure delivery_date is a string if it exists
+        delivery_date: body.delivery_date ? body.delivery_date.toISOString() : undefined,
+      };
+      return PUT(API.ORDER_STATUS_UPDATE + props?.id, payload);
     },
     onError: (error, variables, context) => {
       Notifications["error"]({

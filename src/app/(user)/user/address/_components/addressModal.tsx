@@ -45,7 +45,7 @@ const AddressModal = (props: any) => {
       type == update ? API.ADDRESS + props?.selected?.id : API.ADDRESS;
     const obj = {
       flat: values?.flat,
-      pin_code: values?.pincode,
+      pin_code: "000000",
       state: values?.state,
       city: values?.city,
       street: values?.street,
@@ -192,7 +192,7 @@ const AddressModal = (props: any) => {
             </Form.Item>
           </Col>
 
-          <Col md="6">
+          {/* <Col md="6">
             <Form.Item
               label="PinCode"
               name="pincode"
@@ -213,7 +213,7 @@ const AddressModal = (props: any) => {
             >
               <Input placeholder="Pincode" size="large" />
             </Form.Item>
-          </Col>
+          </Col> */}
           <Col md="6">
             <Form.Item
               label="State"
