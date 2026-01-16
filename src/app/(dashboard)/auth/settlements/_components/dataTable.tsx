@@ -22,7 +22,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "paid",
       render: (item: any) => (
         <span className="fw-medium">
-          {Number(item)?.toFixed(2)} {Settings.currency}
+          {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+          {Number(item)?.toFixed(2)}
         </span>
       ),
     },
@@ -33,7 +34,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "balance",
       render: (item: any) => (
         <span>
-          {Number(item)?.toFixed(2)} {Settings.currency}
+          {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+          {Number(item)?.toFixed(2)}
         </span>
       ),
     },
@@ -43,7 +45,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "total",
       render: (item: any) => (
         <span>
-          {Number(item)?.toFixed(2)} {Settings.currency}
+          {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+          {Number(item)?.toFixed(2)}
         </span>
       ),
     },
