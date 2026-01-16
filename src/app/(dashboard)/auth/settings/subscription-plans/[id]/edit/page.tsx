@@ -8,6 +8,7 @@ import {
   Switch,
   notification,
   Card,
+  Select,
 } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PUT, GET } from "@/util/apicall";
@@ -48,7 +49,7 @@ function EditSubscriptionPlan() {
       const payload = {
         id: Number(params.id),
         ...body,
-        featured_position: plan?.featured_position ?? 0,
+        featured_position: Number(body.featured_position ?? 0),
       };
 
       if (payload.price !== undefined && payload.price !== null) {
@@ -88,6 +89,7 @@ function EditSubscriptionPlan() {
         duration_days: Number(plan.duration_days),
         price: Number(plan.price),
         is_active: plan.is_active,
+        featured_position: plan.featured_position ?? 0,
       });
     }
   }, [data, form]);
@@ -116,6 +118,20 @@ function EditSubscriptionPlan() {
             ]}
           >
             <Input placeholder="e.g., Silver Plan, Gold Plan" size="large" />
+          </Form.Item>
+
+          <Form.Item
+            label="Homepage Section Position"
+            name="featured_position"
+            extra="Assigns products from this plan to a specific section on the homepage."
+          >
+            <Select size="large">
+              <Select.Option value={0}>None (Standard Plan)</Select.Option>
+              <Select.Option value={1}>Position 1 (Platinum Section)</Select.Option>
+              <Select.Option value={2}>Position 2 (Gold Section)</Select.Option>
+              <Select.Option value={3}>Position 3 (Silver Section)</Select.Option>
+              <Select.Option value={4}>Position 4 (Discounted Deals)</Select.Option>
+            </Select>
           </Form.Item>
 
           <div

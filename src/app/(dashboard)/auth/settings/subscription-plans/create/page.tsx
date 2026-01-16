@@ -8,6 +8,7 @@ import {
   Switch,
   notification,
   Card,
+  Select,
 } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { POST } from "@/util/apicall";
@@ -26,7 +27,7 @@ function CreateSubscriptionPlan() {
       // Ensure numeric fields are sent as numbers
       const payload = { 
         ...body,
-        featured_position: 0
+        featured_position: Number(body.featured_position ?? 0)
       };
 
       if (payload.price !== undefined && payload.price !== null) {
@@ -67,7 +68,7 @@ function CreateSubscriptionPlan() {
           form={form}
           layout="vertical"
           onFinish={mutationCreate.mutate}
-          initialValues={{ is_active: true }}
+          initialValues={{ is_active: true, featured_position: 0 }}
         >
           <Form.Item
             label="Plan Name"
@@ -80,6 +81,20 @@ function CreateSubscriptionPlan() {
             ]}
           >
             <Input placeholder="e.g., Silver Plan, Gold Plan" size="large" />
+          </Form.Item>
+
+          <Form.Item
+            label="Homepage Section Position"
+            name="featured_position"
+            extra="Assigns products from this plan to a specific section on the homepage."
+          >
+            <Select size="large">
+              <Select.Option value={0}>None (Standard Plan)</Select.Option>
+              <Select.Option value={1}>Position 1 (Platinum Section)</Select.Option>
+              <Select.Option value={2}>Position 2 (Gold Section)</Select.Option>
+              <Select.Option value={3}>Position 3 (Silver Section)</Select.Option>
+              <Select.Option value={4}>Position 4 (Discounted Deals)</Select.Option>
+            </Select>
           </Form.Item>
 
           <div

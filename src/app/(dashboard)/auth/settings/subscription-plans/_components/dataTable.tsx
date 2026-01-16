@@ -43,6 +43,21 @@ function DataTable({ data, page, take, count, setPage, setTake }: props) {
       ),
     },
     {
+      title: "Homepage Position",
+      dataIndex: "featured_position",
+      key: "featured_position",
+      width: 150,
+      render: (pos: number) => {
+        let text = "None";
+        let color = "default";
+        if (pos === 1) { text = "Platinum (Pos 1)"; color = "purple"; }
+        if (pos === 2) { text = "Gold (Pos 2)"; color = "gold"; }
+        if (pos === 3) { text = "Silver (Pos 3)"; color = "cyan"; }
+        if (pos === 4) { text = "Discounted (Pos 4)"; color = "red"; }
+        return <Tag color={color}>{text}</Tag>;
+      },
+    },
+    {
       title: "Product Range",
       key: "product_range",
       width: 180,
