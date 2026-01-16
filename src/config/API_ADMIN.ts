@@ -39,7 +39,7 @@ const API_ADMIN = {
 
   CORPORATE_STORE_GETALL: "coorporate_store/pgn/", //get
   CORPORATE_STORE_REQUEST_DOCUMENT: "coorporate_store/send_mail", //post
-  CORPORATE_STORE_UPDATE_STATUS: "coorporate_store/update_status/", //put
+  CORPORATE_STORE_UPDATE_STATUS: "coorporate_store/status/", //put
   STORE_DEACTIVATE: "coorporate_store/deactivate/",
 
   INVOICE_GET_ALL: "invoice/all", // get all invoices

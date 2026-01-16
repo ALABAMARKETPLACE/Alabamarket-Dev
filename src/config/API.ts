@@ -124,7 +124,7 @@ const API = {
   CORPORATE_STORE_GETSTOREINFO_ADMIN: "coorporate_store/sellerdetails/", //get store details only for store owners
   CORPORATE_STORE_CHECKSTORE: "coorporate_store/store_check/", //getbyid
   CORPORATE_STORE_ACCOUNT_DETAILS: "coorporate_store/account/details", //get, put
-  CORPORATE_STORE_UPDATE_STATUS: "coorporate_store/update_status/", //put
+  CORPORATE_STORE_UPDATE_STATUS: "coorporate_store/status/", //put
   CORPORATE_STORE_REQUEST_DOCUMENT: "coorporate_store/send_mail", //post
   CORPORATE_STORE_GET_TOP_STORE: "coorporate_store/topstore", //get gets the top selling store in the location
   CORPORATE_SELLER_UPDATE: "coorporate_store/update", // PUT
