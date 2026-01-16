@@ -21,22 +21,10 @@ export default function AddressTab(props: Props) {
     staleTime: Infinity,
   });
 
-  const { data: countries } = useQuery({
-    queryFn: async () => await GET(API.COUNTRIES),
-    queryKey: ["countries_list"],
-    staleTime: Infinity,
-  });
-
   const getStateName = (id: string | number) => {
     if (!states?.data) return id;
     const state = states.data.find((s: any) => s.id == id);
     return state ? state.name : id;
-  };
-
-  const getCountryName = (id: string | number) => {
-    if (!countries?.data) return id;
-    const country = countries.data.find((c: any) => c.id == id);
-    return country ? country.name : id;
   };
 
   return (
@@ -52,11 +40,6 @@ export default function AddressTab(props: Props) {
           <span className="text-capitalize">
             {props?.data?.address_type || "N/A"}
           </span>
-        </Descriptions.Item>
-        <Descriptions.Item label="Country">
-          {props?.data?.country_id
-            ? getCountryName(props?.data?.country_id)
-            : "N/A"}
         </Descriptions.Item>
         <Descriptions.Item label="State">
           {props?.data?.state_id ? getStateName(props?.data?.state_id) : "N/A"}
