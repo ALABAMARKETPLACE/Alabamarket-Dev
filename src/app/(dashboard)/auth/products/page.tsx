@@ -132,10 +132,7 @@ function Products() {
       <div className="products-pageHeaderWrap">
         <PageHeader title={"Products"} bredcume={"Dashboard / Products"}>
           <div className="products-headerActions">
-            <div
-              className="products-headerPrimary"
-              style={{ marginRight: "20px" }}
-            >
+            <div className="products-headerPrimary">
               {" "}
               <Button
                 type="primary"

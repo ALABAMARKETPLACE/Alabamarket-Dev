@@ -961,6 +961,33 @@
     width: 100%;
     justify-content: flex-start;
     margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Make direct input/select children full width on mobile for better usability */
+  > .ant-input-affix-wrapper,
+  > .ant-input,
+  > .ant-picker,
+  > div > .ant-select {
+    @media (max-width: 768px) {
+      width: 100% !important;
+      min-width: 100% !important;
+    }
+  }
+
+  /* Handle divs that wrap inputs/selects */
+  > div:not(.products-headerActions) {
+     @media (max-width: 768px) {
+        width: 100%;
+     }
+  }
+
+  /* Make buttons full width on mobile for easier tapping, unless in a group */
+  > .ant-btn {
+    @media (max-width: 768px) {
+      width: 100%;
+    }
   }
 }
 
