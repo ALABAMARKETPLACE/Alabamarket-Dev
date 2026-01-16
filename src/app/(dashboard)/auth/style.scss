@@ -942,6 +942,11 @@
   border-bottom: 1px solid rgba(208, 200, 200, 0.541);
   margin-bottom: 12px;
   color: rgb(44, 44, 44);
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
 }
 
 .dashboard-pageHeaderBox {
@@ -951,6 +956,12 @@
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
 }
 
 .dashboard-pageHeadertxt1 {
