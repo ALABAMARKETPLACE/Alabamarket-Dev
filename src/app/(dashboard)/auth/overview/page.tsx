@@ -18,8 +18,6 @@ import Error from "@/app/(dashboard)/_components/error";
 import { GET } from "@/util/apicall";
 import { FcBearish, FcBullish } from "react-icons/fc";
 import { useSession } from "next-auth/react";
-import "../style.scss";
-
 function DashboardSeller() {
   const { data: session, status }: any = useSession();
   const id = session?.user?.store_id;
@@ -72,38 +70,51 @@ function DashboardSeller() {
       </div>
       <br />
       <div>
-        <div className="DashboardAdmin-Grid">
-          <Cards
-            Title={"Orders"}
-            Desc={"All Orders"}
-            value={counts?.totalOrders ?? 0}
-            icon={<FiPackage color="blue" />}
-            link="/auth/orders"
-          />
-          <Cards
-            Title={"Products"}
-            Desc={"Total Products"}
-            value={counts?.totalProducts ?? 0}
-            icon={<HiOutlineRectangleGroup color="#63ccf2" />}
-            link="/auth/products"
-          />
-          <Cards
-            Title={"Pending Amount"}
-            Desc={"Pending Amount"}
-            value={(PendingAmount ?? 0).toFixed(2) ?? 0}
-            icon={<FcBearish size={32} color="#63ccf2" />}
-            link="/auth/settlements"
-          />
-          <Cards
-            Title={"Total Amount"}
-            Desc={"Total Amount"}
-            value={counts?.orderTotal ?? 0}
-            icon={<FcBullish color="#63ccf2" size={32} />}
-            link="/auth/settlements"
-          />
-        </div>
-        <div className="DashboardAdmin-ChartRow">
-          <div>
+        <Row>
+          <Col sm={8}>
+            {isLoading ? (
+              <SkeletonLoading size="xsm" count={4} />
+            ) : (
+              <Row className="same-height">
+                <Col sm={3} className="col">
+                  <Cards
+                    Title={"Orders"}
+                    Desc={"All Orders"}
+                    value={counts?.totalOrders ?? 0}
+                    icon={<FiPackage color="blue" />}
+                    link="/auth/orders"
+                  />
+                </Col>
+                <Col sm={3} className="col">
+                  <Cards
+                    Title={"Products"}
+                    Desc={"Total Products"}
+                    value={counts?.totalProducts ?? 0}
+                    icon={<HiOutlineRectangleGroup color="#63ccf2" />}
+                    link="/auth/products"
+                  />
+                </Col>
+                <Col sm={3} className="col">
+                  <Cards
+                    Title={"Pending Amount"}
+                    Desc={"Pending Amount"}
+                    value={(PendingAmount ?? 0).toFixed(2) ?? 0}
+                    icon={<FcBearish size={32} color="#63ccf2" />}
+                    link="/auth/settlements"
+                  />
+                </Col>
+                <Col sm={3} className="col">
+                  <Cards
+                    Title={"Total Amount"}
+                    Desc={"Total Amount"}
+                    value={counts?.orderTotal ?? 0}
+                    icon={<FcBullish color="#63ccf2" size={32} />}
+                    link="/auth/settlements"
+                  />
+                </Col>
+              </Row>
+            )}
+            <br />
             {isLoading2 ? (
               <SkeletonLoading count={1} size="xlg" />
             ) : (
@@ -120,8 +131,8 @@ function DashboardSeller() {
                 <SalesChart data={statistics?.orderStatistics} />
               </Card>
             )}
-          </div>
-          <div>
+          </Col>
+          <Col sm={4}>
             {isLoading3 ? (
               <SkeletonLoading count={1} size="xxlg" />
             ) : (
@@ -173,8 +184,8 @@ function DashboardSeller() {
                 </Table>
               </Card>
             )}
-          </div>
-        </div>
+          </Col>
+        </Row>
       </div>
     </main>
   );

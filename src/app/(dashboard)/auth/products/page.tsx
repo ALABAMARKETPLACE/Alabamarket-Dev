@@ -16,7 +16,6 @@ import FilePickerModal from "./[id]/_components/file_uploader_modal";
 import { useSession } from "next-auth/react";
 import ProductsFilterBar from "./_components/ProductsFilterBar";
 import useProductsFilters from "./_hooks/useProductsFilters";
-import "./style.scss";
 
 function Products() {
   const router = useRouter();

@@ -109,7 +109,6 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         columns={columns}
         pagination={false}
         size="small"
-        scroll={{ x: "max-content" }}
         locale={{
           emptyText: (
             <div className="py-5">

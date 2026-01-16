@@ -58,7 +58,7 @@ export default function OrderDetails() {
         bredcume={"Dashboard / Orders / Details"}
       >
         {!isLoading && (
-          <div className="d-flex gap-2 flex-wrap justify-content-end">
+          <>
             <Tag>{formatDateRelative(order?.data?.createdAt)}</Tag>
             <Tag color={getOrderStatusColor(order?.data?.status)}>
               {getOrderStatus(order?.data?.status)}
@@ -69,22 +69,22 @@ export default function OrderDetails() {
             >
               Substitute Order
             </Button>
-          </div>
+          </>
         )}
       </PageHeader>
       {isLoading ? (
         <Loading />
       ) : (
-        <Container fluid>
-          <Row className="gy-4">
-            <Col lg={8} md={12}>
-              <div className="d-flex flex-column gap-4">
-                <AddressTab data={order?.data?.address} />
-                <ProductTab data={order?.data?.orderItems} />
-                <PaymentStatusTab data={order?.data} />
-              </div>
+        <Container>
+          <Row>
+            <Col md={8}>
+              <AddressTab data={order?.data?.address} />
+              <br />
+              <ProductTab data={order?.data?.orderItems} />
+              <br />
+              <PaymentStatusTab data={order?.data} />
             </Col>
-            <Col lg={4} md={12}>
+            <Col md={4}>
               <OrderStatusTab data={order?.data} />
             </Col>
           </Row>

@@ -6,8 +6,6 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { FaEye } from "react-icons/fa6";
 import CONFIG from "@/config/configuration";
 import { useRouter } from "next/navigation";
-import { formatCurrency } from "@/utils/formatNumber";
-
 interface props {
   data: any[];
   count: number;
@@ -61,7 +59,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
       render: (item: string) => {
         const currencySymbol =
           settings?.currency === "NGN" ? "₦" : settings?.currency;
-        return `${currencySymbol} ${formatCurrency(item)}`;
+        return `${item} ${currencySymbol}`;
       },
     },
     {
@@ -100,7 +98,6 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         columns={columns}
         pagination={false}
         size="small"
-        scroll={{ x: "max-content" }}
       />
       <div className="table-pagination">
         <Pagination
