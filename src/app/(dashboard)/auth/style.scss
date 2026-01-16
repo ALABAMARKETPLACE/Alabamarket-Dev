@@ -944,9 +944,52 @@
   color: rgb(44, 44, 44);
 
   @media (max-width: 768px) {
-    flex-wrap: wrap;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
+}
+
+.dashboard-pageHeader > div:nth-child(2) {
+    @media (max-width: 768px) {
+        margin-bottom: 4px;
+        align-self: flex-start;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+/* Back button container */
+.dashboard-pageHeaderBox2 {
+  background-color: #fff;
+  padding: 4px 6px;
+  border-radius: 5px;
+  border: 1px solid #fff;
+  cursor: pointer;
+  margin-right: 10px;
+  &:hover {
+    color: vars.$primary;
+    border: 1px solid vars.$primary;
+  }
+  
+  @media (max-width: 768px) {
+      margin-right: 0;
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 2;
+  }
+}
+
+/* Page title container */
+.dashboard-pageHeader > div:nth-child(2) {
+    @media (max-width: 768px) {
+        width: 100%;
+        text-align: center;
+        padding-left: 40px; /* Space for back button */
+        padding-right: 10px;
+    }
 }
 
 .dashboard-pageHeaderBox {
@@ -960,9 +1003,12 @@
   @media (max-width: 768px) {
     width: 100%;
     justify-content: flex-start;
-    margin-top: 10px;
+    margin-top: 0;
     flex-wrap: wrap;
     gap: 10px;
+    
+    /* Ensure the container takes full width below the title */
+    flex: 0 0 auto;
   }
 
   /* Make direct input/select children full width on mobile for better usability */
@@ -1003,18 +1049,7 @@
   color: gray;
 }
 
-.dashboard-pageHeaderBox2 {
-  background-color: #fff;
-  padding: 4px 6px;
-  border-radius: 5px;
-  border: 1px solid #fff;
-  cursor: pointer;
-  margin-right: 10px;
-  &:hover {
-    color: vars.$primary;
-    border: 1px solid vars.$primary;
-  }
-}
+
 
 .dashboard-Loading {
   height: 50vh;
