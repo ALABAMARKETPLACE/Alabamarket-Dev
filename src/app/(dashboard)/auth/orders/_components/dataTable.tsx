@@ -8,6 +8,7 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useRouter } from "next/navigation";
 import { FaEye } from "react-icons/fa6";
 import CONFIG from "@/config/configuration";
+import { formatCurrency } from "@/utils/formatNumber";
 
 interface props {
   data: any[];
@@ -54,7 +55,8 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         key: "grandTotal",
         render: (item: any) => (
           <span>
-            {Number(item)?.toFixed(2)} {Settings.currency}
+            {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+            {formatCurrency(item)}
           </span>
         ),
       },
