@@ -31,7 +31,7 @@ export default function OrderStatusTab(props: Props) {
 
   const mutationUpdate = useMutation({
     mutationFn: () => {
-      return PUT(API.UPDATE_ORDER_STATUS + props?.data?.id, { status });
+      return PUT(API.ORDER_STATUS_UPDATE + props?.data?.id, { status });
     },
     onError: (error, variables, context) => {
       Notifications["error"]({
