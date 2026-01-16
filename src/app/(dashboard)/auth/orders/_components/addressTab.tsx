@@ -41,36 +41,33 @@ export default function AddressTab(props: Props) {
 
   return (
     <Card title={"Delivery Address"} className="h-100">
-      <div className="d-flex flex-column gap-2">
-        <div className="d-flex justify-content-between border-bottom pb-2">
-            <span className="text-muted">Contact Name:</span>
-            <span className="fw-medium">{user?.data?.name || "N/A"}</span>
-        </div>
-        <div className="d-flex justify-content-between border-bottom pb-2">
-            <span className="text-muted">Phone Number:</span>
-            <span className="fw-medium">{props?.data?.phone_no || "N/A"}</span>
-        </div>
-        <div className="d-flex justify-content-between border-bottom pb-2">
-            <span className="text-muted">Address Type:</span>
-            <span className="text-capitalize">{props?.data?.address_type || "N/A"}</span>
-        </div>
-        <div className="d-flex justify-content-between border-bottom pb-2">
-            <span className="text-muted">Country:</span>
-            <span>{props?.data?.country_id ? getCountryName(props?.data?.country_id) : "N/A"}</span>
-        </div>
-        <div className="d-flex justify-content-between border-bottom pb-2">
-            <span className="text-muted">State:</span>
-            <span>{props?.data?.state_id ? getStateName(props?.data?.state_id) : "N/A"}</span>
-        </div>
-        <div className="d-flex justify-content-between border-bottom pb-2">
-            <span className="text-muted">City:</span>
-            <span>{props?.data?.city || "N/A"}</span>
-        </div>
-        <div className="d-flex flex-column pt-2">
-            <span className="text-muted mb-1">Full Address:</span>
-            <span className="bg-light p-2 rounded small">{props?.data?.full_address || "N/A"}</span>
-        </div>
-      </div>
+      <Descriptions column={1} bordered>
+        <Descriptions.Item label="Contact Name">
+          {user?.data?.name || "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Phone Number">
+          {props?.data?.phone_no || "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Address Type">
+          <span className="text-capitalize">
+            {props?.data?.address_type || "N/A"}
+          </span>
+        </Descriptions.Item>
+        <Descriptions.Item label="Country">
+          {props?.data?.country_id
+            ? getCountryName(props?.data?.country_id)
+            : "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="State">
+          {props?.data?.state_id ? getStateName(props?.data?.state_id) : "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="City">
+          {props?.data?.city || "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Full Address">
+          {props?.data?.full_address || "N/A"}
+        </Descriptions.Item>
+      </Descriptions>
     </Card>
   );
 }
