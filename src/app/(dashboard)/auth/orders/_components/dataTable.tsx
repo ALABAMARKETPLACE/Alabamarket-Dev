@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import { Button, Table, Pagination, Avatar, Card } from "antd";
 import { TbListDetails } from "react-icons/tb";
 import moment from "moment";
@@ -9,6 +9,8 @@ import { useRouter } from "next/navigation";
 import { FaEye } from "react-icons/fa6";
 import CONFIG from "@/config/configuration";
 import { formatCurrency } from "@/utils/formatNumber";
+import { GET } from "@/util/apicall";
+import API from "@/config/API_ADMIN";
 
 interface props {
   data: any[];
@@ -17,6 +19,34 @@ interface props {
   pageSize: number;
   page: number;
 }
+
+const UserName = ({ userId }: { userId: number }) => {
+  const [name, setName] = useState<string>("Loading...");
+
+  useEffect(() => {
+    let isMounted = true;
+    if (userId) {
+      GET(API.USER_DETAILS + userId)
+        .then((res: any) => {
+          if (isMounted) {
+            setName(res?.data?.name || "N/A");
+          }
+        })
+        .catch(() => {
+          if (isMounted) {
+            setName("N/A");
+          }
+        });
+    } else {
+        setName("N/A");
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
+
+  return <span>{name}</span>;
+};
 
 function DataTable({ data, count, setPage, pageSize, page }: props) {
   const route = useRouter();
@@ -38,8 +68,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
       },
       {
         title: "User Name",
-        dataIndex: "name",
+        dataIndex: "userId",
         key: "userId",
+        render: (userId: number, record: any) => (
+            record?.name ? record.name : <UserName userId={userId} />
+        ),
       },
       {
         title: "OrderDate", //
