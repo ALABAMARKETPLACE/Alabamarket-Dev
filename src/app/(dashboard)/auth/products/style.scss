@@ -1,0 +1,135 @@
+@use "../../../../config/styleVariable.scss" as vars;
+
+.products-pageHeaderWrap {
+  margin-bottom: 20px;
+}
+
+.products-headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.products-headerPrimary {
+  @media (max-width: 768px) {
+    width: 100%;
+    margin-bottom: 10px;
+    
+    button {
+        width: 100%;
+    }
+  }
+}
+
+.products-headerFilters {
+  flex: 1;
+  width: 100%;
+}
+
+.products-tableMobile {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.products-tableMobileCard {
+  background: #fff;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  border: 1px solid #eee;
+}
+
+.products-tableMobileHeader {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.products-tableMobileImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f9f9f9;
+  
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.products-tableMobileTitle {
+  flex: 1;
+  min-width: 0;
+  
+  .title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #333;
+  }
+  
+  .sub {
+    font-size: 12px;
+    color: #888;
+  }
+}
+
+.products-tableMobileBody {
+  margin-bottom: 15px;
+}
+
+.products-tableMobileRow {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  
+  .label {
+    color: #666;
+  }
+  
+  .value {
+    font-weight: 500;
+    color: #333;
+  }
+}
+
+.products-tableMobileActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+}
+
+.products-tableMobileEmpty {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  
+  p {
+    margin-top: 10px;
+  }
+}
