@@ -164,6 +164,10 @@ const API = {
   ORDER_GETCOUNT: "order/getall/", //get all orders count for a store only for seller
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
 
+  // STORE STATISTICS
+  STORE_STATS: "store/stats",
+
+  //PAYMENT_GET
   PAYMENT_GET: "payments/all/",
   //PRODUCTS
   PRODUCTS_BYSTORE: "products/bystore", // GET all for a store
