@@ -39,7 +39,7 @@ const API_ADMIN = {
 
   CORPORATE_STORE_GETALL: "coorporate_store/pgn/", //get
   CORPORATE_STORE_REQUEST_DOCUMENT: "coorporate_store/send_mail", //post
-  CORPORATE_STORE_UPDATE_STATUS: "coorporate_store/status/", //put
+  CORPORATE_STORE_UPDATE_STATUS: "coorporate_store/update_status/", //put
   STORE_DEACTIVATE: "coorporate_store/deactivate/",
 
   INVOICE_GET_ALL: "invoice/all", // get all invoices
@@ -88,7 +88,7 @@ const API_ADMIN = {
 
   COORPORATE_SELLER_DASHBOARD_COUNT: "coorporate_store/dashboard/",
 
-  SETTLEMENT_HISTORY: "settlements/history/", //to get settlement history of a store    get
+  SETTLEMENT_HISTORY: "settlements/history", //to get settlement history of a store    get
   SETTLEMENT_SUMMARY: "settlements/summary/", //to get settlement history of a store    get
   SETTLEMENT_CREATE: "settlements/create", //only for admin
 
