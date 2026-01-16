@@ -62,7 +62,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         render: (img: string) => <Avatar size={35} src={img} shape="square" />,
       },
       {
-        title: "OrderId",
+        title: "Order ID",
         dataIndex: "order_id",
         key: "order_id",
       },
@@ -75,7 +75,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         ),
       },
       {
-        title: "OrderDate", //
+        title: "Order Date", //
         dataIndex: "createdAt",
         key: "createdAt",
         render: (item: any) => (
