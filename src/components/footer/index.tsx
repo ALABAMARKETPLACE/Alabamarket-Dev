@@ -173,7 +173,7 @@ const Footer = () => {
                 <Col sm={6} xs={6}>
                   <a
                     target="_blank"
-                    // href="https://play.google.com/store/apps/details?id=com.nextmeapp&hl=en"
+                    href="https://play.google.com/store/apps/details?id=com.alabauserapp"
                   >
                     <Image
                       src={GooglePlay}

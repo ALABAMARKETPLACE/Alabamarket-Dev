@@ -18,7 +18,7 @@ function Cards({ link, Title, icon, value, Desc }: props) {
         return;
       }}
     >
-      <div className="DashboardAdmin-Box">
+      <div className="d-flex justify-content-between w-100">
         <div className="DashboardAdmin-card-text1">{Title}</div>
         <div className="DashboardAdmin-card-icons">{icon}</div>
       </div>
