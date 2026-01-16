@@ -7,6 +7,8 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import bgImage from "@/assets/images/position1.jpg"; // Using local asset
+import { IoClose } from "react-icons/io5";
+import { Button } from "antd";
 
 function LoginScreen() {
   const navigation = useRouter();
@@ -18,7 +20,15 @@ function LoginScreen() {
 
   return (
     <div className="Screen-box">
-      <div className="auth-container">
+      <div className="auth-container position-relative">
+        <Button
+          type="text"
+          shape="circle"
+          icon={<IoClose size={24} />}
+          className="position-absolute top-0 end-0 m-3 z-3 bg-white shadow-sm"
+          onClick={() => navigation.push("/")}
+          title="Close"
+        />
         {/* Left Side - Image */}
         <div className="auth-image-side" style={{ backgroundImage: `url(${bgImage.src})` }}>
           <div className="auth-image-text">

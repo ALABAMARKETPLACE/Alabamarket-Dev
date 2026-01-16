@@ -6,6 +6,8 @@ import { useSelector } from "react-redux";
 import { Alert, Spin } from "antd";
 import CheckoutItem from "./checkoutItem";
 import { LoadingOutlined } from "@ant-design/icons";
+import { formatCurrency } from "@/utils/formatNumber";
+
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 20, color: "#fff" }} spin />
 );
@@ -35,7 +37,7 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Total Product Price</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt4">
-          {getCurrencySymbol()} {Number(props?.total).toFixed(2)}
+          {getCurrencySymbol()} {formatCurrency(props?.total)}
         </div>
       </div>
       <div style={{ margin: 15 }} />
@@ -43,7 +45,7 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Discount</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt4 text-success">
-          -{getCurrencySymbol()} {Number(props?.discount).toFixed(2)}
+          -{getCurrencySymbol()} {formatCurrency(props?.discount)}
         </div>
       </div>
       <div style={{ margin: 15 }} />
@@ -57,7 +59,7 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Delivery Charges</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt4">
-          {getCurrencySymbol()} {Number(props?.delivery_charge).toFixed(2)}
+          {getCurrencySymbol()} {formatCurrency(props?.delivery_charge)}
         </div>
       </div>
       <div className="Cart-line2" />
@@ -66,7 +68,7 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Total :</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt7">
-          {getCurrencySymbol()} {Number(props?.grand_total).toFixed(2)}
+          {getCurrencySymbol()} {formatCurrency(props?.grand_total)}
         </div>
       </div>
       <div className="Cart-line2" />
