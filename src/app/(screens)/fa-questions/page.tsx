@@ -334,7 +334,7 @@ function FaQuestions() {
               </div>
               <hr />
               <div className="Footer-text2">
-                <Link href="fa-questions">FAQ,S</Link>
+                <Link href="fa-questions">FAQs</Link>
               </div>
               <hr />
               <div className="Footer-text2">

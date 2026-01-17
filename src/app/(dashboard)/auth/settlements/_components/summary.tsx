@@ -38,7 +38,9 @@ function Summary() {
             <Cards
               Title={"Balance to Settle"}
               Desc={"Remaining amount to be settled"}
-              value={`${settings?.currency} ${settlement?.amountToSettle ?? 0}`}
+              value={`${
+                settings?.currency === "NGN" ? "₦" : settings?.currency
+              } ${settlement?.amountToSettle ?? 0}`}
               icon={<GiMoneyStack color="orange" />}
             />
           </Col>
@@ -47,9 +49,9 @@ function Summary() {
             <Cards
               Title={"Settled Amount"}
               Desc={"Total amount settled till now."}
-              value={`${settings?.currency} ${
-                settlement?.totalSettledPrice ?? 0
-              }`}
+              value={`${
+                settings?.currency === "NGN" ? "₦" : settings?.currency
+              } ${settlement?.totalSettledPrice ?? 0}`}
               icon={<IoCheckmarkDoneCircle color="green" />}
             />
           </Col>
@@ -57,9 +59,9 @@ function Summary() {
             <Cards
               Title={"Total Order Price"}
               Desc={"The sum of all orders in your store"}
-              value={`${settings?.currency} ${
-                settlement?.totalOrderPrice ?? 0
-              }`}
+              value={`${
+                settings?.currency === "NGN" ? "₦" : settings?.currency
+              } ${settlement?.totalOrderPrice ?? 0}`}
               icon={<FaShop color="blue" />}
             />
           </Col>
@@ -67,9 +69,9 @@ function Summary() {
             <Cards
               Title={"Settlement Pending"}
               Desc={"Sum of pending settlements."}
-              value={`${settings?.currency} ${
-                settlement?.settlementPending ?? 0
-              }`}
+              value={`${
+                settings?.currency === "NGN" ? "₦" : settings?.currency
+              } ${settlement?.settlementPending ?? 0}`}
               icon={<FaBalanceScaleLeft color="grey" />}
             />
           </Col>

@@ -30,7 +30,7 @@ function Page() {
   return (
     <div>
       <PageHeader title={"Settings"} bredcume={"Dashboard / Settings"}>
-        <div style={{ width: "400px" }}>
+        <div style={{ width: "100%", maxWidth: "400px" }}>
           <div style={{ fontSize: 12, color: "red" }}>
             {" "}
             Warning: Changing Settings in E-commerce Systems

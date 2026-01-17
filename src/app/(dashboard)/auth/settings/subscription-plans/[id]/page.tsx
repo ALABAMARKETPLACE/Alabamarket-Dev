@@ -24,10 +24,10 @@ const POSITION_LABELS: Record<
   { label: string; color: string; icon: string }
 > = {
   0: { label: "Not Featured", color: "default", icon: "" },
-  1: { label: "Top Section", color: "gold", icon: "🏆" },
-  2: { label: "Middle Section", color: "blue", icon: "🥈" },
-  3: { label: "Lower Section", color: "orange", icon: "🥉" },
-  4: { label: "Discounted Section", color: "purple", icon: "🏷️" },
+  1: { label: "Platinum Section", color: "purple", icon: "🏆" },
+  2: { label: "Gold Section", color: "gold", icon: "🥇" },
+  3: { label: "Silver Section", color: "cyan", icon: "🥈" },
+  4: { label: "Discounted Deals", color: "red", icon: "🏷️" },
 };
 
 function ViewSubscriptionPlan() {
@@ -243,7 +243,7 @@ function ViewSubscriptionPlan() {
                       <span>
                         0 - Not Featured{" "}
                         <span style={{ color: "#888", fontSize: 12 }}>
-                          (Not shown on homepage)
+                          (Standard)
                         </span>
                       </span>
                     ),
@@ -252,9 +252,9 @@ function ViewSubscriptionPlan() {
                     value: 1,
                     label: (
                       <span>
-                        🏆 1 - Top Section{" "}
+                        🏆 1 - Platinum Section{" "}
                         <span style={{ color: "#888", fontSize: 12 }}>
-                          (Most prominent)
+                          (Top position)
                         </span>
                       </span>
                     ),
@@ -263,9 +263,9 @@ function ViewSubscriptionPlan() {
                     value: 2,
                     label: (
                       <span>
-                        🥈 2 - Middle Section{" "}
+                        🥇 2 - Gold Section{" "}
                         <span style={{ color: "#888", fontSize: 12 }}>
-                          (Second position)
+                          (Middle position)
                         </span>
                       </span>
                     ),
@@ -274,9 +274,9 @@ function ViewSubscriptionPlan() {
                     value: 3,
                     label: (
                       <span>
-                        🥉 3 - Lower Section{" "}
+                        🥈 3 - Silver Section{" "}
                         <span style={{ color: "#888", fontSize: 12 }}>
-                          (Third position)
+                          (Lower position)
                         </span>
                       </span>
                     ),
@@ -285,9 +285,9 @@ function ViewSubscriptionPlan() {
                     value: 4,
                     label: (
                       <span>
-                        🏷️ 4 - Discounted Section{" "}
+                        🏷️ 4 - Discounted Deals{" "}
                         <span style={{ color: "#888", fontSize: 12 }}>
-                          (Discounted deals)
+                          (Deals section)
                         </span>
                       </span>
                     ),

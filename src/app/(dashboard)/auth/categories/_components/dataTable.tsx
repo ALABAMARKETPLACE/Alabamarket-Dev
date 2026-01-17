@@ -206,6 +206,7 @@ function DataTable({
         columns={columns}
         pagination={false}
         size="small"
+        scroll={{ x: "max-content" }}
       />
       <div className="table-pagination">
         <Pagination

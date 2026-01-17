@@ -26,7 +26,7 @@ function ActionModal({ open, close, data }: Props) {
       const url = `${API.PAYSTACK_SUBACCOUNT_ACTION_BASE}${data.id}/${type}`;
       const payload =
         values.status === "rejected"
-          ? { status_remark: values.status_remark }
+          ? { rejection_reason: values.status_remark }
           : {};
       return PUT(url, payload);
     },

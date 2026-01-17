@@ -13,7 +13,11 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Col, Container } from "react-bootstrap";
 import { MdWhatsapp } from "react-icons/md";
-import { IoCallOutline, IoMailUnreadOutline, IoLocationOutline } from "react-icons/io5";
+import {
+  IoCallOutline,
+  IoMailUnreadOutline,
+  IoLocationOutline,
+} from "react-icons/io5";
 // import { useTranslation } from "next-i18next";
 import { useSelector } from "react-redux";
 import API from "@/config/API";
@@ -70,9 +74,13 @@ function ContactUs() {
             <div dangerouslySetInnerHTML={{ __html: map }} />
             <div className="media-box">
               <div className="box1" style={{ padding: "10px 0" }}>
-                <MdWhatsapp size={24} color="#25D366" style={{ marginRight: 10 }} />
+                <MdWhatsapp
+                  size={24}
+                  color="#25D366"
+                  style={{ marginRight: 10 }}
+                />
                 <a
-                  href={`https://wa.me/${phoneNumber.replace('+', '')}`}
+                  href={`https://wa.me/${phoneNumber.replace("+", "")}`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -80,20 +88,33 @@ function ContactUs() {
                 </a>
               </div>
               <div className="box1" style={{ padding: "10px 0" }}>
-                <IoCallOutline size={24} color="#0066CC" style={{ marginRight: 10 }} />
-                <a href={`tel:${phoneNumber}`}>
-                  Phone: {phoneNumber}
+                <IoCallOutline
+                  size={24}
+                  color="#0066CC"
+                  style={{ marginRight: 10 }}
+                />
+                <a href={`tel:${phoneNumber}`}>Phone: {phoneNumber}</a>
+              </div>
+              <div className="box1" style={{ padding: "10px 0" }}>
+                <IoMailUnreadOutline
+                  size={24}
+                  color="#EA4335"
+                  style={{ marginRight: 10 }}
+                />
+                <a href="mailto:info@alabamarketplace.ng">
+                  Mail: info@alabamarketplace.ng
                 </a>
               </div>
               <div className="box1" style={{ padding: "10px 0" }}>
-                <IoMailUnreadOutline size={24} color="#EA4335" style={{ marginRight: 10 }} />
-                <a href="mailto:info@taxgoglobal.com">
-                  Mail: info@taxgoglobal.com
-                </a>
-              </div>
-              <div className="box1" style={{ padding: "10px 0" }}>
-                <IoLocationOutline size={24} color="#FF5722" style={{ marginRight: 10 }} />
-                <span>B439 Electronics Line, Main Gate Alaba International Market Ojo Lagos</span>
+                <IoLocationOutline
+                  size={24}
+                  color="#FF5722"
+                  style={{ marginRight: 10 }}
+                />
+                <span>
+                  B439 Electronics Line, Main Gate Alaba International Market
+                  Ojo Lagos
+                </span>
               </div>
             </div>
           </Col>

@@ -942,6 +942,54 @@
   border-bottom: 1px solid rgba(208, 200, 200, 0.541);
   margin-bottom: 12px;
   color: rgb(44, 44, 44);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+}
+
+.dashboard-pageHeader > div:nth-child(2) {
+    @media (max-width: 768px) {
+        margin-bottom: 4px;
+        align-self: flex-start;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+/* Back button container */
+.dashboard-pageHeaderBox2 {
+  background-color: #fff;
+  padding: 4px 6px;
+  border-radius: 5px;
+  border: 1px solid #fff;
+  cursor: pointer;
+  margin-right: 10px;
+  &:hover {
+    color: vars.$primary;
+    border: 1px solid vars.$primary;
+  }
+  
+  @media (max-width: 768px) {
+      margin-right: 0;
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      z-index: 2;
+  }
+}
+
+/* Page title container */
+.dashboard-pageHeader > div:nth-child(2) {
+    @media (max-width: 768px) {
+        width: 100%;
+        text-align: center;
+        padding-left: 40px; /* Space for back button */
+        padding-right: 10px;
+    }
 }
 
 .dashboard-pageHeaderBox {
@@ -951,6 +999,42 @@
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 0;
+    flex-wrap: wrap;
+    gap: 10px;
+    
+    /* Ensure the container takes full width below the title */
+    flex: 0 0 auto;
+  }
+
+  /* Make direct input/select children full width on mobile for better usability */
+  > .ant-input-affix-wrapper,
+  > .ant-input,
+  > .ant-picker,
+  > div > .ant-select {
+    @media (max-width: 768px) {
+      width: 100% !important;
+      min-width: 100% !important;
+    }
+  }
+
+  /* Handle divs that wrap inputs/selects */
+  > div:not(.products-headerActions) {
+     @media (max-width: 768px) {
+        width: 100%;
+     }
+  }
+
+  /* Make buttons full width on mobile for easier tapping, unless in a group */
+  > .ant-btn {
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
 }
 
 .dashboard-pageHeadertxt1 {
@@ -965,18 +1049,7 @@
   color: gray;
 }
 
-.dashboard-pageHeaderBox2 {
-  background-color: #fff;
-  padding: 4px 6px;
-  border-radius: 5px;
-  border: 1px solid #fff;
-  cursor: pointer;
-  margin-right: 10px;
-  &:hover {
-    color: vars.$primary;
-    border: 1px solid vars.$primary;
-  }
-}
+
 
 .dashboard-Loading {
   height: 50vh;

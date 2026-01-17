@@ -15,7 +15,7 @@ function PageHeader(props: any) {
       </div>
       {props?.children ? (
         <div className="dashboard-pageHeaderBox">
-          <div className="d-flex gap-3 align-items-center">
+          <div className="d-flex gap-3 align-items-center flex-wrap">
             {props?.children}
           </div>
         </div>

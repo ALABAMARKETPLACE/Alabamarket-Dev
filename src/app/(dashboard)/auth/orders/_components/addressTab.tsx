@@ -1,55 +1,56 @@
 import { Card } from "antd";
+import { Descriptions } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
-import API from "@/config/API";
+import API from "@/config/API_ADMIN";
 
 type Props = {
   data: any;
 };
 
 export default function AddressTab(props: Props) {
-  const { data: initialData } = props;
-
-  // If the passed data is incomplete but has an ID, try to fetch the full address details
-  // We check for minimal required fields to decide if we need to fetch
-  const shouldFetch = initialData?.id && (!initialData?.full_address || !initialData?.phone_no);
-
-  const { data: fetchedData } = useQuery({
-    queryKey: ["address_details", initialData?.id],
-    queryFn: async () => await GET(API.NEW_ADDRESS + initialData?.id),
-    enabled: !!shouldFetch,
-    staleTime: 300000, // 5 minutes
+  const { data: user } = useQuery({
+    queryFn: async () => await GET(API.USER_DETAILS + props?.data?.user_id),
+    queryKey: ["user_details", props?.data?.user_id],
+    enabled: !!props?.data?.user_id,
   });
 
-  // Use fetched data if available, otherwise use initial data
-  const addressData = fetchedData?.data || initialData;
+  const { data: states } = useQuery({
+    queryFn: async () => await GET(API.STATES),
+    queryKey: ["states_list"],
+    staleTime: Infinity,
+  });
+
+  const getStateName = (id: string | number) => {
+    if (!states?.data) return id;
+    const state = states.data.find((s: any) => s.id == id);
+    return state ? state.name : id;
+  };
 
   return (
-    <Card title={"Delivery Address"}>
-      <div className="d-flex flex-column gap-2">
-        <div>
-          <strong>Type:</strong> {addressData?.address_type || addressData?.type || "N/A"}
-        </div>
-        
-        {addressData?.city && (
-          <div>
-            <strong>City:</strong> {addressData?.city}
-          </div>
-        )}
-        
-        <div>
-          <strong>State:</strong> {addressData?.stateDetails?.name || addressData?.state || "N/A"}
-        </div>
-        
-        <div>
-          <strong>Address:</strong> {addressData?.full_address || addressData?.fullAddress || "N/A"}
-        </div>
-        
-        <div>
-          <strong>Phone Number:</strong> {addressData?.code ? `${addressData.code} ` : ""}
-          {addressData?.phone_no || addressData?.alt_phone || "N/A"}
-        </div>
-      </div>
+    <Card title={"Delivery Address"} className="h-100">
+      <Descriptions column={1} bordered>
+        <Descriptions.Item label="Contact Name">
+          {user?.data?.name || "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Phone Number">
+          {props?.data?.phone_no || "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Address Type">
+          <span className="text-capitalize">
+            {props?.data?.address_type || "N/A"}
+          </span>
+        </Descriptions.Item>
+        <Descriptions.Item label="State">
+          {props?.data?.state_id ? getStateName(props?.data?.state_id) : "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="City">
+          {props?.data?.city || "N/A"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Full Address">
+          {props?.data?.full_address || "N/A"}
+        </Descriptions.Item>
+      </Descriptions>
     </Card>
   );
 }

@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import API from "../../../../../../config/API";
 import { POST } from "../../../../../../util/apicall";
 import { reduxSettings } from "../../../../../../redux/slice/settingsSlice";
+import { formatCurrency } from "@/utils/formatNumber";
 
 function ProductItems(props: any) {
   const Settings = useSelector(reduxSettings);
@@ -110,11 +111,13 @@ function ProductItems(props: any) {
                     <div>Quantity: {item?.quantity}</div>
                     <div>
                       Each:
-                      {Number(item?.price)?.toFixed(2)} {Settings.currency}
+                      {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                      {formatCurrency(item?.price)}
                     </div>
                     <h6 className="text-dark fw-bold my-0">
                       Total:
-                      {Number(item?.totalPrice)?.toFixed(2)} {Settings.currency}
+                      {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                      {formatCurrency(item?.totalPrice)}
                     </h6>
                   </Col>
                 </Row>

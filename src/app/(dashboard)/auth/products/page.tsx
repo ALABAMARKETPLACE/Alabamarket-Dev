@@ -16,6 +16,7 @@ import FilePickerModal from "./[id]/_components/file_uploader_modal";
 import { useSession } from "next-auth/react";
 import ProductsFilterBar from "./_components/ProductsFilterBar";
 import useProductsFilters from "./_hooks/useProductsFilters";
+import "./style.scss";
 
 function Products() {
   const router = useRouter();
@@ -131,10 +132,7 @@ function Products() {
       <div className="products-pageHeaderWrap">
         <PageHeader title={"Products"} bredcume={"Dashboard / Products"}>
           <div className="products-headerActions">
-            <div
-              className="products-headerPrimary"
-              style={{ marginRight: "20px" }}
-            >
+            <div className="products-headerPrimary">
               {" "}
               <Button
                 type="primary"

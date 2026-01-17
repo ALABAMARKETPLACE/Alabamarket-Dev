@@ -15,7 +15,7 @@ function SettlementScreen1() {
   const [loading, setLoading] = useState(true);
 
   const getOrderCount = async () => {
-    const url = API.ORDER_GETCOUNT;
+    const url = API.STORE_STATS;
     try {
       const response: any = await GET(url);
       if (response.status) {

@@ -18,6 +18,8 @@ import { storeFinal } from "@/redux/slice/checkoutSlice";
 import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
+import { formatCurrency } from "@/utils/formatNumber";
+
 function Checkout() {
   const dispatch = useDispatch();
   const navigation = useRouter();
@@ -59,7 +61,7 @@ function Checkout() {
           totals += Number(item?.totalPrice);
         });
       }
-      setTotal(Number(totals).toFixed(2));
+      setTotal(totals);
       setGrand_total(totals);
 
       if (Checkout?.address?.id) {
@@ -96,10 +98,7 @@ function Checkout() {
           setDeliveryToken(response?.token);
           let delivery = Number(response?.details?.totalCharge || 0);
           let discountVal = Number(response?.data?.discount || 0);
-          let gTotal =
-            Number(totals) +
-            Number(delivery) -
-            discountVal;
+          let gTotal = Number(totals) + Number(delivery) - discountVal;
           setDelivery_charge(delivery);
           setGrand_total(gTotal);
           setDiscount(discountVal);
@@ -260,12 +259,12 @@ function Checkout() {
             {
               display_name: "Order Total",
               variable_name: "order_total",
-              value: `₦${Number(grand_total).toFixed(2)}`,
+              value: `₦${formatCurrency(grand_total)}`,
             },
             {
               display_name: "Delivery Charge",
               variable_name: "delivery_charge",
-              value: `₦${Number(delivery_charge).toFixed(2)}`,
+              value: `₦${formatCurrency(delivery_charge)}`,
             },
           ],
           cancel_url: `${window.location.origin}/checkout`,

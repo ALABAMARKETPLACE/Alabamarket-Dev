@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Row, Col } from "react-bootstrap";
+import { formatCurrency } from "@/utils/formatNumber";
 
 const CheckoutItem = (props: any) => {
   const productPrice = Number(props?.data?.buyPrice);
@@ -45,7 +46,7 @@ const CheckoutItem = (props: any) => {
             <div className="Cart-CartItem-txt2">
               Unit Price :{" "}
               <span style={{ color: "#000" }}>
-                {Number(productPrice).toFixed(2)} x {props?.data?.quantity}
+                {formatCurrency(productPrice)} x {props?.data?.quantity}
               </span>
             </div>
             <div
@@ -66,7 +67,7 @@ const CheckoutItem = (props: any) => {
                 <span style={{ color: "grey", fontSize: 14 }}>
                   {getCurrencySymbol()}&nbsp;
                 </span>
-                {Number(productPrice * props?.data?.quantity).toFixed(2)}
+                {formatCurrency(productPrice * props?.data?.quantity)}
               </div>
             </div>
           </Col>
