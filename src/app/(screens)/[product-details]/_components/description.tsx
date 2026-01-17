@@ -10,7 +10,7 @@
 // import { useDispatch } from "react-redux";
 // import { useRouter } from "next/navigation";
 // import API from "../../../../config/API";
-// import { POST } from "../../../../util/apicall";
+// import { POST } from "../../../../util/apicall" ;
 // type Props = {
 //   data: any;
 //   currentVariant: any;
