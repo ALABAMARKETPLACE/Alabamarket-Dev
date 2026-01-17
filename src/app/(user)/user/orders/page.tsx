@@ -22,6 +22,8 @@ import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import { MdError } from "react-icons/md";
 import { Suspense } from "react";
+import { formatCurrency } from "@/utils/formatNumber";
+
 const actions = [
   { title: "Delivered", value: "delivered" },
   { title: "Cancelled", value: "cancelled" },
@@ -197,9 +199,10 @@ function UserOrders() {
                                   orderItem.createdAt
                                 ).format("DD/MM/YYYY")}`}</span>
                               </div>
-                              <div className="fw-bold">{`${
-                                Number(orderItem?.totalPrice)?.toFixed(2) ?? ""
-                              } ${Settings.currency ?? ""}`}</div>
+                              <div className="fw-bold">
+                                {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                                {formatCurrency(orderItem?.totalPrice)}
+                              </div>
                             </>
                           }
                         />
@@ -209,8 +212,8 @@ function UserOrders() {
               />
               <div className="d-flex justify-content-between d-md-block">
                 <span className="fw-bold pe-2">
-                  Total: {Number(item?.grandTotal)?.toFixed(2)}{" "}
-                  {Settings.currency}
+                  Total: {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                  {formatCurrency(item?.grandTotal)}
                 </span>
                 <Tag bordered={false}>{item?.status}</Tag>
               </div>

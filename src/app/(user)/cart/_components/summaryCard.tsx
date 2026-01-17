@@ -4,6 +4,8 @@ import { GoArrowRight } from "react-icons/go";
 import { useSelector } from "react-redux";
 import { Alert } from "antd";
 import { reduxSettings } from "../../../../redux/slice/settingsSlice";
+import { formatCurrency } from "@/utils/formatNumber";
+
 const SummaryCard = (props: any) => {
   const Settings = useSelector(reduxSettings);
 
@@ -21,7 +23,7 @@ const SummaryCard = (props: any) => {
         total += Number(item?.totalPrice);
       });
     }
-    return Number(total).toFixed(2);
+    return formatCurrency(total);
   };
 
   return (

@@ -22,8 +22,6 @@ import AppleStore from "../../assets/images/appstore.png";
 
 import Visa from "../../assets/images/visa.png";
 import Mastercard from "../../assets/images/mastercard.png";
-import Dinners from "../../assets/images/dinners.png";
-import samsungpay from "../../assets/images/samsungpay.png";
 import paystacklogo from "../../assets/images/paystack-logo.png";
 
 const Footer = () => {
@@ -55,7 +53,7 @@ const Footer = () => {
               <Row>
                 <Col sm={2} xs={2} className="Footer-icon">
                   <a
-                    href="https://www.facebook.com/"
+                    href="https://www.facebook.com/share/1DDZ2hKrKk/"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -130,7 +128,7 @@ const Footer = () => {
             <Col sm={6} md={6} xs={12} lg={2}>
               <div className="Footer-text1">{t("contact_us")}</div>
               <div className="Footer-text2">
-                <Link href="/fa-questions">FAQ,S</Link>
+                <Link href="/fa-questions">FAQs</Link>
               </div>
               <div className="Footer-text2">
                 <Link href="/about-us">About us</Link>
@@ -165,20 +163,6 @@ const Footer = () => {
                 <Col sm={2} xs={2}>
                   <Image
                     alt="AlabaMarketplace"
-                    src={Dinners}
-                    className="Footer_icon2"
-                  />
-                </Col>
-                <Col sm={2} xs={2}>
-                  <Image
-                    alt="AlabaMarketplace"
-                    src={samsungpay}
-                    className="Footer_icon2"
-                  />
-                </Col>
-                <Col sm={2} xs={2}>
-                  <Image
-                    alt="AlabaMarketplace"
                     src={paystacklogo}
                     className="Footer_icon2"
                   />
@@ -189,7 +173,7 @@ const Footer = () => {
                 <Col sm={6} xs={6}>
                   <a
                     target="_blank"
-                    // href="https://play.google.com/store/apps/details?id=com.nextmeapp&hl=en"
+                    href="https://play.google.com/store/apps/details?id=com.alabauserapp"
                   >
                     <Image
                       src={GooglePlay}

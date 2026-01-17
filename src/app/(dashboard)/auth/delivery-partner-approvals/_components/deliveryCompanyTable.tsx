@@ -15,6 +15,7 @@ import { ColumnsType } from "antd/es/table";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PUT } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
+import { useRouter } from "next/navigation";
 
 type DeliveryCompanyRow = {
   id: number;
@@ -47,6 +48,7 @@ function DeliveryCompanyTable({
   setTake,
   status,
 }: Props) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const [modal, setModal] = useState<{
     open: boolean;
@@ -147,18 +149,36 @@ function DeliveryCompanyTable({
     {
       title: "Actions",
       key: "actions",
-      width: 200,
+      width: 250,
       render: (_, record) => {
-        if (record.status === "pending") {
-          return (
-            <Space>
-              <Button
-                type="primary"
-                size="small"
-                onClick={() => handleApprove(record.id)}
-              >
-                Approve
-              </Button>
+        return (
+          <Space>
+            <Button
+              size="small"
+              onClick={() =>
+                router.push(`/auth/delivery-partner-approvals/${record.id}`)
+              }
+            >
+              View
+            </Button>
+            {record.status === "pending" ? (
+              <>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={() => handleApprove(record.id)}
+                >
+                  Approve
+                </Button>
+                <Button
+                  danger
+                  size="small"
+                  onClick={() => handleReject(record.id)}
+                >
+                  Reject
+                </Button>
+              </>
+            ) : record.status === "approved" ? (
               <Button
                 danger
                 size="small"
@@ -166,33 +186,17 @@ function DeliveryCompanyTable({
               >
                 Reject
               </Button>
-            </Space>
-          );
-        }
-        // For approved/rejected companies, show status change options
-        if (record.status === "approved") {
-          return (
-            <Button
-              danger
-              size="small"
-              onClick={() => handleReject(record.id)}
-            >
-              Reject
-            </Button>
-          );
-        }
-        if (record.status === "rejected") {
-          return (
-            <Button
-              type="primary"
-              size="small"
-              onClick={() => handleApprove(record.id)}
-            >
-              Approve
-            </Button>
-          );
-        }
-        return <Typography.Text type="secondary">-</Typography.Text>;
+            ) : record.status === "rejected" ? (
+              <Button
+                type="primary"
+                size="small"
+                onClick={() => handleApprove(record.id)}
+              >
+                Approve
+              </Button>
+            ) : null}
+          </Space>
+        );
       },
     },
   ];

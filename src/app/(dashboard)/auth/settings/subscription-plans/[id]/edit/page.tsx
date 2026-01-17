@@ -8,6 +8,7 @@ import {
   Switch,
   notification,
   Card,
+  Select,
 } from "antd";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PUT, GET } from "@/util/apicall";
@@ -23,6 +24,14 @@ function EditSubscriptionPlan() {
   const [Notifications, contextHolder] = notification.useNotification();
   const queryClient = useQueryClient();
   const router = useRouter();
+
+  const price = Form.useWatch("price", form);
+  const duration = Form.useWatch("duration_days", form);
+
+  const pricePerDay = React.useMemo(() => {
+    if (!price || !duration || duration <= 0) return "0.00";
+    return (Number(price) / Number(duration)).toFixed(2);
+  }, [price, duration]);
 
   const { data, isLoading, isError, error } = useQuery<any>({
     queryKey: ["subscription-plan", params.id],
@@ -48,7 +57,7 @@ function EditSubscriptionPlan() {
       const payload = {
         id: Number(params.id),
         ...body,
-        featured_position: plan?.featured_position ?? 0,
+        featured_position: Number(body.featured_position ?? 0),
       };
 
       if (payload.price !== undefined && payload.price !== null) {
@@ -88,6 +97,7 @@ function EditSubscriptionPlan() {
         duration_days: Number(plan.duration_days),
         price: Number(plan.price),
         is_active: plan.is_active,
+        featured_position: plan.featured_position ?? 0,
       });
     }
   }, [data, form]);
@@ -116,6 +126,20 @@ function EditSubscriptionPlan() {
             ]}
           >
             <Input placeholder="e.g., Silver Plan, Gold Plan" size="large" />
+          </Form.Item>
+
+          <Form.Item
+            label="Homepage Section Position"
+            name="featured_position"
+            extra="Assigns products from this plan to a specific section on the homepage."
+          >
+            <Select size="large">
+              <Select.Option value={0}>None (Standard Plan)</Select.Option>
+              <Select.Option value={1}>Position 1 (Platinum Section)</Select.Option>
+              <Select.Option value={2}>Position 2 (Gold Section)</Select.Option>
+              <Select.Option value={3}>Position 3 (Silver Section)</Select.Option>
+              <Select.Option value={4}>Position 4 (Discounted Deals)</Select.Option>
+            </Select>
           </Form.Item>
 
           <div
@@ -239,6 +263,9 @@ function EditSubscriptionPlan() {
             <div style={{ fontSize: 13, color: "#003a8c" }}>
               Sellers can boost <strong>min-max products</strong> for the specified{" "}
               <strong>duration</strong> at the <strong>total price</strong>.
+              <div style={{ marginTop: 8, fontWeight: 600 }}>
+                Estimated Cost per Day: ₦{pricePerDay}
+              </div>
             </div>
           </div>
 

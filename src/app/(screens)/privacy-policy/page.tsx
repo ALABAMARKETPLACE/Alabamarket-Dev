@@ -32,37 +32,63 @@ function PrivacyPpolicy() {
         <Row>
           <Col sm={8} xs={12}>
             <p className="page-text3">
-              <strong>Effective Date: 28/10/2025</strong> 
+              <strong>Effective Date: 28/10/2025</strong>
             </p>
             <p className="page-text3">
-             <strong>Last Updated: 28/10/2025</strong>
+              <strong>Last Updated: 28/10/2025</strong>
             </p>
             <br />
             <p className="page-text3">
-              Welcome to AlabaMarketplace.ng. Your privacy is important to us. This Privacy Policy explains how we collect, use, disclose, and protect your information when you visit or use our website, mobile app, and related services (collectively, the "Platform").
+              Welcome to AlabaMarketplace.ng. Your privacy is important to us.
+              This Privacy Policy explains how we collect, use, disclose, and
+              protect your information when you visit or use our website, mobile
+              app, and related services (collectively, the "Platform").
             </p>
             <p className="page-text3">
-              By accessing or using AlabaMarketplace.ng, you agree to this Privacy Policy. If you do not agree, please do not use our services.
+              By accessing or using AlabaMarketplace.ng, you agree to this
+              Privacy Policy. If you do not agree, please do not use our
+              services.
             </p>
             <br />
 
             <h4 className="page-text2">1. Information We Collect</h4>
 
             <h5 className="page-text2">a. Information You Provide Directly</h5>
-            <p className="page-text3">When you register or use our platform, we may collect:</p>
+            <p className="page-text3">
+              When you register or use our platform, we may collect:
+            </p>
             <ul className="page-text3">
-              <li>Full name, username, and contact details (phone number, email, address)</li>
-              <li>Business or shop details (business name, category, product listings)</li>
-              <li>Payment and billing information (bank account, card details, or payment provider data)</li>
+              <li>
+                Full name, username, and contact details (phone number, email,
+                address)
+              </li>
+              <li>
+                Business or shop details (business name, category, product
+                listings)
+              </li>
+              <li>
+                Payment and billing information (bank account, card details, or
+                payment provider data)
+              </li>
               <li>Communications, reviews, or feedback you share with us</li>
             </ul>
 
-            <h5 className="page-text2">b. Information Collected Automatically</h5>
-            <p className="page-text3">When you visit our site, we automatically collect:</p>
+            <h5 className="page-text2">
+              b. Information Collected Automatically
+            </h5>
+            <p className="page-text3">
+              When you visit our site, we automatically collect:
+            </p>
             <ul className="page-text3">
-              <li>IP address, browser type, device information, and operating system</li>
+              <li>
+                IP address, browser type, device information, and operating
+                system
+              </li>
               <li>Pages you visit, time spent, and referral links</li>
-              <li>Cookies and tracking technologies (for analytics, ads, and session management)</li>
+              <li>
+                Cookies and tracking technologies (for analytics, ads, and
+                session management)
+              </li>
             </ul>
 
             <h5 className="page-text2">c. Information from Third Parties</h5>
@@ -70,7 +96,10 @@ function PrivacyPpolicy() {
             <ul className="page-text3">
               <li>Payment processors (e.g., Paystack, Flutterwave)</li>
               <li>Logistics partners (e.g., Royal Couriers, GIG, Ifex)</li>
-              <li>Advertising and analytics providers (e.g., Google Analytics, Meta Pixel)</li>
+              <li>
+                Advertising and analytics providers (e.g., Google Analytics,
+                Meta Pixel)
+              </li>
             </ul>
             <br />
 
@@ -90,10 +119,22 @@ function PrivacyPpolicy() {
             <h4 className="page-text2">3. How We Share Your Information</h4>
             <p className="page-text3">We may share your information with:</p>
             <ul className="page-text3">
-              <li><strong>Service providers:</strong> For hosting, payment processing, or delivery services</li>
-              <li><strong>Business partners:</strong> When needed to fulfill orders or joint promotions</li>
-              <li><strong>Law enforcement or regulators:</strong> As required by law</li>
-              <li><strong>Buyers and sellers:</strong> Limited information necessary for completing transactions</li>
+              <li>
+                <strong>Service providers:</strong> For hosting, payment
+                processing, or delivery services
+              </li>
+              <li>
+                <strong>Business partners:</strong> When needed to fulfill
+                orders or joint promotions
+              </li>
+              <li>
+                <strong>Law enforcement or regulators:</strong> As required by
+                law
+              </li>
+              <li>
+                <strong>Buyers and sellers:</strong> Limited information
+                necessary for completing transactions
+              </li>
             </ul>
             <p className="page-text3">
               <strong>We do not sell your personal information.</strong>
@@ -108,31 +149,39 @@ function PrivacyPpolicy() {
               <li>Deliver personalized ads</li>
             </ul>
             <p className="page-text3">
-              You can manage or disable cookies in your browser settings, though this may affect site performance.
+              You can manage or disable cookies in your browser settings, though
+              this may affect site performance.
             </p>
             <br />
 
             <h4 className="page-text2">5. Data Retention</h4>
-            <p className="page-text3">We retain your information only as long as necessary for:</p>
+            <p className="page-text3">
+              We retain your information only as long as necessary for:
+            </p>
             <ul className="page-text3">
               <li>Legal compliance</li>
               <li>Transaction history</li>
               <li>Platform security and auditing</li>
             </ul>
             <p className="page-text3">
-              When no longer needed, your information will be securely deleted or anonymized.
+              When no longer needed, your information will be securely deleted
+              or anonymized.
             </p>
             <br />
 
             <h4 className="page-text2">6. Data Security</h4>
             <p className="page-text3">
-              We use industry-standard security measures including SSL encryption, firewalls, and access controls. However, no system is 100% secure; users are encouraged to safeguard their login credentials.
+              We use industry-standard security measures including SSL
+              encryption, firewalls, and access controls. However, no system is
+              100% secure; users are encouraged to safeguard their login
+              credentials.
             </p>
             <br />
 
             <h4 className="page-text2">7. Your Rights</h4>
             <p className="page-text3">
-              Under applicable laws (including NDPR and GDPR), you have the right to:
+              Under applicable laws (including NDPR and GDPR), you have the
+              right to:
             </p>
             <ul className="page-text3">
               <li>Access your personal information</li>
@@ -142,35 +191,46 @@ function PrivacyPpolicy() {
               <li>File a complaint with a data protection authority</li>
             </ul>
             <p className="page-text3">
-              You can exercise these rights by contacting info@taxgoglobal.com
+              You can exercise these rights by contacting
+              info@alabamarketplace.ng
             </p>
             <br />
 
             <h4 className="page-text2">8. Children's Privacy</h4>
             <p className="page-text3">
-              Our services are not intended for children under 18. We do not knowingly collect personal information from children. If we become aware of such collection, we will delete the information promptly.
+              Our services are not intended for children under 18. We do not
+              knowingly collect personal information from children. If we become
+              aware of such collection, we will delete the information promptly.
             </p>
             <br />
 
             <h4 className="page-text2">9. International Data Transfers</h4>
             <p className="page-text3">
-              Your information may be transferred to and processed in countries other than Nigeria. We ensure appropriate safeguards are in place to protect your data in accordance with this Privacy Policy.
+              Your information may be transferred to and processed in countries
+              other than Nigeria. We ensure appropriate safeguards are in place
+              to protect your data in accordance with this Privacy Policy.
             </p>
             <br />
 
             <h4 className="page-text2">10. Changes to This Policy</h4>
             <p className="page-text3">
-              We may update this Privacy Policy periodically. Changes will be posted on this page with an updated revision date. Continued use of our Platform after changes indicates acceptance of the revised policy.
+              We may update this Privacy Policy periodically. Changes will be
+              posted on this page with an updated revision date. Continued use
+              of our Platform after changes indicates acceptance of the revised
+              policy.
             </p>
             <br />
 
             <h4 className="page-text2">11. Contact Us</h4>
             <p className="page-text3">
-              For questions or concerns about this Privacy Policy or your data, please contact:
+              For questions or concerns about this Privacy Policy or your data,
+              please contact:
             </p>
             <p className="page-text3">
-              <strong>Email:</strong> info@taxgoglobal.com<br />
-              <strong>Email:</strong> support@taxgoglobal.com<br />
+              <strong>Email:</strong> info@alabamarketplace.ng
+              <br />
+              <strong>Email:</strong> support@taxgoglobal.com
+              <br />
               <strong>Platform:</strong> AlabaMarketplace.ng
             </p>
             <br />
@@ -199,7 +259,7 @@ function PrivacyPpolicy() {
               </div>
               <hr />
               <div className="Footer-text2">
-                <Link href="fa-questions">FAQ,S</Link>
+                <Link href="fa-questions">FAQs</Link>
               </div>
               <hr />
               <div className="Footer-text2">

@@ -6,6 +6,7 @@ import { Button, Popconfirm, Space } from "antd";
 import useDebounce from "../../../../shared/hook/useDebounce";
 import useDidUpdateEffect from "../../../../shared/hook/useDidUpdate";
 import { useRouter } from "next/navigation";
+import { formatCurrency } from "@/utils/formatNumber";
 // import { useNavigate } from "react-router-dom";
 
 const CartItem = (props: any) => {
@@ -66,7 +67,7 @@ const CartItem = (props: any) => {
             <div className="Cart-CartItem-txt2">
               Unit Price :{" "}
               <span style={{ color: "#000" }}>
-                {getCurrencySymbol()} {Number(props?.data?.price).toFixed(2)}
+                {getCurrencySymbol()} {formatCurrency(props?.data?.price)}
               </span>
             </div>
             <div
@@ -111,7 +112,7 @@ const CartItem = (props: any) => {
                 <span style={{ color: "grey", fontSize: 14 }}>
                   {getCurrencySymbol()}{" "}
                 </span>
-                {Number(props?.data?.totalPrice).toFixed(2)}
+                {formatCurrency(props?.data?.totalPrice)}
               </div>
               <div>
                 <Popconfirm

@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import Meta from "antd/es/card/Meta";
 import { reduxSettings } from "../../../../../../redux/slice/settingsSlice";
 import SubstitutionModal from "./substitutionModal";
+import { formatCurrency } from "@/utils/formatNumber";
 
 const { Step } = Steps;
 
@@ -60,25 +61,28 @@ function OrderStatusCard(props: any) {
                     </span>
                   </div>
                   <div>
-                    Total ProductPrice:{Number(props?.data?.total)?.toFixed(2)}{" "}
-                    {Settings.currency}
+                    Total ProductPrice:{" "}
+                    {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                    {formatCurrency(props?.data?.total)}
                   </div>
                   <div>
-                    Tax: {Number(props?.data?.tax)?.toFixed(2)}{" "}
-                    {Settings.currency}
+                    Tax: {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                    {formatCurrency(props?.data?.tax)}
                   </div>
                   <div>
-                    Discount: {Number(props?.data?.discount)?.toFixed(2)}{" "}
-                    {Settings.currency}
+                    Discount:{" "}
+                    {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                    {formatCurrency(props?.data?.discount)}
                   </div>
                   <div>
                     Delivery Charge:{" "}
-                    {Number(props?.data?.deliveryCharge)?.toFixed(2)}{" "}
-                    {Settings.currency}
+                    {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                    {formatCurrency(props?.data?.deliveryCharge)}
                   </div>
                   <div>
-                    Grand Total: {Number(props?.data?.grandTotal)?.toFixed(2)}
-                    {Settings.currency}
+                    Grand Total:{" "}
+                    {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                    {formatCurrency(props?.data?.grandTotal)}
                   </div>
                 </div>
 
@@ -103,8 +107,8 @@ function OrderStatusCard(props: any) {
                     {props?.data?.orderPayment?.ref
                       ? "Amount Paid"
                       : "Total Price"}
-                    : {Number(props?.data?.orderPayment?.amount)?.toFixed(2)}
-                    {Settings.currency}
+                    : {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
+                    {formatCurrency(props?.data?.orderPayment?.amount)}
                   </div>
                   {props?.data?.orderPayment?.ref ? (
                     <div className=" fw-bold">

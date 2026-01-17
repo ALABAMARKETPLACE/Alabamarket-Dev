@@ -75,16 +75,16 @@ export default function OrderDetails() {
       {isLoading ? (
         <Loading />
       ) : (
-        <Container>
-          <Row>
-            <Col md={8}>
-              <AddressTab data={order?.data?.address} />
-              <br />
-              <ProductTab data={order?.data?.orderItems} />
-              <br />
-              <PaymentStatusTab data={order?.data} />
+        <Container fluid>
+          <Row className="gy-4">
+            <Col lg={8} md={12}>
+              <div className="d-flex flex-column gap-4">
+                <AddressTab data={order?.data?.address} />
+                <ProductTab data={order?.data?.orderItems} />
+                <PaymentStatusTab data={order?.data} />
+              </div>
             </Col>
-            <Col md={4}>
+            <Col lg={4} md={12}>
               <OrderStatusTab data={order?.data} />
             </Col>
           </Row>

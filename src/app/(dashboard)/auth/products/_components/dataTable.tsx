@@ -18,6 +18,8 @@ import { AiOutlineProduct } from "react-icons/ai";
 import Link from "next/link";
 import API from "@/config/API";
 import { DELETE } from "@/util/apicall";
+import { formatCurrency } from "@/utils/formatNumber";
+
 interface props {
   data: any[];
   count: number;
@@ -139,7 +141,8 @@ function DataTable({
       key: "price",
       render: (item: number) => (
         <span>
-          {Number(item)?.toFixed(2)} {Settings?.currency ?? ""}
+          {Settings.currency === "NGN" ? "₦" : Settings.currency ?? ""}{" "}
+          {formatCurrency(item)}
         </span>
       ),
       //   responsive: ["md"],
@@ -204,9 +207,9 @@ function DataTable({
         : "-";
       const price =
         typeof record?.retail_rate === "number"
-          ? `${Number(record?.retail_rate).toFixed(2)} ${
-              Settings?.currency ?? ""
-            }`
+          ? `${
+              Settings.currency === "NGN" ? "₦" : Settings.currency ?? ""
+            } ${formatCurrency(record?.retail_rate)}`
           : "--";
 
       return (
