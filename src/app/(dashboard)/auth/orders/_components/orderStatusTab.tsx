@@ -66,25 +66,6 @@ export default function OrderStatusTab(props: Props) {
     return statusColors[status] || "#dfdddd";
   };
 
-  const getStepStatus = (currentStatus: string) => {
-    const stepOrder = ["pending", "processing", "packed", "shipped", "out_for_delivery", "delivered"];
-    const currentIndex = stepOrder.indexOf(currentStatus);
-    
-    if (currentStatus === "cancelled" || currentStatus === "rejected" || currentStatus === "failed") {
-       return -1; // Special error state handling if needed
-    }
-    
-    return currentIndex > -1 ? currentIndex : 0;
-  };
-
-  const stepsItems = [
-    { title: 'Pending', description: 'Order Placed' },
-    { title: 'Processing', description: 'Seller Accepted' },
-    { title: 'Packed', description: 'Ready to Ship' },
-    { title: 'Shipped', description: 'On the Way' },
-    { title: 'Delivered', description: 'Completed' },
-  ];
-
   return (
     <Card
       title="Order Status"
@@ -96,49 +77,26 @@ export default function OrderStatusTab(props: Props) {
       className="h-100"
     >
       {contextHolder}
-      <div className="d-flex flex-column gap-4">
-        {/* Progress Steps */}
-        <div className="px-2 pt-2 pb-4 overflow-x-auto">
-           <Steps
-             size="small"
-             current={getStepStatus(props?.data?.status)}
-             status={["cancelled", "rejected", "failed"].includes(props?.data?.status) ? "error" : "process"}
-             items={stepsItems}
-             direction="vertical"
-             className="d-md-none" // Vertical on mobile
-           />
-           <Steps
-             size="small"
-             current={getStepStatus(props?.data?.status)}
-             status={["cancelled", "rejected", "failed"].includes(props?.data?.status) ? "error" : "process"}
-             items={stepsItems}
-             className="d-none d-md-flex" // Horizontal on desktop
-           />
-        </div>
-
-        {/* History Timeline */}
-        <div>
-           <h6 className="mb-3 text-muted">History</h6>
-           {props?.data?.status_history?.length > 0 ? (
-             <Timeline
-               mode="left"
-               items={props?.data?.status_history?.map((item: any) => ({
-                 label: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
-                 children: (
-                   <div className="d-flex flex-column">
-                     <span className="fw-medium text-capitalize" style={{ color: getOrderStatusColor(item?.status) }}>
-                       {getOrderStatus(item?.status)}
-                     </span>
-                     {item?.remark && <small className="text-muted">{item.remark}</small>}
-                   </div>
-                 ),
-                 color: getOrderStatusColor(item?.status),
-               }))}
-             />
-           ) : (
-             <div className="text-center text-muted py-4">No status history available</div>
-           )}
-        </div>
+      <div className="d-flex flex-column gap-3">
+        {props?.data?.status_history?.length > 0 ? (
+          <Timeline
+            mode="left"
+            items={props?.data?.status_history?.map((item: any) => ({
+              label: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+              children: (
+                <div className="d-flex flex-column">
+                  <span className="fw-medium text-capitalize" style={{ color: getOrderStatusColor(item?.status) }}>
+                    {getOrderStatus(item?.status)}
+                  </span>
+                  {item?.remark && <small className="text-muted">{item.remark}</small>}
+                </div>
+              ),
+              color: getOrderStatusColor(item?.status),
+            }))}
+          />
+        ) : (
+          <div className="text-center text-muted py-4">No status history available</div>
+        )}
       </div>
 
       <Modal
