@@ -198,11 +198,14 @@ function Home() {
       }
 
       // 2. Fallback to generic Discounted Products (tag=discount)
+      // Removed as per request: Strict checking only for subscribed discounted deals
+      /*
       const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=12&tag=discount`;
       const response: any = await GET(url);
       if (response?.status && Array.isArray(response?.data)) {
         return response.data;
       }
+      */
       return [];
     },
     staleTime: 5 * 60 * 1000,
@@ -255,6 +258,17 @@ function Home() {
       const featuredIds = new Set(
         featured.map((item: any) => item?.id ?? item?._id ?? item?.slug)
       );
+
+      // Only fill if strictly required and configured to allow fallback (e.g. for Position 3)
+      // For Position 1 & 2 (Platinum/Gold), we want to be strict to avoid Silver/Recent items leaking in
+      const allowFallback = position === 3; 
+      
+      if (!allowFallback && featured.length < minRequired) {
+          // If we don't allow fallback, just return what we have (even if less than minRequired)
+          // or return empty if you want to hide the section completely when under-filled.
+          // Returning featured lets it render partially.
+          return featured; 
+      }
 
       const fillers = recentFallback.filter((item: any) => {
         const identifier = item?.id ?? item?._id ?? item?.slug;

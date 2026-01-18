@@ -135,6 +135,7 @@ function SubscriptionTab() {
 
   const handleProductSubmission = async (values: any) => {
     try {
+      if (submittingProducts) return;
       setSubmittingProducts(true);
       const plan = plans.find((p: any) => p.id == verifiedPlanId);
       const price = Number(plan?.price || plan?.price_per_day || 0);
@@ -148,7 +149,7 @@ function SubscriptionTab() {
         seller_id: storeData?._id,
         payment_reference: verifiedReference,
         payment_status: "success",
-        status: "approved", // Attempt to auto-approve for immediate display
+        // status: "approved", // Removed auto-approve, wait for admin
       };
 
       const response: any = await POST(API_ADMIN.BOOST_REQUESTS, payload);
@@ -170,7 +171,7 @@ function SubscriptionTab() {
       // Even if boost fails, subscription succeeded, so we finish.
       finishSubscriptionProcess();
     } finally {
-      setSubmittingProducts(false);
+      // setSubmittingProducts(false); // Don't reset to false here to prevent re-submission if component unmounts/redirects slow
     }
   };
 

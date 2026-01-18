@@ -64,7 +64,7 @@ function CreateBoostRequest() {
         seller_id: sellerId || body.seller_id, // Use stored seller_id as fallback
         payment_reference: reference,
         payment_status: "success",
-        status: "approved", // Attempt to auto-approve
+        // status: "approved", // Removed auto-approve to require admin approval
       });
 
       if (!response.status) {

@@ -32,8 +32,7 @@ function RequestForm({
   // Fetch all subscription plans
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-all"],
-    queryFn: ({ signal }) =>
-      GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
+    queryFn: ({ signal }) => GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
@@ -84,6 +83,7 @@ function RequestForm({
 
   // Helper to get plan price
   const getPlanPrice = (plan: any) => {
+    // If it's a subscription plan used for boosting, we charge the full plan price once
     const price = Number(plan?.price || plan?.price_per_day);
     return isNaN(price) ? 0 : price;
   };
@@ -97,7 +97,7 @@ function RequestForm({
   };
 
   const handleSubmit = (values: any) => {
-    // Calculate total price based on selected plan
+    // Calculate total price based on selected plan (Fixed price, NOT multiplied by product count)
     const price = getPlanPrice(selectedPlan);
 
     const payload = {
@@ -105,6 +105,7 @@ function RequestForm({
       product_ids: values.product_ids,
       remarks: values.remarks,
       amount: price,
+      // status: "pending", // Default status is pending, waiting for admin approval
     };
     onSubmit(payload);
   };
@@ -228,9 +229,7 @@ function RequestForm({
               loading={loading}
               size="large"
               className="boostRequests-formAction"
-              disabled={
-                !selectedPlan || selectedProducts.length === 0
-              }
+              disabled={!selectedPlan || selectedProducts.length === 0}
             >
               {mode === "create" ? "Create Request" : "Update Request"}
             </Button>
