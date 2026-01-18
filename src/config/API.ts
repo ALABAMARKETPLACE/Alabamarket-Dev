@@ -89,7 +89,7 @@ const API = {
   USER_CHECK_IFEXIS: "user/check_user/validate", //post// check if a user exist with an email or phone
   USER_DEACTIVATE_EMAIL: "auth/deactivate-account/", //deactivate user's account using mail
   USER_CHANGE_PASSWORD: "user/update-password/", //to change user password
-  USER_ADDNEW_PASSWORD: "user/add-password/", //to ADD NEW user password
+  USER_ADDNEW_PASSWORD: "user/update-password", //to ADD NEW user password
   USER_PHOTO_UPDATE: "user/update-photo/", //to add new photo
   USER_DETAILS: "user/details/", //to get all user info
   USER_CONFIG_INVITE_MAIL: "menus/sendInvite",

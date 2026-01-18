@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
@@ -13,6 +13,9 @@ import {
   Col,
   Statistic,
   Alert,
+  Modal,
+  Form,
+  Select,
 } from "antd";
 import {
   CheckCircleOutlined,
@@ -22,6 +25,7 @@ import {
 } from "@ant-design/icons";
 import { GET, POST, PUT } from "@/util/apicall";
 import API from "@/config/API";
+import API_ADMIN from "@/config/API_ADMIN";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import moment from "moment";
@@ -32,6 +36,15 @@ function SubscriptionTab() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(false);
+  
+  // State for Product Selection Modal
+  const [showProductModal, setShowProductModal] = useState(false);
+  const [verifiedPlanId, setVerifiedPlanId] = useState<string | null>(null);
+  const [verifiedReference, setVerifiedReference] = useState<string | null>(null);
+  const [submittingProducts, setSubmittingProducts] = useState(false);
+  const [form] = Form.useForm();
+  
+  const verificationAttempted = useRef(false);
 
   // Get current store details (including subscription)
   const {
@@ -51,13 +64,27 @@ function SubscriptionTab() {
     select: (data: any) => (Array.isArray(data?.data) ? data?.data : []),
   });
 
+  // Get seller products for boosting
+  const { data: productsData, isLoading: productsLoading } = useQuery({
+    queryKey: ["seller-products-boost"],
+    queryFn: () => GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS),
+    enabled: showProductModal, // Only fetch when modal is open
+  });
+
+  const products = Array.isArray(productsData?.data?.data) 
+    ? productsData.data.data 
+    : Array.isArray(productsData?.data) 
+      ? productsData.data 
+      : [];
+
   // Handle Payment Verification on Mount
   useEffect(() => {
     const reference = searchParams.get("reference");
     const tab = searchParams.get("tab");
     const planId = searchParams.get("plan_id");
 
-    if (reference && tab === "subscription" && planId) {
+    if (reference && tab === "subscription" && planId && !verificationAttempted.current) {
+      verificationAttempted.current = true;
       verifyPayment(reference, planId);
     }
   }, [searchParams]);
@@ -72,17 +99,21 @@ function SubscriptionTab() {
         // Update seller subscription
         const updateResp: any = await PUT(API.CORPORATE_SELLER_UPDATE, {
           subscription_plan_id: planId,
-          subscription_status: "active", // Ensure backend handles this or adjust payload
+          subscription_status: "active",
         });
 
         if (updateResp?.status) {
           notification.success({
             message: "Subscription Updated",
-            description: "Your subscription has been successfully updated.",
+            description: "Your subscription is now active.",
           });
           refetchStore();
-          // Clean URL
-          router.replace("/auth/account-settings?tab=subscription");
+          
+          // Open Product Selection Modal instead of redirecting immediately
+          setVerifiedPlanId(planId);
+          setVerifiedReference(reference);
+          setShowProductModal(true);
+          
         } else {
           throw new Error(updateResp?.message || "Failed to update subscription");
         }
@@ -94,9 +125,58 @@ function SubscriptionTab() {
         message: "Subscription Failed",
         description: err?.message || "Something went wrong during verification.",
       });
+      // If failed, clean URL anyway to avoid loops? 
+      // Better to let user see error and maybe try again or contact support
+      verificationAttempted.current = false; // Allow retry if it was a transient error?
     } finally {
       setVerifying(false);
     }
+  };
+
+  const handleProductSubmission = async (values: any) => {
+    try {
+      setSubmittingProducts(true);
+      const plan = plans.find((p: any) => p.id == verifiedPlanId);
+      const price = Number(plan?.price || plan?.price_per_day || 0);
+
+      // Create Boost Request (Auto-linked to subscription payment)
+      const payload = {
+        plan_id: verifiedPlanId,
+        product_ids: values.product_ids,
+        remarks: "Initial subscription product selection",
+        amount: price,
+        seller_id: storeData?._id,
+        payment_reference: verifiedReference,
+        payment_status: "success",
+      };
+
+      const response: any = await POST(API_ADMIN.BOOST_REQUESTS, payload);
+
+      if (response?.status) {
+        notification.success({
+          message: "Products Boosted!",
+          description: "Your selected products have been assigned to your plan section.",
+        });
+        finishSubscriptionProcess();
+      } else {
+        throw new Error(response?.message || "Failed to boost products");
+      }
+    } catch (err: any) {
+      notification.error({
+        message: "Boost Failed",
+        description: err?.message || "Could not assign products. You can try again later from Boost Requests.",
+      });
+      // Even if boost fails, subscription succeeded, so we finish.
+      finishSubscriptionProcess();
+    } finally {
+      setSubmittingProducts(false);
+    }
+  };
+
+  const finishSubscriptionProcess = () => {
+    setShowProductModal(false);
+    form.resetFields();
+    router.replace("/auth/account-settings?tab=subscription");
   };
 
   const handleSubscribe = async (plan: any) => {
@@ -263,6 +343,56 @@ function SubscriptionTab() {
           })}
         </Row>
       </div>
+      {/* Product Selection Modal */}
+      <Modal
+        title="Select Products for Boosting"
+        open={showProductModal}
+        onCancel={() => {
+           if(submittingProducts) return;
+           finishSubscriptionProcess();
+        }}
+        footer={null}
+        width={600}
+        maskClosable={false}
+        closable={!submittingProducts}
+      >
+        <div className="mb-4">
+           <Alert 
+             message="Subscription Successful!" 
+             description="Please select the products you want to feature in your new plan's section. They will appear immediately after processing."
+             type="success" 
+             showIcon 
+             className="mb-3"
+           />
+           <Form form={form} layout="vertical" onFinish={handleProductSubmission}>
+              <Form.Item
+                name="product_ids"
+                label="Select Products"
+                rules={[{ required: true, message: "Please select at least one product" }]}
+              >
+                 <Select
+                    mode="multiple"
+                    placeholder="Choose products..."
+                    style={{ width: "100%" }}
+                    loading={productsLoading}
+                    maxCount={plans.find((p: any) => p.id == verifiedPlanId)?.max_products}
+                    options={products.map((p: any) => ({
+                       label: p.name,
+                       value: p._id || p.id
+                    }))}
+                 />
+              </Form.Item>
+              <div className="text-end">
+                 <Button onClick={() => finishSubscriptionProcess()} className="me-2" disabled={submittingProducts}>
+                    Skip for Now
+                 </Button>
+                 <Button type="primary" htmlType="submit" loading={submittingProducts}>
+                    Boost Products
+                 </Button>
+              </div>
+           </Form>
+        </div>
+      </Modal>
     </div>
   );
 }
