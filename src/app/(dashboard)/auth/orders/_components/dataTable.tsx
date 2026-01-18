@@ -54,15 +54,25 @@ const SellerName = ({ sellerId }: { sellerId: number }) => {
   useEffect(() => {
     let isMounted = true;
     if (sellerId) {
+      // Try fetching individual seller details first if corporate fails or as logic dictates
+      // But first, let's try the store info endpoint
       GET(API.STORE_INFO_ADMIN + sellerId)
         .then((res: any) => {
           if (isMounted) {
-            setName(res?.data?.name || res?.data?.store_name || "N/A");
+            // Check for various name fields that might be returned
+            const fetchedName = res?.data?.name || res?.data?.store_name || res?.data?.business_name || null;
+            if (fetchedName) {
+              setName(fetchedName);
+            } else {
+               // Fallback or retry with another endpoint if needed
+               setName("Store #" + sellerId);
+            }
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Failed to fetch seller name:", err);
           if (isMounted) {
-            setName("N/A");
+            setName("Unknown Seller");
           }
         });
     } else {
@@ -99,8 +109,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "userId",
         key: "userId",
         render: (userId: number, record: any) => {
+          console.log("Order Record:", record); // DEBUG: Check if seller_id exists
           if (record?.name) return record.name;
-          if (record?.seller_id) return <SellerName sellerId={record.seller_id} />;
+          // Check for both seller_id and store_id just in case
+          const sellerId = record?.seller_id || record?.store_id;
+          if (sellerId) return <SellerName sellerId={sellerId} />;
           if (userId) return <UserName userId={userId} />;
           return "N/A";
         },
