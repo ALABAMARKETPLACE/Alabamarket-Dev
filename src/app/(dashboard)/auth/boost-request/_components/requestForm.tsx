@@ -41,7 +41,7 @@ function RequestForm({
   const { data: productsData, isLoading: productsLoading } = useQuery({
     queryKey: ["seller-products"],
     queryFn: ({ signal }) =>
-      GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS, {}, signal),
+      GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS + "?take=1000", {}, signal),
   });
 
   // Helper to extract plans array

@@ -27,7 +27,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
 
   const mutationDelete = useMutation({
     mutationFn: (id: number) => {
-      return DELETE(API_ADMIN.BOOST_REQUESTS + id);
+      return DELETE(API_ADMIN.BOOST_REQUESTS + `${id}`);
     },
     onError: (error: any) => {
       Notifications["error"]({
@@ -66,13 +66,17 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     }
   };
 
-  const renderDesktopActions = (id: number, record: any) => (
+  const renderDesktopActions = (id: number, record: any) => {
+    // Ensure we have a valid ID from either id or _id
+    const validId = record?.id ?? record?._id ?? id;
+    
+    return (
     <div className="table-action">
       <Button
         type="text"
         size="small"
         title="View Details"
-        onClick={() => router.push(`/auth/boost-request/${id}`)}
+        onClick={() => router.push(`/auth/boost-request/${validId}`)}
       >
         <FiEye size={18} />
       </Button>
@@ -81,7 +85,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           type="text"
           size="small"
           title="Edit"
-          onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
+          onClick={() => router.push(`/auth/boost-request/${validId}/edit`)}
           style={{ color: "#1890ff" }}
         >
           <FiEdit size={18} />
@@ -90,7 +94,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       <Popconfirm
         title="Delete Boost Request"
         description="Are you sure you want to delete this boost request?"
-        onConfirm={() => mutationDelete.mutate(id)}
+        onConfirm={() => mutationDelete.mutate(validId)}
         okText="Yes, Delete"
         cancelText="Cancel"
         okButtonProps={{ danger: true }}
@@ -100,13 +104,13 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           size="small"
           title="Delete"
           danger
-          loading={mutationDelete.isPending && mutationDelete.variables === id}
+          loading={mutationDelete.isPending && mutationDelete.variables === validId}
         >
           <FiTrash2 size={18} />
         </Button>
       </Popconfirm>
     </div>
-  );
+  )};
 
   const columns = [
     {
