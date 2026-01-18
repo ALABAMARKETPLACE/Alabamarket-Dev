@@ -10,7 +10,7 @@ function EditPasswordChange(props: any) {
     <Form form={form} layout="vertical" onFinish={props?.editPassowrd}>
       {contextHolder}
       <Row gutter={16}>
-        {props?.type == "update" ? (
+        {props?.type == "update" || props?.type == "add" ? (
           <Col md={6} sm={12} xs={24}>
             <Form.Item
               name="oldPassword"

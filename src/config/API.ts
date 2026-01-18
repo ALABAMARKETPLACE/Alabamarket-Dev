@@ -152,7 +152,7 @@ const API = {
   ORDER: "order/", //post
   ORDER_GET: "order/getall", //get all orders for a user and admin
   // ORDER_GETONE: "order/get_one/", //get one
-  ORDER_GET_BYSTORE: "order/store/",
+  ORDER_GET_BYSTORE: "order/store",
   ORDER_GET_USER: "order/user/", //to get all orders for a user only for admin
   ORDER_ITEMS_GET: "orderItems/all/",
   ORDER_STATUS_GET: "orderStatus/all/",
