@@ -9,7 +9,7 @@ import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import RequestForm from "../_components/requestForm";
 import { usePaystack } from "@/hooks/usePaystack";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Loading from "@/app/(dashboard)/_components/loading";
 
 function CreateBoostRequest() {
@@ -20,9 +20,13 @@ function CreateBoostRequest() {
   const { data: session }: any = useSession();
   const { initializePayment } = usePaystack();
   const [isVerifying, setIsVerifying] = useState(false);
+  const verificationAttempted = useRef(false);
 
   const rawStoreId =
-    session?.user?.store_id ?? session?.user?.storeId ?? session?.store_id ?? null;
+    session?.user?.store_id ??
+    session?.user?.storeId ??
+    session?.store_id ??
+    null;
   const sellerId =
     rawStoreId === null || rawStoreId === undefined
       ? null
@@ -36,11 +40,12 @@ function CreateBoostRequest() {
     const trxref = searchParams.get("trxref");
     const paymentRef = reference || trxref;
 
-    if (paymentRef && !isVerifying) {
+    if (paymentRef && !isVerifying && !verificationAttempted.current) {
+      verificationAttempted.current = true;
       verifyAndCreate(paymentRef);
-    } else {
-        // Clear storage if no reference (new session)
-        sessionStorage.removeItem("boost_request_data");
+    } else if (!paymentRef) {
+      // Clear storage if no reference (new session)
+      sessionStorage.removeItem("boost_request_data");
     }
   }, [searchParams]);
 
@@ -59,6 +64,7 @@ function CreateBoostRequest() {
         seller_id: sellerId || body.seller_id, // Use stored seller_id as fallback
         payment_reference: reference,
         payment_status: "success",
+        status: "approved", // Attempt to auto-approve
       });
 
       if (!response.status) {
@@ -70,11 +76,10 @@ function CreateBoostRequest() {
       });
       sessionStorage.removeItem("boost_request_data");
       queryClient.invalidateQueries({ queryKey: ["boost_requests"] });
-      
+
       setTimeout(() => {
         router.push("/auth/boost-request");
       }, 1000);
-
     } catch (error: any) {
       Notifications["error"]({
         message: error.message || "Verification failed",
@@ -127,11 +132,13 @@ function CreateBoostRequest() {
 
   if (isVerifying) {
     return (
-        <div>
-            {contextHolder}
-            <Loading />
-            <div style={{ textAlign: "center", marginTop: 20 }}>Verifying Payment and Creating Request...</div>
+      <div>
+        {contextHolder}
+        <Loading />
+        <div style={{ textAlign: "center", marginTop: 20 }}>
+          Verifying Payment and Creating Request...
         </div>
+      </div>
     );
   }
 

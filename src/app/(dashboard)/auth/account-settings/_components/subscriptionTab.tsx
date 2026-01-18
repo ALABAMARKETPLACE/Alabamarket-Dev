@@ -148,6 +148,7 @@ function SubscriptionTab() {
         seller_id: storeData?._id,
         payment_reference: verifiedReference,
         payment_status: "success",
+        status: "approved", // Attempt to auto-approve for immediate display
       };
 
       const response: any = await POST(API_ADMIN.BOOST_REQUESTS, payload);
@@ -191,7 +192,7 @@ function SubscriptionTab() {
       }
 
       // Initialize Paystack Payment
-      const amountInKobo = Math.round(Number(plan.price_per_day || 0) * 100);
+      const amountInKobo = Math.round(Number(plan.price || plan.price_per_day || 0) * 100);
       const reference = `SUB_${Date.now()}_${Math.random()
         .toString(36)
         .substring(2, 8)
