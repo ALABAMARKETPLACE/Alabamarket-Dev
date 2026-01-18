@@ -37,11 +37,11 @@ function RequestForm({
     refetchOnWindowFocus: false,
   });
 
-  // Fetch seller's products
+  // Fetch seller's products using the standard product search API (like Products page)
   const { data: productsData, isLoading: productsLoading } = useQuery({
-    queryKey: ["seller-products"],
+    queryKey: ["seller-products-list"],
     queryFn: ({ signal }) =>
-      GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS + "?take=100", {}, signal),
+      GET(API.FEATURED_ALL_PRODUCTS, { take: 100 }, signal),
   });
 
   // Helper to extract plans array
@@ -52,8 +52,10 @@ function RequestForm({
   };
 
   const getProductsArray = (data: any) => {
-    if (Array.isArray(data?.data?.data)) return data.data.data;
+    // Check for standard paginated response (like Products page)
     if (Array.isArray(data?.data)) return data.data;
+    // Check for other potential structures
+    if (Array.isArray(data?.data?.data)) return data.data.data;
     return [];
   };
 
