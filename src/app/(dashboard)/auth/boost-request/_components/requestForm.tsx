@@ -83,11 +83,17 @@ function RequestForm({
     return isNaN(days) ? 0 : days;
   };
 
-  // Helper to get plan price
-  const getPlanPrice = (plan: any) => {
-    // If it's a subscription plan used for boosting, we charge the full plan price once
-    const price = Number(plan?.price || plan?.price_per_day);
+  // Helper to get base plan price (for display)
+  const getBasePlanPrice = (plan: any) => {
+    const price = Number(plan?.price_per_day ?? plan?.price);
     return isNaN(price) ? 0 : price;
+  };
+
+  // Helper to get total price (for calculation)
+  const getTotalPrice = (plan: any, productsCount: number) => {
+    const basePrice = getBasePlanPrice(plan);
+    // Flat rate regardless of number of products
+    return basePrice;
   };
 
   const handlePlanChange = (planId: number) => {
@@ -100,7 +106,7 @@ function RequestForm({
 
   const handleSubmit = (values: any) => {
     // Calculate total price based on selected plan (Fixed price, NOT multiplied by product count)
-    const price = getPlanPrice(selectedPlan);
+    const price = getTotalPrice(selectedPlan, values.product_ids?.length || 0);
 
     const payload = {
       plan_id: values.plan_id,
@@ -147,7 +153,7 @@ function RequestForm({
                 value: plan.id || plan._id,
                 label: `${plan.name} (${plan.min_products}-${
                   plan.max_products
-                } products, ${getPlanDuration(plan)} days, ₦${getPlanPrice(
+                } products, ${getPlanDuration(plan)} days, ₦${getBasePlanPrice(
                   plan
                 ).toFixed(2)})`,
               }))}
@@ -160,8 +166,14 @@ function RequestForm({
                 💡 Plan Info: Select between{" "}
                 <strong>{selectedPlan.min_products}</strong> and{" "}
                 <strong>{selectedPlan.max_products}</strong> products. Duration:{" "}
-                <strong>{getPlanDuration(selectedPlan)} days</strong>. Price:{" "}
-                <strong>₦{getPlanPrice(selectedPlan).toFixed(2)}</strong>
+                <strong>{getPlanDuration(selectedPlan)} days</strong>. <br />
+                Total Price:{" "}
+                <strong>
+                  ₦
+                  {getTotalPrice(selectedPlan, selectedProducts.length).toFixed(
+                    2
+                  )}
+                </strong>
               </div>
             </div>
           )}
