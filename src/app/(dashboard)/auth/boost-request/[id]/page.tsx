@@ -2,6 +2,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import API_ADMIN from "@/config/API_ADMIN";
+import API from "@/config/API";
 import { Button, Card, Tag, Descriptions, Image } from "antd";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
@@ -27,17 +28,81 @@ function ViewBoostRequest({ params }: Props) {
     enabled: !!params.id && params.id !== "undefined" && params.id !== "null",
   });
 
+  // Fetch all subscription plans to hydrate missing details
+  const { data: plansData } = useQuery({
+    queryKey: ["subscription-plans-all"],
+    queryFn: ({ signal }) => GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
+    staleTime: 30000,
+  });
+
+  // Fetch seller's products to hydrate missing details
+  const { data: productsData } = useQuery({
+    queryKey: ["seller-products"],
+    queryFn: ({ signal }) =>
+      GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS, {}, signal),
+  });
+
   const request = data?.data;
   const isPending = request?.status === "pending";
 
+  // Helper to extract plans array
+  const getPlansArray = (data: any) => {
+    if (Array.isArray(data?.data?.data)) return data.data.data;
+    if (Array.isArray(data?.data)) return data.data;
+    return [];
+  };
+
+  const getProductsArray = (data: any) => {
+    if (Array.isArray(data?.data?.data)) return data.data.data;
+    if (Array.isArray(data?.data)) return data.data;
+    return [];
+  };
+
+  // Compute Plan Details
+  const computedPlan = React.useMemo(() => {
+    if (request?.plan && Object.keys(request.plan).length > 0) return request.plan;
+    
+    const plansList = getPlansArray(plansData);
+    if (request?.plan_id && plansList.length > 0) {
+      return plansList.find((p: any) => (p.id ?? p._id) == request.plan_id) || {};
+    }
+    return {};
+  }, [request, plansData]);
+
+  // Compute Products Details
+  const computedProducts = React.useMemo(() => {
+    // If request has populated products with names, use them
+    if (
+      request?.products && 
+      Array.isArray(request.products) && 
+      request.products.length > 0 && 
+      typeof request.products[0] === 'object' &&
+      request.products[0].name
+    ) {
+      return request.products;
+    }
+
+    // Otherwise try to find them in the products list using product_ids
+    const productsList = getProductsArray(productsData);
+    if (request?.product_ids && productsList.length > 0) {
+      return productsList.filter((p: any) => 
+        request.product_ids.includes(p._id) || request.product_ids.includes(p.id)
+      );
+    }
+
+    return [];
+  }, [request, productsData]);
+
   // Helper to get plan price (total amount)
   const getPlanPrice = (plan: any) => {
-    return Number(plan?.price ?? 0);
+    const price = Number(plan?.price || plan?.price_per_day);
+    return isNaN(price) ? 0 : price;
   };
 
   // Helper to get plan duration
   const getPlanDuration = (plan: any) => {
-    return Number(plan?.duration_days ?? 0);
+    const days = Number(plan?.duration_days || plan?.duration);
+    return isNaN(days) ? 0 : days;
   };
 
   const getStatusColor = (status: string) => {
@@ -108,19 +173,19 @@ function ViewBoostRequest({ params }: Props) {
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Plan Name">
                   <strong style={{ color: "#1890ff" }}>
-                    {request?.plan?.name || "-"}
+                    {computedPlan?.name || "-"}
                   </strong>
                 </Descriptions.Item>
                 <Descriptions.Item label="Duration">
-                  <strong>{getPlanDuration(request?.plan)} days</strong>
+                  <strong>{getPlanDuration(computedPlan)} days</strong>
                 </Descriptions.Item>
                 <Descriptions.Item label="Price">
                   <strong style={{ color: "#a10244" }}>
-                    ₦{getPlanPrice(request?.plan).toFixed(2)}
+                    ₦{getPlanPrice(computedPlan).toFixed(2)}
                   </strong>
                 </Descriptions.Item>
                 <Descriptions.Item label="Product Range">
-                  {request?.plan?.min_products} - {request?.plan?.max_products}{" "}
+                  {computedPlan?.min_products} - {computedPlan?.max_products}{" "}
                   products
                 </Descriptions.Item>
               </Descriptions>
@@ -142,7 +207,7 @@ function ViewBoostRequest({ params }: Props) {
                     : "-"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Total Days">
-                  <strong>{request?.days || 0}</strong> days
+                  <strong>{request?.days || getPlanDuration(computedPlan)}</strong> days
                 </Descriptions.Item>
               </Descriptions>
             </Card>
@@ -156,13 +221,13 @@ function ViewBoostRequest({ params }: Props) {
                   Summary:
                 </div>
                 <div className="boostRequests-paymentSummaryRow">
-                  {request?.product_ids?.length || 0} products × ₦{getPlanPrice(request?.plan).toFixed(2)} per product
+                  {request?.product_ids?.length || 0} products × ₦{getPlanPrice(computedPlan).toFixed(2)} per product
                 </div>
                 <div className="boostRequests-paymentSummaryRow">
-                  Boost Period: {request?.days} days
+                  Boost Period: {request?.days || getPlanDuration(computedPlan)} days
                 </div>
                 <div className="boostRequests-paymentTotal">
-                  Total: ₦{Number(request?.total_amount || 0).toFixed(2)}
+                  Total: ₦{Number(request?.total_amount || (getPlanPrice(computedPlan))).toFixed(2)}
                 </div>
               </div>
             </Card>
@@ -171,12 +236,12 @@ function ViewBoostRequest({ params }: Props) {
           {/* Products to Boost */}
           <div className="boostRequests-detailGridItem boostRequests-detailGridItem--full">
             <Card
-              title={`Products to Boost (${request?.products?.length || 0})`}
+              title={`Products to Boost (${computedProducts.length || request?.product_ids?.length || 0})`}
               bordered={false}
             >
-              {request?.products && request.products.length > 0 ? (
+              {computedProducts.length > 0 ? (
                 <div className="boostRequests-productsGrid">
-                  {request.products.map((product: any, index: number) => (
+                  {computedProducts.map((product: any, index: number) => (
                     <Card
                       hoverable
                       size="small"
