@@ -162,7 +162,7 @@ function ViewBoostRequest({ params }: Props) {
                   {getPlanPrice(request?.plan).toFixed(2)} per product
                 </div>
                 <div className="boostRequests-paymentSummaryRow">
-                  Boost Period: {request?.days} days
+                  Boost Period: {request?.days || 0} days
                 </div>
                 <div className="boostRequests-paymentTotal">
                   Total: ₦{Number(request?.total_amount || 0).toFixed(2)}
