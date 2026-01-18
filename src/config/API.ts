@@ -165,7 +165,7 @@ const API = {
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
 
   // STORE STATISTICS
-  STORE_STATS: "order/store/stats",
+  STORE_STATS: "store/stats",
 
   //PAYMENT_GET
   PAYMENT_GET: "payments/all/",

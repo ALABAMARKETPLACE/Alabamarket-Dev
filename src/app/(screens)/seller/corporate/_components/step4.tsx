@@ -40,27 +40,20 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
         const serverPlans: any[] = Array.isArray(resp?.data) ? resp.data : [];
         if (serverPlans.length > 0) {
           // Map server DTO to current UI model
-          const mapped = serverPlans.map((p: any) => {
-            // Calculate price per day if not provided
-            const duration = Number(p.duration_days || 30);
-            const totalPrice = Number(p.price || 0);
-            const calculatedPricePerDay = duration > 0 ? (totalPrice / duration).toFixed(2) : "0.00";
-            
-            return {
-              id: p.id,
-              name: p.name,
-              price: Number(p.price_per_day ?? calculatedPricePerDay),
-              currency: "₦",
-              duration: "per day",
-              min_products: p.min_products,
-              max_products: p.max_products,
-              boosts: 0,
-              description: `For ${p.min_products} - ${p.max_products} products`,
-              features: [],
-              popular: false,
-              color: "#808080",
-            };
-          });
+          const mapped = serverPlans.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            price: Number(p.price_per_day ?? 0),
+            currency: "₦",
+            duration: "per day",
+            min_products: p.min_products,
+            max_products: p.max_products,
+            boosts: 0,
+            description: `For ${p.min_products} - ${p.max_products} products`,
+            features: [],
+            popular: false,
+            color: "#808080",
+          }));
           setPlans(mapped);
         }
       } catch (e) {

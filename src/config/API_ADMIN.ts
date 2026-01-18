@@ -88,7 +88,7 @@ const API_ADMIN = {
 
   COORPORATE_SELLER_DASHBOARD_COUNT: "coorporate_store/dashboard/",
 
-  SETTLEMENT_HISTORY: "settlements/history", //to get settlement history of a store    get
+  SETTLEMENT_HISTORY: "settlements/history/", //to get settlement history of a store    get
   SETTLEMENT_SUMMARY: "settlements/summary/", //to get settlement history of a store    get
   SETTLEMENT_CREATE: "settlements/create", //only for admin
 

@@ -48,6 +48,44 @@ const UserName = ({ userId }: { userId: number }) => {
   return <span>{name}</span>;
 };
 
+const SellerName = ({ sellerId }: { sellerId: number }) => {
+  const [name, setName] = useState<string>("Loading...");
+
+  useEffect(() => {
+    let isMounted = true;
+    if (sellerId) {
+      // Try fetching individual seller details first if corporate fails or as logic dictates
+      // But first, let's try the store info endpoint
+      GET(API.STORE_INFO_ADMIN + sellerId)
+        .then((res: any) => {
+          if (isMounted) {
+            // Check for various name fields that might be returned
+            const fetchedName = res?.data?.name || res?.data?.store_name || res?.data?.business_name || null;
+            if (fetchedName) {
+              setName(fetchedName);
+            } else {
+               // Fallback or retry with another endpoint if needed
+               setName("Store #" + sellerId);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch seller name:", err);
+          if (isMounted) {
+            setName("Unknown Seller");
+          }
+        });
+    } else {
+      setName("N/A");
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [sellerId]);
+
+  return <span>{name}</span>;
+};
+
 function DataTable({ data, count, setPage, pageSize, page }: props) {
   const route = useRouter();
   const Settings = useAppSelector(reduxSettings);
@@ -70,9 +108,19 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         title: "User Name",
         dataIndex: "userId",
         key: "userId",
-        render: (userId: number, record: any) => (
-            record?.name ? record.name : <UserName userId={userId} />
-        ),
+        render: (userId: number, record: any) => {
+          // Prioritize picking user name from user_id (Buyer)
+          const uId = record?.user_id || record?.userId || userId;
+          
+          if (record?.name) return record.name;
+          if (uId) return <UserName userId={uId} />;
+          
+          // Fallback to Seller ID if User ID is missing (though less likely for "User Name" column)
+          const sellerId = record?.seller_id || record?.store_id;
+          if (sellerId) return <SellerName sellerId={sellerId} />;
+          
+          return "N/A";
+        },
       },
       {
         title: "Order Date", //
