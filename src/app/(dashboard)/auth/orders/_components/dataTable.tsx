@@ -109,12 +109,16 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "userId",
         key: "userId",
         render: (userId: number, record: any) => {
-          console.log("Order Record:", record); // DEBUG: Check if seller_id exists
+          // Prioritize picking user name from user_id (Buyer)
+          const uId = record?.user_id || record?.userId || userId;
+          
           if (record?.name) return record.name;
-          // Check for both seller_id and store_id just in case
+          if (uId) return <UserName userId={uId} />;
+          
+          // Fallback to Seller ID if User ID is missing (though less likely for "User Name" column)
           const sellerId = record?.seller_id || record?.store_id;
           if (sellerId) return <SellerName sellerId={sellerId} />;
-          if (userId) return <UserName userId={userId} />;
+          
           return "N/A";
         },
       },
