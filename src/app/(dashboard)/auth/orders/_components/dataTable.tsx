@@ -48,6 +48,34 @@ const UserName = ({ userId }: { userId: number }) => {
   return <span>{name}</span>;
 };
 
+const SellerName = ({ sellerId }: { sellerId: number }) => {
+  const [name, setName] = useState<string>("Loading...");
+
+  useEffect(() => {
+    let isMounted = true;
+    if (sellerId) {
+      GET(API.STORE_INFO_ADMIN + sellerId)
+        .then((res: any) => {
+          if (isMounted) {
+            setName(res?.data?.name || res?.data?.store_name || "N/A");
+          }
+        })
+        .catch(() => {
+          if (isMounted) {
+            setName("N/A");
+          }
+        });
+    } else {
+      setName("N/A");
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [sellerId]);
+
+  return <span>{name}</span>;
+};
+
 function DataTable({ data, count, setPage, pageSize, page }: props) {
   const route = useRouter();
   const Settings = useAppSelector(reduxSettings);
@@ -70,9 +98,12 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         title: "User Name",
         dataIndex: "userId",
         key: "userId",
-        render: (userId: number, record: any) => (
-            record?.name ? record.name : <UserName userId={userId} />
-        ),
+        render: (userId: number, record: any) => {
+          if (record?.name) return record.name;
+          if (record?.seller_id) return <SellerName sellerId={record.seller_id} />;
+          if (userId) return <UserName userId={userId} />;
+          return "N/A";
+        },
       },
       {
         title: "Order Date", //
