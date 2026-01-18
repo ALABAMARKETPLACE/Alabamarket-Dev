@@ -61,9 +61,15 @@ function RequestForm({
   useEffect(() => {
     const plansList = getPlansArray(plansData);
     if (initialData && plansList.length > 0 && mode === "edit") {
-      const plan = plansList.find(
-        (p: any) => (p.id ?? p._id) === initialData.plan_id,
-      );
+      const plan = plansList.find((p: any) => {
+        const planId = p.id ?? p._id;
+        // Check against plan_id first, then try plan.id if available
+        return (
+          planId == initialData.plan_id ||
+          (initialData.plan &&
+            planId == (initialData.plan.id ?? initialData.plan._id))
+        );
+      });
       setSelectedPlan(plan);
       setSelectedProducts(initialData.product_ids || []);
 

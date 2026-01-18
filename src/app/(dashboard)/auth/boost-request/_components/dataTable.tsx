@@ -68,7 +68,13 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
 
   const renderDesktopActions = (record: any) => {
     const id = record?.id ?? record?._id;
-    if (!id) return null;
+    
+    // If we absolutely cannot find an ID, we render a disabled state or nothing.
+    // However, to debug why it might be undefined, we can log it or render a fallback.
+    // But per user request, we must fix the "undefined" path.
+    if (!id) {
+      return <span style={{ color: 'red', fontSize: '10px' }}>Invalid ID</span>;
+    }
 
     return (
     <div className="table-action">
