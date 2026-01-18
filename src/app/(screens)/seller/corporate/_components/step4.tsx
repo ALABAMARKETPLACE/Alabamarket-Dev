@@ -41,15 +41,17 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
         if (serverPlans.length > 0) {
           // Map server DTO to current UI model
           const mapped = serverPlans.map((p: any) => {
-            // Calculate price per day if not provided
-            const duration = Number(p.duration_days || 30);
-            const totalPrice = Number(p.price || 0);
-            const calculatedPricePerDay = duration > 0 ? (totalPrice / duration).toFixed(2) : "0.00";
+            // Use price_per_day if available, otherwise calculate from price
+            const calculatedPricePerDay = p.price_per_day 
+              ? Number(p.price_per_day)
+              : p.duration_days > 0 
+                ? (Number(p.price || 0) / Number(p.duration_days)) 
+                : 0;
             
             return {
               id: p.id,
               name: p.name,
-              price: Number(p.price_per_day ?? calculatedPricePerDay),
+              price: calculatedPricePerDay,
               currency: "₦",
               duration: "per day",
               min_products: p.min_products,
@@ -59,6 +61,9 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
               features: [],
               popular: false,
               color: "#808080",
+              // Store original fields for reference
+              original_price: Number(p.price),
+              original_duration_days: Number(p.duration_days)
             };
           });
           setPlans(mapped);

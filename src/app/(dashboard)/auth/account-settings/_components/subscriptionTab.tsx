@@ -145,7 +145,7 @@ function SubscriptionTab() {
       if (submittingProducts) return;
       setSubmittingProducts(true);
       const plan = plans.find((p: any) => p.id == verifiedPlanId);
-      const price = Number(plan?.price || plan?.price_per_day || 0);
+      const price = Number(plan?.price_per_day ?? plan?.price ?? 0);
 
       // Create Boost Request (Auto-linked to subscription payment)
       const payload = {
@@ -200,7 +200,9 @@ function SubscriptionTab() {
       }
 
       // Initialize Paystack Payment
-      const amountInKobo = Math.round(Number(plan.price || plan.price_per_day || 0) * 100);
+      const planPrice = Number(plan.price_per_day ?? plan.price ?? 0);
+      const amountInKobo = Math.round(planPrice * 100);
+      
       const reference = `SUB_${Date.now()}_${Math.random()
         .toString(36)
         .substring(2, 8)

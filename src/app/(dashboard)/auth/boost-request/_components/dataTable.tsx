@@ -66,10 +66,12 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     }
   };
 
-  const renderDesktopActions = (id: number, record: any) => {
+  const renderDesktopActions = (record: any) => {
     // Ensure we have a valid ID from either id or _id
-    const validId = record?.id ?? record?._id ?? id;
+    const validId = record?.id || record?._id;
     
+    if (!validId) return null;
+
     return (
     <div className="table-action">
       <Button
@@ -182,7 +184,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "id",
       width: 150,
       fixed: "right" as const,
-      render: (id: number, record: any) => renderDesktopActions(id, record),
+      render: (_: any, record: any) => renderDesktopActions(record),
     },
   ];
 
