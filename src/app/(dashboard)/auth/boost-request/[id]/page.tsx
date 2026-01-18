@@ -24,6 +24,7 @@ function ViewBoostRequest({ params }: Props) {
     queryKey: ["boost-request", params.id],
     queryFn: ({ signal }) =>
       GET(API_ADMIN.BOOST_REQUESTS + params.id, {}, signal),
+    enabled: !!params.id && params.id !== "undefined" && params.id !== "null",
   });
 
   const request = data?.data;
