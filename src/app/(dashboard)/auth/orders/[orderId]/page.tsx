@@ -15,12 +15,26 @@ import { getOrderStatus } from "../_components/getOrderStatus";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 
+import { useSession } from "next-auth/react";
+import API from "@/config/API";
+
 export default function OrderDetails() {
+  const { data: session, status } = useSession();
+  const userRole = (session as any)?.user?.role ?? (session as any)?.role;
   const { orderId } = useParams();
   const route = useRouter();
   const { data: order, isLoading } = useQuery({
-    queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
-    queryKey: ["order_details"],
+    queryFn: async () => {
+      let url: string = API_ADMIN.ORDER_DETAILS;
+      if (userRole === "seller") {
+        url = API.ORDER_GETONE_SELLER;
+      } else if (userRole === "admin") {
+        url = API.ORDER_GETONE_ADMIN;
+      }
+      return await GET(url + orderId);
+    },
+    queryKey: ["order_details", userRole, orderId],
+    enabled: status === "authenticated",
     staleTime: 0,
   });
   const formatDateRelative = (date: string) => {
