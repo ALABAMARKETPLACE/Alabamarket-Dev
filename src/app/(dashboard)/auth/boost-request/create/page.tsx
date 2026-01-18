@@ -12,6 +12,9 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState, useRef } from "react";
 import Loading from "@/app/(dashboard)/_components/loading";
 
+// Global set to track processed references across component remounts
+const processedReferences = new Set<string>();
+
 function CreateBoostRequest() {
   const [Notifications, contextHolder] = notification.useNotification();
   const queryClient = useQueryClient();
@@ -20,7 +23,7 @@ function CreateBoostRequest() {
   const { data: session }: any = useSession();
   const { initializePayment } = usePaystack();
   const [isVerifying, setIsVerifying] = useState(false);
-  const verificationAttempted = useRef(false);
+  // const verificationAttempted = useRef(false); // Replaced by global Set
 
   const rawStoreId =
     session?.user?.store_id ??
@@ -40,12 +43,19 @@ function CreateBoostRequest() {
     const trxref = searchParams.get("trxref");
     const paymentRef = reference || trxref;
 
-    if (paymentRef && !isVerifying && !verificationAttempted.current) {
-      verificationAttempted.current = true;
+    if (paymentRef) {
+      if (processedReferences.has(paymentRef)) {
+        // Already processed or processing this reference
+        return;
+      }
+
+      // Mark as processed immediately
+      processedReferences.add(paymentRef);
       verifyAndCreate(paymentRef);
-    } else if (!paymentRef) {
+    } else {
       // Clear storage if no reference (new session)
-      sessionStorage.removeItem("boost_request_data");
+      // Only clear if we are strictly NOT in a callback flow
+      // sessionStorage.removeItem("boost_request_data");
     }
   }, [searchParams]);
 
@@ -85,6 +95,9 @@ function CreateBoostRequest() {
         message: error.message || "Verification failed",
       });
       setIsVerifying(false);
+      // Optional: remove from processedReferences if you want to allow retry?
+      // processedReferences.delete(reference);
+      // Usually better not to auto-retry on payment callbacks to avoid duplicates.
     }
   };
 

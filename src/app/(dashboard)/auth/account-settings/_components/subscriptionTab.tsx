@@ -30,6 +30,9 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import moment from "moment";
 
+// Global set to track processed references
+const processedReferences = new Set<string>();
+
 function SubscriptionTab() {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
@@ -44,7 +47,7 @@ function SubscriptionTab() {
   const [submittingProducts, setSubmittingProducts] = useState(false);
   const [form] = Form.useForm();
   
-  const verificationAttempted = useRef(false);
+  // const verificationAttempted = useRef(false);
 
   // Get current store details (including subscription)
   const {
@@ -83,8 +86,11 @@ function SubscriptionTab() {
     const tab = searchParams.get("tab");
     const planId = searchParams.get("plan_id");
 
-    if (reference && tab === "subscription" && planId && !verificationAttempted.current) {
-      verificationAttempted.current = true;
+    if (reference && tab === "subscription" && planId) {
+      if (processedReferences.has(reference)) {
+        return;
+      }
+      processedReferences.add(reference);
       verifyPayment(reference, planId);
     }
   }, [searchParams]);
@@ -114,6 +120,9 @@ function SubscriptionTab() {
           setVerifiedReference(reference);
           setShowProductModal(true);
           
+          // Clear URL to prevent re-verification on refresh
+          router.replace("/auth/account-settings?tab=subscription", { scroll: false });
+          
         } else {
           throw new Error(updateResp?.message || "Failed to update subscription");
         }
@@ -125,9 +134,7 @@ function SubscriptionTab() {
         message: "Subscription Failed",
         description: err?.message || "Something went wrong during verification.",
       });
-      // If failed, clean URL anyway to avoid loops? 
-      // Better to let user see error and maybe try again or contact support
-      verificationAttempted.current = false; // Allow retry if it was a transient error?
+      // verificationAttempted.current = false; // Allow retry if it was a transient error?
     } finally {
       setVerifying(false);
     }
