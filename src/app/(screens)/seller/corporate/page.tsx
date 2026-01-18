@@ -103,10 +103,7 @@ function Page() {
         subscription_plan: formData?.step4Data?.subscription_plan || "standard",
         subscription_plan_name:
           formData?.step4Data?.subscription_data?.name || "Standard Seller",
-        subscription_price:
-          formData?.step4Data?.subscription_data?.original_price ||
-          formData?.step4Data?.subscription_data?.price ||
-          0,
+        subscription_price: formData?.step4Data?.subscription_data?.price || 0,
         subscription_boosts:
           formData?.step4Data?.subscription_data?.boosts || 0,
         logo_upload: "",

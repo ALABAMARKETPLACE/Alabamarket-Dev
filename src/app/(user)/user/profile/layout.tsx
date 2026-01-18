@@ -157,10 +157,7 @@ const ProfileDashboard = () => {
       const response: any = await PUT(url, values);
       if (response?.status) {
         getUserDetails();
-        notificationApi.success({
-          message: "Success",
-          description: "Password updated successfully.",
-        });
+        notificationApi.success({ message: `Password updated successfully.` });
         setPasswordopen(false);
       } else {
         notificationApi.error({ message: response.message });

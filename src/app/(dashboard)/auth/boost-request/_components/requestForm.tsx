@@ -37,11 +37,11 @@ function RequestForm({
     refetchOnWindowFocus: false,
   });
 
-  // Fetch seller's products using the standard product search API (like Products page)
+  // Fetch seller's products
   const { data: productsData, isLoading: productsLoading } = useQuery({
-    queryKey: ["seller-products-list"],
+    queryKey: ["seller-products"],
     queryFn: ({ signal }) =>
-      GET(API.FEATURED_ALL_PRODUCTS, { take: 100 }, signal),
+      GET(API_ADMIN.FEATURED_PRODUCTS_PRODUCTS, {}, signal),
   });
 
   // Helper to extract plans array
@@ -52,10 +52,8 @@ function RequestForm({
   };
 
   const getProductsArray = (data: any) => {
-    // Check for standard paginated response (like Products page)
-    if (Array.isArray(data?.data)) return data.data;
-    // Check for other potential structures
     if (Array.isArray(data?.data?.data)) return data.data.data;
+    if (Array.isArray(data?.data)) return data.data;
     return [];
   };
 
@@ -64,7 +62,7 @@ function RequestForm({
     const plansList = getPlansArray(plansData);
     if (initialData && plansList.length > 0 && mode === "edit") {
       const plan = plansList.find(
-        (p: any) => (p.id || p._id) === initialData.plan_id
+        (p: any) => (p.id ?? p._id) === initialData.plan_id,
       );
       setSelectedPlan(plan);
       setSelectedProducts(initialData.product_ids || []);
@@ -83,37 +81,29 @@ function RequestForm({
     return isNaN(days) ? 0 : days;
   };
 
-  // Helper to get base plan price (for display)
-  const getBasePlanPrice = (plan: any) => {
-    const price = Number(plan?.price_per_day ?? plan?.price);
+  // Helper to get plan price
+  const getPlanPrice = (plan: any) => {
+    const price = Number(plan?.price || plan?.price_per_day);
     return isNaN(price) ? 0 : price;
-  };
-
-  // Helper to get total price (for calculation)
-  const getTotalPrice = (plan: any, productsCount: number) => {
-    const basePrice = getBasePlanPrice(plan);
-    // Flat rate regardless of number of products
-    return basePrice;
   };
 
   const handlePlanChange = (planId: number) => {
     const plansList = getPlansArray(plansData);
-    const plan = plansList.find((p: any) => (p.id || p._id) === planId);
+    const plan = plansList.find((p: any) => (p.id ?? p._id) === planId);
     setSelectedPlan(plan);
     setSelectedProducts([]);
     form.setFieldsValue({ product_ids: [] });
   };
 
   const handleSubmit = (values: any) => {
-    // Calculate total price based on selected plan (Fixed price, NOT multiplied by product count)
-    const price = getTotalPrice(selectedPlan, values.product_ids?.length || 0);
+    // Calculate total price based on selected plan
+    const price = getPlanPrice(selectedPlan);
 
     const payload = {
       plan_id: values.plan_id,
       product_ids: values.product_ids,
       remarks: values.remarks,
       amount: price,
-      // status: "pending", // Default status is pending, waiting for admin approval
     };
     onSubmit(payload);
   };
@@ -150,11 +140,11 @@ function RequestForm({
                 (trigger?.parentElement as HTMLElement) || document.body
               }
               options={plans.map((plan: any) => ({
-                value: plan.id || plan._id,
+                value: plan.id ?? plan._id,
                 label: `${plan.name} (${plan.min_products}-${
                   plan.max_products
-                } products, ${getPlanDuration(plan)} days, ₦${getBasePlanPrice(
-                  plan
+                } products, ${getPlanDuration(plan)} days, ₦${getPlanPrice(
+                  plan,
                 ).toFixed(2)})`,
               }))}
             />
@@ -166,14 +156,8 @@ function RequestForm({
                 💡 Plan Info: Select between{" "}
                 <strong>{selectedPlan.min_products}</strong> and{" "}
                 <strong>{selectedPlan.max_products}</strong> products. Duration:{" "}
-                <strong>{getPlanDuration(selectedPlan)} days</strong>. <br />
-                Total Price:{" "}
-                <strong>
-                  ₦
-                  {getTotalPrice(selectedPlan, selectedProducts.length).toFixed(
-                    2
-                  )}
-                </strong>
+                <strong>{getPlanDuration(selectedPlan)} days</strong>. Price:{" "}
+                <strong>₦{getPlanPrice(selectedPlan).toFixed(2)}</strong>
               </div>
             </div>
           )}
@@ -197,7 +181,7 @@ function RequestForm({
                     return Promise.resolve();
                   }
                   return Promise.reject(
-                    `Please select between ${selectedPlan.min_products} and ${selectedPlan.max_products} products`
+                    `Please select between ${selectedPlan.min_products} and ${selectedPlan.max_products} products`,
                   );
                 },
               }),

@@ -89,7 +89,7 @@ const API = {
   USER_CHECK_IFEXIS: "user/check_user/validate", //post// check if a user exist with an email or phone
   USER_DEACTIVATE_EMAIL: "auth/deactivate-account/", //deactivate user's account using mail
   USER_CHANGE_PASSWORD: "user/update-password/", //to change user password
-  USER_ADDNEW_PASSWORD: "user/update-password", //to ADD NEW user password
+  USER_ADDNEW_PASSWORD: "user/add-password/", //to ADD NEW user password
   USER_PHOTO_UPDATE: "user/update-photo/", //to add new photo
   USER_DETAILS: "user/details/", //to get all user info
   USER_CONFIG_INVITE_MAIL: "menus/sendInvite",
@@ -152,7 +152,7 @@ const API = {
   ORDER: "order/", //post
   ORDER_GET: "order/getall", //get all orders for a user and admin
   // ORDER_GETONE: "order/get_one/", //get one
-  ORDER_GET_BYSTORE: "order/store",
+  ORDER_GET_BYSTORE: "order/store/",
   ORDER_GET_USER: "order/user/", //to get all orders for a user only for admin
   ORDER_ITEMS_GET: "orderItems/all/",
   ORDER_STATUS_GET: "orderStatus/all/",
@@ -165,7 +165,7 @@ const API = {
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
 
   // STORE STATISTICS
-  STORE_STATS: "order/store/stats",
+  STORE_STATS: "store/stats",
 
   //PAYMENT_GET
   PAYMENT_GET: "payments/all/",

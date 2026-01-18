@@ -9,13 +9,9 @@ import API from "@/config/API";
 import Error from "@/app/(dashboard)/_components/error";
 import OrdersFilterBar from "./_components/OrdersFilterBar";
 import useOrdersFilters from "./_hooks/useOrdersFilters";
-import { useSession } from "next-auth/react";
 import "./Style.scss";
 
 function Page() {
-  const { data: session, status } = useSession();
-  const userRole = (session as any)?.user?.role ?? (session as any)?.role;
-
   const [isMobile, setIsMobile] = useState(false);
   const [isCompactFilters, setIsCompactFilters] = useState(false);
   const [filtersDropdownOpen, setFiltersDropdownOpen] = useState(false);
@@ -38,12 +34,8 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) => {
-      const endpoint = userRole === "seller" ? API.ORDER_GET_BYSTORE : API.ORDER_GET;
-      return GET(endpoint, queryKey[1] as object);
-    },
-    queryKey: ["admin_orders", orderQueryParams, userRole],
-    enabled: status === "authenticated",
+    queryFn: ({ queryKey }) => GET(API.ORDER_GET, queryKey[1] as object),
+    queryKey: ["admin_orders", orderQueryParams],
   });
 
   useEffect(() => {
@@ -64,7 +56,7 @@ function Page() {
   }, [isMobile]);
 
   const renderContent = () => {
-    if (isLoading || status === "loading") {
+    if (isLoading) {
       return <Loading />;
     }
 

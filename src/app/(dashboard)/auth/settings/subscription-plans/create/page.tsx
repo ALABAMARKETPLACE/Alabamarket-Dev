@@ -22,14 +22,6 @@ function CreateSubscriptionPlan() {
   const queryClient = useQueryClient();
   const router = useRouter();
 
-  const price = Form.useWatch("price", form);
-  const duration = Form.useWatch("duration_days", form);
-
-  const pricePerDay = React.useMemo(() => {
-    if (!price || !duration || duration <= 0) return "0.00";
-    return (Number(price) / Number(duration)).toFixed(2);
-  }, [price, duration]);
-
   const mutationCreate = useMutation({
     mutationFn: (body: any) => {
       // Ensure numeric fields are sent as numbers
@@ -237,9 +229,6 @@ function CreateSubscriptionPlan() {
             <div style={{ fontSize: 13, color: "#003a8c" }}>
               Sellers can boost <strong>min-max products</strong> for the specified{" "}
               <strong>duration</strong> at the <strong>total price</strong>.
-              <div style={{ marginTop: 8, fontWeight: 600 }}>
-                Estimated Cost per Day: ₦{pricePerDay}
-              </div>
             </div>
           </div>
 

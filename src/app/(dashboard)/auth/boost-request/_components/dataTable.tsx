@@ -27,7 +27,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
 
   const mutationDelete = useMutation({
     mutationFn: (id: number) => {
-      return DELETE(API_ADMIN.BOOST_REQUESTS + `${id}`);
+      return DELETE(API_ADMIN.BOOST_REQUESTS + id);
     },
     onError: (error: any) => {
       Notifications["error"]({
@@ -67,10 +67,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   };
 
   const renderDesktopActions = (record: any) => {
-    // Ensure we have a valid ID from either id or _id
-    const validId = record?.id || record?._id;
-    
-    if (!validId) return null;
+    const id = record?.id ?? record?._id;
+    if (!id) return null;
 
     return (
     <div className="table-action">
@@ -78,7 +76,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         type="text"
         size="small"
         title="View Details"
-        onClick={() => router.push(`/auth/boost-request/${validId}`)}
+        onClick={() => router.push(`/auth/boost-request/${id}`)}
       >
         <FiEye size={18} />
       </Button>
@@ -87,7 +85,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           type="text"
           size="small"
           title="Edit"
-          onClick={() => router.push(`/auth/boost-request/${validId}/edit`)}
+          onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
           style={{ color: "#1890ff" }}
         >
           <FiEdit size={18} />
@@ -96,7 +94,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       <Popconfirm
         title="Delete Boost Request"
         description="Are you sure you want to delete this boost request?"
-        onConfirm={() => mutationDelete.mutate(validId)}
+        onConfirm={() => mutationDelete.mutate(id)}
         okText="Yes, Delete"
         cancelText="Cancel"
         okButtonProps={{ danger: true }}
@@ -106,13 +104,14 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           size="small"
           title="Delete"
           danger
-          loading={mutationDelete.isPending && mutationDelete.variables === validId}
+          loading={mutationDelete.isPending && mutationDelete.variables === id}
         >
           <FiTrash2 size={18} />
         </Button>
       </Popconfirm>
     </div>
-  )};
+  );
+  };
 
   const columns = [
     {
@@ -120,6 +119,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "id",
       key: "id",
       width: 100,
+      render: (id: any, record: any) => id ?? record?._id ?? "-",
     },
     {
       title: "Seller Name",
@@ -200,6 +200,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
 
     return data.map((record: any) => {
       const id = record?.id ?? record?._id;
+      if (!id) return null;
+
       const productsCount = Array.isArray(record?.product_ids)
         ? record.product_ids.length
         : 0;
