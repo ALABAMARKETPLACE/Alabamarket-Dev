@@ -16,7 +16,7 @@ function Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [isCompactFilters, setIsCompactFilters] = useState(false);
   const [filtersDropdownOpen, setFiltersDropdownOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const {
     pagination: { page, take, setPage, setTake },
     filters,
@@ -55,6 +55,11 @@ function Page() {
         token: (session as any)?.token,
       }),
     queryKey: [endpoint, params],
+    enabled:
+      status === "authenticated" &&
+      (!!(session as any)?.token) &&
+      (isSeller ? !!storeId : true),
+    retry: false,
   });
 
   useEffect(() => {
