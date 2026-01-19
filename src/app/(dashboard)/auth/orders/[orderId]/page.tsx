@@ -30,21 +30,17 @@ export default function OrderDetails() {
     staleTime: 0,
   });
 
-  const { data: sellerInfo } = useQuery({
-    queryFn: async () => await GET(API.CORPORATE_STORE_GETSELLERINFO),
-    queryKey: ["seller_info_details"],
-    enabled: !!accessToken,
-  });
-
   const { data: storeOrderData } = useQuery({
     queryFn: async () => {
-      if (!sellerInfo?.data?._id && !sellerInfo?.data?.id) return null;
-      const storeId = sellerInfo?.data?._id || sellerInfo?.data?.id;
+      // Use the storeId from the fetched order details
+      const storeId = order?.data?.storeId;
+      if (!storeId) return null;
+
       // Fetch orders for this store, filtering by the current orderId
       return await GET(API.ORDER_GET_BYSTORE + storeId, { orderId });
     },
-    queryKey: ["store_order_lookup", orderId, sellerInfo?.data?._id],
-    enabled: !!(sellerInfo?.data?._id || sellerInfo?.data?.id) && !!orderId,
+    queryKey: ["store_order_lookup", orderId, order?.data?.storeId],
+    enabled: !!order?.data?.storeId && !!orderId,
   });
 
   const specificStoreOrder = Array.isArray(storeOrderData?.data)
@@ -114,11 +110,6 @@ export default function OrderDetails() {
                     user_id: order?.data?.userId,
                     order_contact_name:
                       specificStoreOrder?.name || order?.data?.name,
-                    seller_name:
-                      sellerInfo?.data?.name ||
-                      sellerInfo?.data?.first_name +
-                        " " +
-                        sellerInfo?.data?.last_name,
                   }}
                 />
                 <ProductTab data={order?.data?.orderItems} />
