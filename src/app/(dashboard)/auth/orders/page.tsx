@@ -56,7 +56,7 @@ function Page() {
 
   const endpoint =
     isSeller && resolvedStoreId
-      ? API.ORDER_GET_BYSTORE + resolvedStoreId
+      ? API.ORDER_GET_BYSTORE.replace(/\/$/, "") // Removes trailing slash if present
       : API.ORDER_GET;
   const params =
     isSeller && resolvedStoreId
