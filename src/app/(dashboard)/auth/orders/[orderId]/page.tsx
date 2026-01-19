@@ -82,7 +82,13 @@ export default function OrderDetails() {
           <Row className="gy-4">
             <Col lg={8} md={12}>
               <div className="d-flex flex-column gap-4">
-                <AddressTab data={order?.data?.address} />
+                <AddressTab
+                  data={{
+                    ...order?.data?.address,
+                    user_id: order?.data?.userId,
+                    order_contact_name: order?.data?.name,
+                  }}
+                />
                 <ProductTab data={order?.data?.orderItems} />
                 <PaymentStatusTab data={order?.data} />
               </div>
