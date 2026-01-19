@@ -65,9 +65,36 @@ function Checkout() {
       setGrand_total(totals);
 
       if (Checkout?.address?.id) {
+        // Map address to ensure country_id and state_id are present
+        const addressData = {
+          ...Checkout?.address,
+          country_id:
+            Checkout?.address?.country_id ||
+            Checkout?.address?.countryDetails?.id,
+          state_id:
+            Checkout?.address?.state_id || Checkout?.address?.stateDetails?.id,
+          country:
+            Checkout?.address?.country ||
+            Checkout?.address?.countryDetails?.country_name,
+          state:
+            Checkout?.address?.state || Checkout?.address?.stateDetails?.name,
+        };
+
+        // Use single item with quantity 1 for delivery calculation to avoid weight-based price scaling
+        const firstItem = Checkout?.Checkout?.[0];
+        const calculationCart = firstItem
+          ? [
+              {
+                ...firstItem,
+                quantity: 1,
+                weight: firstItem?.weight || 1, // Ensure weight exists
+              },
+            ]
+          : Checkout?.Checkout;
+
         let obj = {
-          cart: Checkout?.Checkout,
-          address: Checkout?.address,
+          cart: calculationCart,
+          address: addressData,
         };
 
         const response: any = await POST(
