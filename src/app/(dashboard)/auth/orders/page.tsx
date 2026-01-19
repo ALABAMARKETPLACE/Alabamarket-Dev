@@ -43,9 +43,9 @@ function Page() {
     queryFn: ({ queryKey }) => {
       const params = { ...(queryKey[1] as object) };
       
-      // If user is a seller, use the specialized getall/{storeId} endpoint
+      // If user is a seller, use the order/store/{id} endpoint
       if (userRole !== "admin" && storeId) {
-        return GET(API.ORDER_GETCOUNT + storeId, params);
+        return GET(API.ORDER_GET_BYSTORE + storeId, params);
       }
       
       return GET(API.ORDER_GET, params);
