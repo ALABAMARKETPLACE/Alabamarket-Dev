@@ -73,7 +73,12 @@ export default function OrderStatusTab(props: Props) {
     enabled: !!props?.data?.id,
   });
 
-  const history = Array.isArray(statusHistory?.data) ? statusHistory?.data : [];
+  // Filter history to ensure it matches the current order ID
+  const history = Array.isArray(statusHistory?.data)
+    ? statusHistory?.data.filter(
+        (item: any) => String(item.order_id) === String(props?.data?.id),
+      )
+    : [];
 
   return (
     <Card
