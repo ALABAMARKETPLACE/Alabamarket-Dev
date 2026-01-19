@@ -11,12 +11,15 @@ import OrdersFilterBar from "./_components/OrdersFilterBar";
 import useOrdersFilters from "./_hooks/useOrdersFilters";
 import "./Style.scss";
 import { useSession } from "next-auth/react";
+import { useAppSelector } from "@/redux/hooks";
+import { reduxAccessToken } from "@/redux/slice/authSlice";
 
 function Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [isCompactFilters, setIsCompactFilters] = useState(false);
   const [filtersDropdownOpen, setFiltersDropdownOpen] = useState(false);
   const { data: session, status } = useSession();
+  const accessToken = useAppSelector(reduxAccessToken);
   const {
     pagination: { page, take, setPage, setTake },
     filters,
@@ -36,7 +39,20 @@ function Page() {
   const userRole = (session as any)?.role;
   const userType = (session as any)?.user?.type || (session as any)?.type;
   const isSeller = userRole === "seller" || userType === "seller";
-  const endpoint = isSeller && storeId ? API.ORDER_GET_BYSTORE + storeId : API.ORDER_GET;
+  const {
+    data: storeInfo,
+  } = useQuery({
+    queryFn: () => GET(API.CORPORATE_STORE_GETSELLERINFO),
+    queryKey: ["seller_store_details"],
+    enabled: status === "authenticated" && isSeller && !!accessToken,
+    retry: false,
+  });
+  const resolvedStoreId =
+    (storeInfo as any)?.data?._id ??
+    (storeInfo as any)?.data?.id ??
+    storeId;
+  const endpoint =
+    isSeller && resolvedStoreId ? API.ORDER_GET_BYSTORE + resolvedStoreId : API.ORDER_GET;
   const params =
     isSeller && storeId
       ? { ...orderQueryParams, order: "DESC" }
@@ -50,15 +66,12 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) =>
-      GET(queryKey[0] as string, queryKey[1] as object, null, {
-        token: (session as any)?.token,
-      }),
+    queryFn: ({ queryKey }) => GET(queryKey[0] as string, queryKey[1] as object),
     queryKey: [endpoint, params],
     enabled:
       status === "authenticated" &&
-      (!!(session as any)?.token) &&
-      (isSeller ? !!storeId : true),
+      !!accessToken &&
+      (isSeller ? !!resolvedStoreId : true),
     retry: false,
   });
 
