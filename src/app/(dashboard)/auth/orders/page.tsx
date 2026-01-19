@@ -39,20 +39,9 @@ function Page() {
   const userRole = (session as any)?.role;
   const userType = (session as any)?.user?.type || (session as any)?.type;
   const isSeller = userRole === "seller" || userType === "seller";
-  const {
-    data: storeInfo,
-  } = useQuery({
-    queryFn: () => GET(API.CORPORATE_STORE_GETSELLERINFO),
-    queryKey: ["seller_store_details"],
-    enabled: status === "authenticated" && isSeller && !!accessToken,
-    retry: false,
-  });
-  const resolvedStoreId =
-    (storeInfo as any)?.data?._id ??
-    (storeInfo as any)?.data?.id ??
-    storeId;
+  
   const endpoint =
-    isSeller && resolvedStoreId ? API.ORDER_GET_BYSTORE + resolvedStoreId : API.ORDER_GET;
+    isSeller && storeId ? API.ORDER_GET_BYSTORE + storeId : API.ORDER_GET;
   const params =
     isSeller && storeId
       ? { ...orderQueryParams, order: "DESC" }
@@ -66,12 +55,18 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) => GET(queryKey[0] as string, queryKey[1] as object),
+    queryFn: ({ queryKey }) => 
+      GET(
+        queryKey[0] as string, 
+        queryKey[1] as object, 
+        null, 
+        { token: (session as any)?.token }
+      ),
     queryKey: [endpoint, params],
     enabled:
       status === "authenticated" &&
-      !!accessToken &&
-      (isSeller ? !!resolvedStoreId : true),
+      !!(session as any)?.token &&
+      (isSeller ? !!storeId : true),
     retry: false,
   });
 
