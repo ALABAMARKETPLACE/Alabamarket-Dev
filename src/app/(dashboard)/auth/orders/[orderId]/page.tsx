@@ -14,14 +14,19 @@ import { Button, Tag } from "antd";
 import { getOrderStatus } from "../_components/getOrderStatus";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/redux/hooks";
+import { reduxAccessToken } from "@/redux/slice/authSlice";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const route = useRouter();
+  const accessToken = useAppSelector(reduxAccessToken);
   const { data: order, isLoading } = useQuery({
-    queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
-    queryKey: ["order_details"],
+    queryFn: async () => await GET(API_ADMIN.ORDER_GETONE_SELLER + orderId),
+    queryKey: ["order_details", orderId],
     staleTime: 0,
+    enabled: !!accessToken,
+    retry: false,
   });
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
