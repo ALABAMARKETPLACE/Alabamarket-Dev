@@ -36,7 +36,10 @@ export default function OrderDetails() {
       const storeId = order?.data?.storeId;
       if (!storeId) return null;
 
-      // Fetch orders for this store, filtering by the current orderId
+      // Fetch orders for this store.
+      // Note: If the backend filters strictly by `orderId` param, this is fine.
+      // If it returns a paginated list, we might need to fetch a larger page or verify the filtering.
+      // Assuming 'orderId' param works as a filter:
       return await GET(API.ORDER_GET_BYSTORE + storeId, { orderId });
     },
     queryKey: ["store_order_lookup", orderId, order?.data?.storeId],
@@ -45,7 +48,9 @@ export default function OrderDetails() {
 
   const specificStoreOrder = Array.isArray(storeOrderData?.data)
     ? storeOrderData?.data.find(
-        (o: any) => o.id == orderId || o.order_id == orderId,
+        (o: any) =>
+          String(o.id) === String(orderId) ||
+          String(o.order_id) === String(orderId),
       )
     : null;
   const formatDateRelative = (date: string) => {
