@@ -41,14 +41,12 @@ function Page() {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) => {
-      const endpoint =
-        userRole === "admin"
-          ? API.ORDER_GET
-          : API.ORDER_GET_BYSTORE + storeId;
-      return GET(endpoint, queryKey[1] as object);
+      // Use order/getall for both admin and seller. 
+      // The backend filters by store_id automatically for sellers based on their token.
+      return GET(API.ORDER_GET, queryKey[1] as object);
     },
-    queryKey: ["admin_orders", orderQueryParams, userRole, storeId],
-    enabled: !!userRole && (userRole === "admin" || !!storeId),
+    queryKey: ["admin_orders", orderQueryParams, userRole],
+    enabled: !!userRole,
   });
 
   useEffect(() => {
