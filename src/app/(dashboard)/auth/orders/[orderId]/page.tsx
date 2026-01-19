@@ -22,11 +22,9 @@ export default function OrderDetails() {
   const route = useRouter();
   const accessToken = useAppSelector(reduxAccessToken);
   const { data: order, isLoading } = useQuery({
-    queryFn: async () => await GET(API_ADMIN.ORDER_GETONE_SELLER + orderId),
+    queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
     queryKey: ["order_details", orderId],
     staleTime: 0,
-    enabled: !!accessToken,
-    retry: false,
   });
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
