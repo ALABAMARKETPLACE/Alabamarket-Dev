@@ -1,4 +1,3 @@
-import React from "react";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { GoArrowRight } from "react-icons/go";
 import { useSelector } from "react-redux";
@@ -6,7 +5,25 @@ import { Alert } from "antd";
 import { reduxSettings } from "../../../../redux/slice/settingsSlice";
 import { formatCurrency } from "@/utils/formatNumber";
 
-const SummaryCard = (props: any) => {
+interface CartItem {
+  totalPrice: number | string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface CartState {
+  items?: CartItem[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface SummaryCardProps {
+  Cart: CartState;
+  checkout: () => void;
+  error?: string | null;
+}
+
+const SummaryCard = (props: SummaryCardProps) => {
   const Settings = useSelector(reduxSettings);
 
   const getCurrencySymbol = () => {
@@ -16,10 +33,10 @@ const SummaryCard = (props: any) => {
     return Settings?.currency || "₦";
   };
 
-  const getTotalPrice = (cartt: any) => {
+  const getTotalPrice = (cartt: CartState) => {
     let total = 0;
-    if (Array.isArray(cartt?.items) == true) {
-      cartt?.items?.forEach((item: any) => {
+    if (Array.isArray(cartt?.items) === true) {
+      cartt?.items?.forEach((item: CartItem) => {
         total += Number(item?.totalPrice);
       });
     }

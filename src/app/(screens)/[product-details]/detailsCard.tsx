@@ -16,6 +16,7 @@ import { useSession } from "next-auth/react";
 import Reviews from "./_components/reviews";
 import RelatedProducts from "./_components/relatedProducts";
 import "./style.scss";
+import { formatGAItem, trackViewItem } from "@/utils/analytics";
 
 function DetailsCard(props: any) {
   //to-do

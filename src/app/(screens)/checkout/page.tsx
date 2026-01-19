@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "../../(user)/cart/styles.scss";
 import { Container, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +11,7 @@ import SummaryCard from "./_components/summaryCard";
 
 import NotDeliverableModal from "./_components/notDeliverable";
 import { useRouter } from "next/navigation";
-import { GET, POST } from "@/util/apicall";
+import { POST } from "@/util/apicall";
 import API from "@/config/API";
 import useToggle from "@/shared/hook/useToggle";
 import { storeFinal } from "@/redux/slice/checkoutSlice";
@@ -19,24 +19,32 @@ import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { formatCurrency } from "@/utils/formatNumber";
+import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
 
 function Checkout() {
   const dispatch = useDispatch();
   const navigation = useRouter();
   const { data: session } = useSession();
   const user = session?.user;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const customerId = (user as any)?.id || null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Checkout = useSelector((state: any) => state?.Checkout);
   const Settings = useAppSelector(reduxSettings);
   const [notificationApi, contextHolder] = notification.useNotification();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [payment_method, setPayment_method] = useState<any>("Pay Online");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [total, setTotal] = useState<any>(0);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [delivery_charge, setDelivery_charge] = useState<any>(0);
   const [discount, setDiscount] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [grand_total, setGrand_total] = useState<any>(0);
   const [openModal, toggleModal] = useToggle(false);
   useEffect(() => {
@@ -47,16 +55,23 @@ function Checkout() {
     localStorage.removeItem("last_order_response");
   }, []);
 
+  useEffect(() => {
+    if (Checkout?.Checkout && Checkout.Checkout.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gaItems = Checkout.Checkout.map((item: any) =>
+        formatGAItem(item, null, item.quantity),
+      );
+      trackBeginCheckout(gaItems, total, Settings?.currency);
+    }
+  }, [Checkout?.Checkout, total, Settings?.currency]);
+
   console.log("user ", user);
 
-  useEffect(() => {
-    CalculateDeliveryCharge();
-  }, [Checkout?.address?.id]);
-
-  const CalculateDeliveryCharge = async () => {
+  const CalculateDeliveryCharge = useCallback(async () => {
     try {
-      var totals = 0;
-      if (Array.isArray(Checkout?.Checkout) == true) {
+      let totals = 0;
+      if (Array.isArray(Checkout?.Checkout) === true) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         Checkout?.Checkout?.forEach((item: any) => {
           totals += Number(item?.totalPrice);
         });
@@ -92,11 +107,12 @@ function Checkout() {
             ]
           : Checkout?.Checkout;
 
-        let obj = {
+        const obj = {
           cart: calculationCart,
           address: addressData,
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const response: any = await POST(
           API.NEW_CALCULATE_DELIVERY_CHARGE,
           obj,
@@ -104,9 +120,9 @@ function Checkout() {
 
         if (response?.status) {
           setDeliveryToken(response?.token);
-          let delivery = Number(response?.details?.totalCharge || 0);
-          let discountVal = Number(response?.data?.discount || 0);
-          let gTotal = Number(totals) + Number(delivery) - discountVal;
+          const delivery = Number(response?.details?.totalCharge || 0);
+          const discountVal = Number(response?.data?.discount || 0);
+          const gTotal = Number(totals) + Number(delivery) - discountVal;
           setDelivery_charge(delivery);
           setGrand_total(gTotal);
           setDiscount(discountVal);
@@ -121,6 +137,7 @@ function Checkout() {
           setDiscount(0);
         }
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setDelivery_charge(0);
       setDiscount(0);
@@ -132,54 +149,21 @@ function Checkout() {
         setErrorMessage(err.response.data.message);
       }
     }
-  };
+  }, [
+    Checkout?.Checkout,
+    Checkout?.address,
+    setTotal,
+    setGrand_total,
+    setDeliveryToken,
+    setDelivery_charge,
+    setDiscount,
+    toggleModal,
+    setErrorMessage,
+  ]);
 
-  const PlaceOrder = async () => {
-    if (deliveryToken) {
-      // if delivery details available..only
-      let _payment = {
-        ref: payment_method,
-        type: payment_method,
-      };
-      console.log("this is the _payment", _payment);
-
-      try {
-        const obj = {
-          payment: payment_method,
-          cart: Checkout?.Checkout,
-          address: Checkout?.address,
-          charges: {
-            token: deliveryToken,
-          },
-          user_id: customerId,
-          user: user,
-        };
-        dispatch(storeFinal(obj));
-        if (payment_method === "Pay Online") {
-          InitializePaystackPayment();
-        } else if (payment_method === "Pay On Credit") {
-          notificationApi.error({
-            message: `This Order will be processed only after the Admin approves the Credit payment.`,
-          });
-        } else {
-          navigation.replace("/checkoutsuccess/1");
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      if (Checkout?.address?.id) {
-        toggleModal(true);
-        // notificationApi.error({
-        //   message: `Delivery to the Selected address is not available. Please choose another one.`,
-        // });
-        return;
-      }
-      notificationApi.error({
-        message: `Please Choose a Delivery Address to place an Order`,
-      });
-    }
-  };
+  useEffect(() => {
+    CalculateDeliveryCharge();
+  }, [CalculateDeliveryCharge]);
 
   const InitializePaystackPayment = async () => {
     try {
@@ -194,38 +178,6 @@ function Checkout() {
         .substring(2, 8)
         .toUpperCase()}`;
 
-      // const paymentData = {
-      //   email: user?.user?.email || "test@gmail.com",
-      //   amount: amountInKobo,
-      //   currency: "NGN",
-      //   reference: reference,
-      //   callback_url: `${window.location.origin}/checkoutsuccess/2`,
-      //   metadata: {
-      //     order_id: reference,
-      //     customer_id: user?.user?.id || null,
-      //     custom_fields: [
-      //       {
-      //         display_name: "Customer Name",
-      //         variable_name: "customer_name",
-      //         value: user?.user
-      //           ? `${user?.user?.first_name} ${user?.user?.last_name}`
-      //           : "Guest Customer",
-      //       },
-      //       {
-      //         display_name: "Order Total",
-      //         variable_name: "order_total",
-      //         value: `₦${Number(grand_total).toFixed(2)}`,
-      //       },
-      //       {
-      //         display_name: "Delivery Charge",
-      //         variable_name: "delivery_charge",
-      //         value: `₦${Number(delivery_charge).toFixed(2)}`,
-      //       },
-      //     ],
-      //     cancel_url: `${window.location.origin}/checkout`,
-      //   },
-      // };
-
       // Email validation - log warning but don't block payment
       if (!user?.email) {
         console.warn(
@@ -234,15 +186,18 @@ function Checkout() {
       }
 
       // Safely construct payment data with fallbacks
-      const customerName = (user as any)
-        ? `${(user as any).first_name || "Customer"} ${
-            (user as any).last_name || ""
-          }`
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const anyUser = user as any;
+      const customerName = anyUser
+        ? `${anyUser.first_name || "Customer"} ${anyUser.last_name || ""}`
         : "Customer";
       const customerEmail =
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.email ||
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.id ||
         "customer@alabamarketplace.ng";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const customerId = (user as any)?.id || null;
 
       const paymentData = {
@@ -274,6 +229,7 @@ function Checkout() {
           cancel_url: `${window.location.origin}/checkout`,
         },
       };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await POST(API.PAYSTACK_INITIALIZE, paymentData);
 
       if (response.status && response.data?.data?.authorization_url) {
@@ -308,6 +264,7 @@ function Checkout() {
       }
 
       setIsLoading(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setIsLoading(false);
       console.error("Payment initialization error:", err);
@@ -350,6 +307,46 @@ function Checkout() {
     }
   };
 
+  const PlaceOrder = async () => {
+    if (deliveryToken) {
+      try {
+        const obj = {
+          payment: payment_method,
+          cart: Checkout?.Checkout,
+          address: Checkout?.address,
+          charges: {
+            token: deliveryToken,
+          },
+          user_id: customerId,
+          user: user,
+        };
+        dispatch(storeFinal(obj));
+        if (payment_method === "Pay Online") {
+          InitializePaystackPayment();
+        } else if (payment_method === "Pay On Credit") {
+          notificationApi.error({
+            message: `This Order will be processed only after the Admin approves the Credit payment.`,
+          });
+        } else {
+          navigation.replace("/checkoutsuccess/1");
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      if (Checkout?.address?.id) {
+        toggleModal(true);
+        // notificationApi.error({
+        //   message: `Delivery to the Selected address is not available. Please choose another one.`,
+        // });
+        return;
+      }
+      notificationApi.error({
+        message: `Please Choose a Delivery Address to place an Order`,
+      });
+    }
+  };
+
   return (
     <div className="Screen-box" style={{ backgroundImage: "none" }}>
       {contextHolder}
@@ -360,6 +357,7 @@ function Checkout() {
             <NewAddressBox />
             <PaymentBox
               method={payment_method}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(value: any) => setPayment_method(value)}
             />
             <br />

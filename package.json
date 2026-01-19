@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
     "@auth/firebase-adapter": "^2.4.1",
+    "@next/third-parties": "^16.1.3",
     "@paystack/inline-js": "^2.22.2",
     "@reduxjs/toolkit": "^2.2.6",
     "@tanstack/react-query": "^5.50.1",

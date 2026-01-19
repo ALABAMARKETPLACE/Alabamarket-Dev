@@ -1,3 +1,4 @@
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import "@/styles/App.scss";
 import "slick-carousel/slick/slick.css";
@@ -49,20 +50,6 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon.jpeg" />
         <script
           async
-          src="https://www.googletagmanager.com/gtag/js?id=G-EK6V7P6NKR"
-        ></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-EK6V7P6NKR');
-            `,
-          }}
-        />
-        <script
-          async
           src="https://www.googletagmanager.com/gtag/js?id=AW-11168946770"
         ></script>
         <script
@@ -98,6 +85,7 @@ export default function RootLayout({
             </AntdRegistry>
           </ReactQueryProvider>
         </AuthProvider>
+        <GoogleAnalytics gaId="G-HQRRC5GRKE" />
       </body>
     </html>
   );
