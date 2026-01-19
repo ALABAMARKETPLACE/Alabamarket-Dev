@@ -65,19 +65,19 @@ function ProductItems(props: any) {
             title="Delivery Address"
             description={
               <div className="text-dark">
-                <div className="fw-bold">{props?.data?.address?.name}</div>
+                <div className="fw-bold">{props?.data?.address?.name || props?.data?.address?.contact_name || props?.data?.user?.name}</div>
 
-                <div>City: {props?.data?.address?.city}</div>
-                <div>PinCode: {props?.data?.address?.pin_code}</div>
-                <div>State: {props?.data?.address?.state}</div>
-                <div>Type: {props?.data?.address?.type}</div>
+                <div>City: {props?.data?.address?.city || props?.data?.address?.city_name || "N/A"}</div>
+                <div>PinCode: {props?.data?.address?.pin_code || props?.data?.address?.pincode || "N/A"}</div>
+                <div>State: {props?.data?.address?.state || props?.data?.address?.state_name || "N/A"}</div>
+                <div>Type: {props?.data?.address?.address_type || props?.data?.address?.type || "N/A"}</div>
                 <div>
-                  Address: {props?.data?.address?.fullAddress},
+                  Address: {props?.data?.address?.fullAddress || props?.data?.address?.address || props?.data?.address?.full_address || "N/A"},
                   {props?.data?.address?.geo_location}
                 </div>
                 <div className="fw-bold">
                   Phone Number: {props?.data?.address?.code ?? ""}{" "}
-                  {props?.data?.address?.alt_phone ?? ""}
+                  {props?.data?.address?.alt_phone || props?.data?.address?.phone_no || props?.data?.address?.phone || "N/A"}
                 </div>
               </div>
             }
