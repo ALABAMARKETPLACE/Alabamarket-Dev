@@ -67,21 +67,29 @@ function Checkout() {
       if (Checkout?.address?.id) {
         // Prepare cart with weight information for new API
         // Optimized payload: sending only necessary fields to handle multiple items correctly
-        const cartWithWeight = Checkout?.Checkout?.map((item: any) => ({
-          product_id:
-            item?.pid || item?.productId || item?.product_id || item?.id,
-          store_id:
-            item?.storeId ||
-            item?.store_id ||
-            item?.store?.id ||
-            item?.product?.store_id,
-          weight: Number(item?.weight || item?.product?.weight) || 0.1, // Default to 0.1kg to avoid overweight errors if missing
-          quantity: Number(item?.quantity) || 1,
-          length: Number(item?.length) || 0,
-          width: Number(item?.width) || 0,
-          height: Number(item?.height) || 0,
-          price: Number(item?.price) || 0,
-        }));
+        // LOGIC CHANGE: To ensure delivery price matches single-item price regardless of quantity,
+        // we only send the first item with minimal weight/quantity for calculation.
+        const firstItem = Checkout?.Checkout?.[0];
+        const singleItemCart = [
+          {
+            product_id:
+              firstItem?.pid ||
+              firstItem?.productId ||
+              firstItem?.product_id ||
+              firstItem?.id,
+            store_id:
+              firstItem?.storeId ||
+              firstItem?.store_id ||
+              firstItem?.store?.id ||
+              firstItem?.product?.store_id,
+            weight: 0.1, // Minimal weight
+            quantity: 1, // Single quantity
+            length: 0,
+            width: 0,
+            height: 0,
+            price: Number(firstItem?.price) || 0,
+          },
+        ];
 
         // Prepare address with ID, country_id and state_id
         const addressData = {
@@ -94,7 +102,7 @@ function Checkout() {
         };
 
         let obj = {
-          cart: cartWithWeight,
+          cart: singleItemCart,
           address: addressData,
         };
 
@@ -108,15 +116,8 @@ function Checkout() {
           console.log(
             "Delivery calculation failed with actual weight, retrying with minimal weight...",
           );
-          const minimalWeightCart = cartWithWeight.map((item: any) => ({
-            ...item,
-            weight: 0.1, // Force minimal weight to ensure deliverability
-          }));
-
-          const retryObj = {
-            ...obj,
-            cart: minimalWeightCart,
-          };
+          const retryCart = [{ ...singleItemCart[0], weight: 0.001 }];
+          const retryObj = { ...obj, cart: retryCart };
 
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, retryObj);
           console.log("Retry delivery calculation response:", response);

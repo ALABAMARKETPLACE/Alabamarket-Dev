@@ -51,21 +51,29 @@ function CartPage() {
         if (defaultAddress) {
           // 2. Prepare payload for calculation
           // Sending a clean payload with only necessary fields to avoid issues with large payloads or circular references
-          const cartWithWeight = cartItems.map((item: any) => ({
-            product_id:
-              item?.pid || item?.productId || item?.product_id || item?.id,
-            store_id:
-              item?.storeId ||
-              item?.store_id ||
-              item?.store?.id ||
-              item?.product?.store_id,
-            weight: Number(item?.weight || item?.product?.weight) || 0.1, // Default to 0.1kg to avoid overweight errors if missing
-            quantity: Number(item?.quantity) || 1,
-            length: Number(item?.length) || 0,
-            width: Number(item?.width) || 0,
-            height: Number(item?.height) || 0,
-            price: Number(item?.price) || 0,
-          }));
+          // LOGIC CHANGE: To ensure delivery price matches single-item price regardless of quantity,
+          // we only send the first item with minimal weight/quantity for calculation.
+          const firstItem = cartItems[0];
+          const singleItemCart = [
+            {
+              product_id:
+                firstItem?.pid ||
+                firstItem?.productId ||
+                firstItem?.product_id ||
+                firstItem?.id,
+              store_id:
+                firstItem?.storeId ||
+                firstItem?.store_id ||
+                firstItem?.store?.id ||
+                firstItem?.product?.store_id,
+              weight: 0.1, // Minimal weight
+              quantity: 1, // Single quantity
+              length: 0,
+              width: 0,
+              height: 0,
+              price: Number(firstItem?.price) || 0,
+            },
+          ];
 
           const addressData = {
             id: defaultAddress.id,
@@ -77,7 +85,7 @@ function CartPage() {
           };
 
           const obj = {
-            cart: cartWithWeight,
+            cart: singleItemCart, // Use single item payload
             address: addressData,
           };
 
@@ -87,21 +95,13 @@ function CartPage() {
             obj,
           );
 
-          // Retry logic: If delivery fails (likely due to weight limits), retry with minimal weight
+          // Retry logic (kept just in case, though 0.1kg should always work)
           if (!response?.status) {
             console.log(
-              "Delivery calculation failed with actual weight, retrying with minimal weight...",
+              "Delivery calculation failed, retrying with micro weight...",
             );
-            const minimalWeightCart = cartWithWeight.map((item) => ({
-              ...item,
-              weight: 0.1, // Force minimal weight to ensure deliverability
-            }));
-
-            const retryObj = {
-              ...obj,
-              cart: minimalWeightCart,
-            };
-
+            const retryCart = [{ ...singleItemCart[0], weight: 0.001 }];
+            const retryObj = { ...obj, cart: retryCart };
             response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, retryObj);
           }
 
