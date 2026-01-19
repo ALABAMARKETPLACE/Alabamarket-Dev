@@ -65,63 +65,15 @@ function Checkout() {
       setGrand_total(totals);
 
       if (Checkout?.address?.id) {
-        // Prepare cart with weight information for new API
-        // Optimized payload: sending only necessary fields to handle multiple items correctly
-        // LOGIC CHANGE: To ensure delivery price matches single-item price regardless of quantity,
-        // we only send the first item with minimal weight/quantity for calculation.
-        const firstItem = Checkout?.Checkout?.[0];
-        const singleItemCart = [
-          {
-            product_id:
-              firstItem?.pid ||
-              firstItem?.productId ||
-              firstItem?.product_id ||
-              firstItem?.id,
-            store_id:
-              firstItem?.storeId ||
-              firstItem?.store_id ||
-              firstItem?.store?.id ||
-              firstItem?.product?.store_id,
-            weight: 0.1, // Minimal weight
-            quantity: 1, // Single quantity
-            length: 0,
-            width: 0,
-            height: 0,
-            price: Number(firstItem?.price) || 0,
-          },
-        ];
-
-        // Prepare address with ID, country_id and state_id
-        const addressData = {
-          id: Checkout?.address?.id, // Include actual address ID for token validation
-          country_id: Checkout?.address?.country_id || null,
-          state_id: Checkout?.address?.state_id || null,
-          state: Checkout?.address?.state,
-          country: Checkout?.address?.country,
-          city: Checkout?.address?.city,
-        };
-
         let obj = {
-          cart: singleItemCart,
-          address: addressData,
+          cart: Checkout?.Checkout,
+          address: Checkout?.address,
         };
 
-        console.log("Calculating delivery with payload:", obj);
-
-        let response: any = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
-        console.log("Delivery calculation response:", response);
-
-        // Retry logic: If delivery fails (likely due to weight limits), retry with minimal weight
-        if (!response?.status) {
-          console.log(
-            "Delivery calculation failed with actual weight, retrying with minimal weight...",
-          );
-          const retryCart = [{ ...singleItemCart[0], weight: 0.001 }];
-          const retryObj = { ...obj, cart: retryCart };
-
-          response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, retryObj);
-          console.log("Retry delivery calculation response:", response);
-        }
+        const response: any = await POST(
+          API.NEW_CALCULATE_DELIVERY_CHARGE,
+          obj,
+        );
 
         if (response?.status) {
           setDeliveryToken(response?.token);
@@ -132,11 +84,9 @@ function Checkout() {
           setGrand_total(gTotal);
           setDiscount(discountVal);
         } else {
-          // Clean up error message (remove @@ suffix if present)
-          const cleanMessage = (response?.message ?? "").replace(/@@$/, "");
           toggleModal(true);
           setErrorMessage(
-            cleanMessage || "Delivery not available for this location",
+            response?.message || "Delivery not available for this location",
           );
           setDeliveryToken("");
           setDelivery_charge(0);
@@ -148,13 +98,11 @@ function Checkout() {
       setDelivery_charge(0);
       setDiscount(0);
       setDeliveryToken("");
-      console.log("Delivery calculation error:", err);
+      console.log(err);
 
-      // Show error to user if it's a delivery availability issue
       if (err?.response?.data?.message) {
-        const cleanMessage = err.response.data.message.replace(/@@$/, "");
         toggleModal(true);
-        setErrorMessage(cleanMessage);
+        setErrorMessage(err.response.data.message);
       }
     }
   };

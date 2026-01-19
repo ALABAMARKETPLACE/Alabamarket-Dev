@@ -27,9 +27,6 @@ function CartPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [deliveryCharge, setDeliveryCharge] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [calculatingDelivery, setCalculatingDelivery] = useState(false);
   const navigate = useRouter();
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -37,86 +34,6 @@ function CartPage() {
     getRecommendations();
     // dispatch(clearCheckout());
   }, []);
-
-  const calculateDelivery = async (cartItems: any[]) => {
-    try {
-      setCalculatingDelivery(true);
-      // 1. Fetch user addresses
-      const addressRes: any = await GET(API.NEW_ADDRESS_ALL);
-      if (addressRes?.status && addressRes?.data?.length > 0) {
-        // Use the first address or default one
-        const defaultAddress =
-          addressRes.data.find((a: any) => a.is_default) || addressRes.data[0];
-
-        if (defaultAddress) {
-          // 2. Prepare payload for calculation
-          // Sending a clean payload with only necessary fields to avoid issues with large payloads or circular references
-          // LOGIC CHANGE: To ensure delivery price matches single-item price regardless of quantity,
-          // we only send the first item with minimal weight/quantity for calculation.
-          const firstItem = cartItems[0];
-          const singleItemCart = [
-            {
-              product_id:
-                firstItem?.pid ||
-                firstItem?.productId ||
-                firstItem?.product_id ||
-                firstItem?.id,
-              store_id:
-                firstItem?.storeId ||
-                firstItem?.store_id ||
-                firstItem?.store?.id ||
-                firstItem?.product?.store_id,
-              weight: 0.1, // Minimal weight
-              quantity: 1, // Single quantity
-              length: 0,
-              width: 0,
-              height: 0,
-              price: Number(firstItem?.price) || 0,
-            },
-          ];
-
-          const addressData = {
-            id: defaultAddress.id,
-            country_id: defaultAddress.country_id || null,
-            state_id: defaultAddress.state_id || null,
-            state: defaultAddress.state,
-            country: defaultAddress.country,
-            city: defaultAddress.city,
-          };
-
-          const obj = {
-            cart: singleItemCart, // Use single item payload
-            address: addressData,
-          };
-
-          // 3. Call calculation API
-          let response: any = await POST(
-            API.NEW_CALCULATE_DELIVERY_CHARGE,
-            obj,
-          );
-
-          // Retry logic (kept just in case, though 0.1kg should always work)
-          if (!response?.status) {
-            console.log(
-              "Delivery calculation failed, retrying with micro weight...",
-            );
-            const retryCart = [{ ...singleItemCart[0], weight: 0.001 }];
-            const retryObj = { ...obj, cart: retryCart };
-            response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, retryObj);
-          }
-
-          if (response?.status) {
-            setDeliveryCharge(Number(response?.details?.totalCharge || 0));
-            setDiscount(Number(response?.data?.discount || 0));
-          }
-        }
-      }
-    } catch (err) {
-      console.log("Delivery calculation failed", err);
-    } finally {
-      setCalculatingDelivery(false);
-    }
-  };
 
   const getRecommendations = async () => {
     try {
@@ -137,7 +54,6 @@ function CartPage() {
         const cartItems: any = await GET(API.CART_GET_ALL);
         if (cartItems.status) {
           dispatch(storeCart(cartItems.data));
-          calculateDelivery(cartItems.data);
           return;
         } else {
           notificationApi.error({ message: cartItems.message ?? "" });
@@ -299,9 +215,6 @@ function CartPage() {
                     Cart={Cart}
                     checkout={() => goCheckout()}
                     error={error}
-                    deliveryCharge={deliveryCharge}
-                    discount={discount}
-                    calculatingDelivery={calculatingDelivery}
                   />
                 </div>
                 <br />

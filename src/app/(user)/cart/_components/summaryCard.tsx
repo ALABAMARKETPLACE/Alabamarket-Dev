@@ -26,33 +26,6 @@ const SummaryCard = (props: any) => {
     return formatCurrency(total);
   };
 
-  const getDeliveryCharge = () => {
-    if (props?.calculatingDelivery) return "Calculating...";
-    return formatCurrency(props?.deliveryCharge || 0);
-  };
-
-  const getDiscount = () => {
-    return formatCurrency(props?.discount || 0);
-  };
-
-  const getGrandTotal = (cartt: any) => {
-    let total = 0;
-    if (Array.isArray(cartt?.items) == true) {
-      cartt?.items?.forEach((item: any) => {
-        total += Number(item?.totalPrice);
-      });
-    }
-    // Add delivery charge if available
-    if (props?.deliveryCharge) {
-      total += Number(props.deliveryCharge);
-    }
-    // Subtract discount
-    if (props?.discount) {
-      total -= Number(props.discount);
-    }
-    return formatCurrency(total);
-  };
-
   return (
     <div className="Cart-SummaryCard">
       <div className="Cart-row">
@@ -73,9 +46,7 @@ const SummaryCard = (props: any) => {
       <div className="Cart-row">
         <div className="Cart-txt3">Discount</div>
         <div style={{ flex: 1 }} />
-        <div className="Cart-txt4">
-          {getCurrencySymbol()} {getDiscount()}
-        </div>
+        <div className="Cart-txt4">{getCurrencySymbol()} 0.00</div>
       </div>
       <br />
       <div className="Cart-row">
@@ -87,9 +58,7 @@ const SummaryCard = (props: any) => {
       <div className="Cart-row">
         <div className="Cart-txt3">Delivery Charges</div>
         <div style={{ flex: 1 }} />
-        <div className="Cart-txt4">
-          {getCurrencySymbol()} {getDeliveryCharge()}
-        </div>
+        <div className="Cart-txt4">{getCurrencySymbol()} 0.00</div>
       </div>
       <div className="Cart-line2" />
       <br />
@@ -97,16 +66,14 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt3">Total :</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt7">
-          {getCurrencySymbol()} {getGrandTotal(props?.Cart)}
+          {getCurrencySymbol()} {getTotalPrice(props?.Cart)}
         </div>
       </div>
       <div className="Cart-line2" />
-      {props?.deliveryCharge > 0 ? null : (
-        <p className="text-small-summarycard my-0 text-center">
-          <span className="fw-medium">NB:</span> Delivery charge will be
-          calculated in the next step
-        </p>
-      )}
+      <p className="text-small-summarycard my-0 text-center">
+        <span className="fw-medium">NB:</span> Delivery charge will be
+        calculated in the next step
+      </p>
       <br />
       {props?.error ? (
         <>
