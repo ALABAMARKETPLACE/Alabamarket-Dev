@@ -50,9 +50,14 @@ function CartPage() {
 
         if (defaultAddress) {
           // 2. Prepare payload for calculation
+          // Ensure we pass all necessary product details including dimensions if available
           const cartWithWeight = cartItems.map((item: any) => ({
-            weight: item?.weight || 1,
-            quantity: item?.quantity || 1,
+            ...item, // Pass full item just in case
+            weight: Number(item?.weight) || 1,
+            quantity: Number(item?.quantity) || 1,
+            length: Number(item?.length) || 0,
+            width: Number(item?.width) || 0,
+            height: Number(item?.height) || 0,
           }));
 
           const addressData = {
@@ -153,6 +158,7 @@ function CartPage() {
         {},
       );
       if (cartItems.status) {
+        // Optimistically update or fetch fresh data
         loadData();
         notificationApi.success({
           message: cartItems?.message,
