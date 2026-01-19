@@ -39,36 +39,51 @@ function Page() {
   const userRole = (session as any)?.role;
   const userType = (session as any)?.user?.type || (session as any)?.type;
   const isSeller = userRole === "seller" || userType === "seller";
-  
+
+  const { data: storeInfo, isLoading: isStoreLoading } = useQuery({
+    queryFn: () =>
+      GET(API.CORPORATE_STORE_GETSELLERINFO, {}, null, {
+        token: (session as any)?.token,
+      }),
+    queryKey: ["seller_store_details"],
+    enabled:
+      status === "authenticated" && isSeller && !!(session as any)?.token,
+    retry: false,
+  });
+
+  const resolvedStoreId =
+    (storeInfo as any)?.data?._id ?? (storeInfo as any)?.data?.id ?? storeId;
+
   const endpoint =
-    isSeller && storeId ? API.ORDER_GET_BYSTORE + storeId : API.ORDER_GET;
+    isSeller && resolvedStoreId
+      ? API.ORDER_GET_BYSTORE + resolvedStoreId
+      : API.ORDER_GET;
   const params =
-    isSeller && storeId
+    isSeller && resolvedStoreId
       ? { ...orderQueryParams, order: "DESC" }
       : { ...orderQueryParams };
 
   const {
     data: orders,
-    isLoading,
+    isLoading: isOrdersLoading,
     isFetching,
     refetch,
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) => 
-      GET(
-        queryKey[0] as string, 
-        queryKey[1] as object, 
-        null, 
-        { token: (session as any)?.token }
-      ),
+    queryFn: ({ queryKey }) =>
+      GET(queryKey[0] as string, queryKey[1] as object, null, {
+        token: (session as any)?.token,
+      }),
     queryKey: [endpoint, params],
     enabled:
       status === "authenticated" &&
       !!(session as any)?.token &&
-      (isSeller ? !!storeId : true),
+      (isSeller ? !!resolvedStoreId : true),
     retry: false,
   });
+
+  const isLoading = isOrdersLoading || (isSeller && isStoreLoading);
 
   useEffect(() => {
     const handleResize = () => {
@@ -117,19 +132,19 @@ function Page() {
   return (
     <>
       <PageHeader title={"Orders"} bredcume={"Dashboard / Orders"}>
-          <OrdersFilterBar
-            isCompactFilters={isCompactFilters}
-            filtersDropdownOpen={filtersDropdownOpen}
-            onFiltersDropdownChange={setFiltersDropdownOpen}
-            searchValue={searchValue}
-            onSearchChange={handleSearchChange}
-            statusValue={statusValue}
-            onStatusChange={handleStatusChange}
-            dateRangeValue={dateRangeValue}
-            onDateRangeChange={handleDateRangeChange}
-            onRefresh={() => refetch()}
-            isRefreshing={isFetching && !isLoading}
-          />
+        <OrdersFilterBar
+          isCompactFilters={isCompactFilters}
+          filtersDropdownOpen={filtersDropdownOpen}
+          onFiltersDropdownChange={setFiltersDropdownOpen}
+          searchValue={searchValue}
+          onSearchChange={handleSearchChange}
+          statusValue={statusValue}
+          onStatusChange={handleStatusChange}
+          dateRangeValue={dateRangeValue}
+          onDateRangeChange={handleDateRangeChange}
+          onRefresh={() => refetch()}
+          isRefreshing={isFetching && !isLoading}
+        />
       </PageHeader>
       {renderContent()}
     </>
