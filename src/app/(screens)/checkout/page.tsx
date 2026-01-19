@@ -75,7 +75,7 @@ function Checkout() {
             item?.store_id ||
             item?.store?.id ||
             item?.product?.store_id,
-          weight: Number(item?.weight) || 1,
+          weight: Number(item?.weight || item?.product?.weight) || 0.1, // Default to 0.1kg to avoid overweight errors if missing
           quantity: Number(item?.quantity) || 1,
           length: Number(item?.length) || 0,
           width: Number(item?.width) || 0,
