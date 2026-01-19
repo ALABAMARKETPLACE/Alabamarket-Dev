@@ -44,6 +44,9 @@ export default function AddressTab(props: Props) {
       const last = isValid(user?.data?.last_name) ? user.data.last_name : "";
       return `${user.data.first_name} ${last}`.trim();
     }
+    // Fallback to seller name if all else fails
+    if (isValid(props?.data?.seller_name)) return props.data.seller_name;
+
     return "N/A";
   };
 

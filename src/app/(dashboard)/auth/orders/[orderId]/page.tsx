@@ -17,14 +17,23 @@ import { useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxAccessToken } from "@/redux/slice/authSlice";
 
+import API from "@/config/API";
+
 export default function OrderDetails() {
   const { orderId } = useParams();
   const route = useRouter();
   const accessToken = useAppSelector(reduxAccessToken);
+
   const { data: order, isLoading } = useQuery({
     queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
     queryKey: ["order_details", orderId],
     staleTime: 0,
+  });
+
+  const { data: sellerInfo } = useQuery({
+    queryFn: async () => await GET(API.CORPORATE_STORE_GETSELLERINFO),
+    queryKey: ["seller_info_details"],
+    enabled: !!accessToken,
   });
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
@@ -87,6 +96,11 @@ export default function OrderDetails() {
                     ...order?.data?.address,
                     user_id: order?.data?.userId,
                     order_contact_name: order?.data?.name,
+                    seller_name:
+                      sellerInfo?.data?.name ||
+                      sellerInfo?.data?.first_name +
+                        " " +
+                        sellerInfo?.data?.last_name,
                   }}
                 />
                 <ProductTab data={order?.data?.orderItems} />
