@@ -66,15 +66,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     }
   };
 
-  const renderDesktopActions = (record: any) => {
-    const id = record?.id ?? record?._id;
-    
-    // Strict check for invalid ID values including string "undefined"
-    if (!id || id === "undefined" || id === "null") {
-      return <span style={{ color: 'red', fontSize: '10px' }}>Invalid ID</span>;
-    }
-
-    return (
+  const renderDesktopActions = (id: number, record: any) => (
     <div className="table-action">
       <Button
         type="text"
@@ -115,7 +107,6 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       </Popconfirm>
     </div>
   );
-  };
 
   const columns = [
     {
@@ -123,7 +114,6 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "id",
       key: "id",
       width: 100,
-      render: (id: any, record: any) => id ?? record?._id ?? "-",
     },
     {
       title: "Seller Name",
@@ -188,7 +178,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "id",
       width: 150,
       fixed: "right" as const,
-      render: (_: any, record: any) => renderDesktopActions(record),
+      render: (id: number, record: any) => renderDesktopActions(id, record),
     },
   ];
 
@@ -204,8 +194,6 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
 
     return data.map((record: any) => {
       const id = record?.id ?? record?._id;
-      if (!id || id === "undefined" || id === "null") return null;
-
       const productsCount = Array.isArray(record?.product_ids)
         ? record.product_ids.length
         : 0;

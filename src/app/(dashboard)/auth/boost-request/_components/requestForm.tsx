@@ -32,7 +32,8 @@ function RequestForm({
   // Fetch all subscription plans
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-all"],
-    queryFn: ({ signal }) => GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
+    queryFn: ({ signal }) =>
+      GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
@@ -61,15 +62,9 @@ function RequestForm({
   useEffect(() => {
     const plansList = getPlansArray(plansData);
     if (initialData && plansList.length > 0 && mode === "edit") {
-      const plan = plansList.find((p: any) => {
-        const planId = p.id ?? p._id;
-        // Check against plan_id first, then try plan.id if available
-        return (
-          planId == initialData.plan_id ||
-          (initialData.plan &&
-            planId == (initialData.plan.id ?? initialData.plan._id))
-        );
-      });
+      const plan = plansList.find(
+        (p: any) => (p.id || p._id) === initialData.plan_id
+      );
       setSelectedPlan(plan);
       setSelectedProducts(initialData.product_ids || []);
 
@@ -95,7 +90,7 @@ function RequestForm({
 
   const handlePlanChange = (planId: number) => {
     const plansList = getPlansArray(plansData);
-    const plan = plansList.find((p: any) => (p.id ?? p._id) === planId);
+    const plan = plansList.find((p: any) => (p.id || p._id) === planId);
     setSelectedPlan(plan);
     setSelectedProducts([]);
     form.setFieldsValue({ product_ids: [] });
@@ -146,11 +141,11 @@ function RequestForm({
                 (trigger?.parentElement as HTMLElement) || document.body
               }
               options={plans.map((plan: any) => ({
-                value: plan.id ?? plan._id,
+                value: plan.id || plan._id,
                 label: `${plan.name} (${plan.min_products}-${
                   plan.max_products
                 } products, ${getPlanDuration(plan)} days, ₦${getPlanPrice(
-                  plan,
+                  plan
                 ).toFixed(2)})`,
               }))}
             />
@@ -187,7 +182,7 @@ function RequestForm({
                     return Promise.resolve();
                   }
                   return Promise.reject(
-                    `Please select between ${selectedPlan.min_products} and ${selectedPlan.max_products} products`,
+                    `Please select between ${selectedPlan.min_products} and ${selectedPlan.max_products} products`
                   );
                 },
               }),
@@ -233,7 +228,9 @@ function RequestForm({
               loading={loading}
               size="large"
               className="boostRequests-formAction"
-              disabled={!selectedPlan || selectedProducts.length === 0}
+              disabled={
+                !selectedPlan || selectedProducts.length === 0
+              }
             >
               {mode === "create" ? "Create Request" : "Update Request"}
             </Button>

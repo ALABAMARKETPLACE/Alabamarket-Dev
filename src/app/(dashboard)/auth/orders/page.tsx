@@ -17,10 +17,6 @@ function Page() {
   const [isCompactFilters, setIsCompactFilters] = useState(false);
   const [filtersDropdownOpen, setFiltersDropdownOpen] = useState(false);
   const { data: session } = useSession();
-
-  const userRole = (session as any)?.role || (session as any)?.user?.role;
-  const storeId = (session as any)?.user?.store_id;
-
   const {
     pagination: { page, take, setPage, setTake },
     filters,
@@ -32,6 +28,20 @@ function Page() {
     dateRange: { value: dateRangeValue, onChange: handleDateRangeChange },
   } = filters;
 
+  const storeId =
+    (session as any)?.user?.store_id ??
+    (session as any)?.user?.storeId ??
+    (session as any)?.store_id ??
+    null;
+  const userRole = (session as any)?.role;
+  const userType = (session as any)?.user?.type || (session as any)?.type;
+  const isSeller = userRole === "seller" || userType === "seller";
+  const endpoint = isSeller && storeId ? API.ORDER_GET_BYSTORE + storeId : API.ORDER_GET;
+  const params =
+    isSeller && storeId
+      ? { ...orderQueryParams, order: "DESC" }
+      : { ...orderQueryParams };
+
   const {
     data: orders,
     isLoading,
@@ -40,18 +50,8 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) => {
-      const params = { ...(queryKey[1] as object) };
-      
-      // If user is a seller, use the order/store/{id} endpoint
-      if (userRole !== "admin" && storeId) {
-        return GET(API.ORDER_GET_BYSTORE + storeId, params);
-      }
-      
-      return GET(API.ORDER_GET, params);
-    },
-    queryKey: ["admin_orders", orderQueryParams, userRole, storeId],
-    enabled: !!userRole && (userRole === "admin" || !!storeId),
+    queryFn: ({ queryKey }) => GET(queryKey[0] as string, queryKey[1] as object),
+    queryKey: [endpoint, params],
   });
 
   useEffect(() => {
