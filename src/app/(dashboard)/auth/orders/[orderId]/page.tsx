@@ -112,9 +112,15 @@ export default function OrderDetails() {
                 <AddressTab
                   data={{
                     ...order?.data?.address,
+                    ...(specificStoreOrder?.address || {}),
                     user_id: order?.data?.userId,
                     order_contact_name:
                       specificStoreOrder?.name || order?.data?.name,
+                    // Fallback for phone if it exists at root of store order
+                    phone_no:
+                      order?.data?.address?.phone_no ||
+                      specificStoreOrder?.phone ||
+                      specificStoreOrder?.phone_no,
                   }}
                 />
                 <ProductTab data={order?.data?.orderItems} />
