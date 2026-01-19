@@ -50,14 +50,16 @@ function CartPage() {
 
         if (defaultAddress) {
           // 2. Prepare payload for calculation
-          // Ensure we pass all necessary product details including dimensions if available
+          // Sending a clean payload with only necessary fields to avoid issues with large payloads or circular references
           const cartWithWeight = cartItems.map((item: any) => ({
-            ...item, // Pass full item just in case
+            product_id: item?.id || item?.productId || item?.product_id,
+            store_id: item?.storeId || item?.store_id || item?.store?.id,
             weight: Number(item?.weight) || 1,
             quantity: Number(item?.quantity) || 1,
             length: Number(item?.length) || 0,
             width: Number(item?.width) || 0,
             height: Number(item?.height) || 0,
+            price: Number(item?.price) || 0,
           }));
 
           const addressData = {
