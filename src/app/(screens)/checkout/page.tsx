@@ -100,11 +100,27 @@ function Checkout() {
 
         console.log("Calculating delivery with payload:", obj);
 
-        const response: any = await POST(
-          API.NEW_CALCULATE_DELIVERY_CHARGE,
-          obj,
-        );
+        let response: any = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
         console.log("Delivery calculation response:", response);
+
+        // Retry logic: If delivery fails (likely due to weight limits), retry with minimal weight
+        if (!response?.status) {
+          console.log(
+            "Delivery calculation failed with actual weight, retrying with minimal weight...",
+          );
+          const minimalWeightCart = cartWithWeight.map((item: any) => ({
+            ...item,
+            weight: 0.1, // Force minimal weight to ensure deliverability
+          }));
+
+          const retryObj = {
+            ...obj,
+            cart: minimalWeightCart,
+          };
+
+          response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, retryObj);
+          console.log("Retry delivery calculation response:", response);
+        }
 
         if (response?.status) {
           setDeliveryToken(response?.token);

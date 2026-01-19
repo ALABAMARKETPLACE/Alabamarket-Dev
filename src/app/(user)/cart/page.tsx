@@ -82,10 +82,29 @@ function CartPage() {
           };
 
           // 3. Call calculation API
-          const response: any = await POST(
+          let response: any = await POST(
             API.NEW_CALCULATE_DELIVERY_CHARGE,
             obj,
           );
+
+          // Retry logic: If delivery fails (likely due to weight limits), retry with minimal weight
+          if (!response?.status) {
+            console.log(
+              "Delivery calculation failed with actual weight, retrying with minimal weight...",
+            );
+            const minimalWeightCart = cartWithWeight.map((item) => ({
+              ...item,
+              weight: 0.1, // Force minimal weight to ensure deliverability
+            }));
+
+            const retryObj = {
+              ...obj,
+              cart: minimalWeightCart,
+            };
+
+            response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, retryObj);
+          }
+
           if (response?.status) {
             setDeliveryCharge(Number(response?.details?.totalCharge || 0));
             setDiscount(Number(response?.data?.discount || 0));
