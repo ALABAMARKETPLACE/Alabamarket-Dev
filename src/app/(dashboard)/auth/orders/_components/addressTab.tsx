@@ -31,10 +31,10 @@ export default function AddressTab(props: Props) {
     <Card title={"Delivery Address"} className="h-100">
       <Descriptions column={1} bordered>
         <Descriptions.Item label="Contact Name">
-          {user?.data?.name || "N/A"}
+          {props?.data?.name || user?.data?.name || "N/A"}
         </Descriptions.Item>
         <Descriptions.Item label="Phone Number">
-          {props?.data?.phone_no || "N/A"}
+          {props?.data?.phone_no || user?.data?.phone || "N/A"}
         </Descriptions.Item>
         <Descriptions.Item label="Address Type">
           <span className="text-capitalize">
@@ -42,13 +42,13 @@ export default function AddressTab(props: Props) {
           </span>
         </Descriptions.Item>
         <Descriptions.Item label="State">
-          {props?.data?.state_id ? getStateName(props?.data?.state_id) : "N/A"}
+          {props?.data?.state || (props?.data?.state_id ? getStateName(props?.data?.state_id) : "N/A")}
         </Descriptions.Item>
         <Descriptions.Item label="City">
-          {props?.data?.city || "N/A"}
+          {props?.data?.city || props?.data?.city_id || "N/A"}
         </Descriptions.Item>
         <Descriptions.Item label="Full Address">
-          {props?.data?.full_address || "N/A"}
+          {props?.data?.full_address || props?.data?.address || "N/A"}
         </Descriptions.Item>
       </Descriptions>
     </Card>
