@@ -66,9 +66,16 @@ function Checkout() {
 
       if (Checkout?.address?.id) {
         // Prepare cart with weight information for new API
+        // Optimized payload: sending only necessary fields to handle multiple items correctly
         const cartWithWeight = Checkout?.Checkout?.map((item: any) => ({
-          weight: item?.weight || 1, // Default to 1kg if no weight specified
-          quantity: item?.quantity || 1,
+          product_id: item?.id || item?.productId || item?.product_id,
+          store_id: item?.storeId || item?.store_id || item?.store?.id,
+          weight: Number(item?.weight) || 1,
+          quantity: Number(item?.quantity) || 1,
+          length: Number(item?.length) || 0,
+          width: Number(item?.width) || 0,
+          height: Number(item?.height) || 0,
+          price: Number(item?.price) || 0,
         }));
 
         // Prepare address with ID, country_id and state_id
