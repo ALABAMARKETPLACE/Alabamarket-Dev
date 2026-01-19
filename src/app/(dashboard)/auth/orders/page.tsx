@@ -50,7 +50,10 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) => GET(queryKey[0] as string, queryKey[1] as object),
+    queryFn: ({ queryKey }) =>
+      GET(queryKey[0] as string, queryKey[1] as object, null, {
+        token: (session as any)?.token,
+      }),
     queryKey: [endpoint, params],
   });
 

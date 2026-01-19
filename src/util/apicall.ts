@@ -1,7 +1,6 @@
 import API from "@/config/API";
 import { store } from "@/redux/store/store";
 import { message } from "antd";
-import { useSession } from "next-auth/react";
 
 const getFullUrl = (url: string) => {
   if (!url) return "";
@@ -9,10 +8,14 @@ const getFullUrl = (url: string) => {
     if (url.startsWith("http://") || url.startsWith("https://")) {
       return url;
     }
-    const baseUrl = API.BASE_URL.endsWith("/") ? API.BASE_URL : `${API.BASE_URL}/`;
+    const baseUrl = API.BASE_URL.endsWith("/")
+      ? API.BASE_URL
+      : `${API.BASE_URL}/`;
     return new URL(url, baseUrl).toString();
   } catch {
-    const baseUrl = API.BASE_URL.endsWith("/") ? API.BASE_URL : `${API.BASE_URL}/`;
+    const baseUrl = API.BASE_URL.endsWith("/")
+      ? API.BASE_URL
+      : `${API.BASE_URL}/`;
     return baseUrl + url;
   }
 };
@@ -20,10 +23,11 @@ const getFullUrl = (url: string) => {
 const GET = async (
   url: string,
   params: Record<string, any> = {},
-  signal: AbortSignal | null = null
+  signal: AbortSignal | null = null,
+  opts?: { token?: string; headers?: Record<string, string> },
 ) => {
   try {
-    const token: any = store.getState()?.Auth?.token ?? " ";
+    const token: any = opts?.token ?? store.getState()?.Auth?.token ?? " ";
     const queryParams = new URLSearchParams(params).toString();
     const URL = queryParams ? url + `?${queryParams}` : url;
     const response = await fetch(getFullUrl(URL), {
@@ -32,6 +36,7 @@ const GET = async (
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
+        ...(opts?.headers ?? {}),
       },
     });
     if (!response.ok) {
@@ -60,7 +65,7 @@ const GET = async (
 const POST = async (
   url: string,
   body: Record<string, any> = {},
-  signal: AbortSignal | null = null
+  signal: AbortSignal | null = null,
 ) => {
   try {
     const token: any = store.getState()?.Auth?.token ?? " ";
@@ -89,7 +94,7 @@ const POST = async (
 const PUT = async (
   url: string,
   body: Record<string, any>,
-  signal: AbortSignal | null = null
+  signal: AbortSignal | null = null,
 ) => {
   try {
     const token = store.getState()?.Auth?.token ?? " ";
@@ -118,7 +123,7 @@ const PUT = async (
 const PATCH = async (
   url: string,
   body: Record<string, any>,
-  signal: AbortSignal | null = null
+  signal: AbortSignal | null = null,
 ) => {
   try {
     const token: any = store.getState()?.Auth?.token ?? " ";
@@ -146,7 +151,7 @@ const PATCH = async (
 const EXCEL_UPLOAD = async (
   file: any,
   category: number,
-  subCategory: number
+  subCategory: number,
 ) => {
   return new Promise(async (resolve, reject) => {
     // const user: any = Store.getState()?.User?.user;
@@ -171,7 +176,7 @@ const EXCEL_UPLOAD = async (
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         const response = await fileUpload.json();
         resolve(response);
@@ -224,7 +229,7 @@ const COMPRESS_IMAGE = async (file: File) => {
     const data = await response.json();
     if (!response?.ok)
       return Promise.reject(
-        new Error(data?.message ?? "Something went wrong..")
+        new Error(data?.message ?? "Something went wrong.."),
       );
     return { ...data, url: data.Location, status: true };
   } catch (err: any) {
@@ -235,8 +240,8 @@ const COMPRESS_IMAGE = async (file: File) => {
     ) {
       return Promise.reject(
         new Error(
-          "Image upload service is unavailable. Please try again later."
-        )
+          "Image upload service is unavailable. Please try again later.",
+        ),
       );
     }
     return Promise.reject(new Error(err.message));
@@ -268,7 +273,7 @@ const UPLOAD_IMAGES = async (files: any[]) => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
         const response = await fileUpload.json();
         resolve(response);
@@ -318,7 +323,7 @@ const VIDEO_UPLOAD = async (file: File) => {
     const maxSize = 50 * 1024 * 1024; // 100MB
     if (file.size > maxSize) {
       return Promise.reject(
-        new Error("Video file size must be less than 50MB")
+        new Error("Video file size must be less than 50MB"),
       );
     }
 
@@ -332,7 +337,7 @@ const VIDEO_UPLOAD = async (file: File) => {
     ];
     if (!validTypes.includes(file.type)) {
       return Promise.reject(
-        new Error("Please upload a valid video file (MP4, MOV, AVI, WEBM)")
+        new Error("Please upload a valid video file (MP4, MOV, AVI, WEBM)"),
       );
     }
 
