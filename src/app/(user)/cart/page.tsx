@@ -3,7 +3,7 @@ import { notification, Popconfirm } from "antd";
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { IoCartOutline, IoCloseCircleOutline } from "react-icons/io5";
-import { DELETE, GET, PUT } from "../../../util/apicall";
+import { DELETE, GET, PUT, POST } from "../../../util/apicall";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../../config/API";
 import { storeCart } from "../../../redux/slice/cartSlice";
@@ -27,6 +27,9 @@ function CartPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [deliveryCharge, setDeliveryCharge] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [calculatingDelivery, setCalculatingDelivery] = useState(false);
   const navigate = useRouter();
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -34,6 +37,55 @@ function CartPage() {
     getRecommendations();
     // dispatch(clearCheckout());
   }, []);
+
+  const calculateDelivery = async (cartItems: any[]) => {
+    try {
+      setCalculatingDelivery(true);
+      // 1. Fetch user addresses
+      const addressRes: any = await GET(API.NEW_ADDRESS_ALL);
+      if (addressRes?.status && addressRes?.data?.length > 0) {
+        // Use the first address or default one
+        const defaultAddress =
+          addressRes.data.find((a: any) => a.is_default) || addressRes.data[0];
+
+        if (defaultAddress) {
+          // 2. Prepare payload for calculation
+          const cartWithWeight = cartItems.map((item: any) => ({
+            weight: item?.weight || 1,
+            quantity: item?.quantity || 1,
+          }));
+
+          const addressData = {
+            id: defaultAddress.id,
+            country_id: defaultAddress.country_id || null,
+            state_id: defaultAddress.state_id || null,
+            state: defaultAddress.state,
+            country: defaultAddress.country,
+            city: defaultAddress.city,
+          };
+
+          const obj = {
+            cart: cartWithWeight,
+            address: addressData,
+          };
+
+          // 3. Call calculation API
+          const response: any = await POST(
+            API.NEW_CALCULATE_DELIVERY_CHARGE,
+            obj,
+          );
+          if (response?.status) {
+            setDeliveryCharge(Number(response?.details?.totalCharge || 0));
+            setDiscount(Number(response?.data?.discount || 0));
+          }
+        }
+      }
+    } catch (err) {
+      console.log("Delivery calculation failed", err);
+    } finally {
+      setCalculatingDelivery(false);
+    }
+  };
 
   const getRecommendations = async () => {
     try {
@@ -54,6 +106,7 @@ function CartPage() {
         const cartItems: any = await GET(API.CART_GET_ALL);
         if (cartItems.status) {
           dispatch(storeCart(cartItems.data));
+          calculateDelivery(cartItems.data);
           return;
         } else {
           notificationApi.error({ message: cartItems.message ?? "" });
@@ -97,7 +150,7 @@ function CartPage() {
       setLoading(true);
       const cartItems: any = await PUT(
         API.CART + item?.id + `?action=${action}`,
-        {}
+        {},
       );
       if (cartItems.status) {
         loadData();
@@ -138,7 +191,7 @@ function CartPage() {
         navigate.push("/checkout");
       } else {
         setError(
-          "Out of stock: Your cart contains items that are currently unavailable."
+          "Out of stock: Your cart contains items that are currently unavailable.",
         );
       }
     } catch (err) {
@@ -214,6 +267,9 @@ function CartPage() {
                     Cart={Cart}
                     checkout={() => goCheckout()}
                     error={error}
+                    deliveryCharge={deliveryCharge}
+                    discount={discount}
+                    calculatingDelivery={calculatingDelivery}
                   />
                 </div>
                 <br />
