@@ -10,9 +10,10 @@ import {
 } from "antd";
 import { useState } from "react";
 import { getOrderStatus } from "./getOrderStatus";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PUT } from "@/util/apicall";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { PUT, GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
+import API_MAIN from "@/config/API";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
@@ -66,6 +67,14 @@ export default function OrderStatusTab(props: Props) {
     return statusColors[status] || "#dfdddd";
   };
 
+  const { data: statusHistory, isLoading } = useQuery({
+    queryFn: async () => await GET(API_MAIN.ORDER_STATUS_GET + props?.data?.id),
+    queryKey: ["order_status_history", props?.data?.id],
+    enabled: !!props?.data?.id,
+  });
+
+  const history = Array.isArray(statusHistory?.data) ? statusHistory?.data : [];
+
   return (
     <Card
       title="Order Status"
@@ -78,24 +87,33 @@ export default function OrderStatusTab(props: Props) {
     >
       {contextHolder}
       <div className="d-flex flex-column gap-3">
-        {props?.data?.status_history?.length > 0 ? (
+        {isLoading ? (
+          <div className="text-center py-4">Loading history...</div>
+        ) : history.length > 0 ? (
           <Timeline
             mode="left"
-            items={props?.data?.status_history?.map((item: any) => ({
+            items={history.map((item: any) => ({
               label: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
               children: (
                 <div className="d-flex flex-column">
-                  <span className="fw-medium text-capitalize" style={{ color: getOrderStatusColor(item?.status) }}>
+                  <span
+                    className="fw-medium text-capitalize"
+                    style={{ color: getOrderStatusColor(item?.status) }}
+                  >
                     {getOrderStatus(item?.status)}
                   </span>
-                  {item?.remark && <small className="text-muted">{item.remark}</small>}
+                  {item?.remark && (
+                    <small className="text-muted">{item.remark}</small>
+                  )}
                 </div>
               ),
               color: getOrderStatusColor(item?.status),
             }))}
           />
         ) : (
-          <div className="text-center text-muted py-4">No status history available</div>
+          <div className="text-center text-muted py-4">
+            No status history available
+          </div>
         )}
       </div>
 
@@ -110,7 +128,9 @@ export default function OrderStatusTab(props: Props) {
         confirmLoading={mutationUpdate?.isPending}
       >
         <div className="d-flex flex-column gap-3 py-3">
-          <p className="mb-0 text-muted">Select the new status for this order:</p>
+          <p className="mb-0 text-muted">
+            Select the new status for this order:
+          </p>
           <Select
             style={{ width: "100%" }}
             placeholder="Select Status"
