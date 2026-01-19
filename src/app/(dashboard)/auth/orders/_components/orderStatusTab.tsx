@@ -74,10 +74,12 @@ export default function OrderStatusTab(props: Props) {
   });
 
   // Filter history to ensure it matches the current order ID
+  // Checking multiple common field names for order ID
   const history = Array.isArray(statusHistory?.data)
-    ? statusHistory?.data.filter(
-        (item: any) => String(item.order_id) === String(props?.data?.id),
-      )
+    ? statusHistory?.data.filter((item: any) => {
+        const itemOrderId = item.order_id || item.orderId || item.order?.id;
+        return String(itemOrderId) === String(props?.data?.id);
+      })
     : [];
 
   return (
