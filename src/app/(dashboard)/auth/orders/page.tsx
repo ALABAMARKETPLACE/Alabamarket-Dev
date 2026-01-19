@@ -43,15 +43,15 @@ function Page() {
     queryFn: ({ queryKey }) => {
       const params = { ...(queryKey[1] as object) };
       
-      // If user is a seller, pass store_id as a filter
+      // If user is a seller, use the specialized getall/{storeId} endpoint
       if (userRole !== "admin" && storeId) {
-        (params as any).store_id = storeId;
+        return GET(API.ORDER_GETCOUNT + storeId, params);
       }
       
       return GET(API.ORDER_GET, params);
     },
     queryKey: ["admin_orders", orderQueryParams, userRole, storeId],
-    enabled: !!userRole,
+    enabled: !!userRole && (userRole === "admin" || !!storeId),
   });
 
   useEffect(() => {
