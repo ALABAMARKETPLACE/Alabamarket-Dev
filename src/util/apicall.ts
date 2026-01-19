@@ -9,29 +9,42 @@ const getFullUrl = (url: string) => {
     if (url.startsWith("http://") || url.startsWith("https://")) {
       return url;
     }
-    const baseUrl = API.BASE_URL.endsWith("/") ? API.BASE_URL : `${API.BASE_URL}/`;
-    return new URL(url, baseUrl).toString();
-  } catch {
-    const baseUrl = API.BASE_URL.endsWith("/") ? API.BASE_URL : `${API.BASE_URL}/`;
+    const baseUrl = API.BASE_URL.endsWith("/")
+      ? API.BASE_URL
+      : `${API.BASE_URL}/`;
+
+    // Handle relative paths correctly
+    const sanitizedUrl = url.startsWith("/") ? url.slice(1) : url;
+    return new URL(sanitizedUrl, baseUrl).toString();
+  } catch (err) {
+    const baseUrl = API.BASE_URL.endsWith("/")
+      ? API.BASE_URL
+      : `${API.BASE_URL}/`;
     return baseUrl + url;
   }
+};
+
+const getAuthHeader = (): Record<string, string> => {
+  const token: any = store.getState()?.Auth?.token;
+  return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
 const GET = async (
   url: string,
   params: Record<string, any> = {},
-  signal: AbortSignal | null = null
-) => {
+  signal: AbortSignal | null = null,
+): Promise<any> => {
   try {
-    const token: any = store.getState()?.Auth?.token ?? " ";
     const queryParams = new URLSearchParams(params).toString();
-    const URL = queryParams ? url + `?${queryParams}` : url;
-    const response = await fetch(getFullUrl(URL), {
+    const requestUrl = queryParams ? url + `?${queryParams}` : url;
+    const fullUrl = getFullUrl(requestUrl);
+
+    const response: Response = await fetch(fullUrl, {
       ...(signal && { signal }),
       method: "GET",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeader(),
       },
     });
     if (!response.ok) {
@@ -60,17 +73,16 @@ const GET = async (
 const POST = async (
   url: string,
   body: Record<string, any> = {},
-  signal: AbortSignal | null = null
-) => {
+  signal: AbortSignal | null = null,
+): Promise<any> => {
   try {
-    const token: any = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(getFullUrl(url), {
+    const response: Response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...getAuthHeader(),
       },
       body: JSON.stringify(body),
     });
@@ -89,17 +101,16 @@ const POST = async (
 const PUT = async (
   url: string,
   body: Record<string, any>,
-  signal: AbortSignal | null = null
-) => {
+  signal: AbortSignal | null = null,
+): Promise<any> => {
   try {
-    const token = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(getFullUrl(url), {
+    const response: Response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...getAuthHeader(),
       },
       body: JSON.stringify(body),
     });
@@ -118,17 +129,16 @@ const PUT = async (
 const PATCH = async (
   url: string,
   body: Record<string, any>,
-  signal: AbortSignal | null = null
-) => {
+  signal: AbortSignal | null = null,
+): Promise<any> => {
   try {
-    const token: any = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(getFullUrl(url), {
+    const response: Response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PATCH",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...getAuthHeader(),
       },
       body: JSON.stringify(body),
     });
@@ -146,12 +156,9 @@ const PATCH = async (
 const EXCEL_UPLOAD = async (
   file: any,
   category: number,
-  subCategory: number
-) => {
+  subCategory: number,
+): Promise<any> => {
   return new Promise(async (resolve, reject) => {
-    // const user: any = Store.getState()?.User?.user;
-    const token = store.getState()?.Auth?.token ?? " ";
-
     try {
       if (file) {
         message.loading({
@@ -163,17 +170,17 @@ const EXCEL_UPLOAD = async (
         formDataFiles.append("file", file);
         formDataFiles.append("category", String(category));
         formDataFiles.append("subCategory", String(subCategory));
-        const fileUpload = await fetch(
-          `${API.BASE_URL}${API.PRODUCT_UPLOAD_EXCEL}`,
+        const fileUpload: Response = await fetch(
+          getFullUrl(API.PRODUCT_UPLOAD_EXCEL),
           {
             method: "POST",
             body: formDataFiles,
             headers: {
-              Authorization: `Bearer ${token}`,
+              ...getAuthHeader(),
             },
-          }
+          },
         );
-        const response = await fileUpload.json();
+        const response: any = await fileUpload.json();
         resolve(response);
       } else {
         reject("no file selected");
@@ -183,20 +190,22 @@ const EXCEL_UPLOAD = async (
     }
   });
 };
-const DELETE = async (url: string, signal: AbortSignal | null = null) => {
+const DELETE = async (
+  url: string,
+  signal: AbortSignal | null = null,
+): Promise<any> => {
   try {
-    const token = store.getState()?.Auth?.token ?? " ";
-    const response = await fetch(getFullUrl(url), {
+    const response: Response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "DELETE",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeader(),
       },
     });
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData: any = await response.json();
       const error = new Error(errorData.message || "Something went wrong");
       (error as any).status = response.status;
       throw error;
@@ -206,25 +215,24 @@ const DELETE = async (url: string, signal: AbortSignal | null = null) => {
     throw error;
   }
 };
-const COMPRESS_IMAGE = async (file: File) => {
+const COMPRESS_IMAGE = async (file: File): Promise<any> => {
   try {
     if (!file) return Promise.reject(new Error("No Image Is selected.."));
     const formData = new FormData();
     formData.append("file", file);
-    const token: any = store.getState()?.Auth?.token ?? " ";
 
-    const response = await fetch(`${API.BASE_URL}${API.IMAGE_COMPRESS}`, {
+    const response: Response = await fetch(getFullUrl(API.IMAGE_COMPRESS), {
       method: "POST",
       body: formData,
       credentials: "include",
       headers: {
-        Authorization: `Bearer ${token}`,
+        ...getAuthHeader(),
       },
     });
-    const data = await response.json();
+    const data: any = await response.json();
     if (!response?.ok)
       return Promise.reject(
-        new Error(data?.message ?? "Something went wrong..")
+        new Error(data?.message ?? "Something went wrong.."),
       );
     return { ...data, url: data.Location, status: true };
   } catch (err: any) {
@@ -235,17 +243,14 @@ const COMPRESS_IMAGE = async (file: File) => {
     ) {
       return Promise.reject(
         new Error(
-          "Image upload service is unavailable. Please try again later."
-        )
+          "Image upload service is unavailable. Please try again later.",
+        ),
       );
     }
     return Promise.reject(new Error(err.message));
   }
 };
-const UPLOAD_IMAGES = async (files: any[]) => {
-  const token = store.getState()?.Auth?.token ?? " ";
-
-  // const user: any = store.getState()?.User?.user;
+const UPLOAD_IMAGES = async (files: any[]): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     try {
       if (files?.length) {
@@ -260,17 +265,17 @@ const UPLOAD_IMAGES = async (files: any[]) => {
             formDataFiles.append("files", file);
           }
         }
-        const fileUpload = await fetch(
-          `${API.BASE_URL}${API.PRODUCT_UPLOAD_IMAGES}`,
+        const fileUpload: Response = await fetch(
+          getFullUrl(API.PRODUCT_UPLOAD_IMAGES),
           {
             method: "POST",
             body: formDataFiles,
             headers: {
-              Authorization: `Bearer ${token}`,
+              ...getAuthHeader(),
             },
-          }
+          },
         );
-        const response = await fileUpload.json();
+        const response: any = await fileUpload.json();
         resolve(response);
       } else {
         reject("no file selected");
@@ -280,7 +285,7 @@ const UPLOAD_IMAGES = async (files: any[]) => {
     }
   });
 };
-const DOCUMENT_UPLOAD = async (file: any) => {
+const DOCUMENT_UPLOAD = async (file: any): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     try {
       if (file) {
@@ -291,12 +296,12 @@ const DOCUMENT_UPLOAD = async (file: any) => {
         });
         const formDataFiles = new FormData();
         formDataFiles.append("file", file);
-        const fileUpload = await fetch(`${API.BASE_URL}${API.FILE_UPLOAD}`, {
+        const fileUpload: Response = await fetch(getFullUrl(API.FILE_UPLOAD), {
           method: "POST",
           body: formDataFiles,
         });
         if (fileUpload.ok) {
-          const jsonResponse = await fileUpload.text();
+          const jsonResponse: string = await fileUpload.text();
           resolve(jsonResponse);
         } else {
           reject("Failed to upload file");
@@ -310,15 +315,15 @@ const DOCUMENT_UPLOAD = async (file: any) => {
   });
 };
 
-const VIDEO_UPLOAD = async (file: File) => {
+const VIDEO_UPLOAD = async (file: File): Promise<any> => {
   try {
     if (!file) return Promise.reject(new Error("No video file selected"));
 
-    // Check file size (max 100MB)
-    const maxSize = 50 * 1024 * 1024; // 100MB
+    // Check file size (max 50MB)
+    const maxSize = 50 * 1024 * 1024;
     if (file.size > maxSize) {
       return Promise.reject(
-        new Error("Video file size must be less than 50MB")
+        new Error("Video file size must be less than 50MB"),
       );
     }
 
@@ -332,7 +337,7 @@ const VIDEO_UPLOAD = async (file: File) => {
     ];
     if (!validTypes.includes(file.type)) {
       return Promise.reject(
-        new Error("Please upload a valid video file (MP4, MOV, AVI, WEBM)")
+        new Error("Please upload a valid video file (MP4, MOV, AVI, WEBM)"),
       );
     }
 
@@ -346,7 +351,7 @@ const VIDEO_UPLOAD = async (file: File) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const response = await fetch(`${API.BASE_URL}${API.VIDEO_UPLOAD}`, {
+    const response: Response = await fetch(getFullUrl(API.VIDEO_UPLOAD), {
       method: "POST",
       body: formData,
     });
@@ -354,7 +359,7 @@ const VIDEO_UPLOAD = async (file: File) => {
     message.destroy("video-upload");
 
     if (!response?.ok) {
-      const errorText = await response.text();
+      const errorText: string = await response.text();
       let errorMessage = "Failed to upload video";
       try {
         const errorData = JSON.parse(errorText);
@@ -365,7 +370,7 @@ const VIDEO_UPLOAD = async (file: File) => {
       return Promise.reject(new Error(errorMessage));
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
     message.success("Video uploaded successfully!");
     return { ...data, url: data.url || data.Location, status: true };
   } catch (err: any) {

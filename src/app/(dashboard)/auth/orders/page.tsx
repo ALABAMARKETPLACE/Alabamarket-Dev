@@ -10,11 +10,17 @@ import Error from "@/app/(dashboard)/_components/error";
 import OrdersFilterBar from "./_components/OrdersFilterBar";
 import useOrdersFilters from "./_hooks/useOrdersFilters";
 import "./Style.scss";
+import { useSession } from "next-auth/react";
 
 function Page() {
   const [isMobile, setIsMobile] = useState(false);
   const [isCompactFilters, setIsCompactFilters] = useState(false);
   const [filtersDropdownOpen, setFiltersDropdownOpen] = useState(false);
+  const { data: session } = useSession();
+
+  const userRole = (session as any)?.role || (session as any)?.user?.role;
+  const storeId = (session as any)?.user?.store_id;
+
   const {
     pagination: { page, take, setPage, setTake },
     filters,
@@ -34,8 +40,15 @@ function Page() {
     isError,
     error,
   } = useQuery({
-    queryFn: ({ queryKey }) => GET(API.ORDER_GET, queryKey[1] as object),
-    queryKey: ["admin_orders", orderQueryParams],
+    queryFn: ({ queryKey }) => {
+      const endpoint =
+        userRole === "admin"
+          ? API.ORDER_GET
+          : API.ORDER_GET_BYSTORE + storeId;
+      return GET(endpoint, queryKey[1] as object);
+    },
+    queryKey: ["admin_orders", orderQueryParams, userRole, storeId],
+    enabled: !!userRole && (userRole === "admin" || !!storeId),
   });
 
   useEffect(() => {

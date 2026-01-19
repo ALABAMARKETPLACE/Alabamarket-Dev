@@ -14,13 +14,25 @@ import { Button, Tag } from "antd";
 import { getOrderStatus } from "../_components/getOrderStatus";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import API from "@/config/API";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const route = useRouter();
+  const { data: session } = useSession();
+
+  const userRole = (session as any)?.role || (session as any)?.user?.role;
+
   const { data: order, isLoading } = useQuery({
-    queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
-    queryKey: ["order_details"],
+    queryFn: async () => {
+      const endpoint =
+        userRole === "admin"
+          ? API.ORDER_GETONE_ADMIN
+          : API.ORDER_GETONE_SELLER;
+      return await GET(endpoint + orderId);
+    },
+    queryKey: ["order_details", orderId, userRole],
     staleTime: 0,
   });
   const formatDateRelative = (date: string) => {

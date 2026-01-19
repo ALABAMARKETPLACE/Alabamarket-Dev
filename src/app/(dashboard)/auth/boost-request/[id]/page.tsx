@@ -78,10 +78,7 @@ function ViewBoostRequest({ params }: Props) {
         {/* Status Banner */}
         <Card className="boostRequests-statusCard">
           <div className="boostRequests-statusLabel">Request Status</div>
-          <Tag
-            color={getStatusColor(request?.status)}
-            className="boostRequests-statusTag"
-          >
+          <Tag color={getStatusColor(request?.status)} className="boostRequests-statusTag">
             {request?.status?.toUpperCase()}
           </Tag>
         </Card>
@@ -158,11 +155,10 @@ function ViewBoostRequest({ params }: Props) {
                   Summary:
                 </div>
                 <div className="boostRequests-paymentSummaryRow">
-                  {request?.product_ids?.length || 0} products × ₦
-                  {getPlanPrice(request?.plan).toFixed(2)} per product
+                  {request?.product_ids?.length || 0} products × ₦{getPlanPrice(request?.plan).toFixed(2)} per product
                 </div>
                 <div className="boostRequests-paymentSummaryRow">
-                  Boost Period: {request?.days || 0} days
+                  Boost Period: {request?.days} days
                 </div>
                 <div className="boostRequests-paymentTotal">
                   Total: ₦{Number(request?.total_amount || 0).toFixed(2)}
@@ -225,7 +221,7 @@ function ViewBoostRequest({ params }: Props) {
                 <Descriptions.Item label="Requested At">
                   {request?.requested_at
                     ? moment(request.requested_at).format(
-                        "DD MMM YYYY, hh:mm A",
+                        "DD MMM YYYY, hh:mm A"
                       )
                     : "-"}
                 </Descriptions.Item>
