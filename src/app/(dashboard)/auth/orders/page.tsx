@@ -56,7 +56,7 @@ function Page() {
 
   const endpoint =
     isSeller && resolvedStoreId
-      ? API.ORDER_GETONE_SELLER + resolvedStoreId
+      ? API.ORDER_GET_BYSTORE + resolvedStoreId
       : API.ORDER_GET;
   const params =
     isSeller && resolvedStoreId
