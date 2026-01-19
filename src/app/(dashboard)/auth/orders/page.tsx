@@ -41,11 +41,16 @@ function Page() {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) => {
-      // Use order/getall for both admin and seller. 
-      // The backend filters by store_id automatically for sellers based on their token.
-      return GET(API.ORDER_GET, queryKey[1] as object);
+      const params = { ...(queryKey[1] as object) };
+      
+      // If user is a seller, pass store_id as a filter
+      if (userRole !== "admin" && storeId) {
+        (params as any).store_id = storeId;
+      }
+      
+      return GET(API.ORDER_GET, params);
     },
-    queryKey: ["admin_orders", orderQueryParams, userRole],
+    queryKey: ["admin_orders", orderQueryParams, userRole, storeId],
     enabled: !!userRole,
   });
 

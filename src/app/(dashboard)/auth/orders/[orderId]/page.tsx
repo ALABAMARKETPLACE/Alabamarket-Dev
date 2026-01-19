@@ -26,13 +26,11 @@ export default function OrderDetails() {
 
   const { data: order, isLoading } = useQuery({
     queryFn: async () => {
-      const endpoint =
-        userRole === "admin"
-          ? API.ORDER_GETONE_ADMIN
-          : API.ORDER_GETONE_SELLER;
-      return await GET(endpoint + orderId);
+      // Per user request, use get_one/admin for both seller and admin.
+      // The backend should filter by store for sellers when using this endpoint.
+      return await GET(API.ORDER_GETONE_ADMIN + orderId);
     },
-    queryKey: ["order_details", orderId, userRole],
+    queryKey: ["order_details", orderId],
     staleTime: 0,
   });
   const formatDateRelative = (date: string) => {
