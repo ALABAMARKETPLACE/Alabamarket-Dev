@@ -27,15 +27,31 @@ export default function AddressTab(props: Props) {
     return state ? state.name : id;
   };
 
+  const getContactName = () => {
+    // Helper to filter out "undefined" strings or null/undefined values
+    const isValid = (val: any) =>
+      val &&
+      val !== "undefined" &&
+      val !== "null" &&
+      typeof val === "string" &&
+      val.trim() !== "";
+
+    if (isValid(props?.data?.name)) return props.data.name;
+    if (isValid(props?.data?.order_contact_name))
+      return props.data.order_contact_name;
+    if (isValid(user?.data?.name)) return user.data.name;
+    if (isValid(user?.data?.first_name)) {
+      const last = isValid(user?.data?.last_name) ? user.data.last_name : "";
+      return `${user.data.first_name} ${last}`.trim();
+    }
+    return "N/A";
+  };
+
   return (
     <Card title={"Delivery Address"} className="h-100">
       <Descriptions column={1} bordered>
         <Descriptions.Item label="Contact Name">
-          {props?.data?.name ||
-            props?.data?.order_contact_name ||
-            user?.data?.name ||
-            user?.data?.first_name + " " + user?.data?.last_name ||
-            "N/A"}
+          {getContactName()}
         </Descriptions.Item>
         <Descriptions.Item label="Phone Number">
           {props?.data?.phone_no || user?.data?.phone || "N/A"}
