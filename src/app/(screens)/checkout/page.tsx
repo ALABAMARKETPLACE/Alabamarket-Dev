@@ -68,8 +68,13 @@ function Checkout() {
         // Prepare cart with weight information for new API
         // Optimized payload: sending only necessary fields to handle multiple items correctly
         const cartWithWeight = Checkout?.Checkout?.map((item: any) => ({
-          product_id: item?.id || item?.productId || item?.product_id,
-          store_id: item?.storeId || item?.store_id || item?.store?.id,
+          product_id:
+            item?.pid || item?.productId || item?.product_id || item?.id,
+          store_id:
+            item?.storeId ||
+            item?.store_id ||
+            item?.store?.id ||
+            item?.product?.store_id,
           weight: Number(item?.weight) || 1,
           quantity: Number(item?.quantity) || 1,
           length: Number(item?.length) || 0,
@@ -97,7 +102,7 @@ function Checkout() {
 
         const response: any = await POST(
           API.NEW_CALCULATE_DELIVERY_CHARGE,
-          obj
+          obj,
         );
         console.log("Delivery calculation response:", response);
 
@@ -114,7 +119,7 @@ function Checkout() {
           const cleanMessage = (response?.message ?? "").replace(/@@$/, "");
           toggleModal(true);
           setErrorMessage(
-            cleanMessage || "Delivery not available for this location"
+            cleanMessage || "Delivery not available for this location",
           );
           setDeliveryToken("");
           setDelivery_charge(0);
@@ -232,7 +237,7 @@ function Checkout() {
       // Email validation - log warning but don't block payment
       if (!user?.email) {
         console.warn(
-          "Warning: User email not found. Proceeding with payment using available user data."
+          "Warning: User email not found. Proceeding with payment using available user data.",
         );
       }
 
@@ -301,7 +306,7 @@ function Checkout() {
               user_id: customerId,
               user: user,
             },
-          })
+          }),
         );
 
         // Redirect to Paystack payment page

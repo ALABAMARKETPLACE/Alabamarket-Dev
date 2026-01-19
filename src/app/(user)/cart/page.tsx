@@ -52,8 +52,13 @@ function CartPage() {
           // 2. Prepare payload for calculation
           // Sending a clean payload with only necessary fields to avoid issues with large payloads or circular references
           const cartWithWeight = cartItems.map((item: any) => ({
-            product_id: item?.id || item?.productId || item?.product_id,
-            store_id: item?.storeId || item?.store_id || item?.store?.id,
+            product_id:
+              item?.pid || item?.productId || item?.product_id || item?.id,
+            store_id:
+              item?.storeId ||
+              item?.store_id ||
+              item?.store?.id ||
+              item?.product?.store_id,
             weight: Number(item?.weight) || 1,
             quantity: Number(item?.quantity) || 1,
             length: Number(item?.length) || 0,
