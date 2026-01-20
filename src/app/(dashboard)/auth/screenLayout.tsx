@@ -63,7 +63,7 @@ function ScreenLayout(props: any) {
           onRouteClick={closeSidebar} 
         />
       </Layout.Sider>
-      <Layout>
+      <Layout className="dashboard-ContentLayout">
         <Layout.Content>
           <div className="dashboard-Layout">{props?.children}</div>
         </Layout.Content>
