@@ -47,7 +47,7 @@ function ScreenLayout(props: any) {
         />
       )}
       <Layout.Sider
-        width={230}
+        width={260}
         className={`dashboard-SideBarContainer ${sidebarOpen ? "open" : ""}`}
         style={{
           backgroundColor: "#fff",

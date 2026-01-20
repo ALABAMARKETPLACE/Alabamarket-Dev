@@ -257,9 +257,9 @@ $radius-sm: 8px;
 // =============================================================================
 .dashboard-Layout {
   min-height: 100vh;
-  padding: 32px 40px; // More spacious padding
+  padding: 32px 40px;
   padding-top: 112px; // Header height + spacing
-  padding-left: 300px; // Sidebar width + spacing
+  padding-left: 280px; // Sidebar width + spacing
   background-color: $bg-color-main;
   transition: all 0.3s ease;
 
