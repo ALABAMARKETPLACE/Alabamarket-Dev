@@ -72,6 +72,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   padding: 0 $content-gutter;
   position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: 1000;
   border-bottom: 1px solid $border-color;
@@ -79,6 +80,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   color: $text-color-primary;
   transition: all $transition-base;
   gap: $space-lg;
+  box-sizing: border-box;
 
   @media (max-width: 1024px) {
     padding: 0 $space-xl;
@@ -183,7 +185,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
 // Profile/User Box
 .dashboard-HeaderBox2 {
-  border: 1px solid transparent;
+  border: 1px solid $border-color;
   padding: $space-sm $space-md;
   height: 40px;
   border-radius: $radius-md;
@@ -192,7 +194,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   gap: $space-sm;
   cursor: pointer;
   transition: all $transition-fast;
-  background-color: transparent;
+  background-color: #fff;
   flex-shrink: 0;
 
   img {
@@ -204,9 +206,17 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 0 0 1px $border-color;
   }
 
+  svg {
+    color: $text-color-secondary;
+  }
+
   &:hover {
-    background-color: $bg-color-main;
-    border-color: $border-color;
+    background-color: $primary-light;
+    border-color: $primary-color;
+
+    svg {
+      color: $primary-color;
+    }
   }
 
   @media (max-width: 768px) {
@@ -218,6 +228,39 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
       height: 28px;
     }
   }
+}
+
+// Profile/User Box Text
+.dashboard-HeaderBox4 {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+  flex: 0 0 auto;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.dashboard-Headertext1 {
+  font-family: vars.$SemiBold;
+  font-size: 13px;
+  color: $text-color-primary;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-Headertext2 {
+  font-family: vars.$Regular;
+  font-size: 11px;
+  color: $text-color-secondary;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // Icon Buttons
@@ -451,23 +494,35 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   min-height: 100vh;
   padding: $content-gutter;
   padding-top: $header-height + $space-2xl;
-  padding-left: $sidebar-width + $space-2xl;
+  padding-left: $content-gutter;
+  padding-right: $content-gutter;
   background-color: $bg-color-main;
   transition: all $transition-base;
   box-sizing: border-box;
-  max-width: 100vw;
+  width: calc(100% - #{$sidebar-width});
+  max-width: calc(100vw - #{$sidebar-width});
   overflow-x: hidden;
+  margin-left: auto;
+  margin-right: 0;
 
   @media (max-width: 1024px) {
     padding: $space-xl;
     padding-top: $header-height + $space-xl;
     padding-left: $space-xl;
+    padding-right: $space-xl;
+    width: 100%;
+    max-width: 100vw;
+    margin-left: 0;
   }
 
   @media (max-width: 768px) {
     padding: $space-lg;
     padding-top: $header-height-mobile + $space-lg;
     padding-left: $space-lg;
+    padding-right: $space-lg;
+    width: 100%;
+    max-width: 100vw;
+    margin-left: 0;
   }
 }
 
@@ -653,22 +708,152 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   margin-bottom: 14px;
 }
 
-.dashboard-ProfilePopover,
+.dashboard-ProfilePopover {
+  width: 300px;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  .dashboard-ProfilePopoverItem {
+    display: flex;
+    align-items: center;
+    gap: $space-lg;
+    padding: $space-lg;
+    border-bottom: 1px solid $border-color;
+    background-color: $primary-light;
+
+    > div:first-child {
+      flex-shrink: 0;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      svg {
+        font-size: 40px;
+        color: $text-color-secondary;
+      }
+    }
+
+    > div:last-child {
+      flex: 1;
+      min-width: 0;
+
+      .text1 {
+        font-family: vars.$SemiBold;
+        font-size: 16px;
+        color: $text-color-primary;
+        margin-bottom: $space-xs;
+        word-break: break-word;
+      }
+
+      .text2 {
+        font-family: vars.$Regular;
+        font-size: 13px;
+        color: $text-color-secondary;
+        margin-bottom: $space-sm;
+        word-break: break-all;
+      }
+
+      .ant-tag {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .dashboard-ProfilePopoverItem2 {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    padding: $space-lg;
+    cursor: pointer;
+    transition: all $transition-fast;
+    border-bottom: 1px solid $border-color;
+    font-family: vars.$Regular;
+    font-size: 14px;
+    color: $text-color-primary;
+
+    > div:first-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-color-secondary;
+      font-size: 18px;
+    }
+
+    > div:last-child {
+      flex: 1;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: color $transition-fast;
+
+      &:hover {
+        color: vars.$primary;
+      }
+    }
+
+    &:hover {
+      background-color: $primary-light;
+      color: vars.$primary;
+
+      > div:first-child {
+        color: vars.$primary;
+      }
+
+      a {
+        color: vars.$primary;
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.dashboard-NotificationPopover,
 .dashboard-NotificationPopover {
   .ant-popover-inner {
     border-radius: $radius-md;
     box-shadow: $shadow-lg;
     padding: 0;
     overflow: hidden;
+    background-color: #fff;
   }
 
   .ant-popover-title {
     padding: 16px;
     border-bottom: 1px solid $border-color;
+    background-color: #fff;
   }
 
   .ant-popover-inner-content {
     padding: 0;
+  }
+}
+
+/* Global Popover Styling */
+.ant-popover {
+  .ant-popover-inner {
+    border-radius: $radius-md !important;
+    box-shadow: $shadow-lg !important;
+  }
+
+  .ant-popover-arrow-content {
+    background-color: #fff;
+    border: 1px solid $border-color;
   }
 }
 
@@ -1307,4 +1492,35 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   .DashboardAdmin-text1 {
     font-size: 18px;
   }
+}
+
+// =============================================================================
+// ANT DESIGN LAYOUT OVERRIDES
+// =============================================================================
+.ant-layout {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.ant-layout-sider {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 999;
+  box-sizing: border-box;
+  width: $sidebar-width !important;
+  max-width: $sidebar-width !important;
+
+  @media (max-width: 768px) {
+    width: 260px !important;
+  }
+}
+
+.ant-layout-content {
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
