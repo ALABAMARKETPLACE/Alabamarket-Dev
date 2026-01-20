@@ -4,15 +4,19 @@
 // GLOBAL VARIABLES & MIXINS
 // =============================================================================
 $border-color: #e5e7eb;
-$bg-color-main: #f9fafb; // Warmer/Cleaner gray
+$bg-color-main: #f9fafb;
 $bg-color-sidebar: #ffffff;
 $text-color-primary: #111827;
 $text-color-secondary: #6b7280;
 $primary-color: vars.$primary;
 $primary-light: rgba(vars.$primary, 0.08);
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-md:
+  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg:
+  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0 4px 6px -2px rgba(0, 0, 0, 0.05);
 $radius-md: 12px;
 $radius-sm: 8px;
 
@@ -20,19 +24,19 @@ $radius-sm: 8px;
 // DASHBOARD HEADER
 // =============================================================================
 .dashboard-Header {
-  height: 80px; // Fixed height for better alignment
+  height: 80px;
   background-color: #ffffff;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between; // Ensure proper spacing
-  padding: 0 24px;
+  justify-content: space-between;
+  padding: 0 32px; // Increased padding
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 1000;
   border-bottom: 1px solid $border-color;
-  box-shadow: $shadow-sm; // Subtle shadow instead of just border
+  box-shadow: $shadow-sm;
   color: $text-color-primary;
   transition: all 0.3s ease;
 
@@ -65,7 +69,7 @@ $radius-sm: 8px;
   img {
     width: 36px;
     height: 36px;
-    border-radius: 50%; // Circular avatar
+    border-radius: 50%;
     object-fit: cover;
     border: 2px solid #fff;
     box-shadow: 0 0 0 1px $border-color;
@@ -79,7 +83,7 @@ $radius-sm: 8px;
   @media (max-width: 768px) {
     padding: 4px;
     gap: 8px;
-    
+
     img {
       width: 32px;
       height: 32px;
@@ -88,11 +92,11 @@ $radius-sm: 8px;
 }
 
 .dashboard-HeaderBox3 {
-  // Action buttons (notifications, settings etc)
+  // Action buttons
   cursor: pointer;
   width: 40px;
   height: 40px;
-  border-radius: 50%; // Circular buttons
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,7 +147,7 @@ $radius-sm: 8px;
   @media (max-width: 768px) {
     min-width: auto;
     font-size: 18px;
-    
+
     img {
       height: 32px;
     }
@@ -187,21 +191,20 @@ $radius-sm: 8px;
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 0 16px; // Internal padding for scroll area
+  padding: 0 16px;
 
-  // Scrollbar styling
   &::-webkit-scrollbar {
     width: 5px;
   }
   &::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(0, 0, 0, 0.1);
     border-radius: 10px;
   }
 }
 
 .dashboard-SideBarDevider {
-  padding: 16px 12px 8px;
-  color: #9ca3af; // Lighter gray for headers
+  padding: 24px 12px 8px; // Increased top padding for better separation
+  color: #9ca3af;
   font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
@@ -213,7 +216,7 @@ $radius-sm: 8px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
+  padding: 12px 16px; // More generous padding
   margin-bottom: 4px;
   border-radius: $radius-sm;
   color: $text-color-secondary;
@@ -221,7 +224,7 @@ $radius-sm: 8px;
   transition: all 0.2s ease;
   font-family: vars.$Medium;
   font-size: 14px;
-  border-left: none; // Remove old border style
+  border-left: none;
 
   &:hover {
     background-color: $bg-color-main;
@@ -232,15 +235,13 @@ $radius-sm: 8px;
     background-color: $primary-light;
     color: $primary-color;
     font-family: vars.$SemiBold;
-
-    // Optional: Indicator dot or similar if wanted, but background is usually enough
   }
 
   svg {
     font-size: 20px;
     opacity: 0.8;
   }
-  
+
   &.active svg {
     opacity: 1;
   }
@@ -256,14 +257,14 @@ $radius-sm: 8px;
 // =============================================================================
 .dashboard-Layout {
   min-height: 100vh;
-  padding: 24px 32px;
-  padding-top: 104px; // Header height + spacing
-  padding-left: 292px; // Sidebar width + spacing
+  padding: 32px 40px; // More spacious padding
+  padding-top: 112px; // Header height + spacing
+  padding-left: 300px; // Sidebar width + spacing
   background-color: $bg-color-main;
   transition: all 0.3s ease;
 
   @media (max-width: 1024px) {
-    padding-left: 32px; // Sidebar likely hidden or overlay
+    padding-left: 32px;
   }
 
   @media (max-width: 768px) {
@@ -273,43 +274,160 @@ $radius-sm: 8px;
 }
 
 // =============================================================================
+// HEADER CONTROLS (DashboardAdmin-Box)
+// =============================================================================
+.DashboardAdmin-Box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center; // Vertically center
+  gap: 24px;
+  padding: 0 0 24px 0; // Bottom padding only
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 0;
+
+  // Title section
+  > div:first-child {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  // Controls section
+  > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    padding: 6px;
+    border-radius: $radius-md;
+    box-shadow: $shadow-sm;
+    border: 1px solid $border-color;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+
+    > div:last-child {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+}
+
+.DashboardAdmin-text1 {
+  font-size: 24px; // Larger title
+  font-family: vars.$Bold;
+  color: $text-color-primary;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+}
+
+.DashboardAdmin-text2 {
+  font-size: 14px;
+  color: $text-color-secondary;
+  font-family: vars.$Regular;
+}
+
+// =============================================================================
 // CARDS & CONTAINERS
 // =============================================================================
 .DashboardAdmin-card,
-.dashboard-card-base { // Utility class for consistency
+.dashboard-card-base {
   background-color: #ffffff;
   padding: 24px;
   border-radius: $radius-md;
-  border: 1px solid rgba(0,0,0,0.03); // Very subtle border
+  border: 1px solid rgba(0, 0, 0, 0.03);
   box-shadow: $shadow-sm;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; // Stack vertically by default
   justify-content: space-between;
   height: 100%;
+  min-height: 160px; // Taller cards
+  position: relative;
+  overflow: hidden;
+
+  // Add subtle top border for color accent
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(0, 0, 0, 0.05),
+      transparent
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
 
   &:hover {
     box-shadow: $shadow-md;
-    // transform: translateY(-2px); // Subtle lift effect
+    transform: translateY(-2px);
+
+    &::before {
+      opacity: 1;
+    }
   }
 
   @media (max-width: 768px) {
     padding: 16px;
+    min-height: 140px;
   }
+}
+
+// Card content layout
+.cards-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.DashboardAdmin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 16px;
 }
 
 .DashboardAdmin-card-text1 {
   font-size: 14px;
   font-family: vars.$Medium;
   color: $text-color-secondary;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 12px;
 }
 
 .DashboardAdmin-card-text2 {
-  font-size: 24px;
+  font-size: 28px; // Much larger number
   font-family: vars.$Bold;
   color: $text-color-primary;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
+  margin-top: auto; // Push to bottom if needed
+}
+
+.DashboardAdmin-card-text3 {
+  font-size: 12px;
+  color: $text-color-secondary;
+  font-family: vars.$Regular;
+  margin-top: 4px;
 }
 
 .DashboardAdmin-card-icons {
@@ -319,14 +437,23 @@ $radius-sm: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: $primary-light; // Use primary light bg
-  color: $primary-color;
+  background-color: $bg-color-main; // Subtle bg
+  color: $text-color-primary; // Default color
   font-size: 24px;
   margin-bottom: 16px;
+  align-self: flex-start; // Align icon to left
+  transition: all 0.3s ease;
+
+  // When card hovered
+  .DashboardAdmin-card:hover & {
+    background-color: $primary-light;
+    color: $primary-color;
+    transform: scale(1.1);
+  }
 }
 
 // =============================================================================
-// TABLES (ANT DESIGN OVERRIDES)
+// TABLES
 // =============================================================================
 .dashboard-Layout .ant-table-wrapper {
   background: #fff;
@@ -337,17 +464,16 @@ $radius-sm: 8px;
 
   .ant-table {
     border: none;
-    
     .ant-table-container {
       border: none;
     }
   }
 
   .ant-table-thead > tr > th {
-    background: #f9fafb; // Very light gray header
+    background: #f9fafb;
     color: $text-color-secondary;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 16px 24px;
@@ -366,18 +492,17 @@ $radius-sm: 8px;
   .ant-table-tbody > tr:hover > td {
     background-color: #f9fafb !important;
   }
-  
-  // Pagination styling
+
   .ant-pagination {
     margin: 16px 24px !important;
-    
     .ant-pagination-item {
       border-radius: 6px;
       font-family: vars.$Medium;
-      
       &-active {
         border-color: vars.$primary;
-        a { color: vars.$primary; }
+        a {
+          color: vars.$primary;
+        }
       }
     }
   }
@@ -392,11 +517,10 @@ $radius-sm: 8px;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 32px; // Increased spacing
   padding-bottom: 0;
-  border-bottom: none; // Remove separator line
-  
-  // Title container
+  border-bottom: none;
+
   > div:nth-child(2) {
     flex: 1;
     min-width: 0;
@@ -417,7 +541,6 @@ $radius-sm: 8px;
   font-family: vars.$Regular;
 }
 
-// Back Button
 .dashboard-pageHeaderBox2 {
   background-color: #fff;
   width: 40px;
@@ -430,14 +553,14 @@ $radius-sm: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   color: $text-color-secondary;
-  margin-right: 12px;
+  margin-right: 16px;
 
   &:hover {
     border-color: vars.$primary;
     color: vars.$primary;
     background-color: $primary-light;
   }
-  
+
   svg {
     font-size: 20px;
   }
@@ -453,9 +576,13 @@ $radius-sm: 8px;
   border-color: $border-color !important;
   box-shadow: none !important;
   padding: 8px 12px !important;
-  
-  &:hover, &:focus {
+  background-color: #fff !important;
+
+  &:hover,
+  &:focus,
+  &.ant-picker-focused {
     border-color: vars.$primary !important;
+    box-shadow: 0 0 0 2px rgba(vars.$primary, 0.1) !important;
   }
 }
 
@@ -465,11 +592,26 @@ $radius-sm: 8px;
   box-shadow: none;
   height: auto;
   padding: 8px 20px;
-  
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
   &-primary {
     background-color: vars.$primary;
+    border-color: vars.$primary;
     &:hover {
       background-color: darken(vars.$primary, 5%) !important;
+      border-color: darken(vars.$primary, 5%) !important;
+    }
+  }
+
+  &-default {
+    border-color: $border-color;
+    color: $text-color-secondary;
+    &:hover {
+      color: vars.$primary;
+      border-color: vars.$primary;
     }
   }
 }
@@ -481,18 +623,21 @@ $radius-sm: 8px;
   .dashboard-Header {
     padding: 0 16px;
   }
-  
+
   .dashboard-Layout {
     padding: 16px;
     padding-top: 80px;
   }
-  
+
   .dashboard-pageHeadertxt1 {
     font-size: 20px;
   }
+
+  .DashboardAdmin-Box {
+    margin-bottom: 16px;
+  }
 }
 
-// Keep existing popover styles but modernize them slightly
 .dashboard-ProfilePopover,
 .dashboard-NotificationPopover {
   .ant-popover-inner {
@@ -501,13 +646,26 @@ $radius-sm: 8px;
     padding: 0;
     overflow: hidden;
   }
-  
+
   .ant-popover-title {
     padding: 16px;
     border-bottom: 1px solid $border-color;
   }
-  
+
   .ant-popover-inner-content {
     padding: 0;
+  }
+}
+
+.dashboard-Loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 100%;
+  color: vars.$primary;
+
+  .ant-spin-dot-item {
+    background-color: vars.$primary;
   }
 }
