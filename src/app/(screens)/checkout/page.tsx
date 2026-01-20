@@ -206,16 +206,6 @@ function Checkout() {
         currency: "NGN",
         reference: reference,
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
-        // Add split payment parameters
-        ...(Checkout?.Checkout?.[0]?.storeId || Checkout?.Checkout?.[0]?.store_id
-          ? {
-              store_id: Number(
-                Checkout?.Checkout?.[0]?.storeId ||
-                  Checkout?.Checkout?.[0]?.store_id,
-              ),
-              split_payment: true,
-            }
-          : {}),
         metadata: {
           order_id: reference,
           customer_id: customerId,
@@ -239,8 +229,15 @@ function Checkout() {
           cancel_url: `${window.location.origin}/checkout`,
         },
       };
+
+      // Determine correct endpoint based on split payment
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response: any = await POST(API.PAYSTACK_INITIALIZE, paymentData);
+      const endpoint = (paymentData as any).split_payment
+        ? API.PAYSTACK_INITIALIZE_SPLIT
+        : API.PAYSTACK_INITIALIZE;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response: any = await POST(endpoint, paymentData);
 
       if (response.status && response.data?.data?.authorization_url) {
         // Store payment reference for verification
