@@ -6,8 +6,8 @@ import { POST } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 interface props {
   open: boolean;
-  close: Function;
-  data: Record<string, any>;
+  close: () => void;
+  data: Record<string, unknown>;
   requestEndpoint?: string; // optional override endpoint
 }
 
@@ -16,14 +16,14 @@ function RequestDocument({ open, close, data, requestEndpoint }: props) {
   const [Notifications, contextHolder] = notification.useNotification();
 
   const mutationSendmail = useMutation({
-    mutationFn: (body: object) =>
+    mutationFn: (body: Record<string, unknown>) =>
       POST(requestEndpoint || API.CORPORATE_STORE_REQUEST_DOCUMENT, body),
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       close();
       form.resetFields();
       Notifications["success"]({
@@ -66,7 +66,7 @@ function RequestDocument({ open, close, data, requestEndpoint }: props) {
         </Form.Item>
         <p>
           An email will be sent to{" "}
-          <span className="fw-bold">{data?.email}</span>
+          <span className="fw-bold">{data?.email as string}</span>
         </p>
         <div className="d-flex gap-2 justify-content-end">
           <Button

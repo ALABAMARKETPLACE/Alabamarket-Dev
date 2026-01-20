@@ -32,7 +32,7 @@ function CreateNewDistanceCharge() {
   });
 
   const mutationCreate = useMutation({
-    mutationFn: (body: object) => POST(API_ADMIN.NEW_DISTANCE_CHARGE, body),
+    mutationFn: (body: Record<string, unknown>) => POST(API_ADMIN.NEW_DISTANCE_CHARGE, body),
     onError: (error) => {
       Notifications["error"]({ message: error.message });
     },

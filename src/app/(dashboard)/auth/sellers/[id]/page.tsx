@@ -27,6 +27,12 @@ import setlements from "./_components/json/settlement_status.json";
 import Products from "./_components/tabs/products";
 import debounce from "@/shared/helpers/debounce";
 
+interface SellerData {
+  store_name?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
 function SellerDetails() {
   const { RangePicker } = DatePicker;
   const params = useParams();
@@ -38,7 +44,7 @@ function SellerDetails() {
   const quereyClient = useQueryClient();
   const [Notifications, contextHolder] = notification.useNotification();
   const debounceQuery = debounce((val: string) =>
-    setQuery({ page: 1, query: val })
+    setQuery({ page: 1, query: val }),
   );
 
   const {
@@ -46,22 +52,23 @@ function SellerDetails() {
     isLoading,
     isError,
     error,
-  } = useQuery<any>({
+  } = useQuery<unknown, Error, SellerData>({
     queryKey: [API.STORE_INFO_ADMIN + params?.id, params?.id],
-    select: (data: any) => {
+    select: (res: unknown) => {
+      const data = res as { status: boolean; data: SellerData };
       if (data?.status) return data?.data;
       return {};
     },
   });
 
   const mutationUpdate = useMutation({
-    mutationFn: (body: object) => PUT(API.STORE_DEACTIVATE + params?.id, {}),
-    onError: (error, variables, context) => {
+    mutationFn: () => PUT(API.STORE_DEACTIVATE + params?.id, {}),
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       Notifications["success"]({
         message: `Seller Status Updated Successfully`,
       });
@@ -109,7 +116,7 @@ function SellerDetails() {
             />
             <RangePicker
               className="w-100"
-              onChange={(dates: any, dateString: string[]) => {
+              onChange={(_dates: unknown, dateString: string[]) => {
                 orderRef?.current?.date(dateString[0], dateString[1]);
               }}
             />
@@ -130,7 +137,7 @@ function SellerDetails() {
               } this Seller on Alaba Marketplace?`}
               okText="Yes"
               cancelText="No"
-              onConfirm={() => mutationUpdate.mutate({})}
+              onConfirm={() => mutationUpdate.mutate()}
             >
               {seller?.status == "approved" ? (
                 <Button
@@ -168,7 +175,8 @@ function SellerDetails() {
             isLoading={isLoading}
             isError={isError}
             error={error}
-            seller={seller}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            seller={(seller || {}) as Record<string, any>}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab={<span>Settlement Summary</span>} key="2">

@@ -5,7 +5,7 @@ import { POST } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 interface props {
   open: boolean;
-  close: Function;
+  close: () => void;
   storeId: number;
 }
 
@@ -16,16 +16,16 @@ function SettlementModal({ open, close, storeId }: props) {
   const queryClient = useQueryClient();
 
   const mutationCreate = useMutation({
-    mutationFn: async (body: object) => {
+    mutationFn: async (body: Record<string, unknown>) => {
       if (!storeId) throw new Error("Invalid Store ID");
       return POST(API.SETTLEMENT_CREATE, body);
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       Notifications["success"]({
         message: `Settlement Added Successfully.`,
       });
@@ -40,16 +40,19 @@ function SettlementModal({ open, close, storeId }: props) {
     },
   });
 
-  const {
-    data: settlement,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<any>({
+  const { data: settlement, isLoading } = useQuery<
+    unknown,
+    Error,
+    { amountToSettle?: number }
+  >({
     queryKey: [API.SETTLEMENT_SUMMARY + storeId],
-    select: (data) => {
-      if (data?.status) return data?.data;
-      return {};
+    select: (res) => {
+      const response = res as {
+        status: boolean;
+        data: { amountToSettle?: number };
+      };
+      if (response?.status) return response?.data;
+      return { amountToSettle: 0 };
     },
   });
 
@@ -80,16 +83,15 @@ function SettlementModal({ open, close, storeId }: props) {
               message: "Please Enter Amount",
             },
             {
-              validator: (_, value) =>
-                (value && value > settlement?.amountToSettle) || 0
-                  ? Promise.reject(
-                      new Error(
-                        `Amount must be less than ${
-                          settlement?.amountToSettle || 0
-                        }`
-                      )
-                    )
-                  : Promise.resolve(),
+              validator: (_, value) => {
+                const maxAmount = settlement?.amountToSettle ?? 0;
+                if (value && Number(value) > maxAmount) {
+                  return Promise.reject(
+                    new Error(`Amount must be less than ${maxAmount}`),
+                  );
+                }
+                return Promise.resolve();
+              },
             },
           ]}
         >

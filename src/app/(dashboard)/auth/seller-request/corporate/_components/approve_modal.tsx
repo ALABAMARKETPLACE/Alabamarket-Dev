@@ -8,8 +8,8 @@ import { useRouter } from "next/navigation";
 
 interface props {
   open: boolean;
-  close: Function;
-  data: Record<string, any>;
+  close: () => void;
+  data: Record<string, unknown>;
   statusEndpoint?: string; // optional override endpoint base (must end with "/")
   invalidateKeys?: string[]; // optional extra react-query keys to invalidate
 }
@@ -27,17 +27,17 @@ function ApproveModal({
   const queryClient = useQueryClient();
 
   const mutationUpdate = useMutation({
-    mutationFn: (body: object) =>
+    mutationFn: (body: Record<string, unknown>) =>
       PUT(
         (statusEndpoint || API.CORPORATE_STORE_UPDATE_STATUS) + data?.id,
-        body
+        body,
       ),
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       close();
       form.resetFields();
       Notifications["success"]({
