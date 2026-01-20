@@ -10,6 +10,8 @@ $text-color-primary: #111827;
 $text-color-secondary: #6b7280;
 $primary-color: vars.$primary;
 $primary-light: rgba(vars.$primary, 0.08);
+$sidebar-width: 260px;
+$content-gutter: 20px;
 $shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 $shadow-md:
   0 4px 6px -1px rgba(0, 0, 0, 0.1),
@@ -171,7 +173,7 @@ $radius-sm: 8px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   padding-top: 80px; // Match header height
   background: $bg-color-sidebar;
-  width: 260px; // Fixed width
+  width: $sidebar-width; // Fixed width
   position: fixed;
   left: 0;
   bottom: 0;
@@ -259,18 +261,26 @@ $radius-sm: 8px;
   min-height: 100vh;
   padding: 32px 40px;
   padding-top: 112px; // Header height + spacing
-  padding-left: 280px; // Sidebar width + spacing
+  padding-left: calc(
+    #{$sidebar-width} + #{$content-gutter}
+  ); // Sidebar width + spacing
   background-color: $bg-color-main;
   transition: all 0.3s ease;
-
-  @media (max-width: 1024px) {
-    padding-left: 32px;
-  }
 
   @media (max-width: 768px) {
     padding: 16px;
     padding-top: 80px;
+    padding-left: 16px; // Sidebar becomes overlay
   }
+}
+
+// Ensure key blocks use full content width
+.dashboard-Layout .dashboard-card-base,
+.dashboard-Layout .DashboardAdmin-card,
+.dashboard-Layout .dashboard-pageHeader,
+.dashboard-Layout .ant-table-wrapper {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 // =============================================================================
