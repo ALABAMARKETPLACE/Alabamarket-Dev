@@ -1,5 +1,8 @@
 @use "../../../../config/styleVariable.scss" as vars;
 
+$text-color: #1a202c;
+$text-color-secondary: #718096;
+
 // =============================================================================
 // SHARED COMPONENTS (Used in SimiliarProductSubstitution.tsx)
 // =============================================================================
@@ -28,7 +31,7 @@
         outline: none;
         padding: 0 15px;
         font-size: 14px;
-        color: vars.$text-color;
+        color: $text-color;
     }
 
     button {
@@ -83,7 +86,7 @@
         background-color: #f8fafc;
         padding: 6px 12px;
         font-size: 13px;
-        color: vars.$text-color-secondary;
+        color: $text-color-secondary;
         cursor: pointer;
         transition: all 0.2s;
 
