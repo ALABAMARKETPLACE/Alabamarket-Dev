@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import platinumImage from "@/assets/images/postion1.jpg";
 import { TbArrowRight } from "react-icons/tb";
+import SectionBadge from "../../../../components/sectionBadge";
 
 interface PlatinumSectionProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products: any[];
   title?: string;
   image?: StaticImageData | string;
@@ -37,7 +39,13 @@ function PlatinumSection({
       <div className="platinum-section__wrapper">
         <div className="platinum-section__content">
           <div className="platinum-section__header">
-            <div className="platinum-section__title">{title}</div>
+            <div
+              className="platinum-section__title"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              <SectionBadge type="platinum" text="Premium" />
+              {title}
+            </div>
             <span
               role="button"
               tabIndex={0}

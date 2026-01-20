@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import positionImage from "@/assets/images/position2.jpg";
 import { TbArrowRight } from "react-icons/tb";
+import SectionBadge from "../../../../components/sectionBadge";
 
 interface GoldSectionProps {
   products: any[];
@@ -18,19 +19,20 @@ function GoldSection({ products = [] }: GoldSectionProps) {
   const router = useRouter();
   const goldProducts = useMemo(
     () => (Array.isArray(products) ? products : []),
-    [products]
+    [products],
   );
 
   const primaryProducts = goldProducts.slice(0, PRIMARY_COUNT);
   const secondaryProducts = goldProducts.slice(
     PRIMARY_COUNT,
-    PRIMARY_COUNT + SECONDARY_COUNT
+    PRIMARY_COUNT + SECONDARY_COUNT,
   );
 
   if (!primaryProducts.length && !secondaryProducts.length) {
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderGrid = (items: any[], keyPrefix: string) => (
     <div className="gold-section__grid">
       {items.map((product, index) => (
@@ -54,7 +56,13 @@ function GoldSection({ products = [] }: GoldSectionProps) {
 
   const renderHeader = (title: string) => (
     <div className="gold-section__panel-header">
-      <div className="gold-section__panel-title">{title}</div>
+      <div
+        className="gold-section__panel-title"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        <SectionBadge type="gold" text="Best" />
+        {title}
+      </div>
       <span
         role="button"
         tabIndex={0}
@@ -106,5 +114,3 @@ function GoldSection({ products = [] }: GoldSectionProps) {
 }
 
 export default GoldSection;
-
-
