@@ -38,7 +38,7 @@ function Corporate(props: Props, ref: Ref<ResetType>) {
       handleChange(query);
       setPage(1);
     },
-    date: function (date: string) {},
+    date: function () {},
   }));
   return (
     <div style={{ marginTop: -5 }}>
