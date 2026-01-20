@@ -52,6 +52,11 @@ function ScreenLayout(props: any) {
         style={{
           backgroundColor: "#fff",
           height: "100vh",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 999,
         }}
       >
         <SideBar 
