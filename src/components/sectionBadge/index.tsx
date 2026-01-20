@@ -1,5 +1,6 @@
 import React from "react";
 import "./style.scss";
+import { PlatinumIcon, GoldIcon, SilverIcon, DiscountIcon } from "./badgeIcons";
 
 interface SectionBadgeProps {
   type: "platinum" | "gold" | "silver" | "discount";
@@ -27,8 +28,24 @@ const SectionBadge: React.FC<SectionBadgeProps> = ({
     }
   };
 
+  const renderIcon = () => {
+    switch (type) {
+      case "platinum":
+        return <PlatinumIcon className="badge-icon" />;
+      case "gold":
+        return <GoldIcon className="badge-icon" />;
+      case "silver":
+        return <SilverIcon className="badge-icon" />;
+      case "discount":
+        return <DiscountIcon className="badge-icon" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={`section-badge badge-${type} ${className}`}>
+      {renderIcon()}
       <span className="badge-text">{text || getDefaultText()}</span>
     </div>
   );
