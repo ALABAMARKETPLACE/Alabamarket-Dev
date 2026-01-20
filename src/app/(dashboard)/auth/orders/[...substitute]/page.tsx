@@ -22,6 +22,9 @@ interface formType {
 
 interface SubstituteItem {
   _id: number;
+  image: string;
+  name: string;
+  price: string;
   [key: string]: unknown;
 }
 
