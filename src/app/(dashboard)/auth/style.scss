@@ -416,7 +416,7 @@ $radius-sm: 8px;
 }
 
 .DashboardAdmin-card-text2 {
-  font-size: 28px; // Much larger number
+  font-size: 26px;
   font-family: vars.$Bold;
   color: $text-color-primary;
   letter-spacing: -1px;
@@ -450,6 +450,16 @@ $radius-sm: 8px;
     color: $primary-color;
     transform: scale(1.1);
   }
+}
+
+// =============================================================================
+// SIDEBAR OVERLAY (mobile)
+// =============================================================================
+.dashboard-SideBarOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 998;
 }
 
 // =============================================================================
@@ -493,6 +503,11 @@ $radius-sm: 8px;
     background-color: #f9fafb !important;
   }
 
+  .anticon {
+    font-size: 16px;
+    opacity: 0.9;
+  }
+
   .ant-pagination {
     margin: 16px 24px !important;
     .ant-pagination-item {
@@ -504,6 +519,20 @@ $radius-sm: 8px;
           color: vars.$primary;
         }
       }
+    }
+  }
+}
+
+// Compact tables on small screens
+@media (max-width: 768px) {
+  .dashboard-Layout .ant-table-wrapper {
+    .ant-table-thead > tr > th {
+      padding: 12px 12px;
+      font-size: 11px;
+    }
+    .ant-table-tbody > tr > td {
+      padding: 12px 12px;
+      font-size: 13px;
     }
   }
 }
@@ -525,6 +554,13 @@ $radius-sm: 8px;
     flex: 1;
     min-width: 0;
   }
+}
+
+.dashboard-pageHeaderBox {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .dashboard-pageHeadertxt1 {
@@ -577,6 +613,7 @@ $radius-sm: 8px;
   box-shadow: none !important;
   padding: 8px 12px !important;
   background-color: #fff !important;
+  min-height: 40px;
 
   &:hover,
   &:focus,
@@ -584,6 +621,11 @@ $radius-sm: 8px;
     border-color: vars.$primary !important;
     box-shadow: 0 0 0 2px rgba(vars.$primary, 0.1) !important;
   }
+}
+
+.ant-input-affix-wrapper {
+  min-height: 40px;
+  border-radius: 8px !important;
 }
 
 .ant-btn {
@@ -636,6 +678,13 @@ $radius-sm: 8px;
   .DashboardAdmin-Box {
     margin-bottom: 16px;
   }
+}
+
+// =============================================================================
+// Forms inside dashboard layout
+// =============================================================================
+.dashboard-Layout .ant-form-item {
+  margin-bottom: 14px;
 }
 
 .dashboard-ProfilePopover,
