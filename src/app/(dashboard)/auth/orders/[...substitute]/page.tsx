@@ -5,8 +5,8 @@ import OrderSubstitutionForm from "../_components/orderSubstitutionForm";
 import SelectedProductsSubstitution from "../_components/selectedProductsSubstitution";
 import { Row, Col } from "react-bootstrap";
 import SimiliarProductSubstitution from "../_components/similiarProductSubstitution";
-import { Form, Input, notification } from "antd";
-import { useState, useEffect } from "react";
+import { Form, notification } from "antd";
+import { useState } from "react";
 import API from "@/config/API";
 import { POST } from "@/util/apicall";
 import { useRouter } from "next/navigation";
@@ -17,29 +17,37 @@ interface formType {
   orderItemId: number;
   remark: string;
   substitute: number[];
+  [key: string]: unknown;
+}
+
+interface SubstituteItem {
+  _id: number;
+  [key: string]: unknown;
 }
 
 export default function OrderSubstitution() {
   const router = useRouter();
   const { substitute } = useParams();
-  const [selectSubstitute, setSelectSubstitute] = useState<any>([]);
+  const [selectSubstitute, setSelectSubstitute] = useState<SubstituteItem[]>(
+    [],
+  );
   // const [formValues, setFormValues] = useState<any>({});
   const [form] = Form.useForm();
   const [notificationApi, contextHolder] = notification.useNotification();
 
-  const functionCall = (data: any) => {
+  const functionCall = (data: SubstituteItem[]) => {
     setSelectSubstitute(data);
   };
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
-      let formValues: formType = await {
+      const formValues: formType = {
         ...values,
         orderId: Number(values.orderId),
         orderItemId: Number(values.orderItemId),
         availableQuantity: Number(values.availableQuantity),
-        substitute: selectSubstitute.map((item: any) => item._id),
+        substitute: selectSubstitute.map((item: SubstituteItem) => item._id),
       };
 
       if (selectSubstitute.length == 0) {
@@ -48,14 +56,14 @@ export default function OrderSubstitution() {
           description: "Select atleast one product for substitution.",
         });
       } else {
-        const response: any = await POST(API.ORDER_SUBSTITUTION, formValues);
+        await POST(API.ORDER_SUBSTITUTION, formValues);
         notificationApi.success({
           message: "Substitution Successful",
           description: "Order substitution was Submited",
         });
         router.push(`/auth/orders/${substitute?.[1]}`);
       }
-    } catch (errorInfo: any) {
+    } catch (errorInfo: unknown) {
       console.log(errorInfo);
       notificationApi.error({
         message: "Validation Error",
