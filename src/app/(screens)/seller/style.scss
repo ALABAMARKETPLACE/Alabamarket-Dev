@@ -18,18 +18,37 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 .seller-screen-box {
   min-height: 100vh;
   width: 100%;
+  max-width: 100vw;
   background: linear-gradient(135deg, #ffffff 0%, #fffbf8 50%, #ffffff 100%);
   background-attachment: fixed;
-  padding: 40px 20px;
+  padding: 40px 0;
   position: relative;
   overflow-x: hidden;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
-    padding: 30px 16px;
+    padding: 30px 0;
   }
 
   @media (max-width: 480px) {
-    padding: 20px 12px;
+    padding: 20px 0;
+  }
+}
+
+// Container wrapper for proper spacing
+.seller-screen-box > .container,
+.seller-screen-box > .container-fluid {
+  padding-left: 20px;
+  padding-right: 20px;
+  
+  @media (max-width: 768px) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  @media (max-width: 480px) {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
 
@@ -39,16 +58,16 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 .seller-hero-section {
   text-align: center;
   margin-bottom: 60px;
-  padding: 40px 20px;
+  padding: 40px 0;
 
   @media (max-width: 768px) {
     margin-bottom: 40px;
-    padding: 30px 16px;
+    padding: 30px 0;
   }
 
   @media (max-width: 480px) {
     margin-bottom: 30px;
-    padding: 20px 12px;
+    padding: 20px 0;
   }
 
   h1 {
@@ -128,13 +147,18 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 149, 0, 0.1), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 149, 0, 0.1),
+      transparent
+    );
     transition: left $transition;
   }
 
@@ -142,7 +166,11 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     border-color: global.$primary;
     box-shadow: $shadow-md;
     transform: translateX(4px);
-    background: linear-gradient(135deg, rgba(255, 149, 0, 0.02), rgba(255, 95, 21, 0.02));
+    background: linear-gradient(
+      135deg,
+      rgba(255, 149, 0, 0.02),
+      rgba(255, 95, 21, 0.02)
+    );
 
     &::before {
       left: 100%;
@@ -179,7 +207,11 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 // BANNER SECTION
 // =============================================================================
 .sellerRegister-box12 {
-  background: linear-gradient(135deg, rgba(255, 149, 0, 0.08) 0%, rgba(255, 95, 21, 0.04) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 149, 0, 0.08) 0%,
+    rgba(255, 95, 21, 0.04) 100%
+  );
   border-radius: 20px;
   padding: 60px 40px;
   margin-bottom: 80px;
@@ -297,7 +329,7 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   gap: 12px;
 
   &::before {
-    content: '';
+    content: "";
     display: block;
     width: 4px;
     height: 24px;
@@ -453,7 +485,11 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
 .seller-info-panel {
   padding: 24px;
-  background: linear-gradient(135deg, rgba(255, 149, 0, 0.05), rgba(255, 95, 21, 0.02));
+  background: linear-gradient(
+    135deg,
+    rgba(255, 149, 0, 0.05),
+    rgba(255, 95, 21, 0.02)
+  );
   border-radius: 16px;
   border: 1px solid rgba(255, 149, 0, 0.1);
   height: 100%;
@@ -461,7 +497,11 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     border-color: rgba(255, 149, 0, 0.2);
-    background: linear-gradient(135deg, rgba(255, 149, 0, 0.08), rgba(255, 95, 21, 0.04));
+    background: linear-gradient(
+      135deg,
+      rgba(255, 149, 0, 0.08),
+      rgba(255, 95, 21, 0.04)
+    );
   }
 
   @media (max-width: 768px) {
@@ -508,13 +548,15 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     background: global.$primary;
     border-color: global.$primary;
   }
-  
+
   .ant-steps-item-finish .ant-steps-item-icon {
     border-color: global.$primary;
     color: global.$primary;
   }
 
-  .ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after {
+  .ant-steps-item-finish
+    > .ant-steps-item-container
+    > .ant-steps-item-tail::after {
     background-color: global.$primary;
   }
 }
@@ -536,9 +578,9 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 600;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(255, 95, 21, 0.2);
-  
+
   &:hover {
-    background: darken(#FF5F15, 5%) !important;
+    background: darken(#ff5f15, 5%) !important;
     transform: translateY(-1px);
   }
 }
@@ -549,7 +591,7 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 8px;
   border: 1px solid #cbd5e1;
   color: #64748b;
-  
+
   &:hover {
     border-color: global.$primary;
     color: global.$primary;
@@ -569,7 +611,7 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     color: #1e293b;
     margin-bottom: 10px;
     line-height: 1.2;
-    
+
     span {
       color: global.$primary;
     }
@@ -610,7 +652,7 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     span {
       color: global.$primary;
     }
-    
+
     .arrow {
       transform: translateX(5px);
     }
@@ -660,7 +702,8 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-.sellerRegister-box4, .sellerRegister-box5 {
+.sellerRegister-box4,
+.sellerRegister-box5 {
   background: #ffffff;
   border-radius: 16px;
   padding: 20px; // Compact padding

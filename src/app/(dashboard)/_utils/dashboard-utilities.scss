@@ -307,7 +307,7 @@
   font-weight: 600;
 
   &::before {
-    content: '';
+    content: "";
     display: inline-block;
     width: 8px;
     height: 8px;
@@ -464,7 +464,7 @@
   }
 
   &:hover::before {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 120%;
     left: 50%;
@@ -531,25 +531,65 @@
 // SPACING UTILITIES
 // =============================================================================
 
-.p-0 { padding: 0; }
-.p-xs { padding: 4px; }
-.p-sm { padding: 8px; }
-.p-md { padding: 12px; }
-.p-lg { padding: 16px; }
-.p-xl { padding: 24px; }
-.p-2xl { padding: 32px; }
+.p-0 {
+  padding: 0;
+}
+.p-xs {
+  padding: 4px;
+}
+.p-sm {
+  padding: 8px;
+}
+.p-md {
+  padding: 12px;
+}
+.p-lg {
+  padding: 16px;
+}
+.p-xl {
+  padding: 24px;
+}
+.p-2xl {
+  padding: 32px;
+}
 
-.m-0 { margin: 0; }
-.m-xs { margin: 4px; }
-.m-sm { margin: 8px; }
-.m-md { margin: 12px; }
-.m-lg { margin: 16px; }
-.m-xl { margin: 24px; }
-.m-2xl { margin: 32px; }
+.m-0 {
+  margin: 0;
+}
+.m-xs {
+  margin: 4px;
+}
+.m-sm {
+  margin: 8px;
+}
+.m-md {
+  margin: 12px;
+}
+.m-lg {
+  margin: 16px;
+}
+.m-xl {
+  margin: 24px;
+}
+.m-2xl {
+  margin: 32px;
+}
 
-.gap-xs { gap: 4px; }
-.gap-sm { gap: 8px; }
-.gap-md { gap: 12px; }
-.gap-lg { gap: 16px; }
-.gap-xl { gap: 24px; }
-.gap-2xl { gap: 32px; }
+.gap-xs {
+  gap: 4px;
+}
+.gap-sm {
+  gap: 8px;
+}
+.gap-md {
+  gap: 12px;
+}
+.gap-lg {
+  gap: 16px;
+}
+.gap-xl {
+  gap: 24px;
+}
+.gap-2xl {
+  gap: 32px;
+}

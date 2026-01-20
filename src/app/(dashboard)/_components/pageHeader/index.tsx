@@ -36,17 +36,15 @@ function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
           </button>
           <div>
             <div className="dashboard-pageHeadertxt1">{title}</div>
-            {bredcume && <div className="dashboard-pageHeadertxt2">{bredcume}</div>}
+            {bredcume && (
+              <div className="dashboard-pageHeadertxt2">{bredcume}</div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Action Buttons Section */}
-      {children && (
-        <div className="dashboard-pageHeaderBox">
-          {children}
-        </div>
-      )}
+      {children && <div className="dashboard-pageHeaderBox">{children}</div>}
     </div>
   );
 }

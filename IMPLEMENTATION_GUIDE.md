@@ -1,6 +1,7 @@
 # Dashboard & Seller Panel - Implementation Examples
 
 ## Table of Contents
+
 1. [Card Components](#card-components)
 2. [Table Layouts](#table-layouts)
 3. [Page Headers](#page-headers)
@@ -73,7 +74,7 @@
 ```tsx
 // Grid will automatically adjust columns
 <div className="dashboard-grid">
-  {[1, 2, 3, 4].map(item => (
+  {[1, 2, 3, 4].map((item) => (
     <div key={item} className="DashboardAdmin-card">
       {/* Card content */}
     </div>
@@ -93,20 +94,23 @@
 ### Desktop Table
 
 ```tsx
-import { Table } from 'antd';
+import { Table } from "antd";
 
 const columns = [
   {
-    title: 'Product',
-    dataIndex: 'name',
+    title: "Product",
+    dataIndex: "name",
     render: (text, record) => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <div className="table-img">
           <img src={record.image} alt={text} />
         </div>
         <div>
           <div className="dashboard-text-primary">{text}</div>
-          <div className="dashboard-text-secondary" style={{ fontSize: '12px' }}>
+          <div
+            className="dashboard-text-secondary"
+            style={{ fontSize: "12px" }}
+          >
             {record.sku}
           </div>
         </div>
@@ -114,13 +118,13 @@ const columns = [
     ),
   },
   {
-    title: 'Price',
-    dataIndex: 'price',
+    title: "Price",
+    dataIndex: "price",
     render: (price) => `₦${price.toLocaleString()}`,
   },
   {
-    title: 'Status',
-    dataIndex: 'status',
+    title: "Status",
+    dataIndex: "status",
     render: (status) => (
       <span className={`dashboard-badge badge-${status}`}>
         {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -128,7 +132,7 @@ const columns = [
     ),
   },
   {
-    title: 'Actions',
+    title: "Actions",
     render: (_, record) => (
       <div className="table-action">
         <button>Edit</button>
@@ -224,17 +228,14 @@ export function ProductTableMobile({ data }) {
 ### Basic Page Header
 
 ```tsx
-import PageHeader from '@/app/(dashboard)/_components/pageHeader';
-import { Button } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import PageHeader from "@/app/(dashboard)/_components/pageHeader";
+import { Button } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 
 export function ProductsPage() {
   return (
     <>
-      <PageHeader
-        title="Products"
-        bredcume="Manage your product inventory"
-      >
+      <PageHeader title="Products" bredcume="Manage your product inventory">
         <Button type="primary" icon={<PlusOutlined />}>
           Add Product
         </Button>
@@ -249,10 +250,7 @@ export function ProductsPage() {
 ### Page Header with Multiple Actions
 
 ```tsx
-<PageHeader
-  title="Orders"
-  bredcume="View and manage all orders"
->
+<PageHeader title="Orders" bredcume="View and manage all orders">
   <Button type="primary">Export</Button>
   <Button>Filters</Button>
   <Button type="dashed">Settings</Button>
@@ -271,7 +269,7 @@ export function ProductsPage() {
   // Flexbox row layout
   // Space between title and buttons
   // Bottom border separator
-  
+
   // Mobile: buttons stack below title
   @media (max-width: 768px) {
     // Buttons become full width
@@ -311,17 +309,17 @@ export function ProductsPage() {
 ### Standard Filter Bar
 
 ```tsx
-import { Input, Select, DatePicker, Button } from 'antd';
-import { SearchOutlined, ClearOutlined } from '@ant-design/icons';
+import { Input, Select, DatePicker, Button } from "antd";
+import { SearchOutlined, ClearOutlined } from "@ant-design/icons";
 
 export function ProductFilters() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('');
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("");
   const [date, setDate] = useState(null);
 
   const handleReset = () => {
-    setSearch('');
-    setCategory('');
+    setSearch("");
+    setCategory("");
     setDate(null);
   };
 
@@ -339,17 +337,13 @@ export function ProductFilters() {
         value={category}
         onChange={setCategory}
         options={[
-          { label: 'Electronics', value: 'electronics' },
-          { label: 'Clothing', value: 'clothing' },
-          { label: 'Books', value: 'books' },
+          { label: "Electronics", value: "electronics" },
+          { label: "Clothing", value: "clothing" },
+          { label: "Books", value: "books" },
         ]}
       />
 
-      <DatePicker
-        placeholder="Select date"
-        value={date}
-        onChange={setDate}
-      />
+      <DatePicker placeholder="Select date" value={date} onChange={setDate} />
 
       <Button type="primary">Filter</Button>
       <Button icon={<ClearOutlined />} onClick={handleReset}>
@@ -363,16 +357,16 @@ export function ProductFilters() {
 ### Advanced Filters with Dropdown
 
 ```tsx
-import { Dropdown, Button } from 'antd';
-import { FilterOutlined, DownOutlined } from '@ant-design/icons';
+import { Dropdown, Button } from "antd";
+import { FilterOutlined, DownOutlined } from "@ant-design/icons";
 
 export function AdvancedFilters() {
   const filterMenu = {
     items: [
-      { label: 'Price: Low to High', key: 'price-asc' },
-      { label: 'Price: High to Low', key: 'price-desc' },
-      { label: 'Newest First', key: 'newest' },
-      { label: 'Most Popular', key: 'popular' },
+      { label: "Price: Low to High", key: "price-asc" },
+      { label: "Price: High to Low", key: "price-desc" },
+      { label: "Newest First", key: "newest" },
+      { label: "Most Popular", key: "popular" },
     ],
   };
 
@@ -400,11 +394,11 @@ export function AdvancedFilters() {
   // Vertical stack on mobile
   // Bordered container with shadow
   // Responsive gap between items
-  
+
   // Desktop: All items in one row
   // Tablet: May wrap if needed
   // Mobile: All items stack vertically
-  
+
   // All child inputs: 40px height, consistent styling
   // All buttons: matching height and radius
 }
@@ -424,9 +418,7 @@ export function AdvancedFilters() {
 ```tsx
 // Always start with mobile layout, enhance for larger screens
 
-<div className="dashboard-section">
-  {/* Content automatically adapts */}
-</div>
+<div className="dashboard-section">{/* Content automatically adapts */}</div>
 
 // CSS handles all responsive behavior
 // No need for conditional renders
@@ -484,9 +476,7 @@ export function AdvancedFilters() {
   <div className="description">
     You haven't added any products yet. Click below to create one.
   </div>
-  <button onClick={() => router.push('/products/new')}>
-    Create Product
-  </button>
+  <button onClick={() => router.push("/products/new")}>Create Product</button>
 </div>
 ```
 
@@ -495,7 +485,7 @@ export function AdvancedFilters() {
 ```tsx
 <div className="dashboard-loading">
   <div className="spinner"></div>
-  <span style={{ marginLeft: '12px' }}>Loading...</span>
+  <span style={{ marginLeft: "12px" }}>Loading...</span>
 </div>
 ```
 
@@ -504,11 +494,7 @@ export function AdvancedFilters() {
 ```tsx
 <div className="dashboard-form-group">
   <label htmlFor="product-name">Product Name</label>
-  <input
-    id="product-name"
-    type="text"
-    placeholder="Enter product name"
-  />
+  <input id="product-name" type="text" placeholder="Enter product name" />
 </div>
 ```
 
@@ -536,6 +522,7 @@ export function AdvancedFilters() {
 ## Best Practices
 
 ### 1. **Always Use Grid for Cards**
+
 ```tsx
 // ✅ Good - responsive auto-adjust
 <div className="dashboard-grid">
@@ -549,6 +536,7 @@ export function AdvancedFilters() {
 ```
 
 ### 2. **Use Semantic HTML**
+
 ```tsx
 // ✅ Good
 <button className="dashboard-btn">Click me</button>
@@ -560,6 +548,7 @@ export function AdvancedFilters() {
 ```
 
 ### 3. **Mobile-First CSS**
+
 ```scss
 // ✅ Good - mobile first
 .component {
@@ -583,6 +572,7 @@ export function AdvancedFilters() {
 ```
 
 ### 4. **Consistent Spacing**
+
 ```tsx
 // ✅ Good - use spacing values
 <div style={{ gap: '24px' }} className="dashboard-grid">
@@ -592,6 +582,7 @@ export function AdvancedFilters() {
 ```
 
 ### 5. **Accessible Interactive Elements**
+
 ```tsx
 // ✅ Good
 <button
@@ -639,18 +630,23 @@ export function AdvancedFilters() {
 ## Troubleshooting
 
 ### Issue: Cards not stacking on mobile
+
 **Solution**: Ensure parent has `.dashboard-grid` class
 
 ### Issue: Buttons overflowing on mobile
+
 **Solution**: Use `.dashboard-btn-group` for proper wrapping
 
 ### Issue: Tables showing horizontal scroll on mobile
+
 **Solution**: Ensure table is inside element without fixed width
 
 ### Issue: Sidebar not sliding on mobile
+
 **Solution**: Check that `transform` and `transition` are applied
 
 ### Issue: Text not readable on small screens
+
 **Solution**: Verify media queries are reducing font sizes properly
 
 ---
@@ -658,11 +654,13 @@ export function AdvancedFilters() {
 ## Performance Tips
 
 1. **Lazy load heavy components**
+
    ```tsx
-   const HeavyComponent = lazy(() => import('./HeavyComponent'));
+   const HeavyComponent = lazy(() => import("./HeavyComponent"));
    ```
 
 2. **Use CSS for animations**
+
    ```scss
    // ✅ Good - hardware accelerated
    transition: transform 200ms ease;
@@ -672,6 +670,7 @@ export function AdvancedFilters() {
    ```
 
 3. **Optimize images**
+
    ```tsx
    // ✅ Good
    <Image src={url} width={50} height={50} />
@@ -697,8 +696,9 @@ export function AdvancedFilters() {
 ---
 
 ## Version
+
 **v1.0** - Initial implementation guide (January 2026)
 
 ---
 
-*For more information, see DASHBOARD_UI_IMPROVEMENTS.md*
+_For more information, see DASHBOARD_UI_IMPROVEMENTS.md_

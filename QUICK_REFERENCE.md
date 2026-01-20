@@ -2,15 +2,15 @@
 
 ## 🎯 Quick Links
 
-| Component | File | Class |
-|-----------|------|-------|
-| **Header** | `_components/header/index.tsx` | `.dashboard-Header` |
-| **Sidebar** | `_components/sideBar/` | `.dashboard-SideBarContainer` |
-| **Page Title** | `_components/pageHeader/index.tsx` | `.dashboard-pageHeader` |
-| **Cards** | `auth/style.scss` | `.DashboardAdmin-card` |
-| **Tables** | `auth/style.scss` | `.ant-table-wrapper` |
-| **Filters** | `auth/style.scss` | `.products-filterControls` |
-| **Utilities** | `_utils/dashboard-utilities.scss` | Helper classes |
+| Component      | File                               | Class                         |
+| -------------- | ---------------------------------- | ----------------------------- |
+| **Header**     | `_components/header/index.tsx`     | `.dashboard-Header`           |
+| **Sidebar**    | `_components/sideBar/`             | `.dashboard-SideBarContainer` |
+| **Page Title** | `_components/pageHeader/index.tsx` | `.dashboard-pageHeader`       |
+| **Cards**      | `auth/style.scss`                  | `.DashboardAdmin-card`        |
+| **Tables**     | `auth/style.scss`                  | `.ant-table-wrapper`          |
+| **Filters**    | `auth/style.scss`                  | `.products-filterControls`    |
+| **Utilities**  | `_utils/dashboard-utilities.scss`  | Helper classes                |
 
 ---
 
@@ -37,37 +37,37 @@ Danger:          #EF4444 (Red)
 
 ## 📏 Spacing System
 
-| Value | Size | Use Case |
-|-------|------|----------|
-| `xs` | 4px | Micro spacing |
-| `sm` | 8px | Compact elements |
-| `md` | 12px | Normal spacing |
-| `lg` | 16px | Standard gaps |
-| `xl` | 24px | Large sections |
-| `2xl` | 32px | Major sections |
+| Value | Size | Use Case         |
+| ----- | ---- | ---------------- |
+| `xs`  | 4px  | Micro spacing    |
+| `sm`  | 8px  | Compact elements |
+| `md`  | 12px | Normal spacing   |
+| `lg`  | 16px | Standard gaps    |
+| `xl`  | 24px | Large sections   |
+| `2xl` | 32px | Major sections   |
 
 ---
 
 ## 📐 Border Radius
 
-| Size | Value | Use Case |
-|------|-------|----------|
-| `sm` | 6px | Small inputs |
-| `md` | 8px | Buttons, inputs |
-| `lg` | 12px | Cards, containers |
-| `xl` | 16px | Large containers |
+| Size | Value | Use Case          |
+| ---- | ----- | ----------------- |
+| `sm` | 6px   | Small inputs      |
+| `md` | 8px   | Buttons, inputs   |
+| `lg` | 12px  | Cards, containers |
+| `xl` | 16px  | Large containers  |
 
 ---
 
 ## 🔤 Typography
 
-| Element | Size | Weight | Use Case |
-|---------|------|--------|----------|
-| H1 | 28px | Bold | Page titles |
-| H2 | 20px | SemiBold | Section titles |
-| Body | 14px | Regular | Text content |
-| Small | 12px | Regular | Secondary info |
-| Label | 11px | SemiBold | Field labels |
+| Element | Size | Weight   | Use Case       |
+| ------- | ---- | -------- | -------------- |
+| H1      | 28px | Bold     | Page titles    |
+| H2      | 20px | SemiBold | Section titles |
+| Body    | 14px | Regular  | Text content   |
+| Small   | 12px | Regular  | Secondary info |
+| Label   | 11px | SemiBold | Field labels   |
 
 ---
 
@@ -77,15 +77,7 @@ Danger:          #EF4444 (Red)
 // Mobile First Approach
 
 // Mobile (≤480px)
-@media (max-width: 480px)
-
-// Tablet (481px - 768px)
-@media (max-width: 768px)
-
-// Tablet Large (769px - 1024px)
-@media (max-width: 1024px)
-
-// Desktop (≥1025px)
+@media (max-width: 480px) // Tablet (481px - 768px) @media (max-width: 768px) // Tablet Large (769px - 1024px) @media (max-width: 1024px); // Desktop (≥1025px)
 // Base styles (no query needed)
 ```
 
@@ -94,6 +86,7 @@ Danger:          #EF4444 (Red)
 ## 🔲 Component Classes
 
 ### Header
+
 ```
 .dashboard-Header              // Main header
 .dashboard-HeaderBox5          // Logo section
@@ -104,6 +97,7 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Sidebar
+
 ```
 .dashboard-SideBarContainer    // Sidebar wrapper
 .dashboard-SideBar             // Sidebar content
@@ -113,6 +107,7 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Page Header
+
 ```
 .dashboard-pageHeader          // Main header
 .dashboard-pageHeadertxt1      // Title text
@@ -122,6 +117,7 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Cards
+
 ```
 .DashboardAdmin-card           // Main card
 .DashboardAdmin-card-header    // Header section
@@ -132,6 +128,7 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Tables
+
 ```
 .ant-table-wrapper             // Table container
 .ant-table-thead               // Header row
@@ -141,6 +138,7 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Filters
+
 ```
 .products-filterControls       // Filter container
 .dashboard-filterControls      // Alternative style
@@ -154,6 +152,7 @@ Danger:          #EF4444 (Red)
 ## 🎯 Common Patterns
 
 ### Create a Card
+
 ```html
 <div class="DashboardAdmin-card">
   <div class="DashboardAdmin-card-icons">📊</div>
@@ -164,6 +163,7 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Create a Grid
+
 ```html
 <div class="dashboard-grid">
   <!-- Cards automatically arrange -->
@@ -171,20 +171,21 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Create a Page Header
+
 ```tsx
-<PageHeader 
-  title="Page Title" 
-  bredcume="Breadcrumb"
->
+<PageHeader title="Page Title" bredcume="Breadcrumb">
   <Button>Action</Button>
 </PageHeader>
 ```
 
 ### Create a Filter Bar
+
 ```html
 <div class="products-filterControls">
   <input type="text" placeholder="Search..." />
-  <select><option>Category</option></select>
+  <select>
+    <option>Category</option>
+  </select>
   <button>Filter</button>
 </div>
 ```
@@ -233,6 +234,7 @@ Danger:          #EF4444 (Red)
 ## 📊 Empty & Loading States
 
 ### Empty State
+
 ```html
 <div class="dashboard-empty-state">
   <div class="icon">📭</div>
@@ -243,6 +245,7 @@ Danger:          #EF4444 (Red)
 ```
 
 ### Loading State
+
 ```html
 <div class="dashboard-loading">
   <div class="spinner"></div>
@@ -256,14 +259,18 @@ Danger:          #EF4444 (Red)
 
 ```html
 <!-- Padding -->
-<div class="p-lg">Content</div> <!-- 16px -->
-<div class="p-2xl">Content</div> <!-- 32px -->
+<div class="p-lg">Content</div>
+<!-- 16px -->
+<div class="p-2xl">Content</div>
+<!-- 32px -->
 
 <!-- Margin -->
-<div class="m-lg">Content</div> <!-- 16px -->
+<div class="m-lg">Content</div>
+<!-- 16px -->
 
 <!-- Gap (flex/grid) -->
-<div class="gap-lg">Content</div> <!-- 16px -->
+<div class="gap-lg">Content</div>
+<!-- 16px -->
 ```
 
 ---
@@ -288,64 +295,70 @@ Danger:          #EF4444 (Red)
 
 ## 🔗 Important Files
 
-| File | Purpose |
-|------|---------|
-| `auth/style.scss` | Main dashboard styles |
-| `seller/style.scss` | Seller panel styles |
-| `_utils/dashboard-utilities.scss` | Helper classes |
-| `_components/header/` | Header component |
-| `_components/sideBar/` | Sidebar component |
-| `_components/pageHeader/` | Page header component |
+| File                              | Purpose               |
+| --------------------------------- | --------------------- |
+| `auth/style.scss`                 | Main dashboard styles |
+| `seller/style.scss`               | Seller panel styles   |
+| `_utils/dashboard-utilities.scss` | Helper classes        |
+| `_components/header/`             | Header component      |
+| `_components/sideBar/`            | Sidebar component     |
+| `_components/pageHeader/`         | Page header component |
 
 ---
 
 ## 📖 Documentation Files
 
-| File | Content |
-|------|---------|
-| `IMPROVEMENTS_SUMMARY.md` | Overview of changes |
+| File                           | Content                |
+| ------------------------------ | ---------------------- |
+| `IMPROVEMENTS_SUMMARY.md`      | Overview of changes    |
 | `DASHBOARD_UI_IMPROVEMENTS.md` | Detailed design system |
-| `IMPLEMENTATION_GUIDE.md` | Code examples |
-| This file | Quick reference |
+| `IMPLEMENTATION_GUIDE.md`      | Code examples          |
+| This file                      | Quick reference        |
 
 ---
 
 ## 🐛 Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Cards not stacking | Use `.dashboard-grid` class |
-| Table overflowing | Check `.ant-table-wrapper` padding |
-| Sidebar not sliding | Verify `transform` on mobile |
-| Buttons wrapping badly | Use `.dashboard-btn-group` |
-| Text too small on mobile | Check media query sizes |
+| Issue                    | Solution                           |
+| ------------------------ | ---------------------------------- |
+| Cards not stacking       | Use `.dashboard-grid` class        |
+| Table overflowing        | Check `.ant-table-wrapper` padding |
+| Sidebar not sliding      | Verify `transform` on mobile       |
+| Buttons wrapping badly   | Use `.dashboard-btn-group`         |
+| Text too small on mobile | Check media query sizes            |
 
 ---
 
 ## ⚡ Performance Tips
 
 1. **Lazy load images**
+
    ```tsx
    <img loading="lazy" src={url} />
    ```
 
 2. **Use CSS for animations**
+
    ```scss
    transition: all 200ms ease;
    ```
 
 3. **Memoize components**
+
    ```tsx
    const Card = memo(CardComponent);
    ```
 
 4. **Optimize selectors**
+
    ```scss
    // Good
-   .card { }
-   
+   .card {
+   }
+
    // Avoid deep nesting
-   .dashboard .container .card { }
+   .dashboard .container .card {
+   }
    ```
 
 ---
@@ -410,11 +423,13 @@ $transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 ## 🚀 Quick Start
 
 1. **Import styles** in your layout
+
    ```tsx
-   import './auth/style.scss';
+   import "./auth/style.scss";
    ```
 
 2. **Use components**
+
    ```tsx
    <div className="dashboard-grid">
      <div className="DashboardAdmin-card">...</div>
@@ -441,6 +456,7 @@ $transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 ---
 
 ## Version: v1.0
+
 **Last Updated:** January 20, 2026
 
 ---

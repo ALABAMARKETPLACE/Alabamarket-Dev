@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Col, Row, Table } from "react-bootstrap";
-import { Button, Card, DatePicker } from "antd";
+import { Col, Row, Button, Card, DatePicker } from "antd";
 
 import { LuUsers } from "react-icons/lu";
 import { FiPackage } from "react-icons/fi";
@@ -16,7 +15,6 @@ import SkeletonLoading from "@/app/(dashboard)/_components/skeleton";
 import PieChart from "../../_components/charts/chart";
 import Link from "next/link";
 import dayjs from "dayjs";
-import Error from "@/app/(dashboard)/_components/error";
 
 function DashboardAdmin() {
   const [date, setDate] = useState<any>(null);
@@ -48,149 +46,162 @@ function DashboardAdmin() {
       return {};
     },
   });
+
   return (
-    <main>
-      <div style={{ margin: 5 }} />
+    <main className="dashboard-content-wrapper">
       <div className="DashboardAdmin-Box">
         <div>
-          <div className="DashboardAdmin-text1">Good Morning, Admin</div>
-          <div className="DashboardAdmin-text2">
+          <h1 className="DashboardAdmin-text1">Good Morning, Admin</h1>
+          <p className="DashboardAdmin-text2">
             Welcome to Sales Analysis and Manage Dashboard
-          </div>
+          </p>
         </div>
-        <div className="d-flex gap-3 align-items-center">
-          <div style={{ margin: 15 }} />
+        <div>
           <DatePicker
-            className="align-self-center"
             disabledDate={(current) => {
               return current && current.isAfter(dayjs(), "day");
             }}
-            onChange={(date) => setDate(date.format("YYYY-MM-DD"))}
+            onChange={(date) => setDate(date ? date.format("YYYY-MM-DD") : null)}
+            style={{ marginRight: 12 }}
           />
           <Button type="primary" ghost onClick={() => refetch()}>
             Refresh
           </Button>
         </div>
       </div>
-      <br />
-      <div>
-        <Row>
-          <Col sm={8}>
-            {isLoading ? (
-              <SkeletonLoading size="xsm" count={4} />
-            ) : (
-              <Row>
-                <Col sm={3}>
-                  <Cards
-                    Title={"Users"}
-                    Desc={"All Users"}
-                    value={counts?.userCount ?? 0}
-                    icon={<LuUsers color="green" />}
-                    link="/auth/users"
-                  />
-                </Col>
-                <Col sm={3}>
-                  <Cards
-                    Title={"Orders"}
-                    Desc={"All Orders"}
-                    value={counts?.orderCount ?? 0}
-                    icon={<FiPackage color="blue" />}
-                    link="/auth/orders"
-                  />
-                </Col>
-                <Col sm={3}>
-                  <Cards
-                    Title={"Sellers"}
-                    Desc={"All Sellers"}
-                    value={counts?.sellerCount ?? 0}
-                    icon={<TbUsersGroup color="orange" />}
-                    link="/auth/sellers"
-                  />
-                </Col>
-                <Col sm={3}>
-                  <Cards
-                    Title={"Products"}
-                    Desc={"Total Products"}
-                    value={counts?.productsCount ?? 0}
-                    icon={<HiOutlineRectangleGroup color="#63ccf2" />}
-                    link="/auth/products"
-                  />
-                </Col>
-              </Row>
-            )}
-            <br />
+
+      <Row gutter={[24, 24]}>
+        <Col xs={24} lg={16}>
+          {isLoading ? (
+            <SkeletonLoading size="xsm" count={4} />
+          ) : (
+            <Row gutter={[16, 16]}>
+              <Col xs={24} sm={12} xl={6}>
+                <Cards
+                  Title={"Users"}
+                  Desc={"All Users"}
+                  value={counts?.userCount ?? 0}
+                  icon={<LuUsers />}
+                  link="/auth/users"
+                />
+              </Col>
+              <Col xs={24} sm={12} xl={6}>
+                <Cards
+                  Title={"Orders"}
+                  Desc={"All Orders"}
+                  value={counts?.orderCount ?? 0}
+                  icon={<FiPackage />}
+                  link="/auth/orders"
+                />
+              </Col>
+              <Col xs={24} sm={12} xl={6}>
+                <Cards
+                  Title={"Sellers"}
+                  Desc={"All Sellers"}
+                  value={counts?.sellerCount ?? 0}
+                  icon={<TbUsersGroup />}
+                  link="/auth/sellers"
+                />
+              </Col>
+              <Col xs={24} sm={12} xl={6}>
+                <Cards
+                  Title={"Products"}
+                  Desc={"Total Products"}
+                  value={counts?.productsCount ?? 0}
+                  icon={<HiOutlineRectangleGroup />}
+                  link="/auth/products"
+                />
+              </Col>
+            </Row>
+          )}
+
+          <div style={{ marginTop: 24 }}>
             {isLoading2 ? (
               <SkeletonLoading count={1} size="xlg" />
             ) : (
               <Card
                 title={
                   <div className="d-flex justify-content-between">
-                    Weekly Order Statistics{" "}
-                    <Link href={"/auth/reports?report=order"}>
-                      {/* <small>View more</small> */}
-                    </Link>
+                    Weekly Order Statistics
                   </div>
                 }
+                bordered={false}
+                className="dashboard-card-base"
               >
                 <SalesChart data={statistics?.orderStatistics} />
               </Card>
             )}
-          </Col>
-          <Col sm={4}>
-            {isLoading3 ? (
-              <SkeletonLoading count={1} size="xxlg" />
-            ) : (
-              <Card
-                title={
-                  date
-                    ? "Order Statistics for " +
-                      dayjs(date).format("dddd, MMMM YYYY")
-                    : "Today's Orders Statistics"
-                }
-              >
-                {orderStatistics?.totalOrders > 0 ? (
-                  <PieChart data={orderStatistics?.orderStatistics} />
-                ) : null}
+          </div>
+        </Col>
 
-                <Table bordered size="small" className="mt-3">
-                  <tbody>
-                    <tr key={474747}>
-                      <td>
-                        <div className="DashboardAdmin-card-text1">
-                          Total Orders
-                        </div>
-                      </td>
-                      <td>
-                        <div className="DashboardAdmin-card-text2">
-                          {orderStatistics?.totalOrders}
-                        </div>
-                      </td>
-                    </tr>
-                    {typeof orderStatistics?.orderStatistics == "object"
-                      ? Object.keys(orderStatistics?.orderStatistics)?.map(
-                          (item, key) => (
-                            <tr key={key}>
-                              <td>
-                                <div className="DashboardAdmin-card-text1">
-                                  {item}
-                                </div>
-                              </td>
-                              <td>
-                                <div className="DashboardAdmin-card-text2">
-                                  {orderStatistics?.orderStatistics[item]}
-                                </div>
-                              </td>
-                            </tr>
-                          )
-                        )
-                      : null}
-                  </tbody>
-                </Table>
-              </Card>
-            )}
-          </Col>
-        </Row>
-      </div>
+        <Col xs={24} lg={8}>
+          {isLoading3 ? (
+            <SkeletonLoading count={1} size="xxlg" />
+          ) : (
+            <Card
+              title={
+                date
+                  ? "Order Statistics for " + dayjs(date).format("MMM D, YYYY")
+                  : "Today's Orders Statistics"
+              }
+              bordered={false}
+              className="dashboard-card-base"
+            >
+              {orderStatistics?.totalOrders > 0 ? (
+                <div style={{ marginBottom: 24 }}>
+                  <PieChart data={orderStatistics?.orderStatistics} />
+                </div>
+              ) : (
+                <div style={{ padding: '40px 0', textAlign: 'center', color: '#999' }}>
+                    No orders found
+                </div>
+              )}
+
+              <div className="ant-table-wrapper">
+                <div className="ant-table ant-table-small ant-table-bordered">
+                  <div className="ant-table-container">
+                    <div className="ant-table-content">
+                      <table style={{ tableLayout: 'auto', width: '100%' }}>
+                        <tbody className="ant-table-tbody">
+                          <tr className="ant-table-row">
+                            <td className="ant-table-cell">
+                              <span className="DashboardAdmin-card-text1" style={{ fontSize: 14 }}>
+                                Total Orders
+                              </span>
+                            </td>
+                            <td className="ant-table-cell" style={{ textAlign: 'right' }}>
+                              <span className="DashboardAdmin-card-text2" style={{ fontSize: 16 }}>
+                                {orderStatistics?.totalOrders || 0}
+                              </span>
+                            </td>
+                          </tr>
+                          {typeof orderStatistics?.orderStatistics === "object" &&
+                            Object.keys(orderStatistics?.orderStatistics || {})?.map(
+                              (item, key) => (
+                                <tr key={key} className="ant-table-row">
+                                  <td className="ant-table-cell">
+                                    <span className="DashboardAdmin-card-text1" style={{ fontSize: 14 }}>
+                                      {item}
+                                    </span>
+                                  </td>
+                                  <td className="ant-table-cell" style={{ textAlign: 'right' }}>
+                                    <span className="DashboardAdmin-card-text2" style={{ fontSize: 16 }}>
+                                      {orderStatistics?.orderStatistics[item]}
+                                    </span>
+                                  </td>
+                                </tr>
+                              )
+                            )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+        </Col>
+      </Row>
     </main>
   );
 }
