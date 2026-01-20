@@ -154,7 +154,6 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   color: $text-color-primary;
   font-size: 14px;
   white-space: nowrap;
-  width: auto !important;
 
   &:hover {
     background-color: $bg-color-main;
@@ -164,10 +163,6 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   @media (max-width: 1024px) {
     display: none;
   }
-}
-
-.dashboard-HeaderWebsite {
-  margin-right: 40px;
 }
 
 // Main Header Controls
@@ -500,7 +495,6 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   transition: all $transition-base;
   min-height: 100vh;
   background-color: $bg-color-main;
-  width: auto;
 
   @media (max-width: 768px) {
     margin-left: 0;
