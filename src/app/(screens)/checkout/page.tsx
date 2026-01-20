@@ -206,6 +206,16 @@ function Checkout() {
         currency: "NGN",
         reference: reference,
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
+        // Add split payment parameters
+        ...(Checkout?.Checkout?.[0]?.storeId || Checkout?.Checkout?.[0]?.store_id
+          ? {
+              store_id: Number(
+                Checkout?.Checkout?.[0]?.storeId ||
+                  Checkout?.Checkout?.[0]?.store_id,
+              ),
+              split_payment: true,
+            }
+          : {}),
         metadata: {
           order_id: reference,
           customer_id: customerId,
