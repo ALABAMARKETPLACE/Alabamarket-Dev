@@ -10,10 +10,15 @@ import API from "@/config/API_ADMIN";
 import useDebounceQuery from "@/shared/hook/useDebounceQuery";
 import DataTable from "./_components/dataTable";
 import AddOfferModal from "./_components/addofferModal";
-import { reducer } from "./_components/reducer";
+import { reducer, Offer } from "./_components/reducer";
 import options from "@/app/(dashboard)/auth/offers/_components/options.json";
 import { useSession } from "next-auth/react";
 import Error from "@/app/(dashboard)/_components/error";
+
+interface SessionData {
+  role?: string;
+  [key: string]: unknown;
+}
 
 function Page() {
   const [page, setPage] = useState(1);
@@ -21,7 +26,8 @@ function Page() {
   const [query, , handleChange] = useDebounceQuery("", 300);
   const [state, dispatch] = useReducer(reducer, { status: false, type: "add" });
   const [status, setStatus] = useState("");
-  const { data, status: stat }: any = useSession();
+  const { data: sessionData } = useSession();
+  const data = sessionData as SessionData | null;
 
   const {
     data: offers,
@@ -31,7 +37,8 @@ function Page() {
     error,
     refetch,
   } = useQuery({
-    queryFn: ({ queryKey }) => GET(API.OFFERS_GETALL, queryKey[1] as object),
+    queryFn: ({ queryKey }) =>
+      GET(API.OFFERS_GETALL, queryKey[1] as Record<string, unknown>),
     queryKey: ["admin_offers", { page, query, take, order: "DESC", status }],
   });
 
@@ -82,7 +89,7 @@ function Page() {
           setTake={setTake}
           pageSize={take}
           page={page}
-          edit={(item: any) => dispatch({ type: "edit", item })}
+          edit={(item: Offer) => dispatch({ type: "edit", item })}
         />
       )}
       <AddOfferModal

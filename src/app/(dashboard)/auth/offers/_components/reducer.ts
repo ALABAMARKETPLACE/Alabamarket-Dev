@@ -1,7 +1,12 @@
+export interface Offer {
+  id?: string | number;
+  [key: string]: unknown;
+}
+
 interface InitialValue {
     status: boolean;
     type: string;
-    item?: any;
+    item?: Offer | null;
   }
   
   interface AddAction {
@@ -14,7 +19,7 @@ interface InitialValue {
   
   interface EditAction {
     type: "edit";
-    item: any;
+    item: Offer;
   }
   
   type Action = AddAction | EditAction | CloseAction;

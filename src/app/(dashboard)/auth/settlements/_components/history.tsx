@@ -16,7 +16,7 @@ function History() {
     isError,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.SETTLEMENT_HISTORY, queryKey[1] as object),
+      GET(API.SETTLEMENT_HISTORY, queryKey[1] as Record<string, unknown>),
     queryKey: ["admin_settlement_history", { order: "DESC", page, take }],
     select: (data) => {
       if (data?.status) return data;

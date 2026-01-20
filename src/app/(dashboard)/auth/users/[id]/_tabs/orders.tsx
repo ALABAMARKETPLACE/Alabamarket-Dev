@@ -19,7 +19,7 @@ function UserOrders() {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.ORDER_BY_USER + params?.id, queryKey[1] as object),
+      GET(API.ORDER_BY_USER + params?.id, queryKey[1] as Record<string, unknown>),
     queryKey: [
       "admin_user_orders",
       {

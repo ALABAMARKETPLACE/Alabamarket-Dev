@@ -1,7 +1,13 @@
+export interface Category {
+  id?: string | number;
+  name?: string;
+  [key: string]: unknown;
+}
+
 interface InitialValue {
   status: boolean;
   type: string;
-  item?: any;
+  item?: Category | null;
 }
 
 interface AddAction {
@@ -14,7 +20,7 @@ interface CloseAction {
 
 interface EditAction {
   type: "edit";
-  item: any;
+  item: Category;
 }
 
 type Action = AddAction | EditAction | CloseAction;

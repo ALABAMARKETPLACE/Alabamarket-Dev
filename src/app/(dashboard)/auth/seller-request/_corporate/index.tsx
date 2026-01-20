@@ -12,7 +12,9 @@ type ResetType = {
   date: (query: string) => void;
 };
 
-function Corporate(props: any, ref: Ref<ResetType>) {
+type Props = Record<string, unknown>;
+
+function Corporate(props: Props, ref: Ref<ResetType>) {
   const [page, setPage] = useState(1);
   const [take, setTake] = useState(10);
   const [name, , handleChange] = useDebounceQuery("", 300);
@@ -24,7 +26,10 @@ function Corporate(props: any, ref: Ref<ResetType>) {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.CORPORATE_STORE_GETALL + "pending", queryKey[1] as object),
+      GET(
+        API.CORPORATE_STORE_GETALL + "pending",
+        queryKey[1] as Record<string, unknown>,
+      ),
     queryKey: ["admin_seller_request", { page, take, name, order: "DESC" }],
   });
 

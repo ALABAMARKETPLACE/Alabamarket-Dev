@@ -10,7 +10,7 @@ import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import useDebounceQuery from "@/shared/hook/useDebounceQuery";
 import AddCategoryModal from "./_components/addCategoryModal";
-import { reducer } from "./_components/types_and_interfaces";
+import { reducer, Category } from "./_components/types_and_interfaces";
 import Error from "@/app/(dashboard)/_components/error";
 
 function Page() {
@@ -28,7 +28,7 @@ function Page() {
     error,
   } = useQuery({
     queryFn: ({ queryKey, signal }) =>
-      GET(API.CATEGORY_LIST, queryKey[1] as object, signal),
+      GET(API.CATEGORY_LIST, queryKey[1] as Record<string, unknown>, signal),
     queryKey: ["admin_category", { page, search, take, order: "DESC" }],
   });
   return (
@@ -66,7 +66,7 @@ function Page() {
           setTake={setTake}
           pageSize={take}
           page={page}
-          edit={(item: any) => dispatch({ type: "edit", item })}
+          edit={(item: Category) => dispatch({ type: "edit", item })}
         />
       )}
       <AddCategoryModal

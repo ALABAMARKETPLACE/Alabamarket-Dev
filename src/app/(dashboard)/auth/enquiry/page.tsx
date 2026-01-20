@@ -25,7 +25,7 @@ function Page() {
     error,
   } = useQuery({
     queryFn: async ({ queryKey, signal }) =>
-      await GET(API.ENQUIRY_GET, queryKey[1] as object, signal),
+      await GET(API.ENQUIRY_GET, queryKey[1] as Record<string, unknown>, signal),
     queryKey: ["admin_enquiry", { page, take, query, order: "DESC" }],
   });
   return (

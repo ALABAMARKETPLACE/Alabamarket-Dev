@@ -26,7 +26,7 @@ function DeliveryPartnerApprovals() {
     error: errorCompanies,
   } = useQuery({
     queryFn: ({ queryKey, signal }) =>
-      GET(API_ADMIN.DELIVERY_COMPANIES_ALL, queryKey[1] as object, signal),
+      GET(API_ADMIN.DELIVERY_COMPANIES_ALL, queryKey[1] as Record<string, unknown>, signal),
     queryKey: [
       "delivery_companies_admin",
       { page, limit: take, search: query, status: activeTab },

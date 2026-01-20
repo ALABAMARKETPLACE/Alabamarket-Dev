@@ -10,14 +10,37 @@ import React, { useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import ReviewFormModal from "./reviewFormModal";
 import { useRouter, useSearchParams } from "next/navigation";
+
+interface ReviewItem {
+  _id?: string;
+  userName?: string;
+  createdAt?: string;
+  rating?: number | string;
+  message?: string;
+  isUserReview?: boolean;
+  [key: string]: unknown;
+}
+
+interface ProductData {
+  pid?: string;
+  review?: boolean;
+  [key: string]: unknown;
+}
+
+interface SessionData {
+  token?: string;
+  [key: string]: unknown;
+}
+
 type Props = {
-  data: any;
+  data: ProductData;
 };
 function Reviews(props: Props) {
   //const
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session }: any = useSession();
+  const { data: sessionData } = useSession();
+  const session = sessionData as SessionData | null;
   const pid = searchParams.get("pid");
   const [Notifications, contextHolder] = notification.useNotification();
   //state
@@ -28,22 +51,25 @@ function Reviews(props: Props) {
   //function
   const { data: reviews, isLoading: isReviewLoading } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.PRODUCT_REVIEW + "review", queryKey[1] as object),
+      GET(
+        API.PRODUCT_REVIEW + "review",
+        queryKey[1] as Record<string, unknown>,
+      ),
     queryKey: [
       "product_review",
       { productId: props?.data?.pid, page, take, order: "DESC" },
     ],
   });
   const deleteReview = useMutation({
-    mutationFn: async (body: any) => {
+    mutationFn: async (body: ReviewItem) => {
       return DELETE(API.PRODUCT_REVIEW + body?._id);
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       Notifications["success"]({
         message: `Review Deleted Successfully`,
       });
@@ -66,7 +92,7 @@ function Reviews(props: Props) {
       {isReviewLoading ? (
         <Loading />
       ) : reviews?.data?.length ? (
-        reviews?.data?.map((item: any, index: number) => (
+        reviews?.data?.map((item: ReviewItem, index: number) => (
           <React.Fragment key={index}>
             <div className="d-flex justify-content-start gap-3">
               <div> {item?.userName}</div>

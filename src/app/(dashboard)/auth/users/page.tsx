@@ -32,7 +32,7 @@ function Page() {
     error,
   } = useQuery({
     queryFn: async ({ queryKey }) =>
-      await GET(API.APP_USERS, queryKey[1] as object),
+      await GET(API.APP_USERS, queryKey[1] as Record<string, unknown>),
     queryKey: ["admin_users", { page, name, take, status, order: "DESC" }],
   });
 
