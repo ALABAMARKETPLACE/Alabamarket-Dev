@@ -1,10 +1,6 @@
 "use client";
-import { Button } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { BsFillPatchQuestionFill } from "react-icons/bs";
-import { FaLongArrowAltRight } from "react-icons/fa";
-import Image from "next/image";
 import {
   FcBearish,
   FcBriefcase,
@@ -15,17 +11,13 @@ import {
 } from "react-icons/fc";
 import API from "../../../config/API";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { FaHandshakeSimple } from "react-icons/fa6";
 import { IoDocumentText } from "react-icons/io5";
 import { GiCrystalGrowth } from "react-icons/gi";
-import sellerimg from "../../../assets/images/selllertitle.png";
-import './style.scss';
+import "./style.scss";
 
 function Page() {
   const navigation = useRouter();
-  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);
-  const { data: user } = useSession();
   const sellerFeatures = [
     {
       icon: <FaHandshakeSimple size={30} color={API.COLOR} />,
@@ -52,28 +44,37 @@ function Page() {
             Start Your Business on <span>{API.NAME}</span>
           </h1>
           <p>
-            Join thousands of sellers and reach millions of customers across Nigeria.
-            Zero commission, fast payments, and dedicated support.
+            Join thousands of sellers and reach millions of customers across
+            Nigeria. Zero commission, fast payments, and dedicated support.
           </p>
         </div>
 
         <Row className="seller-row" justify="center">
           <Col md={12} sm={12}>
-            <div className="seller-option-card"  onClick={() => navigation.push("/signup")}>
+            <div
+              className="seller-option-card"
+              onClick={() => navigation.push("/signup")}
+            >
               <span>Register as Buyer</span>
               <span className="arrow">›</span>
             </div>
           </Col>
 
           <Col md={12} sm={12}>
-            <div className="seller-option-card" onClick={() => navigation.push("/seller/corporate")}>
+            <div
+              className="seller-option-card"
+              onClick={() => navigation.push("/seller/corporate")}
+            >
               <span>Become a Seller</span>
               <span className="arrow">›</span>
             </div>
           </Col>
 
           <Col md={12} sm={12}>
-            <div className="seller-option-card" onClick={() => navigation.push("/seller/delivery-partner")}>
+            <div
+              className="seller-option-card"
+              onClick={() => navigation.push("/seller/delivery-partner")}
+            >
               <span>Register as Delivery Partner</span>
               <span className="arrow">›</span>
             </div>
@@ -111,25 +112,19 @@ function Page() {
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
                 <FcCustomerSupport size={32} />
-                <span className="sellerRegister-text2">
-                  One click Support
-                </span>
+                <span className="sellerRegister-text2">One click Support</span>
               </div>
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
                 <FcInTransit size={32} />
-                <span className="sellerRegister-text2">
-                  Faster shipping
-                </span>
+                <span className="sellerRegister-text2">Faster shipping</span>
               </div>
             </Col>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
                 <FcBriefcase size={32} />
-                <span className="sellerRegister-text2">
-                  Shopping Festivals
-                </span>
+                <span className="sellerRegister-text2">Shopping Festivals</span>
               </div>
             </Col>
           </Row>
@@ -153,11 +148,25 @@ function Page() {
           <Col md={6}>
             <div className="sellerRegister-box5">
               {sellerFeatures.map((feature, index) => (
-                <div key={index} style={{ display: "flex", marginBottom: index === sellerFeatures.length - 1 ? 0 : 15 }}>
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    marginBottom: index === sellerFeatures.length - 1 ? 0 : 15,
+                  }}
+                >
                   <div style={{ marginRight: "12px" }}>{feature.icon}</div>
                   <div>
-                    <p className="sellerRegister-text2" style={{marginBottom: 4}}>{feature.title}</p>
-                    <p className="sellerRegister-text1" style={{marginBottom: 0}}>
+                    <p
+                      className="sellerRegister-text2"
+                      style={{ marginBottom: 4 }}
+                    >
+                      {feature.title}
+                    </p>
+                    <p
+                      className="sellerRegister-text1"
+                      style={{ marginBottom: 0 }}
+                    >
                       {feature.description}
                     </p>
                   </div>
