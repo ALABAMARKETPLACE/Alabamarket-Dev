@@ -12,24 +12,45 @@ import { formatCurrency } from "@/utils/formatNumber";
 import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 
+export interface Order {
+  id?: string | number;
+  _id?: string | number;
+  order_id?: string | number;
+  image?: string;
+  userId?: number;
+  name?: string;
+  createdAt?: string;
+  grandTotal?: number;
+  status?: string;
+  orderItems?: Record<string, unknown>[];
+  [key: string]: unknown;
+}
+
 interface props {
-  data: any[];
+  data: Order[];
   count: number;
   setPage: (p: number, take: number) => void;
   pageSize: number;
   page: number;
 }
 
+interface UserResponse {
+  data: {
+    name?: string;
+  };
+}
+
 const UserName = ({ userId }: { userId: number }) => {
-  const [name, setName] = useState<string>("Loading...");
+  const [name, setName] = useState<string>(userId ? "Loading..." : "N/A");
 
   useEffect(() => {
     let isMounted = true;
     if (userId) {
       GET(API.USER_DETAILS + userId)
-        .then((res: any) => {
+        .then((res: unknown) => {
+          const userRes = res as UserResponse;
           if (isMounted) {
-            setName(res?.data?.name || "N/A");
+            setName(userRes?.data?.name || "N/A");
           }
         })
         .catch(() => {
@@ -37,8 +58,6 @@ const UserName = ({ userId }: { userId: number }) => {
             setName("N/A");
           }
         });
-    } else {
-        setName("N/A");
     }
     return () => {
       isMounted = false;
@@ -70,15 +89,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         title: "User Name",
         dataIndex: "userId",
         key: "userId",
-        render: (userId: number, record: any) => (
-            record?.name ? record.name : <UserName userId={userId} />
-        ),
+        render: (userId: number, record: Order) =>
+          record?.name ? record.name : <UserName userId={userId} />,
       },
       {
         title: "Order Date", //
         dataIndex: "createdAt",
         key: "createdAt",
-        render: (item: any) => (
+        render: (item: string) => (
           <span>{moment(item).format("MMM Do YYYY")}</span>
         ),
       },
@@ -86,7 +104,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         title: "Total", //
         dataIndex: "grandTotal",
         key: "grandTotal",
-        render: (item: any) => (
+        render: (item: number) => (
           <span>
             {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
             {formatCurrency(item)}
@@ -102,7 +120,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
       {
         title: "Action",
         width: 100,
-        render: (item: any, record: any) => (
+        render: (item: unknown, record: Order) => (
           <div className="table-action">
             <Button
               type="text"
@@ -115,7 +133,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         ),
       },
     ],
-    [route, Settings.currency]
+    [route, Settings.currency],
   );
 
   return (
@@ -126,7 +144,12 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
           columns={columns}
           pagination={false}
           size="small"
-          rowKey={(record) => record?.order_id ?? record?._id ?? record?.id}
+          rowKey={(record) =>
+            (record?.order_id ??
+              record?._id ??
+              record?.id ??
+              "unknown") as React.Key
+          }
           scroll={{ x: "max-content" }}
           locale={{
             emptyText: (

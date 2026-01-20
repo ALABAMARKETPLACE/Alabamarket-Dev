@@ -20,15 +20,33 @@ const getFullUrl = (url: string) => {
   }
 };
 
+interface AuthState {
+  Auth?: {
+    token?: string;
+  };
+}
+
 const GET = async (
   url: string,
-  params: Record<string, any> = {},
+  params: Record<string, unknown> = {},
   signal: AbortSignal | null = null,
   opts?: { token?: string; headers?: Record<string, string> },
 ) => {
   try {
-    const token: any = opts?.token ?? store.getState()?.Auth?.token ?? " ";
-    const queryParams = new URLSearchParams(params).toString();
+    const state = store.getState() as AuthState;
+    const token: string = opts?.token ?? state?.Auth?.token ?? " ";
+    // Convert params to string-compatible format for URLSearchParams
+    const cleanParams = Object.entries(params).reduce(
+      (acc, [key, value]) => {
+        if (value !== undefined && value !== null) {
+          acc[key] = String(value);
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+    const queryParams = new URLSearchParams(cleanParams).toString();
     const URL = queryParams ? url + `?${queryParams}` : url;
     const response = await fetch(getFullUrl(URL), {
       ...(signal && { signal }),
@@ -53,7 +71,7 @@ const GET = async (
         }
       } catch {}
       const error = new Error(messageText);
-      (error as any).status = response.status;
+      (error as Error & { status?: number }).status = response.status;
       throw error;
     }
     return await response.json();
@@ -64,11 +82,12 @@ const GET = async (
 
 const POST = async (
   url: string,
-  body: Record<string, any> = {},
+  body: Record<string, unknown> = {},
   signal: AbortSignal | null = null,
 ) => {
   try {
-    const token: any = store.getState()?.Auth?.token ?? " ";
+    const state = store.getState() as AuthState;
+    const token: string = state?.Auth?.token ?? " ";
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "POST",
@@ -82,7 +101,7 @@ const POST = async (
     if (!response.ok) {
       const errorData = await response.json();
       const error = new Error(errorData.message || "Something went wrong");
-      (error as any).status = response.status;
+      (error as Error & { status?: number }).status = response.status;
       throw error;
     }
     return await response.json();
@@ -93,11 +112,12 @@ const POST = async (
 
 const PUT = async (
   url: string,
-  body: Record<string, any>,
+  body: Record<string, unknown>,
   signal: AbortSignal | null = null,
 ) => {
   try {
-    const token = store.getState()?.Auth?.token ?? " ";
+    const state = store.getState() as AuthState;
+    const token: string = state?.Auth?.token ?? " ";
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PUT",
@@ -111,7 +131,7 @@ const PUT = async (
     if (!response.ok) {
       const errorData = await response.json();
       const error = new Error(errorData.message || "Something went wrong");
-      (error as any).status = response.status;
+      (error as Error & { status?: number }).status = response.status;
       throw error;
     }
     return await response.json();
@@ -122,11 +142,12 @@ const PUT = async (
 
 const PATCH = async (
   url: string,
-  body: Record<string, any>,
+  body: Record<string, unknown>,
   signal: AbortSignal | null = null,
 ) => {
   try {
-    const token: any = store.getState()?.Auth?.token ?? " ";
+    const state = store.getState() as AuthState;
+    const token: string = state?.Auth?.token ?? " ";
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PATCH",
@@ -140,7 +161,7 @@ const PATCH = async (
     if (!response.ok) {
       const errorData = await response.json();
       const error = new Error(errorData.message || "Something went wrong");
-      (error as any).status = response.status;
+      (error as Error & { status?: number }).status = response.status;
       throw error;
     }
     return await response.json();
@@ -149,13 +170,14 @@ const PATCH = async (
   }
 };
 const EXCEL_UPLOAD = async (
-  file: any,
+  file: File,
   category: number,
   subCategory: number,
 ) => {
   return new Promise(async (resolve, reject) => {
     // const user: any = Store.getState()?.User?.user;
-    const token = store.getState()?.Auth?.token ?? " ";
+    const state = store.getState();
+    const token: string = (state as AuthState)?.Auth?.token ?? " ";
 
     try {
       if (file) {
@@ -190,7 +212,8 @@ const EXCEL_UPLOAD = async (
 };
 const DELETE = async (url: string, signal: AbortSignal | null = null) => {
   try {
-    const token = store.getState()?.Auth?.token ?? " ";
+    const state = store.getState();
+    const token: string = (state as AuthState)?.Auth?.token ?? " ";
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "DELETE",
@@ -203,7 +226,7 @@ const DELETE = async (url: string, signal: AbortSignal | null = null) => {
     if (!response.ok) {
       const errorData = await response.json();
       const error = new Error(errorData.message || "Something went wrong");
-      (error as any).status = response.status;
+      (error as Error & { status?: number }).status = response.status;
       throw error;
     }
     return await response.json();
@@ -216,7 +239,8 @@ const COMPRESS_IMAGE = async (file: File) => {
     if (!file) return Promise.reject(new Error("No Image Is selected.."));
     const formData = new FormData();
     formData.append("file", file);
-    const token: any = store.getState()?.Auth?.token ?? " ";
+    const state = store.getState();
+    const token: string = (state as AuthState)?.Auth?.token ?? " ";
 
     const response = await fetch(`${API.BASE_URL}${API.IMAGE_COMPRESS}`, {
       method: "POST",
@@ -232,11 +256,12 @@ const COMPRESS_IMAGE = async (file: File) => {
         new Error(data?.message ?? "Something went wrong.."),
       );
     return { ...data, url: data.Location, status: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     // Handle CORS errors
     if (
-      err.message.includes("CORS") ||
-      err.message.includes("Failed to fetch")
+      error.message.includes("CORS") ||
+      error.message.includes("Failed to fetch")
     ) {
       return Promise.reject(
         new Error(
@@ -244,11 +269,12 @@ const COMPRESS_IMAGE = async (file: File) => {
         ),
       );
     }
-    return Promise.reject(new Error(err.message));
+    return Promise.reject(new Error(error.message));
   }
 };
-const UPLOAD_IMAGES = async (files: any[]) => {
-  const token = store.getState()?.Auth?.token ?? " ";
+const UPLOAD_IMAGES = async (files: File[]) => {
+  const state = store.getState();
+  const token: string = (state as AuthState)?.Auth?.token ?? " ";
 
   // const user: any = store.getState()?.User?.user;
   return new Promise(async (resolve, reject) => {
@@ -285,7 +311,7 @@ const UPLOAD_IMAGES = async (files: any[]) => {
     }
   });
 };
-const DOCUMENT_UPLOAD = async (file: any) => {
+const DOCUMENT_UPLOAD = async (file: File) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (file) {
@@ -373,9 +399,10 @@ const VIDEO_UPLOAD = async (file: File) => {
     const data = await response.json();
     message.success("Video uploaded successfully!");
     return { ...data, url: data.url || data.Location, status: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const error = err as Error;
     message.destroy("video-upload");
-    return Promise.reject(new Error(err.message));
+    return Promise.reject(new Error(error.message));
   }
 };
 

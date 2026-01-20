@@ -8,8 +8,15 @@ import positionImage from "@/assets/images/position2.jpg";
 import { TbArrowRight } from "react-icons/tb";
 import SectionBadge from "../../../../components/sectionBadge";
 
+interface Product {
+  id?: string | number;
+  _id?: string | number;
+  slug?: string;
+  [key: string]: unknown;
+}
+
 interface GoldSectionProps {
-  products: any[];
+  products: Product[];
 }
 
 const PRIMARY_COUNT = 4;
@@ -32,8 +39,7 @@ function GoldSection({ products = [] }: GoldSectionProps) {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderGrid = (items: any[], keyPrefix: string) => (
+  const renderGrid = (items: Product[], keyPrefix: string) => (
     <div className="gold-section__grid">
       {items.map((product, index) => (
         <div

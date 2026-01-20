@@ -10,9 +10,38 @@ import "../styles.scss";
 
 const { TextArea } = Input;
 
+interface Plan {
+  id?: number;
+  _id?: number;
+  name: string;
+  min_products: number;
+  max_products: number;
+  duration_days?: number;
+  duration?: number;
+  price?: number;
+  price_per_day?: number;
+}
+
+interface Product {
+  _id: number;
+  name: string;
+  price: number;
+}
+
+interface InitialData {
+  plan_id: number;
+  product_ids: number[];
+  remarks?: string;
+}
+
 interface RequestFormProps {
-  initialData?: any;
-  onSubmit: (values: any) => void;
+  initialData?: InitialData;
+  onSubmit: (values: {
+    plan_id: number;
+    product_ids: number[];
+    remarks?: string;
+    amount: number;
+  }) => void;
   loading?: boolean;
   mode: "create" | "edit";
   onCancel: () => void;
@@ -26,14 +55,13 @@ function RequestForm({
   onCancel,
 }: RequestFormProps) {
   const [form] = Form.useForm();
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
 
   // Fetch all subscription plans
   const { data: plansData, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-all"],
-    queryFn: ({ signal }) =>
-      GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
+    queryFn: ({ signal }) => GET(API.SUBSCRIPTION_PLANS_ACTIVE, {}, signal),
     staleTime: 30000,
     refetchOnWindowFocus: false,
   });
@@ -46,15 +74,19 @@ function RequestForm({
   });
 
   // Helper to extract plans array
-  const getPlansArray = (data: any) => {
-    if (Array.isArray(data?.data?.data)) return data.data.data;
-    if (Array.isArray(data?.data)) return data.data;
+  const getPlansArray = (data: unknown): Plan[] => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = data as any;
+    if (Array.isArray(d?.data?.data)) return d.data.data;
+    if (Array.isArray(d?.data)) return d.data;
     return [];
   };
 
-  const getProductsArray = (data: any) => {
-    if (Array.isArray(data?.data?.data)) return data.data.data;
-    if (Array.isArray(data?.data)) return data.data;
+  const getProductsArray = (data: unknown): Product[] => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = data as any;
+    if (Array.isArray(d?.data?.data)) return d.data.data;
+    if (Array.isArray(d?.data)) return d.data;
     return [];
   };
 
@@ -63,40 +95,61 @@ function RequestForm({
     const plansList = getPlansArray(plansData);
     if (initialData && plansList.length > 0 && mode === "edit") {
       const plan = plansList.find(
-        (p: any) => (p.id || p._id) === initialData.plan_id
+        (p) => (p.id || p._id) === initialData.plan_id,
       );
-      setSelectedPlan(plan);
-      setSelectedProducts(initialData.product_ids || []);
+      if (plan) {
+        // Only update if not already set to avoid loops/redundant updates
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setSelectedPlan((prev) => {
+          if (prev?.id === plan.id && prev?._id === plan._id) return prev;
+          return plan;
+        });
+        setSelectedProducts((prev) => {
+          const newIds = initialData.product_ids || [];
+          if (
+            prev.length === newIds.length &&
+            prev.every((id, i) => id === newIds[i])
+          ) {
+            return prev;
+          }
+          return newIds;
+        });
 
-      form.setFieldsValue({
-        plan_id: initialData.plan_id,
-        product_ids: initialData.product_ids,
-        remarks: initialData.remarks,
-      });
+        form.setFieldsValue({
+          plan_id: initialData.plan_id,
+          product_ids: initialData.product_ids,
+          remarks: initialData.remarks,
+        });
+      }
     }
   }, [initialData, plansData, form, mode]);
 
   // Helper to get plan duration
-  const getPlanDuration = (plan: any) => {
+  const getPlanDuration = (plan: Plan) => {
     const days = Number(plan?.duration_days || plan?.duration);
     return isNaN(days) ? 0 : days;
   };
 
   // Helper to get plan price
-  const getPlanPrice = (plan: any) => {
+  const getPlanPrice = (plan: Plan | null) => {
+    if (!plan) return 0;
     const price = Number(plan?.price || plan?.price_per_day);
     return isNaN(price) ? 0 : price;
   };
 
   const handlePlanChange = (planId: number) => {
     const plansList = getPlansArray(plansData);
-    const plan = plansList.find((p: any) => (p.id || p._id) === planId);
+    const plan = plansList.find((p) => (p.id || p._id) === planId) || null;
     setSelectedPlan(plan);
     setSelectedProducts([]);
     form.setFieldsValue({ product_ids: [] });
   };
 
-  const handleSubmit = (values: any) => {
+  const handleSubmit = (values: {
+    plan_id: number;
+    product_ids: number[];
+    remarks?: string;
+  }) => {
     // Calculate total price based on selected plan
     const price = getPlanPrice(selectedPlan);
 
@@ -140,12 +193,12 @@ function RequestForm({
               getPopupContainer={(trigger) =>
                 (trigger?.parentElement as HTMLElement) || document.body
               }
-              options={plans.map((plan: any) => ({
+              options={plans.map((plan: Plan) => ({
                 value: plan.id || plan._id,
                 label: `${plan.name} (${plan.min_products}-${
                   plan.max_products
                 } products, ${getPlanDuration(plan)} days, ₦${getPlanPrice(
-                  plan
+                  plan,
                 ).toFixed(2)})`,
               }))}
             />
@@ -182,7 +235,7 @@ function RequestForm({
                     return Promise.resolve();
                   }
                   return Promise.reject(
-                    `Please select between ${selectedPlan.min_products} and ${selectedPlan.max_products} products`
+                    `Please select between ${selectedPlan.min_products} and ${selectedPlan.max_products} products`,
                   );
                 },
               }),
@@ -199,7 +252,7 @@ function RequestForm({
               getPopupContainer={(trigger) =>
                 (trigger?.parentElement as HTMLElement) || document.body
               }
-              options={products.map((product: any) => ({
+              options={products.map((product: Product) => ({
                 value: product._id,
                 label: `${product.name} (₦${product.price})`,
               }))}
@@ -228,9 +281,7 @@ function RequestForm({
               loading={loading}
               size="large"
               className="boostRequests-formAction"
-              disabled={
-                !selectedPlan || selectedProducts.length === 0
-              }
+              disabled={!selectedPlan || selectedProducts.length === 0}
             >
               {mode === "create" ? "Create Request" : "Update Request"}
             </Button>

@@ -179,8 +179,7 @@ function Description(props: Props) {
       } else {
         Notifications.error({ message: newCart?.message });
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
+    } catch {
       Notifications.error({ message: "Something went wrong!" });
     }
   };

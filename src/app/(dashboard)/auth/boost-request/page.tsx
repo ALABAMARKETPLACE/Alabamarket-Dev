@@ -13,17 +13,39 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import BoostRequestFilterBar from "./_components/BoostRequestFilterBar";
 import "./styles.scss";
+import { BoostRequest as BoostRequestType } from "./_components/dataTable";
+
+interface SessionUser {
+  store_id?: string | number | null;
+  storeId?: string | number | null;
+  [key: string]: unknown;
+}
+
+interface Session {
+  user?: SessionUser;
+  store_id?: string | number | null;
+  [key: string]: unknown;
+}
+
+interface BoostRequestsResponse {
+  data: {
+    data: BoostRequestType[];
+    pagination: {
+      total: number;
+    };
+  };
+}
 
 function BoostRequest() {
   const [page, setPage] = useState(1);
   const [take, setTake] = useState(10);
   const [query, searchValue, handleChange] = useDebounceQuery("", 300);
   const [status, setStatus] = useState("all");
-  const [isMobile, setIsMobile] = useState(false);
   const [isCompactFilters, setIsCompactFilters] = useState(false);
   const [filtersDropdownOpen, setFiltersDropdownOpen] = useState(false);
   const router = useRouter();
-  const { data: session }: any = useSession();
+  const { data: sessionData } = useSession();
+  const session = sessionData as Session | null;
   const rawStoreId =
     session?.user?.store_id ??
     session?.user?.storeId ??
@@ -44,13 +66,19 @@ function BoostRequest() {
     error,
   } = useQuery({
     queryFn: ({ queryKey, signal }) =>
-      GET(API_ADMIN.BOOST_REQUESTS, queryKey[1] as object, signal),
+      GET(
+        API_ADMIN.BOOST_REQUESTS,
+        queryKey[1] as Record<string, unknown>,
+        signal,
+      ),
     queryKey: [
       "boost_requests",
       { page, limit: take, search: query, status, seller_id: sellerId },
     ],
     enabled: !!sellerId, // Only run query when sellerId is available
   });
+
+  const responseData = boostRequests as BoostRequestsResponse | undefined;
 
   const statusOptions = [
     { value: "all", label: "All Status" },
@@ -63,19 +91,16 @@ function BoostRequest() {
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      setIsMobile(width <= 768);
+      const mobile = width <= 768;
       setIsCompactFilters(width <= 1024);
+      if (!mobile) {
+        setFiltersDropdownOpen(false);
+      }
     };
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  useEffect(() => {
-    if (!isMobile) {
-      setFiltersDropdownOpen(false);
-    }
-  }, [isMobile]);
 
   return (
     <>
@@ -124,11 +149,11 @@ function BoostRequest() {
       ) : (
         <DataTable
           data={
-            Array.isArray(boostRequests?.data?.data)
-              ? boostRequests?.data?.data
+            Array.isArray(responseData?.data?.data)
+              ? responseData?.data?.data
               : []
           }
-          count={boostRequests?.data?.pagination?.total}
+          count={responseData?.data?.pagination?.total ?? 0}
           setPage={setPage}
           setTake={setTake}
           pageSize={take}

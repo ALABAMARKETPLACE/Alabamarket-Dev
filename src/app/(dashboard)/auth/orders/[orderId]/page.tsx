@@ -14,23 +14,43 @@ import { Button, Tag } from "antd";
 import { getOrderStatus } from "../_components/getOrderStatus";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/redux/hooks";
-import { reduxAccessToken } from "@/redux/slice/authSlice";
 
 import API from "@/config/API";
+
+import { Order } from "../_components/dataTable";
+import { AddressData } from "../_components/addressTab";
+
+interface StoreOrder {
+  id?: string | number;
+  order_id?: string | number;
+  address?: AddressData;
+  name?: string;
+  phone?: string;
+  phone_no?: string;
+  [key: string]: unknown;
+}
+
+interface OrderDetailsResponse {
+  data: Order;
+}
+
+interface StoreOrdersResponse {
+  data: StoreOrder[];
+}
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const route = useRouter();
-  const accessToken = useAppSelector(reduxAccessToken);
 
-  const { data: order, isLoading } = useQuery({
+  const { data: orderData, isLoading } = useQuery({
     queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
     queryKey: ["order_details", orderId],
     staleTime: 0,
   });
 
-  const { data: storeOrderData } = useQuery({
+  const order = orderData as OrderDetailsResponse;
+
+  const { data: storeOrderDataRaw } = useQuery({
     queryFn: async () => {
       // Use the storeId from the fetched order details
       const storeId = order?.data?.storeId;
@@ -46,9 +66,11 @@ export default function OrderDetails() {
     enabled: !!order?.data?.storeId && !!orderId,
   });
 
+  const storeOrderData = storeOrderDataRaw as StoreOrdersResponse;
+
   const specificStoreOrder = Array.isArray(storeOrderData?.data)
     ? storeOrderData?.data.find(
-        (o: any) =>
+        (o) =>
           String(o.id) === String(orderId) ||
           String(o.order_id) === String(orderId),
       )
@@ -89,9 +111,9 @@ export default function OrderDetails() {
       >
         {!isLoading && (
           <>
-            <Tag>{formatDateRelative(order?.data?.createdAt)}</Tag>
-            <Tag color={getOrderStatusColor(order?.data?.status)}>
-              {getOrderStatus(order?.data?.status)}
+            <Tag>{formatDateRelative(order?.data?.createdAt || "")}</Tag>
+            <Tag color={getOrderStatusColor(order?.data?.status || "")}>
+              {getOrderStatus(order?.data?.status || "")}
             </Tag>
             <Button
               type="primary"
@@ -111,19 +133,19 @@ export default function OrderDetails() {
               <div className="d-flex flex-column gap-4">
                 <AddressTab
                   data={{
-                    ...order?.data?.address,
+                    ...(order?.data?.address as AddressData),
                     ...(specificStoreOrder?.address || {}),
                     user_id: order?.data?.userId,
                     order_contact_name:
                       specificStoreOrder?.name || order?.data?.name,
                     // Fallback for phone if it exists at root of store order
                     phone_no:
-                      order?.data?.address?.phone_no ||
+                      (order?.data?.address as AddressData)?.phone_no ||
                       specificStoreOrder?.phone ||
                       specificStoreOrder?.phone_no,
                   }}
                 />
-                <ProductTab data={order?.data?.orderItems} />
+                <ProductTab data={order?.data?.orderItems || []} />
                 <PaymentStatusTab data={order?.data} />
               </div>
             </Col>

@@ -4,33 +4,74 @@ import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 
+export interface AddressData {
+  user_id?: string | number;
+  name?: string;
+  order_contact_name?: string;
+  seller_name?: string;
+  phone_no?: string;
+  address_type?: string;
+  state?: string;
+  state_id?: string | number;
+  city?: string;
+  city_id?: string | number;
+  full_address?: string;
+  address?: string;
+  [key: string]: unknown;
+}
+
 type Props = {
-  data: any;
+  data: AddressData;
 };
+
+interface State {
+  id: string | number;
+  name: string;
+}
+
+interface StatesResponse {
+  data: State[];
+}
+
+interface UserResponse {
+  data: {
+    name?: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    [key: string]: unknown;
+  };
+}
 
 export default function AddressTab(props: Props) {
   const { data: user } = useQuery({
-    queryFn: async () => await GET(API.USER_DETAILS + props?.data?.user_id),
+    queryFn: async () => {
+      const res = await GET(API.USER_DETAILS + props?.data?.user_id);
+      return res as UserResponse;
+    },
     queryKey: ["user_details", props?.data?.user_id],
     enabled: !!props?.data?.user_id,
   });
 
   const { data: states } = useQuery({
-    queryFn: async () => await GET(API.STATES),
+    queryFn: async () => {
+      const res = await GET(API.STATES);
+      return res as StatesResponse;
+    },
     queryKey: ["states_list"],
     staleTime: Infinity,
   });
 
   const getStateName = (id: string | number) => {
     if (!states?.data) return id;
-    const state = states.data.find((s: any) => s.id == id);
+    const state = states.data.find((s: State) => s.id == id);
     return state ? state.name : id;
   };
 
   const getContactName = () => {
     // Helper to filter out "undefined" strings or null/undefined values
-    const isValid = (val: any) =>
-      val &&
+    const isValid = (val: unknown): val is string =>
+      !!val &&
       val !== "undefined" &&
       val !== "null" &&
       typeof val === "string" &&

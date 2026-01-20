@@ -1,13 +1,4 @@
-import {
-  Button,
-  Card,
-  Form,
-  Modal,
-  notification,
-  Select,
-  Steps,
-  Timeline,
-} from "antd";
+import { Button, Card, Modal, notification, Select, Timeline } from "antd";
 import { useState } from "react";
 import { getOrderStatus } from "./getOrderStatus";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -15,12 +6,24 @@ import { PUT, GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import API_MAIN from "@/config/API";
 import moment from "moment";
-import { useAppSelector } from "@/redux/hooks";
-import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { formatCurrency } from "@/utils/formatNumber";
+
+interface OrderData {
+  id?: string | number;
+  [key: string]: unknown;
+}
+
+interface OrderHistoryItem {
+  order_id?: string | number;
+  orderId?: string | number;
+  order?: { id?: string | number };
+  createdAt?: string;
+  status?: string;
+  remark?: string;
+  [key: string]: unknown;
+}
 
 type Props = {
-  data: any;
+  data: OrderData;
 };
 
 export default function OrderStatusTab(props: Props) {
@@ -28,18 +31,17 @@ export default function OrderStatusTab(props: Props) {
   const [status, setStatus] = useState<string>("");
   const queryClient = useQueryClient();
   const [Notifications, contextHolder] = notification.useNotification();
-  const settings = useAppSelector(reduxSettings);
 
   const mutationUpdate = useMutation({
     mutationFn: () => {
       return PUT(API.ORDER_STATUS_UPDATE + props?.data?.id, { status });
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       setOpenModal(false);
       setStatus("");
       Notifications["success"]({
@@ -76,7 +78,7 @@ export default function OrderStatusTab(props: Props) {
   // Filter history to ensure it matches the current order ID
   // Checking multiple common field names for order ID
   const history = Array.isArray(statusHistory?.data)
-    ? statusHistory?.data.filter((item: any) => {
+    ? statusHistory?.data.filter((item: OrderHistoryItem) => {
         const itemOrderId = item.order_id || item.orderId || item.order?.id;
         return String(itemOrderId) === String(props?.data?.id);
       })
@@ -99,22 +101,22 @@ export default function OrderStatusTab(props: Props) {
         ) : history.length > 0 ? (
           <Timeline
             mode="left"
-            items={history.map((item: any) => ({
+            items={history.map((item: OrderHistoryItem) => ({
               label: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
               children: (
                 <div className="d-flex flex-column">
                   <span
                     className="fw-medium text-capitalize"
-                    style={{ color: getOrderStatusColor(item?.status) }}
+                    style={{ color: getOrderStatusColor(item?.status || "") }}
                   >
-                    {getOrderStatus(item?.status)}
+                    {getOrderStatus(item?.status || "")}
                   </span>
                   {item?.remark && (
                     <small className="text-muted">{item.remark}</small>
                   )}
                 </div>
               ),
-              color: getOrderStatusColor(item?.status),
+              color: getOrderStatusColor(item?.status || ""),
             }))}
           />
         ) : (
