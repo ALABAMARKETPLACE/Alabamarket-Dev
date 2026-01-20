@@ -236,6 +236,19 @@ function Checkout() {
         ? API.PAYSTACK_INITIALIZE_SPLIT
         : API.PAYSTACK_INITIALIZE;
 
+      // Log split payment data for debugging
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((paymentData as any).split_payment) {
+        console.log("Initializing Split Payment:", {
+          endpoint,
+          paymentData,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          storeId: (paymentData as any).store_id,
+          amount: paymentData.amount,
+          split_type: "automatic (5% Platform / 95% Seller)",
+        });
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await POST(endpoint, paymentData);
 
