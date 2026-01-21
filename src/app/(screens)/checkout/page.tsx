@@ -67,8 +67,23 @@ function Checkout() {
 
   console.log("user ", user);
 
+  const [isDeliveryCalculating, setIsDeliveryCalculating] = useState(false);
+
   const CalculateDeliveryCharge = useCallback(async () => {
+    // Prevent multiple simultaneous calculations
+    if (isDeliveryCalculating) return;
+
+    // Check if we have necessary data to calculate
+    if (
+      !Checkout?.address?.id ||
+      !Checkout?.Checkout ||
+      Checkout.Checkout.length === 0
+    ) {
+      return;
+    }
+
     try {
+      setIsDeliveryCalculating(true);
       let totals = 0;
       if (Array.isArray(Checkout?.Checkout) === true) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -148,22 +163,24 @@ function Checkout() {
         toggleModal(true);
         setErrorMessage(err.response.data.message);
       }
+    } finally {
+      setIsDeliveryCalculating(false);
     }
   }, [
     Checkout?.Checkout,
     Checkout?.address,
-    setTotal,
-    setGrand_total,
-    setDeliveryToken,
-    setDelivery_charge,
-    setDiscount,
-    toggleModal,
-    setErrorMessage,
+    isDeliveryCalculating,
+    // Remove individual setters to prevent dependency cycle
+    // toggleModal,
   ]);
 
   useEffect(() => {
-    CalculateDeliveryCharge();
-  }, [CalculateDeliveryCharge]);
+    // Only calculate if address and cart exist, and not already calculating
+    if (Checkout?.address?.id && Checkout?.Checkout?.length > 0) {
+      CalculateDeliveryCharge();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [Checkout?.address?.id, Checkout?.Checkout]);
 
   const InitializePaystackPayment = async () => {
     try {
@@ -200,12 +217,29 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const customerId = (user as any)?.id || null;
 
+      // Extract store ID for split payment
+      const firstItem = Checkout?.Checkout?.[0];
+      const storeId = firstItem?.storeId || firstItem?.store_id;
+
+      console.log("DEBUG: Payment Initialization", {
+        firstItem,
+        storeId,
+        hasStoreId: !!storeId,
+      });
+
       const paymentData = {
         email: customerEmail,
         amount: amountInKobo,
         currency: "NGN",
         reference: reference,
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
+        // Add split payment parameters if storeId exists
+        ...(storeId
+          ? {
+              store_id: Number(storeId),
+              split_payment: true,
+            }
+          : {}),
         metadata: {
           order_id: reference,
           customer_id: customerId,
