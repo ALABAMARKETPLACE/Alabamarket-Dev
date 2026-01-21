@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import { TbArrowRight } from "react-icons/tb";
-import SectionBadge from "../../../../components/sectionBadge";
 
 interface DiscountedDealsSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,7 +38,6 @@ function DiscountedDealsSection({
               className="discounted-section__title"
               style={{ display: "flex", alignItems: "center" }}
             >
-              <SectionBadge type="discount" text="Sale" />
               {title}
             </div>
             <span

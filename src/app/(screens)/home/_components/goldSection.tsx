@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import positionImage from "@/assets/images/position2.jpg";
 import { TbArrowRight } from "react-icons/tb";
-import SectionBadge from "../../../../components/sectionBadge";
 
 interface Product {
   id?: string | number;
@@ -66,7 +65,6 @@ function GoldSection({ products = [] }: GoldSectionProps) {
         className="gold-section__panel-title"
         style={{ display: "flex", alignItems: "center" }}
       >
-        <SectionBadge type="gold" text="Best" />
         {title}
       </div>
       <span

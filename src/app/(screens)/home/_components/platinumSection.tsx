@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import platinumImage from "@/assets/images/postion1.jpg";
 import { TbArrowRight } from "react-icons/tb";
-import SectionBadge from "../../../../components/sectionBadge";
 
 interface PlatinumSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,7 +42,6 @@ function PlatinumSection({
               className="platinum-section__title"
               style={{ display: "flex", alignItems: "center" }}
             >
-              <SectionBadge type="platinum" text="Premium" />
               {title}
             </div>
             <span
