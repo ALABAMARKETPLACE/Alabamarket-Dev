@@ -1,6 +1,14 @@
-'use client'
-import React, { useEffect, useState } from "react";
- import { Table, Input, Button, InputNumber, DatePicker, Form, notification } from "antd";
+"use client";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  Table,
+  Input,
+  Button,
+  InputNumber,
+  DatePicker,
+  Form,
+  notification,
+} from "antd";
 import { Col, Row, Card, Container } from "react-bootstrap";
 import dayjs from "dayjs";
 // import API from "../../../config/API";
@@ -55,7 +63,7 @@ const CreateInvoice: React.FC = () => {
   const createInputNumberColumn = (
     dataIndex: keyof Product,
     label: string,
-    allowZero: boolean = true
+    allowZero: boolean = true,
   ) => ({
     title: label,
     dataIndex: dataIndex as string,
@@ -93,7 +101,7 @@ const CreateInvoice: React.FC = () => {
   const vatColumn = {
     title: `VAT${vatPercentage ? ` (${vatPercentage}%)` : ""}`,
     dataIndex: "tax",
-    render: (_: any, record: Product) => {
+    render: (_: unknown, record: Product) => {
       const netAmount = (record.quantity ?? 0) * (record.unitPrice ?? 0);
       const calculatedVAT = (netAmount * (vatPercentage ?? 0)) / 100;
       return <span>{calculatedVAT}</span>;
@@ -108,7 +116,7 @@ const CreateInvoice: React.FC = () => {
     {
       title: "Product",
       dataIndex: "product",
-      render: (_: any, record: Product) => (
+      render: (_: unknown, record: Product) => (
         <Form.Item
           name={`product_${record.key}`}
           rules={[{ required: true, message: "Product is required" }]}
@@ -128,7 +136,7 @@ const CreateInvoice: React.FC = () => {
     {
       title: "Title",
       dataIndex: "title",
-      render: (_: any, record: Product) => (
+      render: (_: unknown, record: Product) => (
         <Form.Item
           name={`title_${record.key}`}
           rules={[{ required: true, message: "Title is required" }]}
@@ -154,7 +162,7 @@ const CreateInvoice: React.FC = () => {
     {
       title: "Net Amount",
       dataIndex: "netAmount",
-      render: (_: any, record: Product) => {
+      render: (_: unknown, record: Product) => {
         const netAmount = (record.quantity ?? 0) * (record.unitPrice ?? 0);
         return <span>{netAmount}</span>;
       },
@@ -169,7 +177,7 @@ const CreateInvoice: React.FC = () => {
     {
       title: "Total",
       dataIndex: "total",
-      render: (_: any, record: Product) => {
+      render: (_: unknown, record: Product) => {
         const netAmount = (record.quantity ?? 0) * (record.unitPrice ?? 0);
         const calculatedVAT = (netAmount * (vatPercentage ?? 0)) / 100;
         const total =
@@ -185,7 +193,7 @@ const CreateInvoice: React.FC = () => {
     {
       title: "Action",
       dataIndex: "action",
-      render: (_: any, record: Product) => (
+      render: (_: unknown, record: Product) => (
         <Button onClick={() => deleteProduct(record.key)}>Delete</Button>
       ),
     },
@@ -195,21 +203,21 @@ const CreateInvoice: React.FC = () => {
     /*------Calculatons--------*/
   }
 
-  const calculateTotals = () => {
+  const totals = useMemo(() => {
     const subTotal = products.reduce(
       (acc, curr) => acc + Number((curr.quantity ?? 0) * (curr.unitPrice ?? 0)),
-      0
+      0,
     );
     const totalVAT = products.reduce(
       (acc, curr) =>
         acc +
         ((curr.quantity ?? 0) * (curr.unitPrice ?? 0) * (vatPercentage ?? 0)) /
           100,
-      0
+      0,
     );
     const overallDiscount = products.reduce(
       (acc, curr) => acc + (curr.discount ?? 0),
-      0
+      0,
     );
     const totalAmount = products.reduce((acc, curr) => {
       const netAmount = Number(curr.quantity) * Number(curr.unitPrice);
@@ -229,14 +237,7 @@ const CreateInvoice: React.FC = () => {
       overallDiscount,
       totalAmount,
     };
-  };
-
-  const [totals, setTotals] = useState({
-    subTotal: 0,
-    totalVAT: 0,
-    overallDiscount: 0,
-    totalAmount: 0,
-  });
+  }, [products, vatPercentage]);
 
   {
     /*------Handlers--------*/
@@ -245,7 +246,7 @@ const CreateInvoice: React.FC = () => {
   const handleInputChange = (
     key: string,
     value: string | number | null,
-    field: keyof Product
+    field: keyof Product,
   ) => {
     const updatedProducts = products.map((product) => {
       if (product.key === key) {
@@ -264,17 +265,9 @@ const CreateInvoice: React.FC = () => {
       const parsedValue = parseFloat(value.toString());
       if (!isNaN(parsedValue)) {
         setVatPercentage(parsedValue);
-        const updatedTotals = calculateTotals();
-        setTotals(updatedTotals);
       }
     }
   };
-
-  useEffect(() => {
-    const calculatedTotals = calculateTotals();
-    setTotals(calculatedTotals);
-    // setVatPercentage(parsedValue);
-  }, [products]);
 
   const addProduct = () => {
     const newProductKey = products.length.toString();
@@ -298,7 +291,7 @@ const CreateInvoice: React.FC = () => {
     setProducts(updatedProducts);
   };
 
-  const handleChange = (fieldName: any, value: any) => {
+  const handleChange = (fieldName: string, value: string) => {
     setFormData({
       ...formData,
       [fieldName]: value,
@@ -353,21 +346,24 @@ const CreateInvoice: React.FC = () => {
 
     const url = API.INVOICE;
     try {
-      const response = await POST(url, obj);
+      const response = await POST(
+        url,
+        obj as unknown as Record<string, unknown>,
+      );
       if (response?.status) {
         Notifications.success({
-            message: "Invoice successfully created",
-            // description:
-            //   "The updated invoice has been successfully saved and emailed to the customer.",
-          });
+          message: "Invoice successfully created",
+          // description:
+          //   "The updated invoice has been successfully saved and emailed to the customer.",
+        });
       } else {
         alert("Failed to send invoice. Please try again later.");
       }
       console.log("Response from API:", response);
     } catch (error) {
-        Notifications["error"]({
-            message: "Something went wrong",
-          });
+      Notifications["error"]({
+        message: "Something went wrong",
+      });
       console.error("Error:", error);
     }
   };

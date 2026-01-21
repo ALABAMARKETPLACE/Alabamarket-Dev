@@ -1,0 +1,594 @@
+/* 
+  ================================================================================
+  DASHBOARD & SELLER PANEL - SHARED UTILITY CLASSES
+  ================================================================================
+  These classes provide consistent styling across different dashboard sections
+  and can be mixed with existing component classes.
+*/
+
+// =============================================================================
+// CONTAINER & LAYOUT HELPERS
+// =============================================================================
+
+/** Responsive content wrapper */
+.dashboard-content-wrapper {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/** Section container with proper spacing */
+.dashboard-section {
+  margin-bottom: 32px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 16px;
+  }
+}
+
+/** Grid layout for cards/items */
+.dashboard-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+  &.grid-2 {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+
+  &.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &.grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 1024px) {
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    &.grid-2 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.grid-3 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 16px;
+    grid-template-columns: repeat(2, 1fr);
+
+    &.grid-2,
+    &.grid-3,
+    &.grid-4 {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+    grid-template-columns: 1fr;
+
+    &.grid-2,
+    &.grid-3,
+    &.grid-4 {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+/** Flexbox row layout */
+.dashboard-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+
+  &.no-wrap {
+    flex-wrap: nowrap;
+  }
+
+  &.between {
+    justify-content: space-between;
+  }
+
+  &.center {
+    justify-content: center;
+  }
+
+  &.end {
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 768px) {
+    gap: 16px;
+
+    &.no-wrap {
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+  }
+}
+
+// =============================================================================
+// TEXT & TYPOGRAPHY HELPERS
+// =============================================================================
+
+.dashboard-text-primary {
+  color: #1a202c;
+  font-family: var(--font-family-bold);
+}
+
+.dashboard-text-secondary {
+  color: #718096;
+  font-family: var(--font-family-regular);
+}
+
+.dashboard-text-muted {
+  color: #a0aec0;
+  font-family: var(--font-family-regular);
+  font-size: 12px;
+}
+
+.dashboard-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
+}
+
+.dashboard-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a202c;
+  letter-spacing: -0.5px;
+}
+
+.dashboard-subtext {
+  font-size: 13px;
+  color: #718096;
+  line-height: 1.5;
+}
+
+// =============================================================================
+// BADGE & TAG HELPERS
+// =============================================================================
+
+.dashboard-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.badge-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+  }
+
+  &.badge-warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+  }
+
+  &.badge-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+  }
+
+  &.badge-info {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+  }
+
+  &.badge-primary {
+    background: rgba(255, 149, 0, 0.1);
+    color: #ff9500;
+  }
+}
+
+// =============================================================================
+// BUTTON & ACTION HELPERS
+// =============================================================================
+
+.dashboard-btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    width: 100%;
+
+    button {
+      flex: 1;
+      min-width: 80px;
+    }
+  }
+}
+
+.dashboard-action-menu {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  button {
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    cursor: pointer;
+    transition: all 200ms ease;
+    font-size: 13px;
+
+    &:hover {
+      background: #e5e7eb;
+      border-color: #d1d5db;
+    }
+  }
+}
+
+// =============================================================================
+// FORM HELPERS
+// =============================================================================
+
+.dashboard-form-group {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a202c;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 200ms ease;
+
+    &:focus {
+      outline: none;
+      border-color: #ff9500;
+      box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.1);
+    }
+
+    &:disabled {
+      background: #f8fafc;
+      color: #a0aec0;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+// =============================================================================
+// STATUS & STATE INDICATORS
+// =============================================================================
+
+.dashboard-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  &.status-active::before {
+    background: #10b981;
+  }
+
+  &.status-pending::before {
+    background: #f59e0b;
+  }
+
+  &.status-inactive::before {
+    background: #ef4444;
+  }
+
+  &.status-processing::before {
+    background: #3b82f6;
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+// =============================================================================
+// DIVIDER & SEPARATOR
+// =============================================================================
+
+.dashboard-divider {
+  height: 1px;
+  background: #e5e7eb;
+  margin: 16px 0;
+
+  &.vertical {
+    width: 1px;
+    height: 24px;
+    margin: 0 16px;
+  }
+}
+
+// =============================================================================
+// EMPTY STATE
+// =============================================================================
+
+.dashboard-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  min-height: 300px;
+  border: 1px dashed #e5e7eb;
+  border-radius: 12px;
+  background: #f9fafb;
+
+  .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 8px;
+  }
+
+  .description {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 16px;
+  }
+
+  button {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    background: #ff9500;
+    color: #fff;
+    cursor: pointer;
+    transition: all 200ms ease;
+
+    &:hover {
+      background: #ff8500;
+    }
+  }
+}
+
+// =============================================================================
+// LOADING STATE
+// =============================================================================
+
+.dashboard-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  font-size: 14px;
+  color: #718096;
+
+  .spinner {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #ff9500;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// =============================================================================
+// TOOLTIP & POPOVER HELPERS
+// =============================================================================
+
+.dashboard-tooltip {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted #ff9500;
+
+  &:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background: #1a202c;
+    color: #fff;
+    border-radius: 6px;
+    white-space: nowrap;
+    font-size: 12px;
+    z-index: 1000;
+  }
+
+  &:hover::before {
+    content: "";
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1a202c;
+    z-index: 1000;
+  }
+}
+
+// =============================================================================
+// SHADOW UTILITIES
+// =============================================================================
+
+.shadow-xs {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-sm {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-xl {
+  box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+}
+
+// =============================================================================
+// RESPONSIVE DISPLAY HELPERS
+// =============================================================================
+
+@media (max-width: 768px) {
+  .hide-tablet {
+    display: none !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-mobile {
+    display: none !important;
+  }
+}
+
+.hide-desktop {
+  @media (min-width: 769px) {
+    display: none !important;
+  }
+}
+
+// =============================================================================
+// SPACING UTILITIES
+// =============================================================================
+
+.p-0 {
+  padding: 0;
+}
+.p-xs {
+  padding: 4px;
+}
+.p-sm {
+  padding: 8px;
+}
+.p-md {
+  padding: 12px;
+}
+.p-lg {
+  padding: 16px;
+}
+.p-xl {
+  padding: 24px;
+}
+.p-2xl {
+  padding: 32px;
+}
+
+.m-0 {
+  margin: 0;
+}
+.m-xs {
+  margin: 4px;
+}
+.m-sm {
+  margin: 8px;
+}
+.m-md {
+  margin: 12px;
+}
+.m-lg {
+  margin: 16px;
+}
+.m-xl {
+  margin: 24px;
+}
+.m-2xl {
+  margin: 32px;
+}
+
+.gap-xs {
+  gap: 4px;
+}
+.gap-sm {
+  gap: 8px;
+}
+.gap-md {
+  gap: 12px;
+}
+.gap-lg {
+  gap: 16px;
+}
+.gap-xl {
+  gap: 24px;
+}
+.gap-2xl {
+  gap: 32px;
+}

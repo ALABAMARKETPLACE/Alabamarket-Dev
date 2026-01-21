@@ -6,6 +6,7 @@ import ProductItem from "../../../../components/productItem/page";
 import { TbArrowRight } from "react-icons/tb";
 
 interface DiscountedDealsSectionProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products: any[];
   title?: string;
 }
@@ -33,7 +34,12 @@ function DiscountedDealsSection({
       <div className="discounted-section__wrapper">
         <div className="discounted-section__content">
           <div className="discounted-section__header">
-            <div className="discounted-section__title">{title}</div>
+            <div
+              className="discounted-section__title"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              {title}
+            </div>
             <span
               role="button"
               tabIndex={0}
@@ -43,7 +49,9 @@ function DiscountedDealsSection({
               }
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
-                  router.push(`/products/view?type=featured&position=discounted`);
+                  router.push(
+                    `/products/view?type=featured&position=discounted`,
+                  );
                 }
               }}
             >

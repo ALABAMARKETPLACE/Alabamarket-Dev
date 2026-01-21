@@ -1,81 +1,542 @@
 @use "../../../config/styleVariable.scss" as global;
 
+// =============================================================================
+// VARIABLES
+// =============================================================================
+$primary-gradient: linear-gradient(135deg, #ff9500 0%, #ff5f15 100%);
+$bg-light: #f8fafc;
+$border-color: #e5e7eb;
+$text-primary: #1a202c;
+$text-secondary: #718096;
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+$transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+// =============================================================================
+// SELLER SCREEN BOX
+// =============================================================================
 .seller-screen-box {
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #ffffff 0%, #fffbf8 100%);
-  padding: 20px 10px; // Compact padding
+  max-width: 100vw;
+  background: linear-gradient(135deg, #ffffff 0%, #fffbf8 50%, #ffffff 100%);
+  background-attachment: fixed;
+  padding: 40px 0;
   position: relative;
-  &::before {
-    display: none;
+  overflow-x: hidden;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    padding: 30px 0;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 0;
   }
 }
 
-// Card Style for Forms
-.seller-card {
-  background: #ffffff;
+// Container wrapper for proper spacing
+.seller-screen-box > .container,
+.seller-screen-box > .container-fluid {
+  padding-left: 20px;
+  padding-right: 20px;
+
+  @media (max-width: 768px) {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  @media (max-width: 480px) {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+
+// =============================================================================
+// HERO SECTION
+// =============================================================================
+.seller-hero-section {
+  text-align: center;
+  margin-bottom: 60px;
+  padding: 40px 0;
+
+  @media (max-width: 768px) {
+    margin-bottom: 40px;
+    padding: 30px 0;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 30px;
+    padding: 20px 0;
+  }
+
+  h1 {
+    font-size: 48px;
+    font-family: global.$Bold;
+    color: $text-primary;
+    margin-bottom: 16px;
+    letter-spacing: -1px;
+    line-height: 1.2;
+
+    @media (max-width: 768px) {
+      font-size: 36px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 28px;
+    }
+
+    span {
+      background: $primary-gradient;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-style: italic;
+    }
+  }
+
+  p {
+    font-size: 18px;
+    color: $text-secondary;
+    font-family: global.$Regular;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+}
+
+// =============================================================================
+// OPTION CARDS (Main CTA)
+// =============================================================================
+.seller-row {
+  margin-bottom: 80px;
+
+  @media (max-width: 768px) {
+    margin-bottom: 60px;
+  }
+
+  @media (max-width: 480px) {
+    margin-bottom: 40px;
+  }
+}
+
+.seller-option-card {
+  background: #fff;
+  border: 2px solid $border-color;
   border-radius: 16px;
-  padding: 20px; // Compact padding
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  height: 100%;
-  transition: all 0.3s ease;
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all $transition;
+  box-shadow: $shadow-sm;
+  font-family: global.$SemiBold;
+  font-size: 18px;
+  color: $text-primary;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 149, 0, 0.1),
+      transparent
+    );
+    transition: left $transition;
+  }
 
   &:hover {
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+    border-color: global.$primary;
+    box-shadow: $shadow-md;
+    transform: translateX(4px);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 149, 0, 0.02),
+      rgba(255, 95, 21, 0.02)
+    );
+
+    &::before {
+      left: 100%;
+    }
+
+    .arrow {
+      transform: translateX(8px);
+    }
+  }
+
+  .arrow {
+    font-size: 24px;
+    font-weight: bold;
+    color: global.$primary;
+    margin-left: 16px;
+    transition: transform $transition;
+  }
+
+  @media (max-width: 768px) {
+    padding: 20px 24px;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px 20px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    border-radius: 12px;
   }
 }
 
-// Info Panel Style
-.seller-info-panel {
-  padding: 16px; // Compact padding
-  background: rgba(255, 149, 0, 0.03);
-  border-radius: 16px;
+// =============================================================================
+// BANNER SECTION
+// =============================================================================
+.sellerRegister-box12 {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 149, 0, 0.08) 0%,
+    rgba(255, 95, 21, 0.04) 100%
+  );
+  border-radius: 20px;
+  padding: 60px 40px;
+  margin-bottom: 80px;
   border: 1px solid rgba(255, 149, 0, 0.1);
+
+  @media (max-width: 1024px) {
+    padding: 40px 30px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+    margin-bottom: 60px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 16px;
+    margin-bottom: 40px;
+  }
+}
+
+.sellerRegister-banner-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+
+  svg {
+    font-size: 40px;
+    transition: transform $transition;
+
+    @media (max-width: 768px) {
+      font-size: 32px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 28px;
+    }
+  }
+
+  &:hover svg {
+    transform: scale(1.1) translateY(-4px);
+  }
+}
+
+.sellerRegister-text2 {
+  font-size: 14px;
+  font-family: global.$SemiBold;
+  color: $text-primary;
+  line-height: 1.4;
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+}
+
+// =============================================================================
+// CONTENT SECTIONS
+// =============================================================================
+.sellerRegister-box4 {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-sm;
   height: 100%;
+  transition: all $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    border-color: rgba(255, 149, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    padding: 30px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
 }
 
 .sellerRegister-Heading {
-  font-size: 28px; // Reduced font size
+  font-size: 36px;
   font-family: global.$Bold;
   text-align: center;
-  color: #1a1a1a;
+  color: $text-primary;
   margin-bottom: 8px;
-  background: linear-gradient(135deg, #ff9500 0%, #ff5f15 100%);
+  background: $primary-gradient;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 24px;
+  }
 }
 
 .sellerRegister-subHeading {
-  font-size: 18px; // Reduced font size
+  font-size: 20px;
   font-family: global.$SemiBold;
-  color: #1a1a1a;
-  margin-bottom: 12px;
+  color: $text-primary;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  
+  gap: 12px;
+
   &::before {
-    content: '';
+    content: "";
     display: block;
     width: 4px;
-    height: 20px;
+    height: 24px;
     background: global.$primary;
     border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+    margin-bottom: 12px;
   }
 }
 
 .sellerRegister-text1 {
-  font-size: 13px; // Reduced font size
+  font-size: 15px;
   font-family: global.$Regular;
-  color: #64748b;
-  line-height: 1.5;
+  color: $text-secondary;
+  line-height: 1.6;
+  margin-bottom: 16px;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 }
 
-.sellerRegister-text2 {
-  font-size: 14px; // Reduced font size
-  font-family: global.$SemiBold;
-  color: #334155;
+// =============================================================================
+// SELLER FEATURES
+// =============================================================================
+.seller-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin: 60px 0;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+    margin: 40px 0;
+  }
+
+  @media (max-width: 480px) {
+    gap: 12px;
+    margin: 30px 0;
+  }
+}
+
+.seller-feature-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 24px;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-sm;
+  transition: all $transition;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    border-color: rgba(255, 149, 0, 0.2);
+    transform: translateY(-4px);
+  }
+
+  .icon {
+    font-size: 48px;
+    margin: 0 auto;
+    transition: transform $transition;
+  }
+
+  &:hover .icon {
+    transform: scale(1.1);
+  }
+
+  .title {
+    font-size: 18px;
+    font-family: global.$SemiBold;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  .description {
+    font-size: 14px;
+    color: $text-secondary;
+    font-family: global.$Regular;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px 20px;
+
+    .title {
+      font-size: 16px;
+    }
+
+    .description {
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px 16px;
+    gap: 12px;
+
+    .icon {
+      font-size: 40px;
+    }
+
+    .title {
+      font-size: 14px;
+    }
+
+    .description {
+      font-size: 12px;
+    }
+  }
+}
+
+// =============================================================================
+// CARD & INFO STYLES
+// =============================================================================
+.seller-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: $shadow-sm;
+  border: 1px solid $border-color;
+  height: 100%;
+  transition: all $transition;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    border-color: rgba(255, 149, 0, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    padding: 24px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 20px;
+  }
+}
+
+.seller-info-panel {
+  padding: 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 149, 0, 0.05),
+    rgba(255, 95, 21, 0.02)
+  );
+  border-radius: 16px;
+  border: 1px solid rgba(255, 149, 0, 0.1);
+  height: 100%;
+  transition: all $transition;
+
+  &:hover {
+    border-color: rgba(255, 149, 0, 0.2);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 149, 0, 0.08),
+      rgba(255, 95, 21, 0.04)
+    );
+  }
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 16px;
+  }
+}
+
+// =============================================================================
+// RESPONSIVE UTILITIES
+// =============================================================================
+@media (max-width: 768px) {
+  // Stack grids on mobile
+  .seller-features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  // Full width on mobile
+  .seller-card,
+  .seller-info-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .seller-screen-box {
+    padding: 16px 8px;
+  }
+
+  .seller-hero-section {
+    padding: 16px 8px;
+  }
 }
 
 // Override Ant Steps
@@ -87,13 +548,15 @@
     background: global.$primary;
     border-color: global.$primary;
   }
-  
+
   .ant-steps-item-finish .ant-steps-item-icon {
     border-color: global.$primary;
     color: global.$primary;
   }
 
-  .ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after {
+  .ant-steps-item-finish
+    > .ant-steps-item-container
+    > .ant-steps-item-tail::after {
     background-color: global.$primary;
   }
 }
@@ -115,9 +578,9 @@
   font-weight: 600;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(255, 95, 21, 0.2);
-  
+
   &:hover {
-    background: darken(#FF5F15, 5%) !important;
+    background: darken(#ff5f15, 5%) !important;
     transform: translateY(-1px);
   }
 }
@@ -128,7 +591,7 @@
   border-radius: 8px;
   border: 1px solid #cbd5e1;
   color: #64748b;
-  
+
   &:hover {
     border-color: global.$primary;
     color: global.$primary;
@@ -148,7 +611,7 @@
     color: #1e293b;
     margin-bottom: 10px;
     line-height: 1.2;
-    
+
     span {
       color: global.$primary;
     }
@@ -189,7 +652,7 @@
     span {
       color: global.$primary;
     }
-    
+
     .arrow {
       transform: translateX(5px);
     }
@@ -239,7 +702,8 @@
   }
 }
 
-.sellerRegister-box4, .sellerRegister-box5 {
+.sellerRegister-box4,
+.sellerRegister-box5 {
   background: #ffffff;
   border-radius: 16px;
   padding: 20px; // Compact padding

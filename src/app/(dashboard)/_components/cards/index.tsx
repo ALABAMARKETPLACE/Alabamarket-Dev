@@ -18,12 +18,14 @@ function Cards({ link, Title, icon, value, Desc }: props) {
         return;
       }}
     >
-      <div className="DashboardAdmin-Box">
+      <div className="DashboardAdmin-card-header">
         <div className="DashboardAdmin-card-text1">{Title}</div>
         <div className="DashboardAdmin-card-icons">{icon}</div>
       </div>
-      <div className="DashboardAdmin-card-text2">{value}</div>
-      <div className="DashboardAdmin-card-text3">{Desc}</div>
+      <div className="cards-content-wrapper">
+        <div className="DashboardAdmin-card-text2">{value}</div>
+        {Desc && <div className="DashboardAdmin-card-text3">{Desc}</div>}
+      </div>
     </div>
   );
 }

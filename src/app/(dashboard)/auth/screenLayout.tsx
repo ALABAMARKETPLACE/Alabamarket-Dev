@@ -47,11 +47,16 @@ function ScreenLayout(props: any) {
         />
       )}
       <Layout.Sider
-        width={230}
+        width={260}
         className={`dashboard-SideBarContainer ${sidebarOpen ? "open" : ""}`}
         style={{
           backgroundColor: "#fff",
           height: "100vh",
+          position: "fixed",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          zIndex: 999,
         }}
       >
         <SideBar 
@@ -63,7 +68,7 @@ function ScreenLayout(props: any) {
           onRouteClick={closeSidebar} 
         />
       </Layout.Sider>
-      <Layout>
+      <Layout className="dashboard-ContentLayout">
         <Layout.Content>
           <div className="dashboard-Layout">{props?.children}</div>
         </Layout.Content>

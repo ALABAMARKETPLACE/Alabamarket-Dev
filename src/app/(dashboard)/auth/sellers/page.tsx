@@ -32,7 +32,7 @@ function Page() {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.CORPORATE_STORE_GETALL + sellerStatus, queryKey[1] as object),
+      GET(API.CORPORATE_STORE_GETALL + sellerStatus, queryKey[1] as Record<string, unknown>),
     queryKey: ["admin_sellers", { page, name: query, take, sellerStatus }],
   });
 

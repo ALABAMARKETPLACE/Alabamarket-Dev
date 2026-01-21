@@ -1,16 +1,39 @@
-import React, { useState } from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Row, Col } from "react-bootstrap";
 import { Button, Popconfirm, Space } from "antd";
 
-import useDebounce from "../../../../shared/hook/useDebounce";
-import useDidUpdateEffect from "../../../../shared/hook/useDidUpdate";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/utils/formatNumber";
-// import { useNavigate } from "react-router-dom";
 
-const CartItem = (props: any) => {
-  //   const navigate = useNavigate();
+interface CartItemData {
+  unit: number | string;
+  status: boolean;
+  quantity: number;
+  slug: string;
+  pid: string;
+  variantId?: string;
+  image: string;
+  name: string;
+  storeName: string;
+  price: number;
+  totalPrice: number;
+  id: string;
+  combination?: { value: string }[];
+}
+
+interface Settings {
+  currency: string;
+}
+
+interface CartItemProps {
+  data: CartItemData;
+  Settings: Settings;
+  loading: boolean;
+  updateQuantity: (action: "add" | "reduce", data: CartItemData) => void;
+  removeItem: (id: string, data: CartItemData) => void;
+}
+
+const CartItem = (props: CartItemProps) => {
   const router = useRouter();
   let stock = "In Stock";
   if (Number(props?.data?.unit) == 0 || props?.data?.status == false) {
@@ -23,16 +46,16 @@ const CartItem = (props: any) => {
     if (props?.Settings?.currency === "NGN") {
       return "₦";
     }
-    return props?.Settings?.currency || "$";
+    return props?.Settings?.currency || "₦";
   };
 
   function capitalizeFirstLetter(text: string) {
     return text.charAt(0).toUpperCase() + text.slice(1);
   }
-  const getActiveVariant = (data: any): string => {
+  const getActiveVariant = (data: CartItemData): string => {
     let variantInfo = "";
     if (Array.isArray(data?.combination) == true) {
-      data?.combination.forEach((item: any) => {
+      data?.combination?.forEach((item) => {
         variantInfo += ` ${capitalizeFirstLetter(item.value)}`;
       });
     }
@@ -44,16 +67,16 @@ const CartItem = (props: any) => {
       <div
         onClick={() => {
           router.push(
-            `/${props?.data?.slug}/?pid=${props?.data?.pid}&review=2`
+            `/${props?.data?.slug}/?pid=${props?.data?.pid}&review=2`,
           );
-          // router.push(
-          //   `/product/${props?.data?.slug}?pid=${props?.data?.pid}${
-          //     props?.data?.variantId ? `&vid=${props?.data?.variantId}` : ""
-          //   }`
-          // );
         }}
       >
-        <img src={props?.data?.image} className="Cart-CartItem-img" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={props?.data?.image}
+          className="Cart-CartItem-img"
+          alt={props?.data?.name || "Product Image"}
+        />
       </div>
       <div style={{ flex: 1 }}>
         <Row>

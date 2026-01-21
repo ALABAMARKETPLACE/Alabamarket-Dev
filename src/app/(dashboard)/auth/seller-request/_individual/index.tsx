@@ -10,7 +10,15 @@ import Error from "@/app/(dashboard)/_components/error";
 type ResetType = {
   query: (query: string) => void;
 };
-function Individual(props: any, ref: Ref<ResetType>) {
+
+interface Seller {
+  status?: string;
+  [key: string]: unknown;
+}
+
+type Props = Record<string, unknown>;
+
+function Individual(props: Props, ref: Ref<ResetType>) {
   const [page, setPage] = useState(1);
   const [take, setTake] = useState(10);
   const [query, , handleChange] = useDebounceQuery("", 300);
@@ -22,7 +30,7 @@ function Individual(props: any, ref: Ref<ResetType>) {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.INDIVIDUAL_STORE_GETALL, queryKey[1] as object),
+      GET(API.INDIVIDUAL_STORE_GETALL, queryKey[1] as Record<string, unknown>),
     queryKey: [
       "admin_seller_request_individual",
       { page, query, take, order: "DESC" },
@@ -45,7 +53,7 @@ function Individual(props: any, ref: Ref<ResetType>) {
         <DataTable
           data={
             Array.isArray(sellers?.data)
-              ? sellers?.data?.filter((s: any) => s?.status === "pending")
+              ? sellers?.data?.filter((s: Seller) => s?.status === "pending")
               : []
           }
           count={sellers?.meta?.itemCount}

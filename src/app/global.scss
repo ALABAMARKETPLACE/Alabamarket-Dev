@@ -7,9 +7,11 @@ body {
   overflow-x: hidden;
 }
 .layout-container {
-  padding: 0 10px;
+  padding: 0;
   box-sizing: border-box;
   width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 .layout-main {
   width: 100%;
@@ -17,7 +19,8 @@ body {
 .Screen-box {
   min-height: 50vh;
   background-color: #ffffff;
-  padding: 0px 66px;
+  padding: 0;
+  box-sizing: border-box;
   @media screen and (min-width: 320px) and (max-width: 768px) {
     padding: 0px 0px;
   }
@@ -51,11 +54,12 @@ body {
 .Loading-box {
   min-height: 70vh;
   background-color: #fff;
-  padding: 0px 66px;
+  padding: 0;
   margin-top: -6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .Horizontal-row {
@@ -234,5 +238,34 @@ body {
 .lg-25 {
   @media (min-width: 992px) {
     width: 20% !important;
+  }
+}
+
+/* Bootstrap Container Overrides */
+.container,
+.container-fluid {
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
+}
+
+.container {
+  @media (min-width: 576px) {
+    max-width: 540px;
+    margin: 0 auto;
+  }
+  @media (min-width: 768px) {
+    max-width: 720px;
+  }
+  @media (min-width: 992px) {
+    max-width: 960px;
+  }
+  @media (min-width: 1200px) {
+    max-width: 1140px;
+  }
+  @media (min-width: 1400px) {
+    max-width: 1320px;
   }
 }

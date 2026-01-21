@@ -132,15 +132,6 @@ function Products() {
       <div className="products-pageHeaderWrap">
         <PageHeader title={"Products"} bredcume={"Dashboard / Products"}>
           <div className="products-headerActions">
-            <div className="products-headerPrimary">
-              {" "}
-              <Button
-                type="primary"
-                onClick={() => router.push("/auth/products/create")}
-              >
-                New +{" "}
-              </Button>
-            </div>
             <div className="products-headerFilters">
               <ProductsFilterBar
                 isAdmin={isAdmin}
@@ -163,6 +154,15 @@ function Products() {
                   loading: isStoresLoading,
                 }}
               />
+            </div>
+            <div className="products-headerPrimary">
+              {" "}
+              <Button
+                type="primary"
+                onClick={() => router.push("/auth/products/create")}
+              >
+                New +{" "}
+              </Button>
             </div>
           </div>
         </PageHeader>

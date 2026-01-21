@@ -18,9 +18,47 @@ interface Props {
   };
 }
 
+interface Product {
+  name: string;
+  image: string;
+  price: number;
+}
+
+interface BoostRequestDetail {
+  id: number;
+  status?: string;
+  seller?: {
+    name?: string;
+    email?: string;
+    phone?: string;
+  };
+  plan?: {
+    name?: string;
+    price?: number;
+    duration_days?: number;
+    min_products?: number;
+    max_products?: number;
+  };
+  start_date?: string;
+  end_date?: string;
+  days?: number;
+  total_amount?: number;
+  product_ids?: number[];
+  products?: Product[];
+  requested_at?: string;
+  approved_at?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  remarks?: string;
+}
+
+interface BoostRequestResponse {
+  data: BoostRequestDetail;
+}
+
 function ViewBoostRequest({ params }: Props) {
   const router = useRouter();
-  const { data, isLoading, isError, error } = useQuery<any>({
+  const { data, isLoading, isError, error } = useQuery<BoostRequestResponse>({
     queryKey: ["boost-request", params.id],
     queryFn: ({ signal }) =>
       GET(API_ADMIN.BOOST_REQUESTS + params.id, {}, signal),
@@ -30,12 +68,12 @@ function ViewBoostRequest({ params }: Props) {
   const isPending = request?.status === "pending";
 
   // Helper to get plan price (total amount)
-  const getPlanPrice = (plan: any) => {
+  const getPlanPrice = (plan?: BoostRequestDetail["plan"]) => {
     return Number(plan?.price ?? 0);
   };
 
   // Helper to get plan duration
-  const getPlanDuration = (plan: any) => {
+  const getPlanDuration = (plan?: BoostRequestDetail["plan"]) => {
     return Number(plan?.duration_days ?? 0);
   };
 
@@ -79,7 +117,7 @@ function ViewBoostRequest({ params }: Props) {
         <Card className="boostRequests-statusCard">
           <div className="boostRequests-statusLabel">Request Status</div>
           <Tag
-            color={getStatusColor(request?.status)}
+            color={getStatusColor(request?.status || "")}
             className="boostRequests-statusTag"
           >
             {request?.status?.toUpperCase()}
@@ -162,7 +200,7 @@ function ViewBoostRequest({ params }: Props) {
                   {getPlanPrice(request?.plan).toFixed(2)} per product
                 </div>
                 <div className="boostRequests-paymentSummaryRow">
-                  Boost Period: {request?.days || 0} days
+                  Boost Period: {request?.days} days
                 </div>
                 <div className="boostRequests-paymentTotal">
                   Total: ₦{Number(request?.total_amount || 0).toFixed(2)}
@@ -179,7 +217,7 @@ function ViewBoostRequest({ params }: Props) {
             >
               {request?.products && request.products.length > 0 ? (
                 <div className="boostRequests-productsGrid">
-                  {request.products.map((product: any, index: number) => (
+                  {request.products.map((product: Product, index: number) => (
                     <Card
                       hoverable
                       size="small"

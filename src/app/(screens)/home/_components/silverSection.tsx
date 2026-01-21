@@ -6,6 +6,7 @@ import ProductItem from "../../../../components/productItem/page";
 import { TbArrowRight } from "react-icons/tb";
 
 interface SilverSectionProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products: any[];
 }
 
@@ -17,7 +18,7 @@ function SilverSection({ products = [] }: SilverSectionProps) {
   const router = useRouter();
   const silverProducts = useMemo(
     () => (Array.isArray(products) ? products : []),
-    [products]
+    [products],
   );
 
   const columns = useMemo(() => {
@@ -42,7 +43,10 @@ function SilverSection({ products = [] }: SilverSectionProps) {
         {columns.map((items, index) => (
           <div className="silver-section__panel" key={`silver-panel-${index}`}>
             <div className="silver-section__panel-header">
-              <div className="silver-section__panel-title">
+              <div
+                className="silver-section__panel-title"
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 {PANEL_TITLES[index] ?? `Silver Picks ${index + 1}`}
               </div>
               <span
@@ -86,5 +90,3 @@ function SilverSection({ products = [] }: SilverSectionProps) {
 }
 
 export default SilverSection;
-
-

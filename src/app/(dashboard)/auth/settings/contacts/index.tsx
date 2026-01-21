@@ -22,18 +22,19 @@ function Contacts() {
       contactNumber: settings.contactNumber,
       address: settings.address,
     });
-  }, [settings]);
+  }, [settings, form]);
 
   const mutation = useMutation({
-    mutationFn: (body: object) => {
+    mutationFn: (body: Record<string, unknown>) => {
       return PUT(API.SETTINGS + settings?.id, body);
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: (res: unknown) => {
+      const data = res as { data: Record<string, unknown> };
       Notifications["success"]({
         message: "Contacts updated successfully.",
       });

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./styles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
@@ -15,6 +15,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useSession } from "next-auth/react";
+import { formatGAItem, trackPurchase } from "@/utils/analytics";
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
 
 function getCurrencySymbol(currency: string) {
@@ -29,15 +30,19 @@ function Checkout() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const params = useParams();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Checkout = useSelector((state: any) => state?.Checkout?.order);
   const Settings = useAppSelector(reduxSettings);
-  const [isLoading, setIsLoading] = useState<any>(true);
-  const [paymentStatus, setPaymentStatus] = useState<any>();
-  const [orderStatus, setOrderStatus] = useState<any>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [paymentStatus, setPaymentStatus] = useState<boolean>();
+  const [orderStatus, setOrderStatus] = useState<boolean>();
   const [Notifications, contextHolder] = notification.useNotification();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: user }: any = useSession();
   const User = user?.user;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [orderItems, setOrderItems] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
 
@@ -46,39 +51,15 @@ function Checkout() {
   const isCOD = routeId === "1";
   const isPaystack = routeId === "2";
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    // Prevent duplicate order creation
-    const orderAlreadyCreated = localStorage.getItem(
-      "order_creation_completed"
-    );
-    if (orderAlreadyCreated && !orderCreated) {
-      // If order was already created, try to load existing data
-      const existingOrderData = localStorage.getItem("last_order_response");
-      if (existingOrderData) {
-        try {
-          const orderData = JSON.parse(existingOrderData);
-          setResponseData(orderData);
-          getOrderItems(orderData);
-          setOrderStatus(true);
-          setPaymentStatus(true);
-          setIsLoading(false);
-          return;
-        } catch (e) {}
-      }
-    }
-
-    if (!orderCreated) {
-      PlaceOrder();
-    }
-  }, [orderCreated]);
-
-  const getOrderItems = (response: any[]) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getOrderItems = useCallback((response: any[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const array: any[] = [];
     if (Array.isArray(response)) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       response.forEach((items: any) => {
         if (Array.isArray(items?.orderItems)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           items?.orderItems.forEach((item2: any) => {
             array.push(item2);
           });
@@ -86,9 +67,27 @@ function Checkout() {
       });
     }
     setOrderItems(array);
-  };
+  }, []);
 
-  const PlaceOrder = async () => {
+  const loadCartItems = useCallback(async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const userId = (User as any)?.data?.id || (User as any)?.id;
+      if (userId) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cartItems: any = await GET(API.CART_GET_ALL);
+        if (cartItems.status) {
+          dispatch(storeCart(cartItems.data));
+          return;
+        } else {
+        }
+      }
+    } catch {
+      return;
+    }
+  }, [User, dispatch]);
+
+  const PlaceOrder = useCallback(async () => {
     try {
       setOrderCreated(true); // Prevent multiple executions
 
@@ -127,6 +126,7 @@ function Checkout() {
 
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const verificationResponse: any = await POST(API.PAYSTACK_VERIFY, {
           reference: paymentRef,
         });
@@ -136,13 +136,13 @@ function Checkout() {
         if (!verificationResponse?.status) {
           throw new Error(
             verificationResponse?.message ||
-              "Payment verification failed. Please try again."
+              "Payment verification failed. Please try again.",
           );
         }
 
         // Payment verified successfully, proceed with order
         const storedOrderData = localStorage.getItem("paystack_order_data");
-        let orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
+        const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
         finalOrderData = orderData?.order_data || {
           payment: {
@@ -160,6 +160,7 @@ function Checkout() {
         const resolvedUserId =
           finalOrderData.user_id ??
           finalOrderData.userId ??
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (finalOrderData.user as any)?.id ??
           Checkout?.user_id ??
           Checkout?.address?.user_id ??
@@ -177,7 +178,6 @@ function Checkout() {
         }
 
         console.log("Final Order Payload:", finalOrderData);
-
       } else {
         // Unknown route
         throw new Error("Invalid checkout route. Please try again.");
@@ -193,7 +193,7 @@ function Checkout() {
       ) {
         console.error("Invalid cart data:", finalOrderData?.cart);
         throw new Error(
-          "Cart is empty. Unable to process order. Please start over."
+          "Cart is empty. Unable to process order. Please start over.",
         );
       }
 
@@ -201,7 +201,7 @@ function Checkout() {
       if (!finalOrderData?.address || !finalOrderData.address.id) {
         console.error("Invalid address data:", finalOrderData?.address);
         throw new Error(
-          "Delivery address is invalid. Please go back and select a valid address."
+          "Delivery address is invalid. Please go back and select a valid address.",
         );
       }
 
@@ -209,11 +209,12 @@ function Checkout() {
       if (!finalOrderData?.charges || !finalOrderData.charges.token) {
         console.error("Invalid charges data:", finalOrderData?.charges);
         throw new Error(
-          "Delivery charge calculation failed. Please go back and recalculate."
+          "Delivery charge calculation failed. Please go back and recalculate.",
         );
       }
 
       // Create order (payment already verified above for Paystack)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await POST(API.ORDER, finalOrderData);
       console.log("Order creation response:", response);
 
@@ -224,11 +225,30 @@ function Checkout() {
         // Store order response for duplicate prevention
         localStorage.setItem(
           "last_order_response",
-          JSON.stringify(response?.data)
+          JSON.stringify(response?.data),
         );
         localStorage.setItem("order_creation_completed", "true");
 
         setOrderStatus(true);
+
+        // Track Purchase
+        if (response?.data && Array.isArray(response.data)) {
+          const order = response.data[0]; // Assuming single order response for now
+          if (order) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const gaItems = order.orderItems.map((item: any) =>
+              formatGAItem(item, null, item.quantity),
+            );
+            trackPurchase(
+              order.orderId || order._id,
+              gaItems,
+              order.newOrder.grandTotal,
+              Settings?.currency,
+              order.newOrder.deliveryCharge,
+              order.newOrder.tax,
+            );
+          }
+        }
 
         // Clear stored payment data for successful orders
         if (isPaystack) {
@@ -249,6 +269,7 @@ function Checkout() {
       }
 
       setIsLoading(false);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setPaymentStatus(true);
       setOrderStatus(false);
@@ -264,23 +285,53 @@ function Checkout() {
           "Something went wrong while processing your order.",
       });
     }
-  };
+  }, [
+    Checkout?.address,
+    Checkout?.cart,
+    Checkout?.charges,
+    Checkout?.user,
+    Checkout?.user_id,
+    Notifications,
+    Settings?.currency,
+    User,
+    dispatch,
+    getOrderItems,
+    isCOD,
+    isPaystack,
+    loadCartItems,
+    searchParams,
+  ]);
 
-  const loadCartItems = async () => {
-    try {
-      const userId = (User as any)?.data?.id || (User as any)?.id;
-      if (userId) {
-        const cartItems: any = await GET(API.CART_GET_ALL);
-        if (cartItems.status) {
-          dispatch(storeCart(cartItems.data));
+  useEffect(() => {
+    window.scrollTo(0, 0);
+
+    // Prevent duplicate order creation
+    const orderAlreadyCreated = localStorage.getItem(
+      "order_creation_completed",
+    );
+    if (orderAlreadyCreated && !orderCreated) {
+      // If order was already created, try to load existing data
+      const existingOrderData = localStorage.getItem("last_order_response");
+      if (existingOrderData) {
+        try {
+          const orderData = JSON.parse(existingOrderData);
+          setResponseData(orderData);
+          getOrderItems(orderData);
+          setOrderStatus(true);
+          setPaymentStatus(true);
+          setIsLoading(false);
           return;
-        } else {
+        } catch (e) {
+          console.error("Error parsing existing order data", e);
         }
       }
-    } catch (err) {
-      return;
     }
-  };
+
+    if (!orderCreated) {
+      PlaceOrder();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderCreated]);
 
   // Cleanup function to reset order creation status when component unmounts
   useEffect(() => {
@@ -399,7 +450,7 @@ function Checkout() {
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(responseData?.[0]?.newOrder?.discount).toFixed(
-                          2
+                          2,
                         )}
                       </div>
                     </div>
@@ -415,7 +466,7 @@ function Checkout() {
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
-                          responseData?.[0]?.newOrder?.deliveryCharge
+                          responseData?.[0]?.newOrder?.deliveryCharge,
                         ).toFixed(2)}
                       </div>
                     </div>
@@ -425,7 +476,7 @@ function Checkout() {
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
-                          responseData?.[0]?.newOrder?.grandTotal
+                          responseData?.[0]?.newOrder?.grandTotal,
                         ).toFixed(2)}
                       </div>
                     </div>

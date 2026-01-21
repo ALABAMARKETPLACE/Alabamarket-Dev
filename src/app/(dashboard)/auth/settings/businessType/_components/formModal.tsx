@@ -10,7 +10,11 @@ interface props {
   type: string;
   visible: boolean;
   onClose: () => void;
-  data: any;
+  data: {
+    id?: string | number;
+    name?: string;
+    description?: string;
+  };
 }
 function BusinessTypeFormModal({ onClose, type, visible, data }: props) {
   const [form] = Form.useForm();
@@ -18,18 +22,18 @@ function BusinessTypeFormModal({ onClose, type, visible, data }: props) {
   const queryClient = useQueryClient();
 
   const mutationCreate = useMutation({
-    mutationFn: (body: object) => {
+    mutationFn: (body: Record<string, unknown>) => {
       if (type == "edit") {
         return PUT(API.BUSINESS_TYPE + data?.id, body);
       }
       return POST(API.BUSINESS_TYPE, body);
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       handleClose();
       Notifications["success"]({
         message: `Business Type ${
@@ -46,15 +50,17 @@ function BusinessTypeFormModal({ onClose, type, visible, data }: props) {
   };
 
   useEffect(() => {
-    if (type == "edit") {
-      form.setFieldsValue({
-        name: data?.name,
-        description: data?.description,
-      });
-    } else {
-      form.resetFields();
+    if (visible) {
+      if (type == "edit") {
+        form.setFieldsValue({
+          name: data?.name,
+          description: data?.description,
+        });
+      } else {
+        form.resetFields();
+      }
     }
-  }, [visible]);
+  }, [visible, type, data, form]);
   return (
     <Modal
       title={`${type == "edit" ? "Update" : "Add New"} Business Type`}

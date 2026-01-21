@@ -13,7 +13,7 @@ const QuillEditor = dynamic(
   () => import("../../../products/create/_components/QuillEditor"),
   {
     ssr: false,
-  }
+  },
 );
 
 type DetailsFormProps = {
@@ -26,10 +26,14 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
   const [selectedC, setCategory] = useState<null | string | number>(null);
   const [Notifications, contextHolder] = notification.useNotification();
   const queryClient = useQueryClient();
-  const { data: category } = useQuery<any>({
+  const { data: category } = useQuery<unknown>({
     queryKey: [API.CATEGORY],
     select: (res) => {
-      if (res?.status) return res?.data;
+      const response = res as {
+        status: boolean;
+        data: { id: string | number; sub_categories: unknown[] }[];
+      };
+      if (response?.status) return response?.data;
       return [];
     },
   });
@@ -40,23 +44,31 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
     isError,
     error,
     refetch,
-  } = useQuery<any>({
+  } = useQuery<unknown>({
     queryKey: [API.PRODUCTS_GETONE_STORE + params.id],
     select: (res) => {
-      if (res?.status) return res?.data;
+      const response = res as {
+        status: boolean;
+        data: Record<string, unknown>;
+      };
+      if (response?.status) return response?.data;
       return {};
     },
   });
 
   const subcategory = useMemo(() => {
     if (Array.isArray(category)) {
-      const selected = category?.find(
-        (item: any) => item?.id == (selectedC || product?.category)
+      const selected = (
+        category as { id: string | number; sub_categories: unknown[] }[]
+      )?.find(
+        (item) =>
+          item?.id ==
+          (selectedC || (product as Record<string, unknown>)?.category),
       );
       if (selected) return selected?.sub_categories;
     }
     return [];
-  }, [selectedC, product?.category]);
+  }, [selectedC, product, category]);
 
   // Generate SKU/Barcode if not provided
   const generateSKU = () => {
@@ -73,19 +85,29 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
     return `${timestamp.substring(timestamp.length - 10)}${random}`;
   };
 
-  const handleFormFinish = (values: any) => {
+  const handleFormFinish = (values: Record<string, unknown>) => {
     // Auto-generate SKU if not provided or too short
-    if (!values.sku || values.sku.trim().length < 10) {
+    if (
+      !values.sku ||
+      (typeof values.sku === "string" && values.sku.trim().length < 10)
+    ) {
       values.sku = generateSKU();
     }
 
     // Auto-generate barcode if not provided or too short
-    if (!values.bar_code || values.bar_code.trim().length < 10) {
+    if (
+      !values.bar_code ||
+      (typeof values.bar_code === "string" &&
+        values.bar_code.trim().length < 10)
+    ) {
       values.bar_code = generateBarcode();
     }
 
     // Check if product weight is greater than 100
-    if (values.product_weight && values.product_weight > 100) {
+    if (
+      typeof values.product_weight === "number" &&
+      values.product_weight > 100
+    ) {
       Modal.confirm({
         title: "High Product Weight",
         content: `The product weight you entered is ${values.product_weight}. This is quite heavy. Are you sure you want to continue?`,
@@ -102,23 +124,24 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
 
   useEffect(() => {
     if (product) {
+      const prod = product as Record<string, unknown>;
       form.setFieldsValue({
-        ...product,
-        category: String(product?.category),
-        subCategory: String(product?.subCategory),
+        ...prod,
+        category: String(prod?.category),
+        subCategory: String(prod?.subCategory),
       });
     }
-  }, [product]);
+  }, [product, form]);
 
   const mutationUpdate = useMutation({
-    mutationFn: async (body: object) =>
+    mutationFn: async (body: Record<string, unknown>) =>
       await PUT(API.PRODUCTS_UPDATE + params.id, body),
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       Notifications["success"]({
         message: `Product Upated Successfully`,
       });
@@ -198,10 +221,12 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
                     loading={isLoading}
                     options={
                       Array.isArray(category)
-                        ? category?.map((it: any) => ({
-                            value: it?.id,
-                            label: it?.name,
-                          }))
+                        ? category?.map(
+                            (it: { id: string | number; name: string }) => ({
+                              value: it?.id,
+                              label: it?.name,
+                            }),
+                          )
                         : []
                     }
                   ></Select>
@@ -222,7 +247,12 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
                     placeholder="Select Subcategory"
                     options={
                       Array.isArray(subcategory)
-                        ? subcategory?.map((it: any) => ({
+                        ? (
+                            subcategory as {
+                              _id: string | number;
+                              name: string;
+                            }[]
+                          )?.map((it) => ({
                             value: it?._id,
                             label: it?.name,
                           }))
@@ -441,9 +471,17 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
           <div className="col-12" style={{ height: "270px" }}>
             <p className="mb-2">Product Speicifications</p>
             <div style={{ backgroundColor: "white" }} className="h-100">
-              <Form.Item name={"specifications"}>
+              <Form.Item
+                name={"specifications"}
+                initialValue={
+                  (product as Record<string, unknown>)?.specifications
+                }
+              >
                 <QuillEditor
-                  value={product?.specifications || ""}
+                  value={
+                    (product as Record<string, unknown>)
+                      ?.specifications as string
+                  }
                   onChange={(v) => form.setFieldValue("specifications", v)}
                   style={{ backgroundColor: "white", height: "230px" }}
                 />

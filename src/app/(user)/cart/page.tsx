@@ -1,6 +1,6 @@
 "use client";
 import { notification, Popconfirm } from "antd";
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { IoCartOutline, IoCloseCircleOutline } from "react-icons/io5";
 import { DELETE, GET, PUT } from "../../../util/apicall";
@@ -21,36 +21,23 @@ function CartPage() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
   const User = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Cart = useSelector((state: any) => state.Cart);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Settings = useSelector((state: any) => state.Settings.Settings);
   const [notificationApi, contextHolder] = notification.useNotification();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [products, setProducts] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useRouter();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    loadData();
-    getRecommendations();
-    // dispatch(clearCheckout());
-  }, []);
 
-  const getRecommendations = async () => {
-    try {
-      const url = API.USER_HISTORY;
-      const response: any = await GET(url);
-      if (response.status) {
-        setProducts(response.data);
-      }
-    } catch (err) {
-      console.log("no recommandations", err);
-    }
-  };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
       if (User) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cartItems: any = await GET(API.CART_GET_ALL);
         if (cartItems.status) {
           dispatch(storeCart(cartItems.data));
@@ -59,7 +46,7 @@ function CartPage() {
           notificationApi.error({ message: cartItems.message ?? "" });
         }
       }
-    } catch (err) {
+    } catch {
       notificationApi.error({
         message: `Something went wrong. please try again`,
       });
@@ -67,10 +54,31 @@ function CartPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [User, dispatch, notificationApi]);
+
+  const getRecommendations = useCallback(async () => {
+    try {
+      const url = API.USER_HISTORY;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response: any = await GET(url);
+      if (response.status) {
+        setProducts(response.data);
+      }
+    } catch (err) {
+      console.log("no recommandations", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    loadData();
+    getRecommendations();
+    // dispatch(clearCheckout());
+  }, [loadData, getRecommendations]);
 
   const clear = async () => {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await DELETE(API.CART_CLEAR_ALL);
       if (response?.status) {
         notificationApi.success({ message: response?.message });
@@ -78,11 +86,12 @@ function CartPage() {
       } else {
         notificationApi.error({ message: response?.message });
       }
-    } catch (err) {
+    } catch {
       notificationApi.error({ message: `Something went wrong.` });
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateQuantity = async (action: string, item: any) => {
     try {
       if (item?.unit <= item?.quantity && action == "add") {
@@ -95,11 +104,13 @@ function CartPage() {
         return;
       }
       setLoading(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cartItems: any = await PUT(
         API.CART + item?.id + `?action=${action}`,
-        {}
+        {},
       );
       if (cartItems.status) {
+        // Optimistically update or fetch fresh data
         loadData();
         notificationApi.success({
           message: cartItems?.message,
@@ -107,16 +118,18 @@ function CartPage() {
       } else {
         notificationApi.error({ message: cartItems?.message ?? "" });
       }
-    } catch (err) {
+    } catch {
       notificationApi.error({ message: "Failed to Update cart" });
     } finally {
       setLoading(false);
     }
   };
 
-  const removeItem = async (id: number, item: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  const removeItem = async (id: string, _item: any) => {
     try {
       const url = API.CART + id;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cartItems: any = await DELETE(url);
       if (cartItems.status) {
         loadData();
@@ -124,7 +137,7 @@ function CartPage() {
           message: `You have removed Product from cart`,
         });
       }
-    } catch (err) {
+    } catch {
       notificationApi.error({ message: "Failed to Update cart" });
     }
   };
@@ -132,13 +145,14 @@ function CartPage() {
   const goCheckout = async () => {
     try {
       setError(null);
-      var data: any = await checkoutCartItems(Cart.items);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const data: any = await checkoutCartItems(Cart.items);
       if (data?.eligibleItems?.length) {
         dispatch(storeCheckout(data?.eligibleItems));
         navigate.push("/checkout");
       } else {
         setError(
-          "Out of stock: Your cart contains items that are currently unavailable."
+          "Out of stock: Your cart contains items that are currently unavailable.",
         );
       }
     } catch (err) {
@@ -186,6 +200,7 @@ function CartPage() {
                 </div>
                 <div className="Cart-line" />
                 <div>
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {Cart.items.map((item: any, index: number) => (
                     <CartItem
                       key={index}
@@ -201,10 +216,10 @@ function CartPage() {
                 <div className="Cart-txt8">
                   The price and availability of items at Alaba Marketplace are
                   subject to change. The Cart is a temporary place to store a
-                  list of your items and reflects each item's most recent price.
-                  Shopping Cart Learn more. Do you have a gift card or
-                  promotional code? We'll ask you to enter your claim code when
-                  it's time to pay.
+                  list of your items and reflects each item&apos;s most recent
+                  price. Shopping Cart Learn more. Do you have a gift card or
+                  promotional code? We&apos;ll ask you to enter your claim code
+                  when it&apos;s time to pay.
                 </div>
                 <br />
               </Col>

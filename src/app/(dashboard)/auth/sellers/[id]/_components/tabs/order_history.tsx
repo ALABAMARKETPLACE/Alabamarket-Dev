@@ -32,7 +32,7 @@ function OrderHistory({ id }: { id: string }, ref: Ref<orderTypes>) {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.ORDER_GET_BYSTORE + id, queryKey[1] as object),
+      GET(API.ORDER_GET_BYSTORE + id, queryKey[1] as Record<string, unknown>),
     queryKey: [
       "admin_orders_sellers",
       {

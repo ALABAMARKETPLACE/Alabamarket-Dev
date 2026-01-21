@@ -19,7 +19,7 @@ function SubaccountApprovals() {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.PAYSTACK_SUBACCOUNT_PENDING, queryKey[1] as object),
+      GET(API.PAYSTACK_SUBACCOUNT_PENDING, queryKey[1] as Record<string, unknown>),
     queryKey: ["admin_paystack_subaccounts_pending", { page, take }],
   });
 

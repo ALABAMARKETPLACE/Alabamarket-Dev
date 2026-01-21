@@ -18,18 +18,18 @@ function CountryFormModal({ onClose, type, visible, data }: props) {
   const queryClient = useQueryClient();
 
   const mutationCreate = useMutation({
-    mutationFn: (body: object) => {
+    mutationFn: (body: Record<string, unknown>) => {
       if (type == "edit") {
         return PUT(API.COUNTRIES + data?.id, body);
       }
       return POST(API.COUNTRIES, body);
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       handleClose();
       Notifications["success"]({
         message: `Country ${type == "add" ? "Added" : "Updated"} Successfully`,

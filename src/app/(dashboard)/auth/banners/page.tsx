@@ -96,23 +96,23 @@ function Banners() {
   return (
     <div>
       <PageHeader title={"Banners"} bredcume={"Dashboard / Banners"}>
-        {/* <div className="banners-headerActions"> */}
-        <div className="banners-headerPrimary">
-          <Button type="primary" onClick={handleCreate} size="large">
-            New +
-          </Button>
-        </div>
-        <div className="banners-headerFilters">
-          <BannersFilterBar
-            isCompactFilters={isCompactFilters}
-            filtersDropdownOpen={filtersDropdownOpen}
-            onFiltersDropdownChange={setFiltersDropdownOpen}
-            searchValue={searchValue}
-            onSearchChange={handleSearchChange}
-            onRefresh={() => refetch()}
-            isRefreshing={isFetching && !isLoading}
-          />
-          {/* </div> */}
+        <div className="banners-headerActions">
+          <div className="banners-headerFilters">
+            <BannersFilterBar
+              isCompactFilters={isCompactFilters}
+              filtersDropdownOpen={filtersDropdownOpen}
+              onFiltersDropdownChange={setFiltersDropdownOpen}
+              searchValue={searchValue}
+              onSearchChange={handleSearchChange}
+              onRefresh={() => refetch()}
+              isRefreshing={isFetching && !isLoading}
+            />
+          </div>
+          <div className="banners-headerPrimary">
+            <Button type="primary" onClick={handleCreate} size="large">
+              New +
+            </Button>
+          </div>
         </div>
       </PageHeader>
       {renderContent()}

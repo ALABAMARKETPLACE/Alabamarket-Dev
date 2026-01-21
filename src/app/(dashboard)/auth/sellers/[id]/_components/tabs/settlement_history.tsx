@@ -19,7 +19,7 @@ function SettlementHistory({ id }: { id: string | number }) {
     error,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(API.SETTLEMENT_HISTORY + id, queryKey[1] as object),
+      GET(API.SETTLEMENT_HISTORY + id, queryKey[1] as Record<string, unknown>),
     queryKey: [
       "admin_settlement_history_seller",
       { page, take, settle_status },

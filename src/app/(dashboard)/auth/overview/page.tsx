@@ -46,7 +46,7 @@ function DashboardSeller() {
   });
   let PendingAmount = counts?.orderTotal - counts?.settled_amount;
   return (
-    <main>
+    <main className="dashboard-content-wrapper">
       <div className="DashboardAdmin-Box">
         <div>
           <div className="DashboardAdmin-text1">Good Morning, Seller</div>

@@ -12,24 +12,45 @@ import { formatCurrency } from "@/utils/formatNumber";
 import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 
+export interface Order {
+  id?: string | number;
+  _id?: string | number;
+  order_id?: string | number;
+  image?: string;
+  userId?: number;
+  name?: string;
+  createdAt?: string;
+  grandTotal?: number;
+  status?: string;
+  orderItems?: Record<string, unknown>[];
+  [key: string]: unknown;
+}
+
 interface props {
-  data: any[];
+  data: Order[];
   count: number;
   setPage: (p: number, take: number) => void;
   pageSize: number;
   page: number;
 }
 
+interface UserResponse {
+  data: {
+    name?: string;
+  };
+}
+
 const UserName = ({ userId }: { userId: number }) => {
-  const [name, setName] = useState<string>("Loading...");
+  const [name, setName] = useState<string>(userId ? "Loading..." : "N/A");
 
   useEffect(() => {
     let isMounted = true;
     if (userId) {
       GET(API.USER_DETAILS + userId)
-        .then((res: any) => {
+        .then((res: unknown) => {
+          const userRes = res as UserResponse;
           if (isMounted) {
-            setName(res?.data?.name || "N/A");
+            setName(userRes?.data?.name || "N/A");
           }
         })
         .catch(() => {
@@ -37,51 +58,11 @@ const UserName = ({ userId }: { userId: number }) => {
             setName("N/A");
           }
         });
-    } else {
-        setName("N/A");
     }
     return () => {
       isMounted = false;
     };
   }, [userId]);
-
-  return <span>{name}</span>;
-};
-
-const SellerName = ({ sellerId }: { sellerId: number }) => {
-  const [name, setName] = useState<string>("Loading...");
-
-  useEffect(() => {
-    let isMounted = true;
-    if (sellerId) {
-      // Try fetching individual seller details first if corporate fails or as logic dictates
-      // But first, let's try the store info endpoint
-      GET(API.STORE_INFO_ADMIN + sellerId)
-        .then((res: any) => {
-          if (isMounted) {
-            // Check for various name fields that might be returned
-            const fetchedName = res?.data?.name || res?.data?.store_name || res?.data?.business_name || null;
-            if (fetchedName) {
-              setName(fetchedName);
-            } else {
-               // Fallback or retry with another endpoint if needed
-               setName("Store #" + sellerId);
-            }
-          }
-        })
-        .catch((err) => {
-          console.error("Failed to fetch seller name:", err);
-          if (isMounted) {
-            setName("Unknown Seller");
-          }
-        });
-    } else {
-      setName("N/A");
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [sellerId]);
 
   return <span>{name}</span>;
 };
@@ -108,25 +89,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         title: "User Name",
         dataIndex: "userId",
         key: "userId",
-        render: (userId: number, record: any) => {
-          // Prioritize picking user name from user_id (Buyer)
-          const uId = record?.user_id || record?.userId || userId;
-          
-          if (record?.name) return record.name;
-          if (uId) return <UserName userId={uId} />;
-          
-          // Fallback to Seller ID if User ID is missing (though less likely for "User Name" column)
-          const sellerId = record?.seller_id || record?.store_id;
-          if (sellerId) return <SellerName sellerId={sellerId} />;
-          
-          return "N/A";
-        },
+        render: (userId: number, record: Order) =>
+          record?.name ? record.name : <UserName userId={userId} />,
       },
       {
         title: "Order Date", //
         dataIndex: "createdAt",
         key: "createdAt",
-        render: (item: any) => (
+        render: (item: string) => (
           <span>{moment(item).format("MMM Do YYYY")}</span>
         ),
       },
@@ -134,7 +104,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         title: "Total", //
         dataIndex: "grandTotal",
         key: "grandTotal",
-        render: (item: any) => (
+        render: (item: number) => (
           <span>
             {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
             {formatCurrency(item)}
@@ -150,7 +120,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
       {
         title: "Action",
         width: 100,
-        render: (item: any, record: any) => (
+        render: (item: unknown, record: Order) => (
           <div className="table-action">
             <Button
               type="text"
@@ -163,7 +133,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         ),
       },
     ],
-    [route, Settings.currency]
+    [route, Settings.currency],
   );
 
   return (
@@ -174,7 +144,12 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
           columns={columns}
           pagination={false}
           size="small"
-          rowKey={(record) => record?.order_id ?? record?._id ?? record?.id}
+          rowKey={(record) =>
+            (record?.order_id ??
+              record?._id ??
+              record?.id ??
+              "unknown") as React.Key
+          }
           scroll={{ x: "max-content" }}
           locale={{
             emptyText: (

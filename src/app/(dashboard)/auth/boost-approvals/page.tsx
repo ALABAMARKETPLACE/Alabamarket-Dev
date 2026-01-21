@@ -26,7 +26,7 @@ function BoostApprovals() {
     error,
   } = useQuery({
     queryFn: ({ queryKey, signal }) =>
-      GET(API_ADMIN.BOOST_REQUESTS, queryKey[1] as object, signal),
+      GET(API_ADMIN.BOOST_REQUESTS, queryKey[1] as Record<string, unknown>, signal),
     queryKey: [
       "boost_requests_admin",
       { page, limit: take, search: query, status },

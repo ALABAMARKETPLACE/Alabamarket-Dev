@@ -2,24 +2,49 @@
 import { useRouter } from "next/navigation";
 import React from "react";
 import { IoChevronBackOutline } from "react-icons/io5";
-function PageHeader(props: any) {
+
+interface PageHeaderProps {
+  title: string;
+  bredcume?: string;
+  children?: React.ReactNode;
+  onBack?: () => void;
+}
+
+function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
   const router = useRouter();
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      router.back();
+    }
+  };
+
   return (
     <div className="dashboard-pageHeader">
-      <div className="dashboard-pageHeaderBox2" onClick={() => router.back()}>
-        <IoChevronBackOutline size={30} />
-      </div>
+      {/* Back Button & Title Section */}
       <div>
-        <div className="dashboard-pageHeadertxt1">{props?.title}</div>
-        <div className="dashboard-pageHeadertxt2">{props?.bredcume}</div>
-      </div>
-      {props?.children ? (
-        <div className="dashboard-pageHeaderBox">
-          <div className="d-flex gap-3 align-items-center flex-wrap">
-            {props?.children}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button
+            className="dashboard-pageHeaderBox2"
+            onClick={handleBack}
+            aria-label="Go back"
+            type="button"
+          >
+            <IoChevronBackOutline size={20} />
+          </button>
+          <div>
+            <div className="dashboard-pageHeadertxt1">{title}</div>
+            {bredcume && (
+              <div className="dashboard-pageHeadertxt2">{bredcume}</div>
+            )}
           </div>
         </div>
-      ) : null}
+      </div>
+
+      {/* Action Buttons Section */}
+      {children && <div className="dashboard-pageHeaderBox">{children}</div>}
     </div>
   );
 }

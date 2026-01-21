@@ -18,18 +18,18 @@ function StateFormModal({ onClose, type, visible, data }: props) {
   const queryClient = useQueryClient();
 
   const mutationCreate = useMutation({
-    mutationFn: (body: object) => {
+    mutationFn: (body: Record<string, unknown>) => {
       if (type == "edit") {
         return PUT(API.STATES + data?.id, body);
       }
       return POST(API.STATES, body);
     },
-    onError: (error, variables, context) => {
+    onError: (error) => {
       Notifications["error"]({
         message: error.message,
       });
     },
-    onSuccess: (data, variables, context) => {
+    onSuccess: () => {
       handleClose();
       Notifications["success"]({
         message: `State ${type == "add" ? "Added" : "Updated"} Successfully`,

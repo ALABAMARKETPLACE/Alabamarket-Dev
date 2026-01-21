@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Button, Table, Pagination, Tag, Popconfirm, notification } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import { MdHourglassEmpty } from "react-icons/md";
 import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
@@ -10,11 +11,32 @@ import API_ADMIN from "@/config/API_ADMIN";
 import moment from "moment";
 import "../styles.scss";
 
+interface Seller {
+  name?: string;
+}
+
+interface Plan {
+  name?: string;
+}
+
+export interface BoostRequest {
+  id: number;
+  _id?: number;
+  seller?: Seller;
+  plan?: Plan;
+  product_ids?: number[];
+  days?: number;
+  total_amount?: number;
+  status?: string;
+  start_date?: string;
+  end_date?: string;
+}
+
 interface props {
-  data: any[];
+  data: BoostRequest[];
   count: number;
-  setPage: Function;
-  setTake: Function;
+  setPage: (page: number) => void;
+  setTake: (take: number) => void;
   pageSize: number;
   page: number;
 }
@@ -29,7 +51,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     mutationFn: (id: number) => {
       return DELETE(API_ADMIN.BOOST_REQUESTS + id);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       Notifications["error"]({
         message: error.message || "Failed to delete boost request",
       });
@@ -66,15 +88,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     }
   };
 
-  const renderDesktopActions = (record: any) => {
-    const id = record?.id ?? record?._id;
-    
-    // Strict check for invalid ID values including string "undefined"
-    if (!id || id === "undefined" || id === "null") {
-      return <span style={{ color: 'red', fontSize: '10px' }}>Invalid ID</span>;
-    }
-
-    return (
+  const renderDesktopActions = (id: number, record: BoostRequest) => (
     <div className="table-action">
       <Button
         type="text"
@@ -115,27 +129,25 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       </Popconfirm>
     </div>
   );
-  };
 
-  const columns = [
+  const columns: ColumnsType<BoostRequest> = [
     {
       title: "Request ID",
       dataIndex: "id",
       key: "id",
       width: 100,
-      render: (id: any, record: any) => id ?? record?._id ?? "-",
     },
     {
       title: "Seller Name",
       dataIndex: "seller",
       key: "seller",
-      render: (seller: any) => seller?.name || "-",
+      render: (seller: Seller) => seller?.name || "-",
     },
     {
       title: "Plan",
       dataIndex: "plan",
       key: "plan",
-      render: (plan: any) => plan?.name || "-",
+      render: (plan: Plan) => plan?.name || "-",
     },
     {
       title: "Products",
@@ -155,15 +167,18 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "total_amount",
       key: "total_amount",
       width: 120,
-      render: (amount: number) => `₦${Number(amount).toFixed(2)}`,
+      render: (amount?: number) =>
+        amount ? `₦${Number(amount).toFixed(2)}` : "-",
     },
     {
       title: "Status",
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (status: string) => (
-        <Tag color={getStatusColor(status)}>{status?.toUpperCase()}</Tag>
+      render: (status?: string) => (
+        <Tag color={getStatusColor(status || "")}>
+          {status?.toUpperCase() || "UNKNOWN"}
+        </Tag>
       ),
     },
     {
@@ -171,7 +186,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "start_date",
       key: "start_date",
       width: 120,
-      render: (date: string) =>
+      render: (date?: string) =>
         date ? moment(date).format("DD/MM/YYYY") : "-",
     },
     {
@@ -179,7 +194,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "end_date",
       key: "end_date",
       width: 120,
-      render: (date: string) =>
+      render: (date?: string) =>
         date ? moment(date).format("DD/MM/YYYY") : "-",
     },
     {
@@ -188,7 +203,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "id",
       width: 150,
       fixed: "right" as const,
-      render: (_: any, record: any) => renderDesktopActions(record),
+      render: (id: number, record: BoostRequest) =>
+        renderDesktopActions(id, record),
     },
   ];
 
@@ -202,10 +218,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       );
     }
 
-    return data.map((record: any) => {
+    return data.map((record: BoostRequest) => {
       const id = record?.id ?? record?._id;
-      if (!id || id === "undefined" || id === "null") return null;
-
       const productsCount = Array.isArray(record?.product_ids)
         ? record.product_ids.length
         : 0;
@@ -231,7 +245,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
                 {record?.seller?.name ?? "Unknown seller"}
               </div>
             </div>
-            <Tag color={getStatusColor(record?.status)}>
+            <Tag color={getStatusColor(record?.status || "")}>
               {record?.status?.toUpperCase() ?? "UNKNOWN"}
             </Tag>
           </div>
@@ -313,7 +327,9 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           pagination={false}
           size="small"
           scroll={{ x: 1200 }}
-          rowKey={(record: any) => record?.id ?? record?._id}
+          rowKey={(record: BoostRequest) =>
+            (record?.id ?? record?._id) as number
+          }
           className="boostRequests-tableDesktop"
           locale={{
             emptyText: (

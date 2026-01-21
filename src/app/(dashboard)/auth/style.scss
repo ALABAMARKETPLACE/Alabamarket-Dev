@@ -1,343 +1,399 @@
 @use "../../../config/styleVariable.scss" as vars;
 
+// =============================================================================
+// GLOBAL VARIABLES & MIXINS
+// =============================================================================
+// Colors
+$border-color: #e5e7eb;
+$border-color-light: #f0f0f0;
+$bg-color-main: #f8fafc;
+$bg-color-sidebar: #ffffff;
+$bg-color-header: #ffffff;
+$text-color-primary: #1a202c;
+$text-color-secondary: #718096;
+$text-color-tertiary: #a0aec0;
+$primary-color: vars.$primary;
+$primary-light: rgba(vars.$primary, 0.08);
+$success-color: #10b981;
+$warning-color: #f59e0b;
+$danger-color: #ef4444;
+
+// Layout
+$sidebar-width: 243px;
+$header-height: 80px;
+$header-height-mobile: 64px;
+$content-gutter: 32px;
+$content-gutter-mobile: 16px;
+
+// Spacing
+$space-xs: 4px;
+$space-sm: 8px;
+$space-md: 12px;
+$space-lg: 16px;
+$space-xl: 24px;
+$space-2xl: 32px;
+
+// Shadows
+$shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+$shadow-sm:
+  0 1px 3px 0 rgba(0, 0, 0, 0.1),
+  0 1px 2px 0 rgba(0, 0, 0, 0.06);
+$shadow-md:
+  0 4px 6px -1px rgba(0, 0, 0, 0.1),
+  0 2px 4px -1px rgba(0, 0, 0, 0.06);
+$shadow-lg:
+  0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$shadow-xl:
+  0 20px 25px -5px rgba(0, 0, 0, 0.1),
+  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+// Border Radius
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
+
+// Transitions
+$transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+$transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+// =============================================================================
+// DASHBOARD HEADER
+// =============================================================================
 .dashboard-Header {
-  height: 8vh;
-  background-color: #fff;
+  height: $header-height;
+  background-color: $bg-color-header;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
-  padding: 0px 15px;
+  justify-content: space-between;
+  padding: 0 $content-gutter;
   position: fixed;
   top: 0;
+  left: 0;
   width: 100%;
   z-index: 1000;
-  border-bottom: 1px solid rgb(232, 232, 232);
-  color: rgb(44, 44, 44);
-
-  @media (max-width: 768px) {
-    padding: 0px 10px;
-    gap: 5px;
-  }
-}
-
-.dashboard-Layout {
-  height: 100vh;
-  padding: 10px 15px;
-  padding-top: 8.5vh;
-  padding-bottom: 20px;
-  overflow: scroll;
-  background-color: #f6f6f6;
-  overflow-x: hidden;
-  .ant-table {
-    border: 1px solid rgb(238, 238, 238);
-    overflow: hidden;
-  }
-  .ant-table-thead .ant-table-cell {
-    background-color: #fff !important;
-    border-bottom: 1px solid rgb(238, 238, 238);
-    font-size: 15px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 10px;
-    padding-top: 8.5vh;
-  }
-}
-
-.dashboard-HeaderBox1 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: nowrap;
+  border-bottom: 1px solid $border-color;
+  box-shadow: $shadow-sm;
+  color: $text-color-primary;
+  transition: all $transition-base;
+  gap: $space-lg;
+  box-sizing: border-box;
 
   @media (max-width: 1024px) {
-    gap: 8px;
+    padding: 0 $space-xl;
+    gap: $space-md;
   }
 
   @media (max-width: 768px) {
-    gap: 6px;
-    flex-wrap: wrap;
-  }
-
-  @media (max-width: 480px) {
-    gap: 4px;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    width: 100%;
+    height: $header-height-mobile;
+    padding: 0 $space-lg;
+    gap: $space-sm;
   }
 }
 
-.dashboard-HeaderBox2 {
-  border: 1px solid rgb(0, 199, 46);
-  padding: 1px 5px 0px 1px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  cursor: pointer;
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: all 0.3s ease;
-  img {
-    width: 35px;
-    height: 35px;
-    border-radius: 10px;
-    margin-left: 1px;
-    object-fit: cover;
-  }
-  &:hover {
-    border: 1px solid rgb(0, 0, 0);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  @media (max-width: 1024px) {
-    height: 36px;
-    gap: 8px;
-    padding: 1px 4px 0px 1px;
-  }
-
-  @media (max-width: 768px) {
-    height: 32px;
-    gap: 6px;
-    padding: 1px 3px 0px 1px;
-    img {
-      width: 28px;
-      height: 28px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    height: 32px;
-    gap: 4px;
-    padding: 0px 3px;
-    img {
-      width: 26px;
-      height: 26px;
-    }
-  }
-}
-
-.dashboard-HeaderBox3 {
-  cursor: pointer;
-  padding: 8px 15px;
-  border-radius: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  flex-shrink: 0;
-  &:hover {
-    background-color: rgb(244, 244, 244);
-    color: vars.$primary;
-  }
-
-  @media (max-width: 1024px) {
-    padding: 6px 12px;
-    font-size: 13px;
-  }
-
-  @media (max-width: 768px) {
-    padding: 5px 10px;
-    font-size: 12px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 4px 8px;
-    font-size: 11px;
-    border-radius: 8px;
-  }
-}
-
-.dashboard-HeaderBox4 {
-  width: 70px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  -o-text-overflow: ellipsis;
-  -ms-text-overflow: ellipsis;
-  display: block;
-  font-size: 14px;
-  flex-shrink: 0;
-
-  @media (max-width: 1024px) {
-    width: 60px;
-    font-size: 13px;
-  }
-
-  @media (max-width: 768px) {
-    width: 50px;
-    font-size: 11px;
-  }
-
-  @media (max-width: 480px) {
-    display: none;
-  }
-}
-
-.dashboard-Headertext1 {
-  font-size: 14px;
-  line-height: 16px;
-  font-family: vars.$SemiBold;
-
-  @media (max-width: 768px) {
-    font-size: 12px;
-    line-height: 14px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 11px;
-  }
-}
-
-.dashboard-Headertext2 {
-  font-size: 10px;
-  color: grey;
-  font-weight: 100;
-  line-height: 12px;
-
-  @media (max-width: 768px) {
-    font-size: 9px;
-  }
-
-  @media (max-width: 480px) {
-    display: none;
-  }
-}
-
+// Header Logo/Brand
 .dashboard-HeaderBox5 {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  gap: 10px;
-  font-size: 20px;
+  gap: $space-md;
+  font-size: 18px;
   font-family: vars.$Bold;
-  line-height: 18px;
-  width: 230px;
+  color: $text-color-primary;
+  min-width: 220px;
+  white-space: nowrap;
+
   img {
     height: 40px;
-    width: 40px;
+    width: auto;
     object-fit: contain;
-    border-radius: 10px;
+  }
+
+  @media (max-width: 1024px) {
+    min-width: 200px;
+    font-size: 16px;
   }
 
   @media (max-width: 768px) {
-    width: auto;
-    font-size: 16px;
+    min-width: auto;
+    font-size: 14px;
 
-    > div:last-child {
-      display: none; // Hide version text on mobile
+    img {
+      height: 32px;
     }
   }
 }
 
+// Header Text
 .dashboard-HeaderPanelText {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
+  margin-left: $space-sm;
 
-  @media (max-width: 768px) {
-    display: none;
-  }
-}
-
-.dashboard-HeaderWebsite,
-.dashboard-HeaderClock {
-  @media (max-width: 768px) {
+  @media (max-width: 1024px) {
     display: none;
   }
 }
 
 .dashboard-Headertext3 {
   font-size: 10px;
-  color: grey;
+  color: $text-color-tertiary;
+  font-weight: 400;
 }
 
-.dashboard-SideBar {
+// Navigation Links
+.dashboard-HeaderWebsite,
+.dashboard-HeaderClock {
+  padding: $space-md $space-lg;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: all $transition-fast;
+  color: $text-color-primary;
+  font-size: 14px;
+  white-space: nowrap;
+  width: auto !important;
+
+  &:hover {
+    background-color: $bg-color-main;
+    color: $primary-color;
+  }
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+}
+
+.dashboard-HeaderWebsite {
+  margin-right: 40px;
+}
+
+// Main Header Controls
+.dashboard-HeaderBox1 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-md;
+  margin-left: auto;
+  flex-wrap: nowrap;
+
+  @media (max-width: 1024px) {
+    gap: $space-sm;
+  }
+
+  @media (max-width: 768px) {
+    gap: $space-xs;
+  }
+}
+
+// Profile/User Box
+.dashboard-HeaderBox2 {
+  border: 1px solid $border-color;
+  padding: $space-sm $space-md;
+  height: 40px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  cursor: pointer;
+  transition: all $transition-fast;
+  background-color: #fff;
+  flex-shrink: 0;
+
+  img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px $border-color;
+  }
+
+  svg {
+    color: $text-color-secondary;
+  }
+
+  &:hover {
+    background-color: $primary-light;
+    border-color: $primary-color;
+
+    svg {
+      color: $primary-color;
+    }
+  }
+
+  @media (max-width: 768px) {
+    height: 36px;
+    padding: $space-xs $space-sm;
+
+    img {
+      width: 28px;
+      height: 28px;
+    }
+  }
+}
+
+// Profile/User Box Text
+.dashboard-HeaderBox4 {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  border-right: 1px solid rgb(232, 232, 232);
-  padding: 0px 0px 10px 0px;
-  color: rgb(44, 44, 44);
+  gap: 0;
+  min-width: 0;
+  flex: 0 0 auto;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
 }
 
-// Mobile Menu Toggle Button
+.dashboard-Headertext1 {
+  font-family: vars.$SemiBold;
+  font-size: 13px;
+  color: $text-color-primary;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-Headertext2 {
+  font-family: vars.$Regular;
+  font-size: 11px;
+  color: $text-color-secondary;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Icon Buttons
+.dashboard-HeaderBox3 {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  border-radius: $radius-md;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-fast;
+  color: $text-color-secondary;
+  border: 1px solid transparent;
+  flex-shrink: 0;
+  background-color: transparent;
+
+  &:hover {
+    background-color: $bg-color-main;
+    color: $primary-color;
+    border-color: $border-color;
+  }
+
+  svg {
+    font-size: 20px;
+  }
+
+  @media (max-width: 768px) {
+    width: 36px;
+    height: 36px;
+
+    svg {
+      font-size: 18px;
+    }
+  }
+}
+
+// Header Tags
+.dashboard-HeaderTag {
+  margin: 0;
+  padding: $space-xs $space-sm;
+  font-size: 11px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dashboard-HeaderVerifyTag {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+}
+
+// Mobile Menu Toggle
 .dashboard-MobileMenuToggle {
   display: none;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 5px;
+  padding: $space-md;
+  border-radius: $radius-md;
   align-items: center;
   justify-content: center;
-  color: rgb(44, 44, 44);
-  transition: background-color 0.3s ease;
+  color: $text-color-primary;
+  transition: all $transition-fast;
+  flex-shrink: 0;
 
   &:hover {
-    background-color: rgb(244, 244, 244);
+    background-color: $bg-color-main;
   }
 
   @media (max-width: 768px) {
     display: flex;
   }
-}
 
-.dashboard-HeaderTag {
-  margin-right: 5px;
-  flex-shrink: 0;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-
-  @media (max-width: 1024px) {
-    font-size: 11px;
-    padding: 3px 8px;
-    margin-right: 3px;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 10px;
-    line-height: 1.2;
-    padding: 2px 6px;
-    margin-right: 2px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 9px;
-    padding: 2px 5px;
-    margin-right: 1px;
+  svg {
+    font-size: 20px;
   }
 }
 
-.dashboard-HeaderVerifyTag {
-  @media (max-width: 1024px) {
-    display: none !important;
+// =============================================================================
+// SIDEBAR
+// =============================================================================
+.dashboard-SideBar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-right: 1px solid $border-color;
+  background-color: $bg-color-sidebar;
+  padding: $space-2xl 0;
+  color: $text-color-primary;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: $radius-sm;
+
+    &:hover {
+      background: $border-color-light;
+    }
   }
 }
 
-.dashboard-HeaderRoleTag {
-  @media (max-width: 768px) {
-    display: none !important;
-  }
-}
-
-// Sidebar Container with responsive behavior
 .dashboard-SideBarContainer {
-  transition: transform 0.3s ease-in-out;
-  padding-top: 8vh;
+  transition: transform $transition-slow cubic-bezier(0.4, 0, 0.2, 1);
+  padding-top: $header-height;
+  background: $bg-color-sidebar;
+  width: $sidebar-width;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 999;
+  border-right: 1px solid $border-color;
+  overflow-y: auto;
 
   @media (max-width: 768px) {
-    position: fixed !important;
-    left: 0;
-    top: 8vh;
-    height: calc(100vh - 8vh) !important;
-    z-index: 1001;
+    width: 280px;
+    padding-top: $header-height-mobile;
+    top: 0;
+    height: 100vh;
+    box-shadow: $shadow-lg;
     transform: translateX(-100%);
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-    padding-top: 0;
 
     &.open {
       transform: translateX(0);
@@ -345,21 +401,86 @@
   }
 }
 
-// Overlay for mobile sidebar
-.dashboard-SideBarOverlay {
-  display: none;
+.dashboard-SideBarBox1 {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 $space-md;
 
-  @media (max-width: 768px) {
-    display: block;
-    position: fixed;
-    top: 8vh;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    animation: fadeIn 0.3s ease-in-out;
+  &::-webkit-scrollbar {
+    width: 4px;
   }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: $radius-sm;
+  }
+}
+
+.dashboard-SideBarDevider {
+  padding: $space-xl $space-lg $space-md;
+  color: $text-color-tertiary;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: vars.$SemiBold;
+  margin-top: $space-lg;
+}
+
+.dashboard-SideBarItem {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-md $space-lg;
+  margin-bottom: $space-xs;
+  border-radius: $radius-md;
+  color: $text-color-secondary;
+  cursor: pointer;
+  transition: all $transition-fast;
+  font-family: vars.$Medium;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    background-color: $bg-color-main;
+    color: $text-color-primary;
+  }
+
+  &.active {
+    background-color: $primary-light;
+    color: $primary-color;
+    font-family: vars.$SemiBold;
+    border-left-color: $primary-color;
+  }
+
+  svg {
+    font-size: 18px;
+    opacity: 0.8;
+    flex-shrink: 0;
+  }
+
+  &.active svg {
+    opacity: 1;
+  }
+}
+
+.ashboard-SideBartext1 {
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-SideBarOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  animation: fadeIn $transition-fast ease-in;
 }
 
 @keyframes fadeIn {
@@ -371,706 +492,936 @@
   }
 }
 
-.dashboard-SideBarBox1 {
-  flex: 1;
-  overflow: scroll;
-  overflow-x: hidden;
-}
+// =============================================================================
+// MAIN LAYOUT
+// =============================================================================
+.dashboard-ContentLayout {
+  margin-left: $sidebar-width;
+  transition: all $transition-base;
+  min-height: 100vh;
+  background-color: $bg-color-main;
 
-.dashboard-SideBarDevider {
-  border-bottom: 1px solid rgb(235, 235, 235);
-  padding: 10px 20px;
-  color: gray;
-  font-size: 12px;
-}
-
-.dashboard-SideBarItem {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 20px;
-  font-size: 18px;
-  color: rgb(97, 97, 97);
-  &.active {
-    border-left: 3px solid vars.$primary;
-    background-color: vars.$primary2;
-    color: vars.$primary;
-  }
-  &:hover {
-    background-color: rgb(243, 243, 243);
-    color: #000;
+  @media (max-width: 768px) {
+    margin-left: 0;
   }
 }
 
-.ashboard-SideBartext1 {
-  font-size: 14px;
-  color: rgb(44, 44, 44);
-}
-
-.dashboard-ProfilePopover {
-  min-width: 200px;
-  color: rgb(44, 44, 44);
-}
-
-.dashboard-ProfilePopoverItem {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 15px;
-  padding-bottom: 10px;
-  img {
-    width: 70px;
-    height: 70px;
-    border-radius: 100px;
-  }
-  .text1 {
-    font-size: 16px;
-    font-family: vars.$SemiBold;
-  }
-  .text2 {
-    font-size: 12px;
-    font-family: vars.$Medium;
-    color: gray;
-    margin-bottom: 5px;
-  }
-}
-
-.dashboard-ProfilePopoverItem2 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 10px 5px;
-  gap: 10px;
-  border-top: 1px solid rgb(243, 243, 243);
-  &:hover {
-    background-color: rgb(243, 243, 243);
-  }
-}
-
-.dashboard-NotificationPopover {
-  width: min(380px, 90vw);
-  color: rgb(44, 44, 44);
-}
-
-.dashboard-NotificationPopoverHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.dashboard-NotificationPopoverBody {
-  max-height: 420px;
-  overflow-y: auto;
-  padding: 12px 16px;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 3px;
-
-    &:hover {
-      background: #555;
-    }
-  }
-}
-
-.dashboard-NotificationPopoverBody .ant-list {
-  padding: 0;
-}
-
-.dashboard-NotificationPopoverBody .ant-list-items {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.dashboard-NotificationPopoverBody .ant-list-item {
-  padding: 0;
-  border-bottom: none;
-}
-
-.dashboard-NotificationPopoverItem {
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-  padding: 12px 16px;
-  cursor: pointer;
-  border-left: 3px solid transparent;
-  border-radius: 10px;
-  background-color: #fff;
+.dashboard-Layout {
+  min-height: 100vh;
+  padding: $content-gutter;
+  padding-top: $header-height + $space-2xl;
+  background-color: $bg-color-main;
+  transition: all $transition-base;
   box-sizing: border-box;
-
-  &:hover {
-    background-color: #f5f5f5 !important;
-  }
-
-  &.unread {
-    background-color: #f0f7ff !important;
-    border-left-color: #1890ff;
-  }
-}
-
-.dashboard-NotificationPopoverItemMeta .ant-list-item-meta-content {
   width: 100%;
-}
+  overflow-x: hidden;
 
-.dashboard-NotificationPopoverAvatar {
-  font-size: 24px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: #f5f5f5;
+  @media (max-width: 1024px) {
+    padding: $space-xl;
+    padding-top: $header-height + $space-xl;
+  }
 
-  &.unread {
-    background: #e6f7ff;
+  @media (max-width: 768px) {
+    padding: $space-lg;
+    padding-top: $header-height-mobile + $space-lg;
   }
 }
 
-.dashboard-NotificationPopoverAvatarImage {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.dashboard-NotificationPopoverTitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-}
-
-.dashboard-NotificationPopoverTitleText {
-  font-size: 14px;
-  flex: 1;
-}
-
-.dashboard-NotificationPopoverDescription {
-  margin-top: 4px;
-}
-
-.dashboard-NotificationPopoverMessage {
-  font-size: 13px;
-  color: #666;
-  display: block;
-}
-
-.dashboard-NotificationPopoverMetaRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-  gap: 8px;
-}
-
-.dashboard-NotificationPopoverTimestamp {
-  font-size: 11px;
-}
-
-.dashboard-NotificationPopoverMarkRead {
-  font-size: 11px !important;
-  padding: 0 4px !important;
-  height: auto !important;
-}
-
-.dashboard-NotificationPopoverFooter {
-  border-top: 1px solid #f0f0f0;
-  padding: 8px;
-  text-align: center;
-}
-
-@media (max-width: 600px) {
-  .dashboard-NotificationPopover {
-    width: calc(100vw - 24px);
-    min-width: unset;
-  }
-
-  .dashboard-NotificationPopoverTitleText {
-    font-size: 13px;
-  }
-
-  .dashboard-NotificationPopoverMessage {
-    font-size: 12px;
-  }
-
-  .dashboard-NotificationPopoverOverlay.ant-popover {
-    width: calc(100vw - 24px) !important;
-    left: 50% !important;
-    right: auto !important;
-    transform: translateX(-50%) !important;
-  }
-
-  .dashboard-NotificationPopoverOverlay .ant-popover-arrow {
-    display: none;
-  }
-
-  .dashboard-NotificationPopoverBody {
-    max-height: min(65vh, 420px);
-  }
-
-  .dashboard-NotificationPopoverItem {
-    padding: 10px 12px;
-    border-left-width: 2px;
-  }
-
-  .dashboard-NotificationPopoverTitle {
-    flex-direction: column;
-  }
-
-  .dashboard-NotificationPopoverMetaRow {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dashboard-NotificationPopoverMarkRead {
-    padding: 0 !important;
-  }
-}
-
-/* Products header responsive filters */
-.products-headerActions {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-}
-
-.products-headerPrimary {
-  display: flex;
-  gap: 10px;
-  flex: 0 0 auto;
-}
-
-.products-headerFilters {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  min-width: 0;
-}
-
-.products-pageHeaderWrap .dashboard-pageHeader {
-  padding: 2px 0 6px;
-  min-height: unset;
-}
-
-.products-pageHeaderWrap .dashboard-pageHeadertxt1 {
-  font-size: 18px;
-  line-height: 22px;
-}
-
-.products-pageHeaderWrap .dashboard-pageHeadertxt2 {
-  font-size: 11px;
-}
-
-.products-headerPrimary .ant-btn,
-.products-filterControls .ant-btn {
-  height: 34px;
-  padding: 0px 12px;
-  font-size: 13px;
-  border-radius: 6px;
-}
-
-.products-filterControls .ant-btn-primary {
-  font-weight: 600;
-}
-
-.products-filterControls .ant-input,
-.products-filterControls .ant-select-selector,
-.products-filterControls .ant-tree-select-selector {
-  min-height: 34px;
-  height: 34px;
-  font-size: 13px;
-  border-radius: 6px !important;
-}
-
-.products-filterControls .ant-select-selection-item,
-.products-filterControls .ant-select-selection-placeholder,
-.products-filterControls .ant-select-selection-search-input,
-.products-filterControls .ant-tree-select-selection-item {
-  line-height: 32px !important;
-  font-size: 13px;
-}
-
-.products-filterControls {
-  width: 100%;
-}
-
-.products-filterControls-inline .products-filterRow {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-end;
-}
-
-.products-filterControls-dropdown {
-  width: 320px;
-  max-width: calc(100vw - 40px);
-  padding: 12px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0px 12px 30px rgba(15, 15, 15, 0.15);
-}
-
-.products-filterControls-dropdown .products-filterRow {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.products-filterItem {
-  min-width: 160px;
-  max-width: 220px;
-  flex: 0 0 auto;
-}
-
-.products-filterItem--search {
-  min-width: 200px;
-  max-width: 240px;
-}
-
-.products-filterTree {
-  min-width: 220px;
-}
-
-.products-filterTrigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.products-filterDropdownOverlay .ant-dropdown-content {
-  background: transparent;
-  box-shadow: none;
-}
-
-.products-tableMobile {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.products-tableMobileCard {
-  background: #fff;
-  border: 1px solid #f0f0f0;
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 12px 24px rgba(15, 15, 15, 0.05);
-}
-
-.products-tableMobileHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.products-tableMobileImage .ant-image-img {
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
-  object-fit: cover;
-}
-
-.products-tableMobileTitle {
-  flex: 1;
-}
-
-.products-tableMobileTitle .title {
-  font-size: 15px;
-  font-weight: 600;
-  color: #262626;
-}
-
-.products-tableMobileTitle .sub {
-  font-size: 12px;
-  color: #8c8c8c;
-}
-
-.products-tableMobileStatus {
-  margin-left: auto;
-}
-
-.products-tableMobileBody {
-  margin-top: 12px;
-  border-top: 1px solid #f2f2f2;
-  padding-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.products-tableMobileRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-}
-
-.products-tableMobileRow .label {
-  color: #8c8c8c;
-}
-
-.products-tableMobileRow .value {
-  font-weight: 600;
-  color: #262626;
-}
-
-.products-tableMobileActions {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.products-tableMobileEmpty {
-  padding: 30px 10px;
-  text-align: center;
-  color: #8c8c8c;
-  border: 1px dashed #e8e8e8;
-  border-radius: 10px;
-  background: #fff;
-}
-
-.products-tableDesktop {
-  background: #fff;
-  border-radius: 12px;
-  padding: 10px;
-}
-
-.product-update-section {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px 24px 32px;
-  box-shadow: 0 10px 30px rgba(15, 15, 15, 0.05);
-}
-
-.product-update-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.product-update-actions__btn {
-  flex: 1;
-  min-width: 180px;
-}
-
-.product-update-variantCard {
-  border: 1px solid #f0f0f0;
-  border-radius: 10px;
-  padding: 12px;
-  background: #fff;
-  box-shadow: 0 10px 25px rgba(15, 15, 15, 0.06);
-}
-
-@media (max-width: 1024px) {
-  .products-headerActions {
-    flex-wrap: wrap;
-  }
-
-  .products-filterControls-inline .products-filterRow {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-  }
-
-  .products-filterItem {
-    min-width: 150px;
-    max-width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .products-headerActions {
-    gap: 8px;
-  }
-
-  .products-headerFilters {
-    justify-content: flex-end;
-  }
-
-  .products-filterControls-inline {
-    display: none;
-  }
-
-  .products-filterTree {
-    min-width: 100%;
-  }
-
-  .products-filterControls-dropdown {
-    width: calc(100vw - 32px);
-  }
-
-  .products-filterItem {
-    min-width: 100%;
-  }
-
-  .products-tableDesktop {
-    padding: 0;
-    background: transparent;
-  }
-
-  .product-update-section {
-    padding: 16px 14px 24px;
-  }
-
-  .product-update-actions {
-    flex-direction: column;
-  }
-
-  .product-update-actions__btn {
-    min-width: 100%;
-  }
-}
-
+// =============================================================================
+// PAGE HEADERS (Section Titles & Breadcrumbs)
+// =============================================================================
 .dashboard-pageHeader {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 0px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(208, 200, 200, 0.541);
-  margin-bottom: 12px;
-  color: rgb(44, 44, 44);
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: $space-lg;
+  margin-bottom: $space-2xl;
+  padding-bottom: $space-lg;
+  border-bottom: 1px solid $border-color;
 
-  @media (max-width: 768px) {
+  > div:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    gap: $space-sm;
   }
-}
 
-.dashboard-pageHeader > div:nth-child(2) {
-    @media (max-width: 768px) {
-        margin-bottom: 4px;
-        align-self: flex-start;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-}
-
-/* Back button container */
-.dashboard-pageHeaderBox2 {
-  background-color: #fff;
-  padding: 4px 6px;
-  border-radius: 5px;
-  border: 1px solid #fff;
-  cursor: pointer;
-  margin-right: 10px;
-  &:hover {
-    color: vars.$primary;
-    border: 1px solid vars.$primary;
-  }
-  
   @media (max-width: 768px) {
-      margin-right: 0;
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      z-index: 2;
+    margin-bottom: $space-xl;
+    gap: $space-md;
+    align-items: center;
+    justify-content: flex-start;
   }
-}
-
-/* Page title container */
-.dashboard-pageHeader > div:nth-child(2) {
-    @media (max-width: 768px) {
-        width: 100%;
-        text-align: center;
-        padding-left: 40px; /* Space for back button */
-        padding-right: 10px;
-    }
 }
 
 .dashboard-pageHeaderBox {
-  flex: 1;
   display: flex;
-  flex-direction: row;
   align-items: center;
+  gap: $space-md;
+  flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 10px;
 
   @media (max-width: 768px) {
     width: 100%;
     justify-content: flex-start;
-    margin-top: 0;
-    flex-wrap: wrap;
-    gap: 10px;
-    
-    /* Ensure the container takes full width below the title */
-    flex: 0 0 auto;
+  }
+}
+
+.dashboard-pageHeaderBox2 {
+  background-color: #fff;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-md;
+  border: 1px solid $border-color;
+  cursor: pointer;
+  transition: all $transition-fast;
+  color: $text-color-secondary;
+  flex-shrink: 0;
+
+  &:hover {
+    border-color: $primary-color;
+    color: $primary-color;
+    background-color: $primary-light;
   }
 
-  /* Make direct input/select children full width on mobile for better usability */
-  > .ant-input-affix-wrapper,
-  > .ant-input,
-  > .ant-picker,
-  > div > .ant-select {
-    @media (max-width: 768px) {
-      width: 100% !important;
-      min-width: 100% !important;
-    }
-  }
-
-  /* Handle divs that wrap inputs/selects */
-  > div:not(.products-headerActions) {
-     @media (max-width: 768px) {
-        width: 100%;
-     }
-  }
-
-  /* Make buttons full width on mobile for easier tapping, unless in a group */
-  > .ant-btn {
-    @media (max-width: 768px) {
-      width: 100%;
-    }
+  svg {
+    font-size: 18px;
   }
 }
 
 .dashboard-pageHeadertxt1 {
-  font-size: 22px;
-  font-family: vars.$SemiBold;
-  line-height: 25px;
+  font-size: 28px;
+  font-family: vars.$Bold;
+  color: $text-color-primary;
+  margin: 0;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 22px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+  }
 }
 
 .dashboard-pageHeadertxt2 {
-  font-size: 12px;
+  font-size: 14px;
+  color: $text-color-secondary;
   font-family: vars.$Regular;
-  color: gray;
+  margin: 0;
+  line-height: 1.5;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 
+// =============================================================================
+// FILTERS & INPUTS
+// =============================================================================
+.ant-input,
+.ant-select-selector,
+.ant-picker {
+  border-radius: 8px !important;
+  border-color: $border-color !important;
+  box-shadow: none !important;
+  padding: 8px 12px !important;
+  background-color: #fff !important;
+  min-height: 40px;
 
+  &:hover,
+  &:focus,
+  &.ant-picker-focused {
+    border-color: vars.$primary !important;
+    box-shadow: 0 0 0 2px rgba(vars.$primary, 0.1) !important;
+  }
+}
+
+.ant-input-affix-wrapper {
+  min-height: 40px;
+  border-radius: 8px !important;
+}
+
+.ant-btn {
+  border-radius: 8px;
+  font-family: vars.$Medium;
+  box-shadow: none;
+  height: auto;
+  padding: 8px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &-primary {
+    background-color: vars.$primary;
+    border-color: vars.$primary;
+    &:hover {
+      background-color: darken(vars.$primary, 5%) !important;
+      border-color: darken(vars.$primary, 5%) !important;
+    }
+  }
+
+  &-default {
+    border-color: $border-color;
+    color: $text-color-secondary;
+    &:hover {
+      color: vars.$primary;
+      border-color: vars.$primary;
+    }
+  }
+}
+
+// =============================================================================
+// MOBILE & RESPONSIVE TWEAKS
+// =============================================================================
+@media (max-width: 768px) {
+  .dashboard-Header {
+    padding: 0 16px;
+  }
+
+  .dashboard-Layout {
+    padding: 16px;
+    padding-top: 80px;
+  }
+
+  .dashboard-pageHeadertxt1 {
+    font-size: 20px;
+  }
+
+  .DashboardAdmin-Box {
+    margin-bottom: 16px;
+  }
+}
+
+// =============================================================================
+// Forms inside dashboard layout
+// =============================================================================
+.dashboard-Layout .ant-form-item {
+  margin-bottom: 14px;
+}
+
+.dashboard-ProfilePopover {
+  width: 300px;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  .dashboard-ProfilePopoverItem {
+    display: flex;
+    align-items: center;
+    gap: $space-lg;
+    padding: $space-lg;
+    border-bottom: 1px solid $border-color;
+    background-color: $primary-light;
+
+    > div:first-child {
+      flex-shrink: 0;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      svg {
+        font-size: 40px;
+        color: $text-color-secondary;
+      }
+    }
+
+    > div:last-child {
+      flex: 1;
+      min-width: 0;
+
+      .text1 {
+        font-family: vars.$SemiBold;
+        font-size: 16px;
+        color: $text-color-primary;
+        margin-bottom: $space-xs;
+        word-break: break-word;
+      }
+
+      .text2 {
+        font-family: vars.$Regular;
+        font-size: 13px;
+        color: $text-color-secondary;
+        margin-bottom: $space-sm;
+        word-break: break-all;
+      }
+
+      .ant-tag {
+        font-size: 12px;
+      }
+    }
+  }
+
+  .dashboard-ProfilePopoverItem2 {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    padding: $space-lg;
+    cursor: pointer;
+    transition: all $transition-fast;
+    border-bottom: 1px solid $border-color;
+    font-family: vars.$Regular;
+    font-size: 14px;
+    color: $text-color-primary;
+
+    > div:first-child {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: $text-color-secondary;
+      font-size: 18px;
+    }
+
+    > div:last-child {
+      flex: 1;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+      transition: color $transition-fast;
+
+      &:hover {
+        color: vars.$primary;
+      }
+    }
+
+    &:hover {
+      background-color: $primary-light;
+      color: vars.$primary;
+
+      > div:first-child {
+        color: vars.$primary;
+      }
+
+      a {
+        color: vars.$primary;
+      }
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.dashboard-NotificationPopover,
+.dashboard-NotificationPopover {
+  .ant-popover-inner {
+    border-radius: $radius-md;
+    box-shadow: $shadow-lg;
+    padding: 0;
+    overflow: hidden;
+    background-color: #fff;
+  }
+
+  .ant-popover-title {
+    padding: 16px;
+    border-bottom: 1px solid $border-color;
+    background-color: #fff;
+  }
+
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+}
+
+/* Global Popover Styling */
+.ant-popover {
+  .ant-popover-inner {
+    border-radius: $radius-md !important;
+    box-shadow: $shadow-lg !important;
+  }
+
+  .ant-popover-arrow-content {
+    background-color: #fff;
+    border: 1px solid $border-color;
+  }
+}
 
 .dashboard-Loading {
-  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 100%;
+  color: vars.$primary;
+
+  .ant-spin-dot-item {
+    background-color: vars.$primary;
+  }
+}
+
+// =============================================================================
+// CARDS & CONTAINERS
+// =============================================================================
+.DashboardAdmin-Box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: $space-2xl;
+  padding: $space-lg 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: $space-lg;
+  flex-wrap: wrap;
+
+  > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xs;
+    flex: 0 1 auto;
+  }
+
+  > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 1024px) {
+    gap: $space-xl;
+  }
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $space-lg;
+
+    > div:last-child {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+}
+
+.DashboardAdmin-text1 {
+  font-size: 26px;
+  font-family: vars.$Bold;
+  color: $text-color-primary;
+  letter-spacing: -0.5px;
+  margin: 0;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 22px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+  }
+}
+
+.DashboardAdmin-text2 {
+  font-size: 13px;
+  color: $text-color-secondary;
+  font-family: vars.$Regular;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// Card Component
+.DashboardAdmin-card,
+.dashboard-card-base {
+  background-color: #fff;
+  padding: $space-2xl;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-xs;
+  transition: all $transition-base;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  min-height: 160px;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+    border-color: rgba(vars.$primary, 0.2);
+  }
+
+  @media (max-width: 768px) {
+    padding: $space-xl;
+    min-height: 140px;
+  }
+
+  @media (max-width: 480px) {
+    padding: $space-lg;
+    min-height: 120px;
+  }
+}
+
+.DashboardAdmin-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: $space-lg;
+  gap: $space-lg;
+}
+
+.DashboardAdmin-card-text1 {
+  font-size: 12px;
+  font-family: vars.$SemiBold;
+  color: $text-color-secondary;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.DashboardAdmin-card-text2 {
+  font-size: 28px;
+  font-family: vars.$Bold;
+  color: $text-color-primary;
+  letter-spacing: -1px;
+  margin: $space-sm 0 0;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+  }
+}
+
+.DashboardAdmin-card-text3 {
+  font-size: 12px;
+  color: $text-color-secondary;
+  font-family: vars.$Regular;
+  margin: $space-sm 0 0;
+  line-height: 1.4;
+}
+
+.DashboardAdmin-card-icons {
+  width: 52px;
+  height: 52px;
+  border-radius: $radius-lg;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(vars.$primary, 0.08) 0%,
+    rgba(vars.$primary, 0.04) 100%
+  );
+  color: $primary-color;
+  font-size: 28px;
+  flex-shrink: 0;
+  transition: all $transition-fast;
+
+  @media (max-width: 768px) {
+    width: 48px;
+    height: 48px;
+    font-size: 24px;
+  }
+}
+
+.DashboardAdmin-card:hover .DashboardAdmin-card-icons {
+  background: linear-gradient(
+    135deg,
+    rgba(vars.$primary, 0.15) 0%,
+    rgba(vars.$primary, 0.08) 100%
+  );
+  transform: scale(1.1);
+}
+
+// =============================================================================
+// TABLES - DESKTOP & MOBILE
+// =============================================================================
+.dashboard-Layout .ant-table-wrapper {
+  background: #fff;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-xs;
+  border: 1px solid $border-color;
+  overflow: hidden;
+
+  .ant-table {
+    border: none;
+
+    .ant-table-container {
+      border: none;
+    }
+  }
+
+  .ant-table-thead > tr > th {
+    background: #f9fafb;
+    color: $text-color-secondary;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: $space-lg $space-2xl;
+    border-bottom: 1px solid $border-color;
+    font-family: vars.$SemiBold;
+    white-space: nowrap;
+  }
+
+  .ant-table-tbody > tr > td {
+    padding: $space-lg $space-2xl;
+    border-bottom: 1px solid $border-color;
+    color: $text-color-primary;
+    font-size: 14px;
+    font-family: vars.$Regular;
+    vertical-align: middle;
+  }
+
+  .ant-table-tbody > tr:last-child > td {
+    border-bottom: none;
+  }
+
+  .ant-table-tbody > tr:hover > td {
+    background-color: #f9fafb !important;
+  }
+
+  .anticon {
+    font-size: 16px;
+    opacity: 0.9;
+  }
+
+  .ant-pagination {
+    margin: $space-lg $space-2xl !important;
+    padding-top: $space-lg;
+    border-top: 1px solid $border-color;
+
+    .ant-pagination-item {
+      border-radius: $radius-md;
+      font-family: vars.$Medium;
+
+      &-active {
+        border-color: $primary-color;
+
+        a {
+          color: $primary-color;
+        }
+      }
+    }
+
+    .ant-pagination-next,
+    .ant-pagination-prev {
+      border-radius: $radius-md;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .ant-table-thead > tr > th {
+      padding: $space-md $space-lg;
+      font-size: 11px;
+    }
+
+    .ant-table-tbody > tr > td {
+      padding: $space-md $space-lg;
+      font-size: 13px;
+    }
+
+    .ant-pagination {
+      margin: $space-md $space-lg !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ant-table-thead > tr > th {
+      padding: $space-sm;
+      font-size: 10px;
+    }
+
+    .ant-table-tbody > tr > td {
+      padding: $space-sm;
+      font-size: 12px;
+    }
+  }
+}
+
+// Mobile Table Cards
+.products-tableMobile,
+.dashboard-tableMobile {
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+
+  @media (min-width: 769px) {
+    display: none;
+  }
+}
+
+.products-tableMobileCard,
+.dashboard-tableMobileCard {
+  background: #fff;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  padding: $space-lg;
+  box-shadow: $shadow-xs;
+  transition: all $transition-fast;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    border-color: rgba(vars.$primary, 0.2);
+  }
+}
+
+.products-tableMobileHeader,
+.dashboard-tableMobileHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-lg;
+  margin-bottom: $space-lg;
+  padding-bottom: $space-lg;
+  border-bottom: 1px solid $border-color;
+}
+
+.products-tableMobileImage,
+.dashboard-tableMobileImage {
+  width: 60px;
+  height: 60px;
+  border-radius: $radius-md;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: $bg-color-main;
+  border: 1px solid $border-color;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 480px) {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.products-tableMobileTitle,
+.dashboard-tableMobileTitle {
+  flex: 1;
+  min-width: 0;
+
+  .title {
+    font-weight: 600;
+    font-size: 14px;
+    color: $text-color-primary;
+    margin-bottom: $space-xs;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .sub {
+    font-size: 12px;
+    color: $text-color-secondary;
+  }
+
+  @media (max-width: 480px) {
+    .title {
+      font-size: 13px;
+    }
+
+    .sub {
+      font-size: 11px;
+    }
+  }
+}
+
+.products-tableMobileBody,
+.dashboard-tableMobileBody {
+  margin-bottom: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.products-tableMobileRow,
+.dashboard-tableMobileRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  gap: $space-md;
+
+  .label {
+    color: $text-color-secondary;
+    font-family: vars.$Medium;
+    min-width: 100px;
+  }
+
+  .value {
+    font-weight: 600;
+    color: $text-color-primary;
+    text-align: right;
+    flex: 1;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+
+    .label {
+      min-width: 80px;
+    }
+  }
+}
+
+.products-tableMobileStatus,
+.dashboard-tableMobileStatus {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  padding: $space-xs $space-md;
+  border-radius: $radius-sm;
+  font-weight: 600;
+
+  &.active {
+    background: rgba($success-color, 0.1);
+    color: $success-color;
+  }
+
+  &.pending {
+    background: rgba($warning-color, 0.1);
+    color: $warning-color;
+  }
+
+  &.inactive {
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+  }
+}
+
+.products-tableMobileActions,
+.dashboard-tableMobileActions {
+  display: flex;
+  gap: $space-sm;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  button {
+    padding: $space-sm $space-md;
+    border-radius: $radius-sm;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all $transition-fast;
+  }
+}
+
+.products-tableMobileEmpty,
+.dashboard-tableMobileEmpty {
+  padding: $space-2xl $space-lg;
+  text-align: center;
+  color: $text-color-secondary;
+  border: 1px dashed $border-color;
+  border-radius: $radius-lg;
+  background: #f9fafb;
+  font-family: vars.$Regular;
+}
+
+// =============================================================================
+// FILTER CONTROLS
+// =============================================================================
+.products-filterControls,
+.dashboard-filterControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-lg;
+  align-items: flex-end;
+  padding: $space-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-xs;
+  margin-bottom: $space-2xl;
+
+  @media (max-width: 768px) {
+    gap: $space-md;
+    padding: $space-lg;
+    flex-direction: column;
+  }
+}
+
+.products-filterControls .ant-btn,
+.dashboard-filterControls .ant-btn {
+  height: 40px;
+  padding: $space-md $space-lg !important;
+  font-size: 14px;
+  border-radius: $radius-md;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    height: 40px;
+    width: 100%;
+  }
+}
+
+.products-filterControls .ant-input,
+.products-filterControls .ant-select-selector,
+.dashboard-filterControls .ant-input,
+.dashboard-filterControls .ant-select-selector {
+  height: 40px;
+  font-size: 14px;
+  border-radius: $radius-md !important;
+  border-color: $border-color !important;
+
+  &:hover {
+    border-color: $primary-color !important;
+  }
 }
 
 .table-img {
-  width: 40px;
-  height: 40px;
-  padding: 2px;
-  border: 1px dashed rgb(206, 206, 206);
+  width: 48px;
+  height: 48px;
+  padding: $space-sm;
+  border: 1px solid $border-color;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
+  border-radius: $radius-md;
+  background: $bg-color-main;
+  flex-shrink: 0;
+
   img {
-    width: 35px;
-    height: 35px;
-    border-radius: 3px;
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-sm;
+    object-fit: cover;
+  }
+
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    padding: $space-xs;
+
+    img {
+      width: 32px;
+      height: 32px;
+    }
   }
 }
 
@@ -1078,240 +1429,100 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 5px;
+  gap: $space-md;
+  flex-wrap: wrap;
+
+  @media (max-width: 480px) {
+    gap: $space-sm;
+  }
 }
 
 .table-pagination {
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
+  align-items: center;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: $space-lg;
   width: 100%;
+  gap: $space-lg;
 }
 
 .table-desctext {
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* number of lines to show */
-  line-clamp: 2;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
+  line-clamp: 2;
+  color: $text-color-secondary;
+  font-family: vars.$Regular;
 }
 
-.DashboardAdmin-Box {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  padding: 16px 0;
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 8px;
+// =============================================================================
+// RESPONSIVE UTILITIES
+// =============================================================================
+@media (max-width: 1024px) {
+  .dashboard-Layout {
+    padding-left: $space-xl;
+  }
+}
 
-  @media (max-width: 1024px) {
-    gap: 10px;
-    padding: 12px 0;
+@media (max-width: 768px) {
+  // Hide desktop elements on mobile
+  .hide-on-mobile {
+    display: none !important;
   }
 
-  @media (max-width: 768px) {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px 0;
-    align-items: flex-start;
+  // Stack controls vertically
+  .dashboard-pageHeader > div:last-child {
+    width: 100%;
   }
 
-  @media (max-width: 480px) {
-    flex-direction: column;
-    gap: 10px;
-    padding: 8px 0;
+  .DashboardAdmin-Box > div:last-child {
     width: 100%;
   }
 }
 
-.DashboardAdmin-text1 {
-  font-size: 22px;
-  font-family: vars.$SemiBold;
+@media (max-width: 480px) {
+  .dashboard-Layout {
+    padding: $space-md;
+    padding-top: $header-height-mobile + $space-md;
+  }
 
-  @media (max-width: 768px) {
+  .dashboard-pageHeadertxt1 {
     font-size: 18px;
   }
 
-  @media (max-width: 480px) {
-    font-size: 16px;
+  .DashboardAdmin-text1 {
+    font-size: 18px;
   }
 }
 
-.DashboardAdmin-text2 {
-  font-size: 14px;
-  color: gray;
-
-  @media (max-width: 768px) {
-    font-size: 13px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 12px;
-  }
-}
-
-.DashboardAdmin-card {
-  background-color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  border: 1px solid rgb(238, 238, 238);
+// =============================================================================
+// ANT DESIGN LAYOUT OVERRIDES
+// =============================================================================
+.ant-layout {
   display: flex;
-  flex-direction: column; /* Ensures content stacks vertically */
-  justify-content: space-between; /* Space out card content */
-  height: 100%; /* Make all cards the same height */
-  min-height: 130px; /* Optional: Set a minimum height */
+  width: 100%;
+  min-height: 100vh;
+}
+
+.ant-layout-sider {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 999;
+  box-sizing: border-box;
+  width: $sidebar-width !important;
+  max-width: $sidebar-width !important;
 
   @media (max-width: 768px) {
-    padding: 8px;
-    min-height: 115px;
-  }
-
-  @media (max-width: 480px) {
-    min-height: 100px;
-    padding: 6px;
+    width: 260px !important;
   }
 }
 
-.DashboardAdmin-card-text1 {
-  font-size: 15px;
-  font-family: vars.$Regular;
-  color: rgb(85, 85, 85);
-
-  @media (max-width: 768px) {
-    font-size: 13px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 12px;
-  }
-}
-
-.DashboardAdmin-card-text2 {
-  font-size: 18px;
-  font-family: vars.$Bold;
-  color: #000;
-
-  @media (max-width: 768px) {
-    font-size: 16px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 14px;
-  }
-}
-
-.DashboardAdmin-card-text3 {
-  font-size: 13px;
-  color: gray;
-
-  @media (max-width: 768px) {
-    font-size: 12px;
-  }
-
-  @media (max-width: 480px) {
-    font-size: 11px;
-  }
-}
-
-.DashboardAdmin-card-icons {
-  font-size: 18px;
-  background-color: rgb(240, 240, 240);
-  height: 30px;
-  width: 30px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  @media (max-width: 768px) {
-    height: 26px;
-    width: 26px;
-    font-size: 16px;
-  }
-
-  @media (max-width: 480px) {
-    height: 24px;
-    width: 24px;
-    font-size: 14px;
-  }
-}
-
-.form-lable {
-  font-size: 13px;
-  margin-bottom: 5px;
-  color: rgb(0, 0, 0);
-  font-family: vars.$Medium;
-}
-
-// Header controls container styling
-.DashboardAdmin-Box > div:first-child {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 4px;
-  min-width: 0;
-
-  @media (max-width: 768px) {
-    width: 100%;
-  }
-
-  @media (max-width: 480px) {
-    width: 100%;
-  }
-}
-
-.DashboardAdmin-Box > div:last-child {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-  white-space: nowrap;
-  flex-wrap: nowrap;
-
-  @media (max-width: 768px) {
-    width: 100%;
-    gap: 8px;
-    justify-content: flex-start;
-  }
-
-  @media (max-width: 480px) {
-    width: 100%;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: space-between;
-  }
-}
-
-.DashboardAdmin-Box .ant-picker {
-  width: auto;
-  min-width: 200px;
-
-  @media (max-width: 768px) {
-    min-width: 160px;
-  }
-
-  @media (max-width: 480px) {
-    min-width: 140px;
-    font-size: 12px;
-  }
-}
-
-.DashboardAdmin-Box .ant-btn {
-  padding: 8px 16px;
-  font-size: 14px;
-
-  @media (max-width: 768px) {
-    padding: 6px 12px;
-    font-size: 13px;
-  }
-
-  @media (max-width: 480px) {
-    padding: 5px 10px;
-    font-size: 12px;
-  }
+.ant-layout-content {
+  width: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

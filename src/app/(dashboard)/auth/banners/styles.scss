@@ -53,6 +53,18 @@
     margin: auto;
   }
 
+.banners-headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 .banners-headerPrimary {
   display: flex;
   align-items: center;

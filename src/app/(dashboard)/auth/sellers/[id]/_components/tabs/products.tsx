@@ -20,7 +20,7 @@ function Products({ id }: { id: string }) {
     error,
   } = useQuery({
     queryFn: ({ queryKey, signal }) =>
-      GET(API.PRODUCTS_BYSTORE + "/" + id, queryKey[1] as object, signal),
+      GET(API.PRODUCTS_BYSTORE + "/" + id, queryKey[1] as Record<string, unknown>, signal),
     queryKey: ["admin_products_bystore", { page, take, query }, id],
   });
   return (

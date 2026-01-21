@@ -8,6 +8,7 @@ import platinumImage from "@/assets/images/postion1.jpg";
 import { TbArrowRight } from "react-icons/tb";
 
 interface PlatinumSectionProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   products: any[];
   title?: string;
   image?: StaticImageData | string;
@@ -37,7 +38,12 @@ function PlatinumSection({
       <div className="platinum-section__wrapper">
         <div className="platinum-section__content">
           <div className="platinum-section__header">
-            <div className="platinum-section__title">{title}</div>
+            <div
+              className="platinum-section__title"
+              style={{ display: "flex", alignItems: "center" }}
+            >
+              {title}
+            </div>
             <span
               role="button"
               tabIndex={0}

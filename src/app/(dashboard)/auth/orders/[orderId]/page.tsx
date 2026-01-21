@@ -15,14 +15,66 @@ import { getOrderStatus } from "../_components/getOrderStatus";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 
+import API from "@/config/API";
+
+import { Order } from "../_components/dataTable";
+import { AddressData } from "../_components/addressTab";
+
+interface StoreOrder {
+  id?: string | number;
+  order_id?: string | number;
+  address?: AddressData;
+  name?: string;
+  phone?: string;
+  phone_no?: string;
+  [key: string]: unknown;
+}
+
+interface OrderDetailsResponse {
+  data: Order;
+}
+
+interface StoreOrdersResponse {
+  data: StoreOrder[];
+}
+
 export default function OrderDetails() {
   const { orderId } = useParams();
   const route = useRouter();
-  const { data: order, isLoading } = useQuery({
+
+  const { data: orderData, isLoading } = useQuery({
     queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
-    queryKey: ["order_details"],
+    queryKey: ["order_details", orderId],
     staleTime: 0,
   });
+
+  const order = orderData as OrderDetailsResponse;
+
+  const { data: storeOrderDataRaw } = useQuery({
+    queryFn: async () => {
+      // Use the storeId from the fetched order details
+      const storeId = order?.data?.storeId;
+      if (!storeId) return null;
+
+      // Fetch orders for this store.
+      // Note: If the backend filters strictly by `orderId` param, this is fine.
+      // If it returns a paginated list, we might need to fetch a larger page or verify the filtering.
+      // Assuming 'orderId' param works as a filter:
+      return await GET(API.ORDER_GET_BYSTORE + storeId, { orderId });
+    },
+    queryKey: ["store_order_lookup", orderId, order?.data?.storeId],
+    enabled: !!order?.data?.storeId && !!orderId,
+  });
+
+  const storeOrderData = storeOrderDataRaw as StoreOrdersResponse;
+
+  const specificStoreOrder = Array.isArray(storeOrderData?.data)
+    ? storeOrderData?.data.find(
+        (o) =>
+          String(o.id) === String(orderId) ||
+          String(o.order_id) === String(orderId),
+      )
+    : null;
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
     const diffInHours = moment().diff(givenDate, "hours");
@@ -59,9 +111,9 @@ export default function OrderDetails() {
       >
         {!isLoading && (
           <>
-            <Tag>{formatDateRelative(order?.data?.createdAt)}</Tag>
-            <Tag color={getOrderStatusColor(order?.data?.status)}>
-              {getOrderStatus(order?.data?.status)}
+            <Tag>{formatDateRelative(order?.data?.createdAt || "")}</Tag>
+            <Tag color={getOrderStatusColor(order?.data?.status || "")}>
+              {getOrderStatus(order?.data?.status || "")}
             </Tag>
             <Button
               type="primary"
@@ -79,8 +131,21 @@ export default function OrderDetails() {
           <Row className="gy-4">
             <Col lg={8} md={12}>
               <div className="d-flex flex-column gap-4">
-                <AddressTab data={order?.data?.address} />
-                <ProductTab data={order?.data?.orderItems} />
+                <AddressTab
+                  data={{
+                    ...(order?.data?.address as AddressData),
+                    ...(specificStoreOrder?.address || {}),
+                    user_id: order?.data?.userId,
+                    order_contact_name:
+                      specificStoreOrder?.name || order?.data?.name,
+                    // Fallback for phone if it exists at root of store order
+                    phone_no:
+                      (order?.data?.address as AddressData)?.phone_no ||
+                      specificStoreOrder?.phone ||
+                      specificStoreOrder?.phone_no,
+                  }}
+                />
+                <ProductTab data={order?.data?.orderItems || []} />
                 <PaymentStatusTab data={order?.data} />
               </div>
             </Col>

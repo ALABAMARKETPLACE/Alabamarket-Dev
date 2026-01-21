@@ -210,7 +210,7 @@ const Footer = () => {
       </I18nextProvider>
       <br />
       <div className="Footer-Box1">
-        COPYRIGHT © 2025 Taxgoglobal Corporation. ALL RIGHTS RESERVED
+        COPYRIGHT © {new Date().getFullYear()} Taxgoglobal Corporation. ALL RIGHTS RESERVED
       </div>
     </footer>
   );

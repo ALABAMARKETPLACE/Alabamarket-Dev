@@ -73,7 +73,7 @@ function EditNewDistanceCharge() {
   }, [existingData]);
 
   const mutationUpdate = useMutation({
-    mutationFn: (body: object) =>
+    mutationFn: (body: Record<string, unknown>) =>
       PUT(API_ADMIN.NEW_DISTANCE_CHARGE + params.id, body),
     onError: (error) => {
       Notifications["error"]({ message: error.message });

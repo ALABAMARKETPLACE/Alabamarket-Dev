@@ -7,8 +7,15 @@ import ProductItem from "../../../../components/productItem/page";
 import positionImage from "@/assets/images/position2.jpg";
 import { TbArrowRight } from "react-icons/tb";
 
+interface Product {
+  id?: string | number;
+  _id?: string | number;
+  slug?: string;
+  [key: string]: unknown;
+}
+
 interface GoldSectionProps {
-  products: any[];
+  products: Product[];
 }
 
 const PRIMARY_COUNT = 4;
@@ -18,20 +25,20 @@ function GoldSection({ products = [] }: GoldSectionProps) {
   const router = useRouter();
   const goldProducts = useMemo(
     () => (Array.isArray(products) ? products : []),
-    [products]
+    [products],
   );
 
   const primaryProducts = goldProducts.slice(0, PRIMARY_COUNT);
   const secondaryProducts = goldProducts.slice(
     PRIMARY_COUNT,
-    PRIMARY_COUNT + SECONDARY_COUNT
+    PRIMARY_COUNT + SECONDARY_COUNT,
   );
 
   if (!primaryProducts.length && !secondaryProducts.length) {
     return null;
   }
 
-  const renderGrid = (items: any[], keyPrefix: string) => (
+  const renderGrid = (items: Product[], keyPrefix: string) => (
     <div className="gold-section__grid">
       {items.map((product, index) => (
         <div
@@ -54,7 +61,12 @@ function GoldSection({ products = [] }: GoldSectionProps) {
 
   const renderHeader = (title: string) => (
     <div className="gold-section__panel-header">
-      <div className="gold-section__panel-title">{title}</div>
+      <div
+        className="gold-section__panel-title"
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        {title}
+      </div>
       <span
         role="button"
         tabIndex={0}
@@ -106,5 +118,3 @@ function GoldSection({ products = [] }: GoldSectionProps) {
 }
 
 export default GoldSection;
-
-
