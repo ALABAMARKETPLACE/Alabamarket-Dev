@@ -1,4 +1,3 @@
-import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import "@/styles/App.scss";
 import "slick-carousel/slick/slick.css";
@@ -46,14 +45,30 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script dangerouslySetInnerHTML={{
+    __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-5J27TX49');`
+  }} />
+  
         <link rel="icon" href="/icon.jpeg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/icon.jpeg" />
         <meta
           name="google-site-verification"
-          content="BOD9AxLW76nB9a-0zZOoXbBGJItd5s9Sb3PGxqIsscU"
+          content="hjuHfzlO0fdL02U92aa34wv7wVNkG8yqQX-Hv-lhdLE"
         />
       </head>
       <body>
+        <noscript>
+    <iframe 
+      src="https://www.googletagmanager.com/ns.html?id=GTM-5J27TX49"
+      height="0" 
+      width="0" 
+      style={{display:'none', visibility:'hidden'}}
+    />
+  </noscript>
         <AuthProvider>
           <ReactQueryProvider>
             <AntdRegistry>
@@ -71,8 +86,6 @@ export default function RootLayout({
             </AntdRegistry>
           </ReactQueryProvider>
         </AuthProvider>
-        <GoogleAnalytics gaId="AW-11168946770" />
-        <GoogleAnalytics gaId="G-HQRRC5GRKE" />
       </body>
     </html>
   );
