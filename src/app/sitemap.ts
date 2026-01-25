@@ -1,24 +1,16 @@
-import { NextResponse } from "next/server";
+import type { MetadataRoute } from "next";
 
 const SITE_URL = "https://alabamarketplace.ng";
-
-// Your static pages
-const staticUrls = ["", "/about", "/fa-questions", "/about-us", "/contact_us"];
 
 // APIs you provided
 const CATEGORY_API = "https://apis.alabamarketplace.ng/category";
 const PRODUCTS_API = "https://apis.alabamarketplace.ng/products/bystore";
 
+// Static pages you want indexed
+const staticPaths = ["", "/about", "/fa-questions", "/about-us", "/contact_us"];
+
 type AnyObj = Record<string, any>;
 
-/**
- * Tries to extract an array from common API response shapes:
- * - [ ... ]
- * - { data: [ ... ] }
- * - { data: { items: [ ... ] } }
- * - { items: [ ... ] }
- * - { results: [ ... ] }
- */
 function extractArray(payload: any): any[] {
   if (Array.isArray(payload)) return payload;
 
@@ -34,11 +26,10 @@ function extractArray(payload: any): any[] {
   for (const c of candidates) {
     if (Array.isArray(c)) return c;
   }
-
   return [];
 }
 
-async function fetchCategories(): Promise<string[]> {
+async function getCategoryEntries(): Promise<MetadataRoute.Sitemap> {
   try {
     const res = await fetch(CATEGORY_API, { cache: "no-store" });
     if (!res.ok) return [];
@@ -46,24 +37,25 @@ async function fetchCategories(): Promise<string[]> {
     const json = await res.json();
     const categories = extractArray(json);
 
-    // Try common id fields: id, _id, categoryId
     return categories
       .map((c: AnyObj) => c?.id ?? c?._id ?? c?.categoryId)
       .filter((id: any) => id !== undefined && id !== null && id !== "")
-      .map((id: string | number) => `/category/${id}`);
+      .map((id: string | number) => ({
+        url: `${SITE_URL}/category/${id}`,
+        changeFrequency: "weekly",
+        priority: 0.7,
+      }));
   } catch {
     return [];
   }
 }
 
-async function fetchAllProducts(): Promise<string[]> {
-  const urls: string[] = [];
+async function getAllProductEntries(): Promise<MetadataRoute.Sitemap> {
+  const entries: MetadataRoute.Sitemap = [];
   let page = 1;
-  const take = 50; // increase/decrease if needed
+  const take = 50;
   const order = "DESC";
-
-  // Safety cap so sitemap generation can't loop forever if API misbehaves
-  const MAX_PAGES = 500;
+  const MAX_PAGES = 500; // safety cap
 
   try {
     while (page <= MAX_PAGES) {
@@ -82,45 +74,41 @@ async function fetchAllProducts(): Promise<string[]> {
       for (const p of products) {
         const id = (p as AnyObj)?.id ?? (p as AnyObj)?._id ?? (p as AnyObj)?.productId;
         if (id !== undefined && id !== null && id !== "") {
-          urls.push(`/product/${id}`);
+          entries.push({
+            url: `${SITE_URL}/product/${id}`,
+            changeFrequency: "daily",
+            priority: 0.8,
+          });
         }
       }
 
-      // If we got fewer than "take", we reached the last page
-      if (products.length < take) break;
-
+      if (products.length < take) break; // last page
       page++;
     }
   } catch {
-    // If products fetch fails, sitemap will still return static + categories
+    // if it fails, return whatever we have (or empty)
   }
 
-  return urls;
+  return entries;
 }
 
-export async function GET() {
-  const [categoryUrls, productUrls] = await Promise.all([
-    fetchCategories(),
-    fetchAllProducts(),
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const staticEntries: MetadataRoute.Sitemap = staticPaths.map((path) => ({
+    url: `${SITE_URL}${path}`,
+    changeFrequency: "monthly",
+    priority: path === "" ? 1 : 0.6,
+  }));
+
+  const [categoryEntries, productEntries] = await Promise.all([
+    getCategoryEntries(),
+    getAllProductEntries(),
   ]);
 
-  // De-duplicate
-  const allPaths = Array.from(
-    new Set([...staticUrls, ...categoryUrls, ...productUrls])
-  );
+  // De-dupe by URL
+  const map = new Map<string, MetadataRoute.Sitemap[number]>();
+  for (const item of [...staticEntries, ...categoryEntries, ...productEntries]) {
+    map.set(item.url, item);
+  }
 
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${allPaths
-  .map(
-    (path) => `  <url>
-    <loc>${SITE_URL}${path}</loc>
-  </url>`
-  )
-  .join("\n")}
-</urlset>`;
-
-  return new NextResponse(xml, {
-    headers: { "Content-Type": "application/xml" },
-  });
+  return Array.from(map.values());
 }
