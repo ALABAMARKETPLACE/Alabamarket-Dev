@@ -262,9 +262,10 @@ function Checkout() {
         },
       };
 
-      // Determine correct endpoint based on split payment
+      // Determine correct endpoint based on split payment; fallback to non-split if needed
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const endpoint = (paymentData as any).split_payment
+      const wantsSplit = (paymentData as any).split_payment;
+      const endpointPrimary = wantsSplit
         ? API.PAYSTACK_INITIALIZE_SPLIT
         : API.PAYSTACK_INITIALIZE;
 
@@ -272,7 +273,7 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((paymentData as any).split_payment) {
         console.log("Initializing Split Payment:", {
-          endpoint,
+          endpoint: endpointPrimary,
           paymentData,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           storeId: (paymentData as any).store_id,
@@ -281,10 +282,34 @@ function Checkout() {
         });
       }
 
+      // Try primary endpoint first
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response: any = await POST(endpoint, paymentData);
+      let response: any = await POST(endpointPrimary, paymentData);
+      let rawUrl =
+        response?.data?.data?.authorization_url ||
+        response?.data?.authorization_url ||
+        response?.authorization_url ||
+        null;
+      let authUrl =
+        typeof rawUrl === "string"
+          ? rawUrl.trim().replace(/^["'`]+|["'`]+$/g, "")
+          : null;
 
-      if (response.status && response.data?.data?.authorization_url) {
+      // Fallback to non-split initialize if split not available or URL missing
+      if (!authUrl && wantsSplit) {
+        response = await POST(API.PAYSTACK_INITIALIZE, paymentData);
+        rawUrl =
+          response?.data?.data?.authorization_url ||
+          response?.data?.authorization_url ||
+          response?.authorization_url ||
+          null;
+        authUrl =
+          typeof rawUrl === "string"
+            ? rawUrl.trim().replace(/^["'`]+|["'`]+$/g, "")
+            : null;
+      }
+
+      if (authUrl) {
         // Store payment reference for verification
         localStorage.setItem("paystack_payment_reference", reference);
         localStorage.setItem(
@@ -310,7 +335,7 @@ function Checkout() {
         );
 
         // Redirect to Paystack payment page
-        window.location.href = response.data.data.authorization_url;
+        window.location.href = authUrl;
       } else {
         throw new Error(response.message || "Payment initialization failed");
       }

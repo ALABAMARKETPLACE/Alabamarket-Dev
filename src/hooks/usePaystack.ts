@@ -61,9 +61,7 @@ export const usePaystack = (): any => {
         }
 
         const result: any = await dispatch(initializePayment(data)).unwrap();
-
         if (result.status && result.data?.data?.authorization_url) {
-          // Payment initialization successful
           notificationApi.success({
             message: "Payment Initialized",
             description: "Redirecting to payment page...",
@@ -126,9 +124,7 @@ export const usePaystack = (): any => {
         };
 
         const result: any = await dispatch(initializePayment(splitPaymentData)).unwrap();
-
         if (result.status && result.data?.data?.authorization_url) {
-          // Split payment initialization successful
           const formattedAmounts = formatSplitAmount(splitCalculation);
           
           notificationApi.success({
