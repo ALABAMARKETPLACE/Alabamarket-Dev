@@ -55,13 +55,8 @@ export const paystackSlice = createAppSlice({
     initializePayment: create.asyncThunk(
       async (paymentData: PaystackInitializeRequest, { rejectWithValue }) => {
         try {
-          const endpoint =
-            (paymentData as unknown as { split_payment?: boolean })
-              ?.split_payment === true
-              ? API.PAYSTACK_INITIALIZE_SPLIT
-              : API.PAYSTACK_INITIALIZE;
           const response = await POST(
-            endpoint,
+            API.PAYSTACK_INITIALIZE,
             paymentData as unknown as Record<string, unknown>,
           );
           return response;
