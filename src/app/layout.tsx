@@ -14,6 +14,7 @@ import { StoreProvider } from "@/util/storeProvider";
 import ReactQueryProvider from "@/util/queryProvider";
 
 import CONFIG from "@/config/configuration";
+import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 
 export const metadata: Metadata = {
   title: CONFIG.NAME,
@@ -79,6 +80,7 @@ export default function RootLayout({
                       <Header />
                       <main className="layout-main">{children}</main>
                       <Footer />
+                      <WhatsAppChatTab />
                     </div>
                   </StoreProvider>
                 </App>
