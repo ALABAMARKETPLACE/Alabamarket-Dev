@@ -9,11 +9,9 @@ import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
 
-import NotDeliverableModal from "./_components/notDeliverable";
 import { useRouter } from "next/navigation";
 import { POST } from "@/util/apicall";
 import API from "@/config/API";
-import useToggle from "@/shared/hook/useToggle";
 import { storeFinal } from "@/redux/slice/checkoutSlice";
 import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/redux/hooks";
@@ -37,7 +35,6 @@ function Checkout() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [total, setTotal] = useState<any>(0);
@@ -46,7 +43,6 @@ function Checkout() {
   const [discount, setDiscount] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [grand_total, setGrand_total] = useState<any>(0);
-  const [openModal, toggleModal] = useToggle(false);
   useEffect(() => {
     window.scrollTo(0, 0);
 
@@ -142,10 +138,11 @@ function Checkout() {
           setGrand_total(gTotal);
           setDiscount(discountVal);
         } else {
-          toggleModal(true);
-          setErrorMessage(
-            response?.message || "Delivery not available for this location",
-          );
+          notificationApi.error({
+            message: "Delivery Not Available",
+            description:
+              response?.message || "Please select another delivery address.",
+          });
           setDeliveryToken("");
           setDelivery_charge(0);
           setGrand_total(totals);
@@ -160,8 +157,10 @@ function Checkout() {
       console.log(err);
 
       if (err?.response?.data?.message) {
-        toggleModal(true);
-        setErrorMessage(err.response.data.message);
+        notificationApi.error({
+          message: "Delivery Calculation Failed",
+          description: err.response.data.message,
+        });
       }
     } finally {
       setIsDeliveryCalculating(false);
@@ -170,8 +169,7 @@ function Checkout() {
     Checkout?.Checkout,
     Checkout?.address,
     isDeliveryCalculating,
-    // Remove individual setters to prevent dependency cycle
-    // toggleModal,
+    notificationApi,
   ]);
 
   useEffect(() => {
@@ -389,10 +387,10 @@ function Checkout() {
       }
     } else {
       if (Checkout?.address?.id) {
-        toggleModal(true);
-        // notificationApi.error({
-        //   message: `Delivery to the Selected address is not available. Please choose another one.`,
-        // });
+        notificationApi.error({
+          message:
+            "Delivery to the selected address is not available. Please choose another one.",
+        });
         return;
       }
       notificationApi.error({
@@ -432,11 +430,6 @@ function Checkout() {
         </Row>
       </Container>
       <br />
-      <NotDeliverableModal
-        open={openModal}
-        close={() => toggleModal(false)}
-        message={errorMessage}
-      />
     </div>
   );
 }

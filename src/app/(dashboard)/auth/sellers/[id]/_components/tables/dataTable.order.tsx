@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+
 import { Button, Table, Pagination, Avatar } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import { TbListDetails } from "react-icons/tb";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
@@ -8,23 +9,36 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useRouter } from "next/navigation";
 import { FaEye } from "react-icons/fa6";
 import CONFIG from "@/config/configuration";
+
+type OrderId = string | number;
+interface OrderRow {
+  image?: string;
+  order_id: OrderId;
+  name: string;
+  createdAt: string | number | Date;
+  grandTotal: number | string;
+  status: string;
+}
+
 interface props {
-  data: any[];
+  data: OrderRow[];
   count: number;
-  setPage: Function;
-  setTake: Function;
+  setPage: (page: number) => void;
+  setTake: (size: number) => void;
   pageSize: number;
   page: number;
 }
 function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   const route = useRouter();
   const Settings = useAppSelector(reduxSettings);
-  const columns = [
+  const columns: ColumnsType<OrderRow> = [
     {
       title: "",
       dataIndex: "image",
       key: "image",
-      render: (img: string) => <Avatar size={35} src={img} shape="square" />,
+      render: (img: string | undefined) => (
+        <Avatar size={35} src={img} shape="square" />
+      ),
     },
     {
       title: "OrderId",
@@ -40,13 +54,15 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "OrderDate", //
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (item: any) => <span>{moment(item).format("MMM Do YYYY")}</span>,
+      render: (item: string | number | Date) => (
+        <span>{moment(item).format("MMM Do YYYY")}</span>
+      ),
     },
     {
       title: "Total", //
       dataIndex: "grandTotal",
       key: "grandTotal",
-      render: (item: any) => (
+      render: (item: number | string) => (
         <span>
           {Number(item)?.toFixed(2)} {Settings.currency}
         </span>
@@ -61,7 +77,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     {
       title: "Action",
       width: 100,
-      render: (item: any, record: any) => (
+      render: (_: unknown, record: OrderRow) => (
         <div className="table-action">
           <Button
             type="text"
@@ -97,7 +113,11 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           pageSize={pageSize}
           current={page}
           total={count ?? 0}
-          showTotal={(total: any) => `Total ${count ?? 0} Orders`}
+          showTotal={(_total: number, _range: [number, number]) => {
+            void _total;
+            void _range;
+            return `Total ${count ?? 0} Orders`;
+          }}
           onChange={(page, pageSize) => {
             setPage(page);
             setTake(pageSize);
