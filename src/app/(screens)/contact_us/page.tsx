@@ -24,6 +24,7 @@ import API from "@/config/API";
 // import { POST } from "@/utils/apiCalls";
 import { useTranslation } from "react-i18next";
 import { POST } from "@/util/apicall";
+import CONFIG from "@/config/configuration";
 
 function ContactUs() {
   const [form] = Form.useForm();
@@ -33,7 +34,8 @@ function ContactUs() {
   const [notificationApi, contextHolder] = notification.useNotification();
 
   const map = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.0!2d3.180982!3d6.460719!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b87bf2173a035%3A0x46d6a31cf47025c5!2sAlaba%20International%20Market!5e0!3m2!1sen!2sng!4v1700000000000!5m2!1sen!2sng" width="100%" height="300" style="border:0;border-radius:10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-  const phoneNumber = "+2349117356897";
+  const phoneNumber = CONFIG.CONTACT_NUMBER;
+  const whatsappNumber = phoneNumber.replace(/[^\d]/g, "");
 
   const onFinish = async (values: any) => {
     try {
@@ -80,7 +82,7 @@ function ContactUs() {
                   style={{ marginRight: 10 }}
                 />
                 <a
-                  href={`https://wa.me/${phoneNumber.replace("+", "")}`}
+                  href={`https://wa.me/${whatsappNumber}`}
                   target="_blank"
                   rel="noreferrer"
                 >
@@ -93,7 +95,9 @@ function ContactUs() {
                   color="#0066CC"
                   style={{ marginRight: 10 }}
                 />
-                <a href={`tel:${phoneNumber}`}>Phone: {phoneNumber}</a>
+                <a href={`tel:${phoneNumber.replace(/\s/g, "")}`}>
+                  Phone: {phoneNumber}
+                </a>
               </div>
               <div className="box1" style={{ padding: "10px 0" }}>
                 <IoMailUnreadOutline
