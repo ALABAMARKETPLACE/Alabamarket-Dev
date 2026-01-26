@@ -61,18 +61,24 @@ export const usePaystack = (): any => {
         }
 
         const result: any = await dispatch(initializePayment(data)).unwrap();
-
-        if (result.status && result.data?.data?.authorization_url) {
-          // Payment initialization successful
+        const rawUrl =
+          result?.data?.data?.authorization_url ||
+          result?.data?.authorization_url ||
+          result?.authorization_url ||
+          null;
+        const authUrl =
+          typeof rawUrl === "string"
+            ? rawUrl.trim().replace(/^["'`]+|["'`]+$/g, "")
+            : null;
+        if (authUrl) {
           notificationApi.success({
             message: "Payment Initialized",
             description: "Redirecting to payment page...",
             duration: 2,
           });
           return result;
-        } else {
-          throw new Error(result.message || "Payment initialization failed");
         }
+        throw new Error(result?.message || "Payment initialization failed");
       } catch (error: any) {
         console.error("Payment initialization error:", error);
 
@@ -125,21 +131,28 @@ export const usePaystack = (): any => {
           },
         };
 
-        const result: any = await dispatch(initializePayment(splitPaymentData)).unwrap();
-
-        if (result.status && result.data?.data?.authorization_url) {
-          // Split payment initialization successful
+        const result: any = await dispatch(
+          initializePayment(splitPaymentData),
+        ).unwrap();
+        const rawUrl =
+          result?.data?.data?.authorization_url ||
+          result?.data?.authorization_url ||
+          result?.authorization_url ||
+          null;
+        const authUrl =
+          typeof rawUrl === "string"
+            ? rawUrl.trim().replace(/^["'`]+|["'`]+$/g, "")
+            : null;
+        if (authUrl) {
           const formattedAmounts = formatSplitAmount(splitCalculation);
-          
           notificationApi.success({
             message: "Split Payment Initialized",
             description: `Total: ${formattedAmounts.total} | Seller: ${formattedAmounts.seller} | Platform: ${formattedAmounts.admin}`,
             duration: 4,
           });
           return result;
-        } else {
-          throw new Error(result.message || "Split payment initialization failed");
         }
+        throw new Error(result?.message || "Split payment initialization failed");
       } catch (error: any) {
         console.error("Split payment initialization error:", error);
 

@@ -120,8 +120,19 @@ function CreateBoostRequest() {
       });
     },
     onSuccess: (data: PaystackInitializeResponse) => {
-      if (data?.data?.data?.authorization_url) {
-        window.location.href = data.data.data.authorization_url;
+      const rawUrl =
+        data?.data?.data?.authorization_url ||
+        (data as unknown as { data?: { authorization_url?: string } })?.data
+          ?.authorization_url ||
+        (data as unknown as { authorization_url?: string })
+          ?.authorization_url ||
+        null;
+      const authUrl =
+        typeof rawUrl === "string"
+          ? rawUrl.trim().replace(/^["'`]+|["'`]+$/g, "")
+          : null;
+      if (authUrl) {
+        window.location.href = authUrl;
       }
     },
   });
