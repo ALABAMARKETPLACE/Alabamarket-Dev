@@ -1,5 +1,5 @@
 import { AutoComplete, Button, Input, Modal, notification, Spin } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoSearchOutline } from "react-icons/io5";
 import MapPicker from "react-google-map-picker";
 import useDebounceQuery from "@/shared/hook/useDebounceQuery";
@@ -24,12 +24,21 @@ function LocationPicker({
 }: props) {
   const [zoom, setZoom] = useState(10);
   const [loading, setLoading] = useState(false);
+  const [modalWidth, setModalWidth] = useState<number>(500);
   const [Notifications, contextHolder] = notification.useNotification();
   const [query, , handleChange] = useDebounceQuery("", 300);
   const message = (msg: string, status: "error" | "success" = "error") =>
     Notifications[status]({
       message: msg,
     });
+
+  useEffect(() => {
+    const computeWidth = () => Math.min(500, Math.max(320, window.innerWidth - 24));
+    const handleResize = () => setModalWidth(computeWidth());
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const getCurrentLocation = async () => {
     try {
@@ -78,7 +87,7 @@ function LocationPicker({
       title={title || "Select a location"}
       open={open}
       onCancel={() => close()}
-      width={500}
+      width={modalWidth}
       footer={false}
       centered={true}
     >

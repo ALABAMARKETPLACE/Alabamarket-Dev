@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
 import { TbArrowRight } from "react-icons/tb";
+import SectionBadge from "../../../../components/sectionBadge";
 
 interface SilverSectionProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,11 +44,15 @@ function SilverSection({ products = [] }: SilverSectionProps) {
         {columns.map((items, index) => (
           <div className="silver-section__panel" key={`silver-panel-${index}`}>
             <div className="silver-section__panel-header">
-              <div
-                className="silver-section__panel-title"
-                style={{ display: "flex", alignItems: "center" }}
-              >
-                {PANEL_TITLES[index] ?? `Silver Picks ${index + 1}`}
+              <div className="silver-section__panel-title">
+                <SectionBadge
+                  type="silver"
+                  text="Silver"
+                  className="homeSectionBadge"
+                />
+                <span className="homeSectionTitleText">
+                  {PANEL_TITLES[index] ?? `Silver Picks ${index + 1}`}
+                </span>
               </div>
               <span
                 role="button"

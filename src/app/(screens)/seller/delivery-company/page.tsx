@@ -6,7 +6,6 @@ import { Form, Input, Button, notification, Select, Checkbox } from "antd";
 import API from "../../../../config/API";
 import { GET, POST } from "../../../../util/apicall";
 import PrefixSelector from "../../../../components/prefixSelector/page";
-import "../../seller/style.scss";
 
 function DeliveryCompanyRegistration() {
   const [loading, setLoading] = useState(false);
@@ -86,7 +85,7 @@ function DeliveryCompanyRegistration() {
         </div>
         <hr />
         <Row>
-          <Col md={6}>
+          <Col xs={12} md={6}>
             <Form
               form={form}
               onFinish={handleSubmit}
@@ -119,7 +118,7 @@ function DeliveryCompanyRegistration() {
                   addonBefore={<PrefixSelector />}
                   size="large"
                   placeholder="Enter Phone Number"
-                  type="number"
+                  type="tel"
                   inputMode="numeric"
                   pattern="[0-9]*"
                 />
@@ -246,7 +245,7 @@ function DeliveryCompanyRegistration() {
               </Button>
             </Form>
           </Col>
-          <Col md={6}>
+          <Col xs={12} md={6}>
             <div className="sellerRegister-box2">
               <h5 className="sellerRegister-subHeading">
                 Partner with {API.NAME} as a Delivery Company

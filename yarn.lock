@@ -2267,7 +2267,7 @@ es-abstract@^1.17.5, es-abstract@^1.23.2, es-abstract@^1.23.3, es-abstract@^1.23
     is-array-buffer "^3.0.5"
     is-callable "^1.2.7"
     is-data-view "^1.0.2"
-    is-negative-zero "^2.0.3"
+    is-negative-5% "^2.0.3"
     is-regex "^1.2.1"
     is-set "^2.0.3"
     is-shared-array-buffer "^1.0.4"

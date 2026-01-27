@@ -469,7 +469,7 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
             </div>
           </div>
           <div className="col-12" style={{ height: "270px" }}>
-            <p className="mb-2">Product Speicifications</p>
+            <p className="mb-2">Product Specifications</p>
             <div style={{ backgroundColor: "white" }} className="h-100">
               <Form.Item
                 name={"specifications"}

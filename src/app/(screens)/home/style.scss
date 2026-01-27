@@ -105,6 +105,68 @@
   }
 }
 
+.homeSectionBadge {
+  margin-right: 0 !important;
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  .badge-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.homeSectionTitleText {
+  font-family: global.$Bold;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  font-size: 20px;
+  background: linear-gradient(90deg, #0f172a 0%, #334155 60%, #ff9500 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.discounted-section__header,
+.platinum-section__header,
+.gold-section__panel-header,
+.silver-section__panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.discounted-section__title,
+.platinum-section__title,
+.gold-section__panel-title,
+.silver-section__panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.discounted-section__see-more,
+.platinum-section__see-more,
+.gold-section__see-more,
+.silver-section__see-more {
+  @include section-see-more;
+}
+
+@media (max-width: 768px) {
+  .homeSectionTitleText {
+    font-size: 18px;
+  }
+}
+
 // ====== SECTION TITLE STYLES ======
 .section-title-wrapper {
   display: flex;

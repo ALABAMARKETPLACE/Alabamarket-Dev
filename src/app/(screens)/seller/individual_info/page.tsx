@@ -1,6 +1,5 @@
 import { Col, Container, Row } from "react-bootstrap";
 import IndividualSellerImg from "../../../../assets/images/profitimage.png";
-import '../style.scss'
 import { FaLongArrowAltRight } from "react-icons/fa";
 import React from "react";
 import API from "../../../../config/API";
@@ -31,7 +30,7 @@ const IndividualInfo = () => {
       <br />
       <Container>
         <Row>
-          <Col md={6}>
+          <Col xs={12} md={6}>
             <div>
               <h4 className="sellerRegister-subHeading">
                 Why choosing individual seller?
@@ -53,7 +52,7 @@ const IndividualInfo = () => {
               </div>
             </div>
           </Col>
-          <Col md={6}>
+          <Col xs={12} md={6}>
             <div>
             <Image
                 src={IndividualSellerImg}

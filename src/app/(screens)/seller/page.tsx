@@ -14,15 +14,14 @@ import { useRouter } from "next/navigation";
 import { FaHandshakeSimple } from "react-icons/fa6";
 import { IoDocumentText } from "react-icons/io5";
 import { GiCrystalGrowth } from "react-icons/gi";
-import "./style.scss";
 
 function Page() {
   const navigation = useRouter();
   const sellerFeatures = [
     {
       icon: <FaHandshakeSimple size={30} color={API.COLOR} />,
-      title: "0% Commission Fee",
-      description: `Suppliers selling on ${API.NAME} keep 100% of their profit by not paying any commission`,
+      title: "5% Commission Fee",
+      description: `Suppliers selling on ${API.NAME} keep 95% of their profit with a 5% commission fee`,
     },
     {
       icon: <IoDocumentText size={30} color={API.COLOR} />,
@@ -45,7 +44,7 @@ function Page() {
           </h1>
           <p>
             Join thousands of sellers and reach millions of customers across
-            Nigeria. Zero commission, fast payments, and dedicated support.
+            Nigeria. 5% commission, fast payments, and dedicated support.
           </p>
         </div>
 

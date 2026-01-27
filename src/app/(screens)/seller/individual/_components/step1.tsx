@@ -133,7 +133,7 @@ function IndividualStep1({
       {contextHolder}
       <Container>
         <Row>
-          <Col md={4}>
+          <Col xs={12} md={4}>
             <Form
               form={form}
               onFinish={handleSubmit}
@@ -188,7 +188,7 @@ function IndividualStep1({
                   addonBefore={<PrefixSelector />}
                   size="large"
                   placeholder="Enter Phone Number"
-                  type="number"
+                  type="tel"
                   inputMode="numeric"
                   pattern="[0-9]*"
                 />
@@ -325,7 +325,7 @@ function IndividualStep1({
               </Row>
             </Form>
           </Col>
-          <Col md={8}>
+          <Col xs={12} md={8}>
             <div className="sellerRegister-box2">
               <p className="sellerRegister-subHeading">
                 Grow your business faster by selling on {API.NAME}
@@ -340,7 +340,7 @@ function IndividualStep1({
               </p>
               <Row>
                 {data.map((item) => (
-                  <Col md={6} key={item.id}>
+                  <Col xs={12} sm={6} md={6} key={item.id}>
                     <div className="IndividualStep1-Box1">
                       <div style={{ marginTop: 10 }}>{item.icon}</div>
                       <div style={{ marginLeft: 10 }}>
@@ -375,7 +375,7 @@ const data = [
     id: "unique_id_1",
     icon: <FaUsersGear size={20} color="grey" />,
     count: "Millions in Sales",
-    text: "Suppliers are selling commission-free",
+    text: "Suppliers keep 95% profit after commission",
   },
   {
     id: "unique_id_2",

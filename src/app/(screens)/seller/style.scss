@@ -735,3 +735,113 @@ $transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     margin-bottom: 8px;
   }
 }
+
+.sellerRegister-stepbox {
+  padding: 20px 0;
+}
+
+.sellerRegister-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sellerRegister-box2 {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-sm;
+  height: 100%;
+}
+
+.IndividualStep1-Box1 {
+  display: flex;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid $border-color;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: $shadow-sm;
+  height: 100%;
+}
+
+.individualSellerPage-Box5 {
+  width: 100%;
+  height: auto;
+  max-width: 560px;
+  display: block;
+  margin: 0 auto;
+}
+
+.sellerRegister-ImagePicker {
+  width: 100%;
+  cursor: pointer;
+}
+
+.sellerRegister-ImagePickerBox {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 2px dashed #cbd5e1;
+  background: #ffffff;
+  min-height: 76px;
+  user-select: none;
+}
+
+.sellerReviewRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sellerReviewValue {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.sellerReviewValueText {
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sellerReviewTag {
+  flex: 0 0 auto;
+}
+
+.sellerReviewActions .btn-primary-custom,
+.sellerReviewActions .btn-secondary-custom {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .seller-screen-box {
+    background-attachment: scroll;
+  }
+
+  .sellerRegister-steps {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sellerRegister-steps .ant-steps {
+    min-width: 560px;
+  }
+
+  .sellerRegister-box2 {
+    margin-top: 16px;
+  }
+}

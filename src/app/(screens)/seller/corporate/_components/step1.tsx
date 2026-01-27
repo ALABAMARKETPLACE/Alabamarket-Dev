@@ -153,9 +153,11 @@ function Step1({ moveToNextStep, formData }: any) {
       {contextHolder}
       <Container>
         <Row className="gy-4">
-          <Col md={7}>
+          <Col xs={12} md={7}>
             <div className="seller-card">
-              <h5 className="sellerRegister-subHeading mb-4">Personal Information</h5>
+              <h5 className="sellerRegister-subHeading mb-4">
+                Personal Information
+              </h5>
               <Form
                 onFinish={onFinish}
                 initialValues={{
@@ -163,10 +165,10 @@ function Step1({ moveToNextStep, formData }: any) {
                     ? User?.user?.first_name
                     : formData?.first_name,
                   last_name: Auth
-                    ? User?.user?.last_name ?? formData?.last_name
+                    ? (User?.user?.last_name ?? formData?.last_name)
                     : formData?.last_name,
                   email: Auth
-                    ? User?.user?.email ?? formData?.email
+                    ? (User?.user?.email ?? formData?.email)
                     : formData?.email,
                   password: Auth
                     ? User?.user?.password
@@ -178,9 +180,9 @@ function Step1({ moveToNextStep, formData }: any) {
                       ? "**********"
                       : formData?.password
                     : formData?.password,
-                  code: Auth ? User?.user?.countrycode ?? "+234" : "+234",
+                  code: Auth ? (User?.user?.countrycode ?? "+234") : "+234",
                   phone: Auth
-                    ? User?.user?.phone ?? formData.phone
+                    ? (User?.user?.phone ?? formData.phone)
                     : formData.phone,
                 }}
                 layout="vertical"
@@ -188,7 +190,9 @@ function Step1({ moveToNextStep, formData }: any) {
                 <Row>
                   <Col sm={6} xs={12}>
                     <Form.Item
-                      label={<span className="input-form-label">First Name</span>}
+                      label={
+                        <span className="input-form-label">First Name</span>
+                      }
                       name={"first_name"}
                       rules={[
                         { required: true, message: "Name is required" },
@@ -204,7 +208,9 @@ function Step1({ moveToNextStep, formData }: any) {
                   </Col>
                   <Col sm={6} xs={12}>
                     <Form.Item
-                      label={<span className="input-form-label">Last Name</span>}
+                      label={
+                        <span className="input-form-label">Last Name</span>
+                      }
                       name={"last_name"}
                       rules={[
                         { required: true, message: "Name is required" },
@@ -219,9 +225,11 @@ function Step1({ moveToNextStep, formData }: any) {
                     </Form.Item>
                   </Col>
                 </Row>
-                
+
                 <Form.Item
-                  label={<span className="input-form-label">Email Address</span>}
+                  label={
+                    <span className="input-form-label">Email Address</span>
+                  }
                   name={"email"}
                   rules={[
                     { required: true, message: "Email is required" },
@@ -256,18 +264,24 @@ function Step1({ moveToNextStep, formData }: any) {
                     style={{ width: "100%" }}
                     size="large"
                     placeholder="Enter Phone Number"
-                    type="number"
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     disabled={userType === "user" && User?.data?.phone}
                   />
                 </Form.Item>
 
                 <Row>
-                  <Col sm={6}>
+                  <Col xs={12} sm={6}>
                     <Form.Item
                       label={<span className="input-form-label">Password</span>}
                       name="password"
                       rules={[
-                        { required: true, message: "Password is required", min: 8 },
+                        {
+                          required: true,
+                          message: "Password is required",
+                          min: 8,
+                        },
                         { max: 20, message: "Password is too long" },
                       ]}
                       hasFeedback
@@ -279,9 +293,13 @@ function Step1({ moveToNextStep, formData }: any) {
                       />
                     </Form.Item>
                   </Col>
-                  <Col sm={6}>
+                  <Col xs={12} sm={6}>
                     <Form.Item
-                      label={<span className="input-form-label">Confirm Password</span>}
+                      label={
+                        <span className="input-form-label">
+                          Confirm Password
+                        </span>
+                      }
                       name="confirm_password"
                       rules={[
                         { required: true, message: "Confirm password" },
@@ -292,8 +310,8 @@ function Step1({ moveToNextStep, formData }: any) {
                             }
                             return Promise.reject(
                               new Error(
-                                "The new password that you entered do not match!"
-                              )
+                                "The new password that you entered do not match!",
+                              ),
                             );
                           },
                         }),
@@ -325,7 +343,7 @@ function Step1({ moveToNextStep, formData }: any) {
               </Form>
             </div>
           </Col>
-          <Col md={5}>
+          <Col xs={12} md={5}>
             <div className="seller-info-panel">
               <h4 className="sellerRegister-subHeading">
                 Why sell on {API.NAME}?
@@ -343,7 +361,10 @@ function Step1({ moveToNextStep, formData }: any) {
                     <div className="sellerRegister-text2 mt-2 mb-1">
                       Sell Across Nigeria
                     </div>
-                    <div className="sellerRegister-text1" style={{ fontSize: 13 }}>
+                    <div
+                      className="sellerRegister-text1"
+                      style={{ fontSize: 13 }}
+                    >
                       Reach millions of customers
                     </div>
                   </div>
@@ -354,8 +375,11 @@ function Step1({ moveToNextStep, formData }: any) {
                     <div className="sellerRegister-text2 mt-2 mb-1">
                       Higher Profits
                     </div>
-                    <div className="sellerRegister-text1" style={{ fontSize: 13 }}>
-                      With 0% commission*
+                    <div
+                      className="sellerRegister-text1"
+                      style={{ fontSize: 13 }}
+                    >
+                      With 5% Commission*
                     </div>
                   </div>
                 </Col>
@@ -365,7 +389,10 @@ function Step1({ moveToNextStep, formData }: any) {
                     <div className="sellerRegister-text2 mt-2 mb-1">
                       24x7 Support
                     </div>
-                    <div className="sellerRegister-text1" style={{ fontSize: 13 }}>
+                    <div
+                      className="sellerRegister-text1"
+                      style={{ fontSize: 13 }}
+                    >
                       Dedicated Seller Support Team
                     </div>
                   </div>
@@ -376,7 +403,10 @@ function Step1({ moveToNextStep, formData }: any) {
                     <div className="sellerRegister-text2 mt-2 mb-1">
                       Fast Payments
                     </div>
-                    <div className="sellerRegister-text1" style={{ fontSize: 13 }}>
+                    <div
+                      className="sellerRegister-text1"
+                      style={{ fontSize: 13 }}
+                    >
                       Get paid in 7-10 days
                     </div>
                   </div>

@@ -4,7 +4,6 @@ import { Container, Row, Col } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";
 import API from "../../../../config/API";
-import "../../seller/style.scss";
 
 function DeliveryPartnerSelection() {
   const navigation = useRouter();

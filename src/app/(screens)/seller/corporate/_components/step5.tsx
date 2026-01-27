@@ -327,21 +327,25 @@ function Step5({
 
                   <div className="text-start p-4 mb-4" style={{ background: '#f8fafc', borderRadius: 12 }}>
                     <h6 className="sellerRegister-text2 mb-3">Contact Information</h6>
-                    <div className="d-flex align-items-center mb-3">
-                      <div className="d-flex align-items-center me-4">
+                    <div className="sellerReviewRow mb-3">
+                      <div className="sellerReviewValue">
                         <FaMobileAlt size={18} className="text-muted me-2" />
-                        <span style={{ fontWeight: 600 }}>{phoneNumber}</span>
+                        <span className="sellerReviewValueText">{phoneNumber}</span>
                       </div>
-                      <Tag color="orange">Verification Pending</Tag>
+                      <Tag color="orange" className="sellerReviewTag">
+                        Verification Pending
+                      </Tag>
                     </div>
-                    <div className="d-flex align-items-center">
-                      <div className="d-flex align-items-center me-4">
+                    <div className="sellerReviewRow">
+                      <div className="sellerReviewValue">
                         <FiMail size={18} className="text-muted me-2" />
-                        <span style={{ fontWeight: 600 }}>
+                        <span className="sellerReviewValueText">
                           {formData.step1Data.email}
                         </span>
                       </div>
-                      <Tag color="orange">Verification Pending</Tag>
+                      <Tag color="orange" className="sellerReviewTag">
+                        Verification Pending
+                      </Tag>
                     </div>
                   </div>
 
@@ -395,13 +399,13 @@ function Step5({
                     )}
                   </div>
 
-                  <Row className="g-3">
-                    <Col md={6} xs={6}>
+                  <Row className="g-3 align-items-stretch sellerReviewActions">
+                    <Col xs={12} sm={6} md={6}>
                       <Button onClick={() => goBack()} block size="large" className="btn-secondary-custom">
                         Back
                       </Button>
                     </Col>
-                    <Col md={6} xs={6}>
+                    <Col xs={12} sm={6} md={6}>
                       <Button
                         type="primary"
                         loading={isLoading || loading}

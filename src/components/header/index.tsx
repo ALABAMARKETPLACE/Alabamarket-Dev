@@ -96,13 +96,19 @@ function Header() {
               {/* Left Section: Logo & Location */}
               <div className="Header-left">
                 <Link href="/">
-                  <div className="Header_logoBox">
+                  <div className="Header_brand">
                     <Image
                       alt="AlabaMarketplace"
                       src={Logo}
                       className="Header_logo"
                       priority
                     />
+                    <div className="Header_brandTextWrap">
+                      <div className="Header_brandText">Alaba Marketplace</div>
+                      <div className="Header_brandTagline">
+                        Shop smarter. Sell faster.
+                      </div>
+                    </div>
                   </div>
                 </Link>
                 <div className="Header-location d-none d-lg-block">
@@ -118,7 +124,7 @@ function Header() {
               {/* Right Section: CTA, Account, Cart */}
               <div className="Header-right">
                 {showSellerCta ? (
-                  <div className="Header-sellerCTA d-none d-md-block">
+                  <div className="Header-sellerCTA">
                     <Button
                       size="large"
                       icon={<BsShopWindow size={18} />}
