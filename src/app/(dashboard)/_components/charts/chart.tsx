@@ -68,7 +68,7 @@ const PieChart = ({ data }: PieChartProps) => {
               usePointStyle: true,
               padding: 20,
               font: {
-                family: "'DMSans-Medium', sans-serif",
+                family: "'Poppins', sans-serif",
                 size: 12,
               },
               color: "#6B7280",
@@ -81,11 +81,11 @@ const PieChart = ({ data }: PieChartProps) => {
             bodyColor: "#4B5563",
             titleFont: {
               size: 13,
-              family: "'DMSans-Bold', sans-serif",
+              family: "'Poppins', sans-serif",
             },
             bodyFont: {
               size: 12,
-              family: "'DMSans-Regular', sans-serif",
+              family: "'Poppins', sans-serif",
             },
             borderColor: "rgba(229, 231, 235, 0.5)",
             borderWidth: 1,

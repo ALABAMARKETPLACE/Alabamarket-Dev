@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 };
 const theme = {
   token: {
-    fontFamily: "DMSans-Regular",
+    fontFamily: "Poppins, Roboto, Arial, Helvetica, sans-serif",
     colorPrimary: CONFIG.COLOR,
     lineWidth: 1,
     controlOutlineWidth: 0,

@@ -44,7 +44,9 @@ function PopularItems(props: any) {
   return (
     <div className="container-fluid home-full-width">
       <div className="section-title-wrapper justify-content-between mb-3">
-        <div className="section-title" style={{ fontSize: "20px" }}>{props?.title}</div>
+        <div className="popularItems-titleRow">
+          <span className="homeSectionTitleText">{props?.title}</span>
+        </div>
         <span
           role="button"
           tabIndex={0}

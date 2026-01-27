@@ -232,19 +232,75 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: vars.$button_background_color !important;
-  border: none !important;
+  background: linear-gradient(
+    135deg,
+    #ffbf00 0%,
+    vars.$primary 65%,
+    #ff9500 100%
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
   color: white !important;
   border-radius: 50px !important;
   padding: 0 24px !important;
   height: 42px !important;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(255, 95, 21, 0.2);
-  transition: all 0.3s ease;
+  letter-spacing: 0.2px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 10px 24px rgba(255, 95, 21, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -40% -60%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0) 60%
+    );
+    transform: translateX(-40%) rotate(10deg);
+    opacity: 0.8;
+    transition:
+      transform 0.4s ease,
+      opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .ant-btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 95, 21, 0.3);
+    filter: saturate(1.05);
+    box-shadow:
+      0 14px 34px rgba(255, 95, 21, 0.26),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+
+    &::before {
+      transform: translateX(10%) rotate(10deg);
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: translateY(-1px) scale(0.99);
+    box-shadow:
+      0 10px 22px rgba(255, 95, 21, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18);
   }
 }
 
