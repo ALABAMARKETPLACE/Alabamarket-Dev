@@ -8,6 +8,7 @@ import { ConfigProvider, App } from "antd";
 
 import Footer from "@/components/footer";
 import Header from "@/components/header/HeaderClientWrapper";
+import ChatbotWidget from "@/components/chatbot/ChatbotWidget";
 
 import AuthProvider from "@/util/authProvider";
 import { StoreProvider } from "@/util/storeProvider";
@@ -80,6 +81,7 @@ export default function RootLayout({
                       <Header />
                       <main className="layout-main">{children}</main>
                       <Footer />
+                      <ChatbotWidget />
                       <WhatsAppChatTab />
                     </div>
                   </StoreProvider>
