@@ -104,6 +104,9 @@ jobs:
       # Build & restart frontend
       # -----------------------------
       - name: Build & restart frontend
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
         run: |
           ssh $SERVER_USER@$SERVER_HOST << EOF
             set -e
@@ -114,6 +117,13 @@ jobs:
 
             cd $APP_DIR
 
+            if [[ -n "$OPENAI_API_KEY" ]]; then
+              export OPENAI_API_KEY="$OPENAI_API_KEY"
+            fi
+            if [[ -n "$OPENAI_MODEL" ]]; then
+              export OPENAI_MODEL="$OPENAI_MODEL"
+            fi
+
             npm install --legacy-peer-deps
             npm run build
 
@@ -123,7 +133,7 @@ jobs:
               \$PM2 delete $APP_NAME || true
               \$PM2 start npm --name $APP_NAME -- start
             else
-              \$PM2 reload ../ecosystem.config.js --only $APP_NAME || \
+              \$PM2 reload ../ecosystem.config.js --only $APP_NAME --update-env || \
               \$PM2 start ../ecosystem.config.js
             fi
 

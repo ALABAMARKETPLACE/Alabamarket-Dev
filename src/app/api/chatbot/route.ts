@@ -73,11 +73,14 @@ function buildFallbackReply(message: string) {
   ].join("\n");
 }
 
-async function generateOpenAIReply(messages: IncomingMessage[]) {
-  const apiKey = normalizeText(process.env.OPENAI_API_KEY);
-  if (!apiKey) return null;
-
-  const model = normalizeText(process.env.OPENAI_MODEL) || "gpt-4o-mini";
+async function generateOpenAIReply(params: {
+  apiKey: string;
+  model: string;
+  messages: IncomingMessage[];
+}) {
+  const apiKey = normalizeText(params.apiKey);
+  const model = normalizeText(params.model) || "gpt-4o-mini";
+  const messages = Array.isArray(params.messages) ? params.messages : [];
 
   const systemPrompt = [
     `You are a helpful customer support assistant for ${CONFIG.NAME} (e-commerce).`,
@@ -106,14 +109,16 @@ async function generateOpenAIReply(messages: IncomingMessage[]) {
     body: JSON.stringify(payload),
   });
 
-  if (!res.ok) return null;
+  if (!res.ok) {
+    return { reply: null as string | null, status: res.status };
+  }
 
   const data = (await res.json()) as {
     choices?: Array<{ message?: { content?: string } }>;
   };
 
   const content = data?.choices?.[0]?.message?.content;
-  return normalizeText(content) || null;
+  return { reply: normalizeText(content) || null, status: res.status };
 }
 
 export async function POST(req: Request) {
@@ -122,6 +127,10 @@ export async function POST(req: Request) {
       message?: string;
       messages?: IncomingMessage[];
     };
+
+    const isDev = process.env.NODE_ENV !== "production";
+    const apiKey = normalizeText(process.env.OPENAI_API_KEY);
+    const model = normalizeText(process.env.OPENAI_MODEL) || "gpt-4o-mini";
 
     const rawMessages = Array.isArray(body?.messages) ? body.messages : [];
     const sanitized = rawMessages
@@ -145,25 +154,53 @@ export async function POST(req: Request) {
 
     if (!lastUser) {
       return NextResponse.json(
-        { reply: "Tell me what you need help with, and I’ll assist." },
+        { reply: "Tell me what you need help with, and I’ll assist.", mode: "empty" },
         { status: 200 },
       );
     }
 
-    const openAIReply = await generateOpenAIReply(sanitized);
-    if (openAIReply) {
-      return NextResponse.json({ reply: openAIReply }, { status: 200 });
+    if (apiKey) {
+      const result = await generateOpenAIReply({ apiKey, model, messages: sanitized });
+      if (result.reply) {
+        return NextResponse.json(
+          { reply: result.reply, mode: "openai", model },
+          { status: 200 },
+        );
+      }
+
+      const fallbackBase = buildFallbackReply(lastUser);
+      const fallback =
+        isDev && typeof result.status === "number"
+          ? [
+              `AI is configured but the OpenAI request failed (HTTP ${result.status}). Using fallback replies.`,
+              "",
+              fallbackBase,
+            ].join("\n")
+          : fallbackBase;
+
+      return NextResponse.json(
+        { reply: fallback, mode: "fallback_openai_error", model, status: result.status },
+        { status: 200 },
+      );
     }
 
+    const fallbackBase = buildFallbackReply(lastUser);
+    const fallback = isDev
+      ? [
+          "AI is not enabled on this server. Set OPENAI_API_KEY in .env.local and restart the dev server.",
+          "",
+          fallbackBase,
+        ].join("\n")
+      : fallbackBase;
+
     return NextResponse.json(
-      { reply: buildFallbackReply(lastUser) },
+      { reply: fallback, mode: "fallback_missing_key" },
       { status: 200 },
     );
   } catch {
     return NextResponse.json(
-      { reply: "Sorry — something went wrong. Please try again." },
+      { reply: "Sorry — something went wrong. Please try again.", mode: "error" },
       { status: 200 },
     );
   }
 }
-
