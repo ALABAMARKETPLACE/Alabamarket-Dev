@@ -106,7 +106,7 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
     <div className="sellerRegister-stepbox">
       <Container>
         <Row className="gy-4">
-          <Col md={7}>
+          <Col xs={12} md={7}>
             <div className="seller-card">
               <h5 className="sellerRegister-subHeading mb-4">Upload Documents</h5>
               <Form
@@ -234,7 +234,7 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
               </Form>
             </div>
           </Col>
-          <Col md={5}>
+          <Col xs={12} md={5}>
             <div className="seller-info-panel">
               <h4 className="sellerRegister-subHeading">Document Guidelines</h4>
               <div className="sellerRegister-text1">

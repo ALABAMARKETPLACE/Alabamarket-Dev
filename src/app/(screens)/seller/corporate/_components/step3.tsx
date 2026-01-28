@@ -13,7 +13,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
     <div className="sellerRegister-stepbox">
       <Container>
         <Row className="gy-4">
-          <Col md={7}>
+          <Col xs={12} md={7}>
             <div className="seller-card">
               <h5 className="sellerRegister-subHeading mb-4">Seller Identity</h5>
               <Form
@@ -44,7 +44,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                 </Form.Item>
 
                 <Row>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item 
                       label={<span className="input-form-label">Citizenship Country</span>}
                       name="citizenship_country"
@@ -62,7 +62,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                       </Select>
                     </Form.Item>
                   </Col>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item 
                       label={<span className="input-form-label">Birth Country</span>}
                       name="birth_country"
@@ -83,7 +83,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                 </Row>
 
                 <Row>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item 
                       label={<span className="input-form-label">Date of Birth</span>}
                       name="dob"
@@ -95,7 +95,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                       />
                     </Form.Item>
                   </Col>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item 
                       label={<span className="input-form-label">ID Proof Type</span>}
                       name="id_type"
@@ -110,7 +110,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                 </Row>
 
                 <Row>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item 
                       label={<span className="input-form-label">Issue Country</span>}
                       name="issue_country"
@@ -128,7 +128,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                       </Select>
                     </Form.Item>
                   </Col>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item 
                       label={<span className="input-form-label">Expiry Date</span>}
                       name="expiry_date"
@@ -159,7 +159,7 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
               </Form>
             </div>
           </Col>
-          <Col md={5}>
+          <Col xs={12} md={5}>
             <div className="seller-info-panel">
               <h4 className="sellerRegister-subHeading">Identity Verification</h4>
               <div className="sellerRegister-text1">

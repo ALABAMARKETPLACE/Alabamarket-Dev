@@ -89,7 +89,7 @@ function Location() {
           const coords = position.coords;
           const response: any = await GET_GEOCODE(
             coords?.latitude,
-            coords?.longitude
+            coords?.longitude,
           );
           if (response?.country) {
             console.log("herererere");
@@ -119,9 +119,11 @@ function Location() {
         <div className="Header-Text2">Deliver To</div>
         <div className="Header-locationBox2">
           <div className="Header-Text3">
-            {Location?.country ? Location?.full_address : "Delivery Loaction"}{" "}
+            {Location?.country
+              ? Location?.full_address
+              : "Delivery location"}
           </div>
-          <div style={{ marginTop: -5 }}>
+          <div className="Header-locationCaret">
             <IoCaretDownOutline />
           </div>
         </div>

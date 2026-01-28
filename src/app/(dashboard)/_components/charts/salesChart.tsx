@@ -21,11 +21,11 @@ export const options = {
       titleFont: {
         size: 13,
         weight: "bold" as const,
-        family: "'DMSans-Bold', sans-serif",
+        family: "'Poppins', sans-serif",
       },
       bodyFont: {
         size: 12,
-        family: "'DMSans-Regular', sans-serif",
+        family: "'Poppins', sans-serif",
       },
       borderColor: "rgba(229, 231, 235, 0.5)",
       borderWidth: 1,
@@ -59,7 +59,7 @@ export const options = {
       },
       ticks: {
         font: {
-          family: "'DMSans-Medium', sans-serif",
+          family: "'Poppins', sans-serif",
           size: 11,
         },
         color: "#9CA3AF",
@@ -77,7 +77,7 @@ export const options = {
       },
       ticks: {
         font: {
-          family: "'DMSans-Medium', sans-serif",
+          family: "'Poppins', sans-serif",
           size: 11,
         },
         color: "#9CA3AF",

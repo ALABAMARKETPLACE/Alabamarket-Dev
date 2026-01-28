@@ -66,6 +66,10 @@
 }
 
 @media (max-width: 768px) {
+  .container {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+
   .tab {
     padding: 8px;
   }

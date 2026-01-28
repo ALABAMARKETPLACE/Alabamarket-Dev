@@ -6,7 +6,6 @@ import { Form, Input, Button, notification, Select, Checkbox } from "antd";
 import API from "../../../../config/API";
 import { GET, POST } from "../../../../util/apicall";
 import PrefixSelector from "../../../../components/prefixSelector/page";
-import "../../seller/style.scss";
 
 function DriverRegistration() {
   const [loading, setLoading] = useState(false);
@@ -83,7 +82,7 @@ function DriverRegistration() {
         </div>
         <hr />
         <Row>
-          <Col md={6}>
+          <Col xs={12} md={6}>
             <Form
               form={form}
               onFinish={handleSubmit}
@@ -114,7 +113,7 @@ function DriverRegistration() {
                   addonBefore={<PrefixSelector />}
                   size="large"
                   placeholder="Enter Phone Number"
-                  type="number"
+                  type="tel"
                   inputMode="numeric"
                   pattern="[0-9]*"
                 />
@@ -232,7 +231,7 @@ function DriverRegistration() {
               </Button>
             </Form>
           </Col>
-          <Col md={6}>
+          <Col xs={12} md={6}>
             <div className="sellerRegister-box2">
               <h5 className="sellerRegister-subHeading">
                 Join {API.NAME} as a Driver Partner

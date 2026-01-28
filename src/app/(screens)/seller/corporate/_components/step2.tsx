@@ -212,12 +212,12 @@ function Step2({ businessType, formData, moveToNextStep, goBack }: any) {
                   <div className="p-3 mb-3" style={{ background: '#f8fafc', borderRadius: 8 }}>
                     <div className="input-form-label mb-2">Manual Location Entry</div>
                     <Row>
-                      <Col md={6}>
+                      <Col xs={12} md={6}>
                         <Form.Item name="manual_lat" label="Latitude (Optional)">
                           <Input placeholder="e.g., 6.5244" size="large" type="number" step="any" />
                         </Form.Item>
                       </Col>
-                      <Col md={6}>
+                      <Col xs={12} md={6}>
                         <Form.Item name="manual_lng" label="Longitude (Optional)">
                           <Input placeholder="e.g., 3.3792" size="large" type="number" step="any" />
                         </Form.Item>
@@ -242,7 +242,7 @@ function Step2({ businessType, formData, moveToNextStep, goBack }: any) {
                 </Form.Item>
 
                 <Row>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item
                       label={<span className="input-form-label">Business Registration Number</span>}
                       name="trn_number"
@@ -254,7 +254,7 @@ function Step2({ businessType, formData, moveToNextStep, goBack }: any) {
                       <Input placeholder="Registration Number" size="large" />
                     </Form.Item>
                   </Col>
-                  <Col md={6}>
+                  <Col xs={12} md={6}>
                     <Form.Item
                       label={<span className="input-form-label">Union Membership Number</span>}
                       name={"trade_licencse_no"}
@@ -271,7 +271,7 @@ function Step2({ businessType, formData, moveToNextStep, goBack }: any) {
                 <div className="p-3 mb-4" style={{ border: '1px solid #e2e8f0', borderRadius: 8 }}>
                   <h6 className="mb-3" style={{ color: '#475569' }}>Bank Details</h6>
                   <Row>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <Form.Item
                         label={<span className="input-form-label">Select Bank</span>}
                         name="settlement_bank"
@@ -293,7 +293,7 @@ function Step2({ businessType, formData, moveToNextStep, goBack }: any) {
                         />
                       </Form.Item>
                     </Col>
-                    <Col md={6}>
+                    <Col xs={12} md={6}>
                       <Form.Item
                         label={<span className="input-form-label">Account Number</span>}
                         name="account_number"
