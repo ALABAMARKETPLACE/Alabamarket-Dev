@@ -164,7 +164,7 @@ function Home() {
   const { data: recentFallback = [], isLoading: recentLoading } = useQuery({
     queryKey: ["featured-recent-fallback"],
     queryFn: async () => {
-      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=10&tag=recent`;
+      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=10`;
       const response: any = await GET(url);
       if (response?.status && Array.isArray(response?.data)) {
         return response.data;
@@ -194,11 +194,11 @@ function Home() {
           return subResponse.data;
         }
       } catch (err) {
-        console.log("No subscription deals found, falling back to tag search");
+        console.log("No subscription deals found, falling back to product search");
       }
 
-      // 2. Fallback to generic Discounted Products (tag=discount)
-      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=12&tag=discount`;
+      // 2. Fallback to generic Products without tag restriction
+      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=12`;
       const response: any = await GET(url);
       if (response?.status && Array.isArray(response?.data)) {
         return response.data;

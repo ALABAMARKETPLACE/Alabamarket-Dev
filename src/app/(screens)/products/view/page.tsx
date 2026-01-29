@@ -260,7 +260,7 @@ function Page() {
     try {
       const url =
         API.PRODUCT_SEARCH_NEW_SINGLE +
-        `?take=${featuredPageSize}&tag=recent&page=${nextPage}`;
+        `?take=${featuredPageSize}&page=${nextPage}`;
       const response: any = await GET(url);
       if (response?.status) {
         const fallbackData = response?.data ?? [];

@@ -2,21 +2,46 @@ import API from "@/config/API";
 import { store } from "@/redux/store/store";
 import { message } from "antd";
 
+/**
+ * Normalizes position identifiers in API URLs to numeric values
+ * Converts "discounted" -> "4", "lower" -> "3", etc.
+ */
+const normalizeUrlPositions = (url: string): string => {
+  const positionMap: Record<string, string> = {
+    "/discounted/": "/4/",
+    "/discount/": "/4/",
+    "/lower/": "/3/",
+    "/middle/": "/2/",
+    "/top/": "/1/",
+  };
+
+  let normalizedUrl = url;
+  for (const [old, replacement] of Object.entries(positionMap)) {
+    normalizedUrl = normalizedUrl.replace(new RegExp(old, "gi"), replacement);
+  }
+  return normalizedUrl;
+};
+
 const getFullUrl = (url: string) => {
   if (!url) return "";
+  // Normalize any position identifiers in the URL
+  const normalizedUrl = normalizeUrlPositions(url);
   try {
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-      return url;
+    if (
+      normalizedUrl.startsWith("http://") ||
+      normalizedUrl.startsWith("https://")
+    ) {
+      return normalizedUrl;
     }
     const baseUrl = API.BASE_URL.endsWith("/")
       ? API.BASE_URL
       : `${API.BASE_URL}/`;
-    return new URL(url, baseUrl).toString();
+    return new URL(normalizedUrl, baseUrl).toString();
   } catch {
     const baseUrl = API.BASE_URL.endsWith("/")
       ? API.BASE_URL
       : `${API.BASE_URL}/`;
-    return baseUrl + url;
+    return baseUrl + normalizedUrl;
   }
 };
 
