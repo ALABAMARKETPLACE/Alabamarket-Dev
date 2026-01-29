@@ -60,8 +60,8 @@ function Home() {
         1: API.FEATURED_POSITION_1,
         2: API.FEATURED_POSITION_2,
         3: API.FEATURED_POSITION_3,
-      } as Record<1 | 2 | 3, string>),
-    []
+      }) as Record<1 | 2 | 3, string>,
+    [],
   );
 
   const featuredTakeLimits = useMemo(
@@ -70,8 +70,8 @@ function Home() {
         1: 10,
         2: 12,
         3: 30,
-      } as Record<1 | 2 | 3, number>),
-    []
+      }) as Record<1 | 2 | 3, number>,
+    [],
   );
 
   const minItemsByPosition = useMemo(
@@ -80,8 +80,8 @@ function Home() {
         1: 5,
         2: 8,
         3: 20,
-      } as Record<1 | 2 | 3, number>),
-    []
+      }) as Record<1 | 2 | 3, number>,
+    [],
   );
 
   const featuredPositions = useMemo(() => [1, 2, 3] as const, []);
@@ -93,11 +93,11 @@ function Home() {
     setDelayedPositions([1]);
     const timer2 = setTimeout(
       () => setDelayedPositions((prev) => [...prev, 2]),
-      200
+      200,
     );
     const timer3 = setTimeout(
       () => setDelayedPositions((prev) => [...prev, 3]),
-      400
+      400,
     );
     return () => {
       clearTimeout(timer2);
@@ -143,7 +143,7 @@ function Home() {
       featuredQueries[0]?.data,
       featuredQueries[1]?.data,
       featuredQueries[2]?.data,
-    ]
+    ],
   );
 
   const needsRecent = useMemo(() => {
@@ -194,7 +194,9 @@ function Home() {
           return subResponse.data;
         }
       } catch (err) {
-        console.log("No subscription deals found, falling back to product search");
+        console.log(
+          "No subscription deals found, falling back to product search",
+        );
       }
 
       // 2. Fallback to generic Products without tag restriction
@@ -253,7 +255,7 @@ function Home() {
       }
 
       const featuredIds = new Set(
-        featured.map((item: any) => item?.id ?? item?._id ?? item?.slug)
+        featured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
       );
 
       const fillers = recentFallback.filter((item: any) => {
@@ -277,7 +279,7 @@ function Home() {
   const position3Items = positionItems[3];
   const recentVisitedPreview = useMemo(
     () => (Array.isArray(history) ? history.slice(0, 7) : []),
-    [history]
+    [history],
   );
   const allProducts =
     (allProductsResponse?.data as any[]) ??
