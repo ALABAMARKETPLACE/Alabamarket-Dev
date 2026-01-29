@@ -35,7 +35,7 @@ const GET = async (
   try {
     const state = store.getState() as AuthState;
     const token: string = opts?.token ?? state?.Auth?.token ?? " ";
-    // Convert params to string-compatible format for URLSearchParams
+    // Convert params to string-compatible format for URLSearchParams o
     const cleanParams = Object.entries(params).reduce(
       (acc, [key, value]) => {
         if (value !== undefined && value !== null) {
@@ -276,7 +276,7 @@ const UPLOAD_IMAGES = async (files: File[]) => {
   const state = store.getState();
   const token: string = (state as AuthState)?.Auth?.token ?? " ";
 
-  // const user: any = store.getState()?.User?.user;
+  // const user: any = store.getState()?.User?.user 0;
   return new Promise(async (resolve, reject) => {
     try {
       if (files?.length) {
