@@ -48,13 +48,11 @@ function DiscountedDealsSection({
               tabIndex={0}
               className="discounted-section__see-more"
               onClick={() =>
-                router.push(`/products/view?type=featured&position=discounted`)
+                router.push(`/products/view?type=featured&position=4`)
               }
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") {
-                  router.push(
-                    `/products/view?type=featured&position=discounted`,
-                  );
+                  router.push(`/products/view?type=featured&position=4`);
                 }
               }}
             >

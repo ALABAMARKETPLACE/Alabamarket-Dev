@@ -80,6 +80,7 @@ function Description(props: Props) {
   const settings = useAppSelector(reduxSettings);
   const [Notifications, contextHolder] = notification.useNotification();
   const [quantity, setQuantity] = useState<number>(1);
+  const [formattedPrice, setFormattedPrice] = useState<string>("");
 
   // Calculate totalPrice directly instead of using state and useEffect
   const basePrice =
@@ -96,6 +97,17 @@ function Description(props: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props?.data?.pid]);
+
+  // Format price only on client to avoid hydration mismatch
+  useEffect(() => {
+    const formatted = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: settings.currency ?? "INR",
+    }).format(totalPrice);
+    // Replace NGN with naira symbol ₦
+    const finalFormatted = formatted.replace(/NGN\s?/, "₦");
+    setFormattedPrice(finalFormatted);
+  }, [totalPrice, settings.currency]);
 
   const updateQuantity = (type: "increment" | "decrement") => {
     if (type === "increment" && quantity < availableQuantity) {
@@ -226,16 +238,7 @@ function Description(props: Props) {
       <br />
       <div className="d-flex align-items-center ">
         Total Price:{" "}
-        <div className="fs-5 fw-bold pl-3 ms-3">
-          {(() => {
-            const formatted = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: settings.currency ?? "INR",
-            }).format(totalPrice);
-            // Replace NGN with naira symbol ₦
-            return formatted.replace(/NGN\s?/, "₦");
-          })()}
-        </div>
+        <div className="fs-5 fw-bold pl-3 ms-3">{formattedPrice}</div>
       </div>
       <br />
       <div className="d-flex gap-2 align-items-center">

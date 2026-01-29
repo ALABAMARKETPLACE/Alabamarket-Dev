@@ -127,9 +127,9 @@ function Header() {
                   <div className="Header-sellerCTA">
                     <Button
                       size="large"
-                      icon={<BsShopWindow size={18} />}
                       className="Header-sellerBtn"
                       onClick={handleSellerNavigation}
+                      style={{ pointerEvents: "auto" }}
                     >
                       <span className="Header-sellerBtn-text">
                         {sellerCtaLabel}

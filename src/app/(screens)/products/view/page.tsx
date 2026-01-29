@@ -60,11 +60,11 @@ function Page() {
   //=====================
   const typeParam = useMemo(
     () => searchParams.get("type") ?? "",
-    [searchParams]
+    [searchParams],
   );
   const positionParam = useMemo(
     () => searchParams.get("position") ?? "",
-    [searchParams]
+    [searchParams],
   );
   const isFeaturedView = typeParam === "featured";
   const isAllProductsView = typeParam === "all";
@@ -77,7 +77,7 @@ function Page() {
       pageNumber: number;
       pageSize: number;
       itemCount: number;
-    }
+    },
   ) => {
     const { isFeatured, responseData, pageNumber, pageSize, itemCount } =
       options;
@@ -142,7 +142,8 @@ function Page() {
         }
         return;
       }
-      url = `${API.FEATURED_POSITION_PRODUCTS}/${positionParam}/products?page=${pageNumber}&take=${featuredPageSize}`;
+      const position = positionParam === "discounted" ? "4" : positionParam;
+      url = `${API.FEATURED_POSITION_PRODUCTS}/${position}/products?page=${pageNumber}&take=${featuredPageSize}`;
     } else if (isAllProducts) {
       const params = new URLSearchParams({
         page: String(pageNumber),
@@ -172,17 +173,17 @@ function Page() {
       const response: any = await GET(url);
       if (response?.status) {
         const fetchedProducts = isFeatured
-          ? response?.data?.products ?? []
+          ? (response?.data?.products ?? [])
           : Array.isArray(response?.data)
-          ? response?.data
-          : Array.isArray(response?.data?.data)
-          ? response?.data?.data
-          : [];
+            ? response?.data
+            : Array.isArray(response?.data?.data)
+              ? response?.data?.data
+              : [];
 
         setProducts((prev) =>
           pageNumber === 1
             ? fetchedProducts
-            : _.uniqBy([...prev, ...fetchedProducts], "_id")
+            : _.uniqBy([...prev, ...fetchedProducts], "_id"),
         );
 
         const metaData = response.meta ?? {
@@ -200,8 +201,8 @@ function Page() {
           pageSize: isFeatured
             ? featuredPageSize
             : isAllProducts
-            ? allProductsPageSize
-            : fetchedProducts.length || featuredPageSize,
+              ? allProductsPageSize
+              : fetchedProducts.length || featuredPageSize,
           itemCount: fetchedProducts.length,
         });
         setMeta(normalizedMeta);
@@ -214,7 +215,7 @@ function Page() {
             ? response?.data?.planName
               ? `${response?.data?.planName} Products`
               : result.featured
-            : result[currentType] ?? "Products"
+            : (result[currentType] ?? "Products"),
         );
 
         if (isFeatured && pageNumber === 1 && fetchedProducts.length === 0) {
@@ -247,7 +248,7 @@ function Page() {
 
   const loadFallbackProducts = async (
     nextPage: number,
-    reset: boolean = false
+    reset: boolean = false,
   ) => {
     if (loadingMore) return;
     setHasFeaturedMore(false);
@@ -265,7 +266,7 @@ function Page() {
       if (response?.status) {
         const fallbackData = response?.data ?? [];
         setProducts((prev) =>
-          reset ? fallbackData : _.uniqBy([...prev, ...fallbackData], "_id")
+          reset ? fallbackData : _.uniqBy([...prev, ...fallbackData], "_id"),
         );
         setFallbackHasMore(response?.meta?.hasNextPage ?? false);
         setFallbackPage(nextPage);
@@ -275,7 +276,7 @@ function Page() {
               page: 1,
               take: featuredPageSize,
               hasNextPage: response?.meta?.hasNextPage ?? false,
-            }
+            },
           );
         } else if (response?.meta) {
           setMeta(response.meta);

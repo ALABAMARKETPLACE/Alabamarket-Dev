@@ -247,6 +247,8 @@
   letter-spacing: 0.2px;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  pointer-events: auto;
   box-shadow:
     0 10px 24px rgba(255, 95, 21, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
@@ -314,12 +316,14 @@
   }
 
   .Header-top {
-    grid-template-columns: 1fr auto;
-    gap: 12px;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
   }
 
   .Header-left {
     min-width: 0;
+    flex: 0 1 auto;
+    max-width: 70%;
   }
 
   .Header_brandText {
@@ -331,26 +335,169 @@
   }
 
   .Header-sellerBtn {
-    padding: 0 14px !important;
-    height: 38px !important;
+    padding: 6px 12px !important;
+    height: auto !important;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .Header-sellerBtn-text {
+    display: inline;
+  }
+
+  .ant-btn-icon {
+    display: none;
   }
 }
 
 @media (max-width: 576px) {
   .Header-top {
-    gap: 18px;
+    grid-template-columns: 1fr auto auto;
+    gap: 6px;
   }
 
   .Header-right {
-    gap: 16px;
+    gap: 6px;
+  }
+
+  .Header-left {
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: 55%;
+  }
+
+  .Header-sellerCTA {
+    flex: 0 0 auto;
+    min-width: auto;
   }
 
   .Header-sellerBtn {
-    padding: 0 10px !important;
-    min-width: 40px;
+    padding: 6px 10px !important;
+    min-width: auto;
+    width: auto;
+    height: auto !important;
+    font-size: 12px;
   }
 
   .Header-sellerBtn-text {
+    display: inline;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .ant-btn-icon {
+    display: none;
+  }
+
+  .Header-actions {
+    gap: 6px;
+  }
+
+  .Header-action-item {
+    padding: 4px;
+  }
+}
+
+@media (max-width: 450px) {
+  .Header-left {
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: 45%;
+  }
+
+  .Header_brand {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .Header_brandText {
+    font-size: 12px;
+  }
+
+  .Header_logo {
+    width: 30px;
+    height: 30px;
+  }
+
+  .Header-sellerBtn {
+    padding: 4px 10px !important;
+    height: auto !important;
+    font-size: 12px;
+    white-space: nowrap;
+    min-width: auto;
+  }
+
+  .Header-sellerBtn-text {
+    display: inline;
+  }
+
+  .Header-right {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .Header-actions {
+    gap: 4px;
+  }
+
+  .Header-action-item {
+    padding: 2px;
+    font-size: 12px;
+  }
+
+  .Header-location {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .Header-left {
+    min-width: 0;
+    flex: 0 1 auto;
+    max-width: 35%;
+  }
+
+  .Header_brand {
+    padding: 4px 6px;
+    gap: 4px;
+  }
+
+  .Header_brandText {
+    font-size: 11px;
+  }
+
+  .Header_logo {
+    width: 28px;
+    height: 28px;
+  }
+
+  .Header-sellerBtn {
+    padding: 4px 8px !important;
+    height: auto !important;
+    font-size: 11px;
+    white-space: nowrap;
+    min-width: auto;
+  }
+
+  .Header-sellerBtn-text {
+    display: inline;
+  }
+
+  .Header-right {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .Header-actions {
+    gap: 4px;
+  }
+
+  .Header-action-item {
+    padding: 2px;
+    font-size: 12px;
+  }
+
+  .Header-location {
     display: none;
   }
 }
