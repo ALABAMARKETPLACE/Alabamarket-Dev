@@ -132,7 +132,7 @@ function Page() {
 
   useEffect(() => {
     if (!isMobile) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line o
       setFiltersDropdownOpen(false);
     }
   }, [isMobile]);
