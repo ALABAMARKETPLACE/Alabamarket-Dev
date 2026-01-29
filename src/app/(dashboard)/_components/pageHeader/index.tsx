@@ -24,22 +24,20 @@ function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
   return (
     <div className="dashboard-pageHeader">
       {/* Back Button & Title Section */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <button
-            className="dashboard-pageHeaderBox2"
-            onClick={handleBack}
-            aria-label="Go back"
-            type="button"
-          >
-            <IoChevronBackOutline size={20} />
-          </button>
-          <div>
-            <div className="dashboard-pageHeadertxt1">{title}</div>
-            {bredcume && (
-              <div className="dashboard-pageHeadertxt2">{bredcume}</div>
-            )}
-          </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
+        <button
+          className="dashboard-pageHeaderBox2"
+          onClick={handleBack}
+          aria-label="Go back"
+          type="button"
+        >
+          <IoChevronBackOutline size={20} />
+        </button>
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <div className="dashboard-pageHeadertxt1">{title}</div>
+          {bredcume && (
+            <div className="dashboard-pageHeadertxt2">{bredcume}</div>
+          )}
         </div>
       </div>
 

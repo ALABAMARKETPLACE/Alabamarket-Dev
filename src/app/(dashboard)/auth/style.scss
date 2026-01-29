@@ -533,26 +533,23 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 .dashboard-pageHeader {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: $space-lg;
   margin-bottom: $space-2xl;
   padding-bottom: $space-lg;
   border-bottom: 1px solid $border-color;
 
-  > div:nth-child(2) {
+  > div:first-child {
     flex: 1;
     min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: $space-sm;
   }
 
   @media (max-width: 768px) {
     margin-bottom: $space-xl;
     gap: $space-md;
-    align-items: center;
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -566,6 +563,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   @media (max-width: 768px) {
     width: 100%;
     justify-content: flex-start;
+    flex-direction: row;
   }
 }
 
@@ -602,6 +600,8 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   margin: 0;
   letter-spacing: -0.5px;
   line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: break-word;
 
   @media (max-width: 768px) {
     font-size: 22px;
