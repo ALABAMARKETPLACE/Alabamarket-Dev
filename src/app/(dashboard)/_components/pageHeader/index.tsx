@@ -24,7 +24,15 @@ function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
   return (
     <div className="dashboard-pageHeader">
       {/* Back Button & Title Section */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          flex: 1,
+          minWidth: 0,
+        }}
+      >
         <button
           className="dashboard-pageHeaderBox2"
           onClick={handleBack}
