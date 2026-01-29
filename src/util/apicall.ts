@@ -276,7 +276,7 @@ const UPLOAD_IMAGES = async (files: File[]) => {
   const state = store.getState();
   const token: string = (state as AuthState)?.Auth?.token ?? " ";
 
-  // const user: any = store.getState()?.User?.user;
+  // const user: any = store.getState()?.User?.user 0;
   return new Promise(async (resolve, reject) => {
     try {
       if (files?.length) {
