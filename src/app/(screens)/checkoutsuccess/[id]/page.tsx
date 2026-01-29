@@ -46,10 +46,8 @@ function Checkout() {
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
 
-  // Get route parameter to determine payment method
-  const routeId = params?.id;
-  const isCOD = routeId === "1";
-  const isPaystack = routeId === "2";
+  // Only "Pay Online" (Paystack) is available
+  // Route ID "2" is for Paystack payment
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderItems = useCallback((response: any[]) => {
@@ -91,97 +89,74 @@ function Checkout() {
     try {
       setOrderCreated(true); // Prevent multiple executions
 
-      let finalOrderData;
+      // Only "Pay Online" (Paystack) flow
+      console.log("Processing Paystack payment...");
 
-      if (isCOD) {
-        // COD Order Flow - No payment verification needed
-        console.log("Processing COD order...");
+      const paymentRef =
+        searchParams.get("reference") ||
+        searchParams.get("ref") ||
+        localStorage.getItem("paystack_payment_reference");
 
-        finalOrderData = {
-          payment: {
-            ref: null,
-            type: "Cash On Delivery",
-          },
-          cart: Checkout?.cart,
-          address: Checkout?.address,
-          charges: Checkout?.charges,
-          user_id:
-            User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
-          user: User ?? Checkout?.user ?? null,
-        };
-      } else if (isPaystack) {
-        // Paystack Order Flow - Verify payment first
-        console.log("Processing Paystack order...");
+      console.log("Paystack payment reference:", paymentRef);
 
-        const paymentRef =
-          searchParams.get("reference") ||
-          searchParams.get("ref") ||
-          localStorage.getItem("paystack_payment_reference");
-
-        console.log("Paystack payment reference:", paymentRef);
-
-        if (!paymentRef || paymentRef === "null") {
-          throw new Error("Payment reference not found. Please try again.");
-        }
-
-        // Verify payment with backend
-        console.log("Verifying payment with reference:", paymentRef);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const verificationResponse: any = await POST(API.PAYSTACK_VERIFY, {
-          reference: paymentRef,
-        });
-
-        console.log("Payment verification response:", verificationResponse);
-
-        if (!verificationResponse?.status) {
-          throw new Error(
-            verificationResponse?.message ||
-              "Payment verification failed. Please try again.",
-          );
-        }
-
-        // Payment verified successfully, proceed with order
-        const storedOrderData = localStorage.getItem("paystack_order_data");
-        const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
-
-        finalOrderData = orderData?.order_data || {
-          payment: {
-            ref: paymentRef,
-            type: "Pay Online",
-          },
-          cart: Checkout?.cart,
-          address: Checkout?.address,
-          charges: Checkout?.charges,
-          user_id:
-            User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
-          user: User ?? Checkout?.user ?? null,
-        };
-
-        const resolvedUserId =
-          finalOrderData.user_id ??
-          finalOrderData.userId ??
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (finalOrderData.user as any)?.id ??
-          Checkout?.user_id ??
-          Checkout?.address?.user_id ??
-          User?.id ??
-          null;
-
-        finalOrderData.user_id = resolvedUserId;
-
-        if (!finalOrderData.userId && resolvedUserId) {
-          finalOrderData.userId = resolvedUserId;
-        }
-
-        if (!finalOrderData.user && User) {
-          finalOrderData.user = User;
-        }
-
-        console.log("Final Order Payload:", finalOrderData);
-      } else {
-        // Unknown route
-        throw new Error("Invalid checkout route. Please try again.");
+      if (!paymentRef || paymentRef === "null") {
+        throw new Error("Payment reference not found. Please try again.");
       }
+
+      // Verify payment with backend
+      console.log("Verifying payment with reference:", paymentRef);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const verificationResponse: any = await POST(API.PAYSTACK_VERIFY, {
+        reference: paymentRef,
+      });
+
+      console.log("Payment verification response:", verificationResponse);
+
+      if (!verificationResponse?.status) {
+        throw new Error(
+          verificationResponse?.message ||
+            "Payment verification failed. Please try again.",
+        );
+      }
+
+      // Payment verified successfully, proceed with order
+      const storedOrderData = localStorage.getItem("paystack_order_data");
+      const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
+
+      const finalOrderData = orderData?.order_data || {
+        payment: {
+          ref: paymentRef,
+          type: "Pay Online",
+        },
+        cart: Checkout?.cart,
+        address: Checkout?.address,
+        charges: Checkout?.charges,
+        user_id:
+          User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
+        user: User ?? Checkout?.user ?? null,
+      };
+
+      const resolvedUserId =
+        finalOrderData.user_id ??
+        finalOrderData.userId ??
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (finalOrderData.user as any)?.id ??
+        Checkout?.user_id ??
+        Checkout?.address?.user_id ??
+        User?.id ??
+        null;
+
+      finalOrderData.user_id = resolvedUserId;
+
+      if (!finalOrderData.userId && resolvedUserId) {
+        finalOrderData.userId = resolvedUserId;
+      }
+
+      if (!finalOrderData.user && User) {
+        finalOrderData.user = User;
+      }
+
+      console.log("Final Order Payload:", finalOrderData);
 
       console.log("Final order data:", finalOrderData);
 
@@ -251,10 +226,8 @@ function Checkout() {
         }
 
         // Clear stored payment data for successful orders
-        if (isPaystack) {
-          localStorage.removeItem("paystack_payment_reference");
-          localStorage.removeItem("paystack_order_data");
-        }
+        localStorage.removeItem("paystack_payment_reference");
+        localStorage.removeItem("paystack_order_data");
 
         dispatch(clearCheckout());
         loadCartItems();
@@ -296,8 +269,6 @@ function Checkout() {
     User,
     dispatch,
     getOrderItems,
-    isCOD,
-    isPaystack,
     loadCartItems,
     searchParams,
   ]);

@@ -30,8 +30,8 @@ function Checkout() {
   const Checkout = useSelector((state: any) => state?.Checkout);
   const Settings = useAppSelector(reduxSettings);
   const [notificationApi, contextHolder] = notification.useNotification();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [payment_method, setPayment_method] = useState<any>("Pay Online");
+  // Only Pay Online is available
+  const payment_method = "Pay Online";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
@@ -398,15 +398,8 @@ function Checkout() {
           user: user,
         };
         dispatch(storeFinal(obj));
-        if (payment_method === "Pay Online") {
-          InitializePaystackPayment();
-        } else if (payment_method === "Pay On Credit") {
-          notificationApi.error({
-            message: `This Order will be processed only after the Admin approves the Credit payment.`,
-          });
-        } else {
-          navigation.replace("/checkoutsuccess/1");
-        }
+        // Only "Pay Online" is available
+        InitializePaystackPayment();
       } catch (err) {
         console.log(err);
       }
@@ -432,11 +425,7 @@ function Checkout() {
         <Row>
           <Col sm={7}>
             <NewAddressBox />
-            <PaymentBox
-              method={payment_method}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => setPayment_method(value)}
-            />
+            <PaymentBox method={payment_method} />
             <br />
           </Col>
           <Col sm={5}>

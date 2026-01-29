@@ -144,22 +144,22 @@ export interface PaystackState {
   isInitializing: boolean;
   initializationError: string | null;
   paymentData: PaystackInitializeRequest | null;
-  
+
   // Payment verification
   isVerifying: boolean;
   verificationError: string | null;
   verificationData: PaystackVerificationData | null;
-  
+
   // Payment status
-  paymentStatus: 'idle' | 'pending' | 'success' | 'failed' | 'cancelled';
+  paymentStatus: "idle" | "pending" | "success" | "failed" | "cancelled";
   paymentReference: string | null;
-  
+
   // Public key
   publicKey: string | null;
-  
+
   // Transaction details
   currentTransaction: PaystackVerificationData | null;
-  
+
   // Refund status
   isRefunding: boolean;
   refundError: string | null;
@@ -218,7 +218,7 @@ export interface PaymentSplitData {
   seller_amount: number;
   admin_percentage: number;
   seller_percentage: number;
-  split_status: 'pending' | 'completed' | 'failed';
+  split_status: "pending" | "completed" | "failed";
   admin_settled: boolean;
   seller_settled: boolean;
   admin_settled_at?: string;
@@ -232,18 +232,28 @@ export interface PaymentSplitData {
 export interface StoreInfo {
   id: number;
   store_name: string;
-  subaccount_status: 'pending' | 'active' | 'inactive';
+  subaccount_status: "pending" | "active" | "inactive";
   paystack_subaccount_code?: string;
 }
 
 // Payment methods
-export type PaymentMethod = 'Pay Online' | 'Cash On Delivery' | 'Pay On Credit';
+export type PaymentMethod = "Pay Online";
 
 // Payment channels supported by Paystack
-export type PaystackChannel = 'card' | 'bank' | 'ussd' | 'mobile_money' | 'bank_transfer' | 'qr';
+export type PaystackChannel =
+  | "card"
+  | "bank"
+  | "ussd"
+  | "mobile_money"
+  | "bank_transfer"
+  | "qr";
 
 // Payment status from Paystack
-export type PaystackPaymentStatus = 'success' | 'failed' | 'abandoned' | 'pending';
+export type PaystackPaymentStatus =
+  | "success"
+  | "failed"
+  | "abandoned"
+  | "pending";
 
 // Hook return types
 export interface UsePaystackReturn {
@@ -252,23 +262,32 @@ export interface UsePaystackReturn {
   error: string | null;
   paymentData: PaystackVerificationData | null;
   publicKey: string | null;
-  
+
   // Actions
-  initializePayment: (data: PaystackInitializeRequest) => Promise<PaystackInitializeResponse>;
-  initializeSplitPayment: (data: SplitPaymentRequest) => Promise<PaystackInitializeResponse>;
+  initializePayment: (
+    data: PaystackInitializeRequest,
+  ) => Promise<PaystackInitializeResponse>;
+  initializeSplitPayment: (
+    data: SplitPaymentRequest,
+  ) => Promise<PaystackInitializeResponse>;
   verifyPayment: (reference: string) => Promise<PaystackVerificationResponse>;
-  refundPayment: (data: PaystackRefundRequest) => Promise<PaystackRefundResponse>;
+  refundPayment: (
+    data: PaystackRefundRequest,
+  ) => Promise<PaystackRefundResponse>;
   getPublicKey: () => Promise<PaystackPublicKeyResponse>;
   clearPaymentData: () => void;
-  
+
   // Split Payment utilities
-  calculateSplit: (amount: number, adminPercentage?: number) => SplitPaymentCalculation;
+  calculateSplit: (
+    amount: number,
+    adminPercentage?: number,
+  ) => SplitPaymentCalculation;
   formatSplitAmount: (calculation: SplitPaymentCalculation) => {
     total: string;
     admin: string;
     seller: string;
   };
-  
+
   // Status
-  paymentStatus: 'idle' | 'pending' | 'success' | 'failed' | 'cancelled';
+  paymentStatus: "idle" | "pending" | "success" | "failed" | "cancelled";
 }
