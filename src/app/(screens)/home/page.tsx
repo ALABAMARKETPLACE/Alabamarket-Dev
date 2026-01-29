@@ -22,6 +22,7 @@ import SilverSection from "./_components/silverSection";
 
 function Home() {
   const [Banner, setBanners] = useState([]);
+  const [showNewProducts, setShowNewProducts] = useState(true);
   const data = useSelector(reduxLatLong);
   const subCategories = useSelector(reduxSubcategoryItems);
   const [history, setHistory] = useState<any[]>([]);
@@ -60,8 +61,9 @@ function Home() {
         1: API.FEATURED_POSITION_1,
         2: API.FEATURED_POSITION_2,
         3: API.FEATURED_POSITION_3,
-      } as Record<1 | 2 | 3, string>),
-    []
+        4: API.FEATURED_POSITION_4,
+      }) as Record<1 | 2 | 3 | 4, string>,
+    [],
   );
 
   const featuredTakeLimits = useMemo(
@@ -70,8 +72,9 @@ function Home() {
         1: 10,
         2: 12,
         3: 30,
-      } as Record<1 | 2 | 3, number>),
-    []
+        4: 12,
+      }) as Record<1 | 2 | 3 | 4, number>,
+    [],
   );
 
   const minItemsByPosition = useMemo(
@@ -80,28 +83,34 @@ function Home() {
         1: 5,
         2: 8,
         3: 20,
-      } as Record<1 | 2 | 3, number>),
-    []
+        4: 12,
+      }) as Record<1 | 2 | 3 | 4, number>,
+    [],
   );
 
-  const featuredPositions = useMemo(() => [1, 2, 3] as const, []);
+  const featuredPositions = useMemo(() => [1, 2, 3, 4] as const, []);
 
   const [delayedPositions, setDelayedPositions] = useState<number[]>([]);
 
-  // Stagger the queries: Position 1 immediately, Position 2 after 200ms, Position 3 after 400ms
+  // Stagger the queries: Position 1 immediately, Position 2 after 200ms, Position 3 after 400ms, Position 4 after 600ms
   useEffect(() => {
     setDelayedPositions([1]);
     const timer2 = setTimeout(
       () => setDelayedPositions((prev) => [...prev, 2]),
-      200
+      200,
     );
     const timer3 = setTimeout(
       () => setDelayedPositions((prev) => [...prev, 3]),
-      400
+      400,
+    );
+    const timer4 = setTimeout(
+      () => setDelayedPositions((prev) => [...prev, 4]),
+      600,
     );
     return () => {
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(timer4);
     };
   }, []);
 
@@ -115,11 +124,28 @@ function Home() {
       ],
       queryFn: async () => {
         const url = featuredEndpoints[position];
-        const response: any = await GET(url, {
-          take: featuredTakeLimits[position],
-        });
-        if (response?.status && Array.isArray(response?.data)) {
-          return response.data;
+        // For position 4, add fallback to discount tag
+        try {
+          const response: any = await GET(url, {
+            take: featuredTakeLimits[position],
+          });
+          if (response?.status && Array.isArray(response?.data)) {
+            return response.data;
+          }
+        } catch (err) {
+          if (position === 4) {
+            // Fallback to discount tag for position 4
+            const fallbackUrl =
+              API.PRODUCT_SEARCH_NEW_SINGLE +
+              `?take=${featuredTakeLimits[position]}&tag=discount`;
+            const fallbackResponse: any = await GET(fallbackUrl);
+            if (
+              fallbackResponse?.status &&
+              Array.isArray(fallbackResponse?.data)
+            ) {
+              return fallbackResponse.data;
+            }
+          }
         }
         return [];
       },
@@ -133,17 +159,19 @@ function Home() {
 
   const featuredLoading = featuredQueries.some((query) => query.isLoading);
 
-  const featuredProducts = useMemo<Record<1 | 2 | 3, any[]>>(
+  const featuredProducts = useMemo<Record<1 | 2 | 3 | 4, any[]>>(
     () => ({
       1: featuredQueries[0]?.data ?? [],
       2: featuredQueries[1]?.data ?? [],
       3: featuredQueries[2]?.data ?? [],
+      4: featuredQueries[3]?.data ?? [],
     }),
     [
       featuredQueries[0]?.data,
       featuredQueries[1]?.data,
       featuredQueries[2]?.data,
-    ]
+      featuredQueries[3]?.data,
+    ],
   );
 
   const needsRecent = useMemo(() => {
@@ -178,39 +206,6 @@ function Home() {
     gcTime: 10 * 60 * 1000,
   });
 
-  const { data: discountedDeals = [] } = useQuery({
-    queryKey: ["featured-discounted-deals"],
-    queryFn: async () => {
-      // 1. Try to fetch from Subscription-based Featured Position 4
-      try {
-        const subResponse: any = await GET(API.FEATURED_POSITION_4, {
-          take: 12,
-        });
-        if (
-          subResponse?.status &&
-          Array.isArray(subResponse?.data) &&
-          subResponse.data.length > 0
-        ) {
-          return subResponse.data;
-        }
-      } catch (err) {
-        console.log("No subscription deals found, falling back to tag search");
-      }
-
-      // 2. Fallback to generic Discounted Products (tag=discount)
-      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=12&tag=discount`;
-      const response: any = await GET(url);
-      if (response?.status && Array.isArray(response?.data)) {
-        return response.data;
-      }
-      return [];
-    },
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    gcTime: 10 * 60 * 1000,
-  });
-
   const { data: allProductsResponse } = useQuery({
     queryKey: ["featured-products-all"],
     queryFn: async () => {
@@ -233,51 +228,83 @@ function Home() {
   useEffect(() => {
     getBanners();
     getUserHistory();
+    // Rotate between new and old products every 30 seconds
+    const rotationInterval = setInterval(() => {
+      setShowNewProducts((prev) => !prev);
+    }, 30000);
+    return () => clearInterval(rotationInterval);
   }, [data, token]);
 
   const positionItems = useMemo(() => {
-    const buildItems = (position: 1 | 2 | 3) => {
+    const buildItems = (position: 1 | 2 | 3 | 4) => {
       const featured = featuredProducts[position] || [];
       const minRequired = minItemsByPosition[position] ?? 6;
 
-      if (!featured.length) {
-        return recentFallback || [];
+      // If showing new products, prioritize featured
+      if (showNewProducts) {
+        if (featured.length >= minRequired) {
+          return featured;
+        }
+
+        if (!recentFallback?.length) {
+          return featured;
+        }
+
+        const featuredIds = new Set(
+          featured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+        );
+
+        const fillers = recentFallback.filter((item: any) => {
+          const identifier = item?.id ?? item?._id ?? item?.slug;
+          return identifier ? !featuredIds.has(identifier) : true;
+        });
+
+        const combined = [...featured, ...fillers];
+        return combined.slice(0, minRequired);
+      } else {
+        // If showing old products, prioritize recent/fallback
+        if (!recentFallback?.length) {
+          return featured;
+        }
+
+        if (featured.length >= minRequired) {
+          const featuredIds = new Set(
+            featured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+          );
+
+          const uniqueFeatured = featured.filter((item: any) => {
+            const identifier = item?.id ?? item?._id ?? item?.slug;
+            return identifier
+              ? !recentFallback.some((r: any) => {
+                  const rid = r?.id ?? r?._id ?? r?.slug;
+                  return rid === identifier;
+                })
+              : true;
+          });
+
+          const combined = [...recentFallback, ...uniqueFeatured];
+          return combined.slice(0, minRequired);
+        }
+
+        return recentFallback.slice(0, minRequired);
       }
-
-      if (!recentFallback?.length) {
-        return featured;
-      }
-
-      if (featured.length >= minRequired) {
-        return featured;
-      }
-
-      const featuredIds = new Set(
-        featured.map((item: any) => item?.id ?? item?._id ?? item?.slug)
-      );
-
-      const fillers = recentFallback.filter((item: any) => {
-        const identifier = item?.id ?? item?._id ?? item?.slug;
-        return identifier ? !featuredIds.has(identifier) : true;
-      });
-
-      const combined = [...featured, ...fillers];
-      return combined.slice(0, minRequired);
     };
 
     return {
       1: buildItems(1),
       2: buildItems(2),
       3: buildItems(3),
+      4: buildItems(4),
     };
-  }, [featuredProducts, recentFallback, minItemsByPosition]);
+  }, [featuredProducts, recentFallback, minItemsByPosition, showNewProducts]);
 
   const position1Items = positionItems[1];
   const position2Items = positionItems[2];
   const position3Items = positionItems[3];
+  const position4Items = positionItems[4];
   const recentVisitedPreview = useMemo(
     () => (Array.isArray(history) ? history.slice(0, 7) : []),
-    [history]
+    [history],
   );
   const allProducts =
     (allProductsResponse?.data as any[]) ??
@@ -286,6 +313,7 @@ function Home() {
   const showPosition1 = position1Items.length > 0;
   const showPosition2 = position2Items.length > 0;
   const showPosition3 = position3Items.length > 0;
+  const showPosition4 = position4Items.length > 0;
 
   return (
     <div className="page-Box">
@@ -299,9 +327,9 @@ function Home() {
         </>
       ) : null}
 
-      {discountedDeals.length > 0 && (
+      {showPosition4 && (
         <>
-          <DiscountedDealsSection products={discountedDeals} />
+          <DiscountedDealsSection products={position4Items} />
           <div className="HomeSCreen-space" />
         </>
       )}

@@ -8,8 +8,7 @@ import { IoIosRadioButtonOff, IoMdRadioButtonOn } from "react-icons/io";
 
 import Visa from "../../../../assets/images/visa.png";
 import Mster from "../../../../assets/images/mastercard.png";
-import Diners from "../../../../assets/images/dinners.png";
-import Samsu from "../../../../assets/images/samsungpay.png";
+import Paystack from "../../../../assets/images/paystack-logo.png";
 import { BsBank } from "react-icons/bs";
 import { FaRegCreditCard } from "react-icons/fa6";
 import { MdPayments } from "react-icons/md";
@@ -62,10 +61,7 @@ function PaymentBox(props: any) {
                   <Image src={Mster} height={30} alt="Mastercard" />
                 </div>
                 <div style={{ marginRight: 10 }}>
-                  <Image src={Diners} height={30} alt="Diners" />
-                </div>
-                <div style={{ marginRight: 10 }}>
-                  <Image src={Samsu} height={30} alt="Samsung Pay" />
+                  <Image src={Paystack} height={30} alt="Paystack" />
                 </div>
                 <div
                   style={{
@@ -77,14 +73,14 @@ function PaymentBox(props: any) {
                     fontWeight: "bold",
                   }}
                 >
-                  ₦
+                  Verve
                 </div>
               </div>
             </Col>
           </Row>
         </div>
       </div>
-      <div
+      {/* <div
         className={`Cart-paymentBox ${
           props?.method === "Cash On Delivery" ? "active" : ""
         }`}
@@ -103,8 +99,8 @@ function PaymentBox(props: any) {
         <div className="Cart-txt3" style={{ flex: 1 }}>
           Cash On Delivery ( COD )
         </div>
-      </div>
-      <div
+      </div> */}
+      {/* <div
         className={`Cart-paymentBox ${
           props?.method === "Pay On Credit" ? "active" : ""
         }`}
@@ -134,7 +130,7 @@ function PaymentBox(props: any) {
             <span>The payment will be completed on month end.</span>
           </div>
         </div>
-      ) : null}
+      ) : null} */}
     </div>
   );
 }
