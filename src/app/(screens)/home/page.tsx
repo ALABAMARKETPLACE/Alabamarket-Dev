@@ -259,12 +259,14 @@ function Home() {
       return products.filter(
         (item) =>
           item?.status !== false && // Product must be active
-          item?.unit !== 0 // Product must have stock
+          item?.unit !== 0, // Product must have stock
       );
     };
 
     const buildItems = (position: 1 | 2 | 3 | 4) => {
-      const featured = filterAvailableProducts(featuredProducts[position] || []);
+      const featured = filterAvailableProducts(
+        featuredProducts[position] || [],
+      );
       const fallback = filterAvailableProducts(recentFallback || []);
       const minRequired = minItemsByPosition[position] ?? 6;
 
@@ -286,7 +288,9 @@ function Home() {
         }
 
         const featuredIds = new Set(
-          shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+          shuffledFeatured.map(
+            (item: any) => item?.id ?? item?._id ?? item?.slug,
+          ),
         );
 
         const shuffledFallback = seededShuffle(fallback, positionSeed * 2);
@@ -308,7 +312,9 @@ function Home() {
         if (featured.length >= minRequired) {
           const shuffledFeatured = seededShuffle(featured, positionSeed * 4);
           const featuredIds = new Set(
-            shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+            shuffledFeatured.map(
+              (item: any) => item?.id ?? item?._id ?? item?.slug,
+            ),
           );
 
           const uniqueFeatured = shuffledFeatured.filter((item: any) => {
@@ -335,7 +341,13 @@ function Home() {
       3: buildItems(3),
       4: buildItems(4),
     };
-  }, [featuredProducts, recentFallback, minItemsByPosition, showNewProducts, rotationTime]);
+  }, [
+    featuredProducts,
+    recentFallback,
+    minItemsByPosition,
+    showNewProducts,
+    rotationTime,
+  ]);
 
   const position1Items = positionItems[1];
   const position2Items = positionItems[2];
@@ -357,7 +369,7 @@ function Home() {
     const filtered = rawProducts.filter(
       (item) =>
         item?.status !== false && // Product must be active
-        item?.unit !== 0 // Product must have stock
+        item?.unit !== 0, // Product must have stock
     );
 
     // Randomize the order of all products using rotation time as seed
