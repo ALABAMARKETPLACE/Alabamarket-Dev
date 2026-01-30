@@ -21,7 +21,11 @@ import RuleBasedChatBot from "@/components/chatbot/RuleBasedChatBot";
 import LayoutContent from "@/components/LayoutContent";
 =======
 import ChatBot from "@/components/chatbot/ChatBot";
+<<<<<<< HEAD
 >>>>>>> 2b3b6c8 (Done)
+=======
+import LayoutContent from "@/components/LayoutContent";
+>>>>>>> 864a271 (Done)
 
 export const metadata: Metadata = {
   title: CONFIG.NAME,
@@ -86,11 +90,15 @@ export default function RootLayout({
                 <App>
                   <StoreProvider>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 864a271 (Done)
                     <LayoutContent>
                       <div className="layout-container">
                         <Header />
                         <main className="layout-main">{children}</main>
                         <Footer />
+<<<<<<< HEAD
                         {/* <ChatBot /> */}
                         <RuleBasedChatBot />
                       </div>
@@ -103,6 +111,11 @@ export default function RootLayout({
                       <ChatBot />
                     </div>
 >>>>>>> 2b3b6c8 (Done)
+=======
+                        <ChatBot />
+                      </div>
+                    </LayoutContent>
+>>>>>>> 864a271 (Done)
                   </StoreProvider>
                 </App>
               </ConfigProvider>
