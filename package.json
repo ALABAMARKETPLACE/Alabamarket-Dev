@@ -34,6 +34,7 @@
     "moment": "^2.30.1",
     "next": "^16.1.0",
     "next-auth": "^4.24.7",
+    "openai": "^6.17.0",
     "peer": "^1.0.2",
     "react": "^18",
     "react-bootstrap": "^2.10.4",
