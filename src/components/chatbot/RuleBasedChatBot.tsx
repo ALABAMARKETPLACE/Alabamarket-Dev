@@ -147,7 +147,9 @@ const RuleBasedChatBot: React.FC = () => {
                 key={message.id}
                 className={`chatbot-message-wrapper chatbot-message-wrapper--${message.sender}`}
               >
-                <div className={`chatbot-message chatbot-message--${message.sender}`}>
+                <div
+                  className={`chatbot-message chatbot-message--${message.sender}`}
+                >
                   <div className="chatbot-message-bubble">
                     <p className="chatbot-message-text">{message.text}</p>
                   </div>
