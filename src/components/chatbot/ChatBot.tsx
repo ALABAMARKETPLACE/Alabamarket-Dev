@@ -101,10 +101,14 @@ const ChatBot: React.FC = () => {
   };
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 7be3989 (Done)
   // Parse message and make phone numbers clickable
   const renderMessageWithLinks = (text: string) => {
     // Pattern to match Nigerian phone numbers and formatted numbers
     const phonePattern = /(\+234\s?\d{3}\s?\d{3}\s?\d{4}|\+234\d{10}|0\d{10})/g;
+<<<<<<< HEAD
 
     const parts = text.split(phonePattern);
 
@@ -116,6 +120,19 @@ const ChatBot: React.FC = () => {
           ? cleanNumber
           : "+234" + cleanNumber.slice(1);
 
+=======
+    
+    const parts = text.split(phonePattern);
+    
+    return parts.map((part, index) => {
+      if (phonePattern.test(part)) {
+        // Remove spaces and format for tel: link
+        const cleanNumber = part.replace(/\s/g, '');
+        const telNumber = cleanNumber.startsWith('+') 
+          ? cleanNumber 
+          : '+234' + cleanNumber.slice(1);
+        
+>>>>>>> 7be3989 (Done)
         return (
           <a
             key={index}
@@ -131,8 +148,11 @@ const ChatBot: React.FC = () => {
     });
   };
 
+<<<<<<< HEAD
 =======
 >>>>>>> 2b3b6c8 (Done)
+=======
+>>>>>>> 7be3989 (Done)
   return (
     <>
       {/* Floating Button */}
@@ -173,10 +193,14 @@ const ChatBot: React.FC = () => {
                 <div key={msg.id} className={`message message-${msg.sender}`}>
                   <div className="message-content">
 <<<<<<< HEAD
+<<<<<<< HEAD
                     <p>{renderMessageWithLinks(msg.text)}</p>
 =======
                     <p>{msg.text}</p>
 >>>>>>> 2b3b6c8 (Done)
+=======
+                    <p>{renderMessageWithLinks(msg.text)}</p>
+>>>>>>> 7be3989 (Done)
                     <span className="message-time">
                       {msg.timestamp.toLocaleTimeString([], {
                         hour: "2-digit",
