@@ -225,68 +225,107 @@ function Home() {
     gcTime: 10 * 60 * 1000,
   });
 
+  // State to track rotation time for consistent random selection
+  const [rotationTime, setRotationTime] = useState(() =>
+    Math.floor(Date.now() / 30000),
+  );
+
   useEffect(() => {
     getBanners();
     getUserHistory();
-    // Rotate between new and old products every 30 seconds
+    // Rotate products every 30 seconds - different sections get different products
     const rotationInterval = setInterval(() => {
+      setRotationTime(Math.floor(Date.now() / 30000));
       setShowNewProducts((prev) => !prev);
     }, 30000);
     return () => clearInterval(rotationInterval);
   }, [data, token]);
 
+  // Helper function to create a seeded random shuffle based on time and section
+  const seededShuffle = (array: any[], seed: number): any[] => {
+    if (!array || array.length === 0) return [];
+    const shuffled = [...array];
+    // Simple seeded random using seed value
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(((seed * (i + 1)) % 997) * (i + 1)) % (i + 1);
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
   const positionItems = useMemo(() => {
+    // Helper function to filter out unavailable products
+    const filterAvailableProducts = (products: any[]) => {
+      return products.filter(
+        (item) =>
+          item?.status !== false && // Product must be active
+          item?.unit !== 0 // Product must have stock
+      );
+    };
+
     const buildItems = (position: 1 | 2 | 3 | 4) => {
-      const featured = featuredProducts[position] || [];
+      const featured = filterAvailableProducts(featuredProducts[position] || []);
+      const fallback = filterAvailableProducts(recentFallback || []);
       const minRequired = minItemsByPosition[position] ?? 6;
 
-      // If showing new products, prioritize featured
+      // Create unique seed for each position to ensure different products in each section
+      // Combines rotation time with position number for consistent but different randomization
+      const positionSeed = rotationTime + position * 100;
+
+      // If showing new products, prioritize featured with randomization
       if (showNewProducts) {
-        if (featured.length >= minRequired) {
-          return featured;
+        // Shuffle featured products for this position
+        const shuffledFeatured = seededShuffle(featured, positionSeed);
+
+        if (shuffledFeatured.length >= minRequired) {
+          return shuffledFeatured.slice(0, minRequired);
         }
 
-        if (!recentFallback?.length) {
-          return featured;
+        if (!fallback?.length) {
+          return shuffledFeatured;
         }
 
         const featuredIds = new Set(
-          featured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+          shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
         );
 
-        const fillers = recentFallback.filter((item: any) => {
+        const shuffledFallback = seededShuffle(fallback, positionSeed * 2);
+        const fillers = shuffledFallback.filter((item: any) => {
           const identifier = item?.id ?? item?._id ?? item?.slug;
           return identifier ? !featuredIds.has(identifier) : true;
         });
 
-        const combined = [...featured, ...fillers];
+        const combined = [...shuffledFeatured, ...fillers];
         return combined.slice(0, minRequired);
       } else {
-        // If showing old products, prioritize recent/fallback
-        if (!recentFallback?.length) {
-          return featured;
+        // If showing old products, prioritize recent/fallback with randomization
+        const shuffledFallback = seededShuffle(fallback, positionSeed * 3);
+
+        if (!shuffledFallback?.length) {
+          return seededShuffle(featured, positionSeed);
         }
 
         if (featured.length >= minRequired) {
+          const shuffledFeatured = seededShuffle(featured, positionSeed * 4);
           const featuredIds = new Set(
-            featured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+            shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
           );
 
-          const uniqueFeatured = featured.filter((item: any) => {
+          const uniqueFeatured = shuffledFeatured.filter((item: any) => {
             const identifier = item?.id ?? item?._id ?? item?.slug;
             return identifier
-              ? !recentFallback.some((r: any) => {
+              ? !shuffledFallback.some((r: any) => {
                   const rid = r?.id ?? r?._id ?? r?.slug;
                   return rid === identifier;
                 })
               : true;
           });
 
-          const combined = [...recentFallback, ...uniqueFeatured];
+          const combined = [...shuffledFallback, ...uniqueFeatured];
           return combined.slice(0, minRequired);
         }
 
-        return recentFallback.slice(0, minRequired);
+        return shuffledFallback.slice(0, minRequired);
       }
     };
 
@@ -296,19 +335,36 @@ function Home() {
       3: buildItems(3),
       4: buildItems(4),
     };
-  }, [featuredProducts, recentFallback, minItemsByPosition, showNewProducts]);
+  }, [featuredProducts, recentFallback, minItemsByPosition, showNewProducts, rotationTime]);
 
   const position1Items = positionItems[1];
   const position2Items = positionItems[2];
   const position3Items = positionItems[3];
   const position4Items = positionItems[4];
-  const recentVisitedPreview = useMemo(
-    () => (Array.isArray(history) ? history.slice(0, 7) : []),
-    [history],
-  );
-  const allProducts =
-    (allProductsResponse?.data as any[]) ??
-    (Array.isArray(allProductsResponse) ? allProductsResponse : []);
+  const recentVisitedPreview = useMemo(() => {
+    const recent = Array.isArray(history) ? history.slice(0, 7) : [];
+    // Randomize recent products with different seed to show variety
+    const recentSeed = rotationTime + 250;
+    return seededShuffle(recent, recentSeed);
+  }, [history, rotationTime]);
+
+  // Filter out unavailable products from all products with randomization
+  const allProducts = useMemo(() => {
+    const rawProducts =
+      (allProductsResponse?.data as any[]) ??
+      (Array.isArray(allProductsResponse) ? allProductsResponse : []);
+
+    const filtered = rawProducts.filter(
+      (item) =>
+        item?.status !== false && // Product must be active
+        item?.unit !== 0 // Product must have stock
+    );
+
+    // Randomize the order of all products using rotation time as seed
+    // This creates a unique but deterministic randomization per time period
+    const allProductSeed = rotationTime + 500;
+    return seededShuffle(filtered, allProductSeed);
+  }, [allProductsResponse, rotationTime]);
 
   const showPosition1 = position1Items.length > 0;
   const showPosition2 = position2Items.length > 0;
