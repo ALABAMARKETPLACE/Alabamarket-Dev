@@ -261,7 +261,8 @@ function Home() {
         // Check if product is available
         const isAvailable =
           item?.status === true ||
-          (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+          (typeof item?.status === "string" &&
+            item.status.toLowerCase() === "active");
         const hasStock = (item?.unit ?? 0) > 0;
         return isAvailable && hasStock;
       });
@@ -364,7 +365,8 @@ function Home() {
       // Check if product is available
       const isAvailable =
         item?.status === true ||
-        (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+        (typeof item?.status === "string" &&
+          item.status.toLowerCase() === "active");
       const hasStock = (item?.unit ?? 0) > 0;
       return isAvailable && hasStock;
     });
@@ -385,7 +387,8 @@ function Home() {
       // Check if product is available
       const isAvailable =
         item?.status === true ||
-        (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+        (typeof item?.status === "string" &&
+          item.status.toLowerCase() === "active");
       const hasStock = (item?.unit ?? 0) > 0;
       return isAvailable && hasStock;
     });

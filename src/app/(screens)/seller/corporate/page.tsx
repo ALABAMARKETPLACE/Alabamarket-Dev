@@ -57,10 +57,10 @@ function Page() {
       //uploading id proof and trn file.
       setLoading(true);
       const id_proof_upload = await DOCUMENT_UPLOAD(
-        formData?.step4Data?.id_proof?.file
+        formData?.step4Data?.id_proof?.file,
       );
       const trn_upload = await DOCUMENT_UPLOAD(
-        formData?.step4Data?.trn_upload?.file
+        formData?.step4Data?.trn_upload?.file,
       );
       let obj = {
         //step1
