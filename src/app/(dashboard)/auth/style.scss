@@ -1632,6 +1632,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
     .ant-table-thead {
 <<<<<<< HEAD
+<<<<<<< HEAD
       background-color: #f9fafb;
 
       > tr > th {
@@ -1642,6 +1643,12 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
       > tr > th {
         background-color: $table-header-bg;
 >>>>>>> b6726a9 (Done)
+=======
+      background-color: #f9fafb;
+
+      > tr > th {
+        background-color: #f9fafb;
+>>>>>>> a0afd81 (Done)
         font-weight: 600;
         font-size: 13px;
         color: $text-color-secondary;
@@ -1849,10 +1856,14 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   align-items: center;
   justify-content: center;
 <<<<<<< HEAD
+<<<<<<< HEAD
   padding: $space-2xl $space-lg;
 =======
   padding: $space-3xl $space-lg;
 >>>>>>> b6726a9 (Done)
+=======
+  padding: $space-2xl $space-lg;
+>>>>>>> a0afd81 (Done)
   text-align: center;
 }
 

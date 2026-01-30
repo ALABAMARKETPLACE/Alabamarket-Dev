@@ -42,10 +42,14 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         key: "image",
         width: 50,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["md" as const],
 =======
         responsive: ["md"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["md" as const],
+>>>>>>> a0afd81 (Done)
         render: (img: string | undefined) => (
           <div className="table__image-wrapper">
             <Avatar
@@ -82,10 +86,14 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         key: "createdAt",
         width: 110,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["lg" as const],
 =======
         responsive: ["lg"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["lg" as const],
+>>>>>>> a0afd81 (Done)
         render: (item: string | number | Date) => (
           <span className="table__date">
             {moment(item).format("MMM DD, YY")}
@@ -98,10 +106,14 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         key: "grandTotal",
         width: 110,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["md" as const],
 =======
         responsive: ["md"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["md" as const],
+>>>>>>> a0afd81 (Done)
         render: (item: number | string) => (
           <span className="table__amount">
             {Number(item)?.toFixed(2)} {Settings?.currency ?? ""}
@@ -114,6 +126,9 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         key: "status",
         width: 100,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a0afd81 (Done)
         responsive: ["md" as const],
         render: (status: string) => {
           let color = "default";

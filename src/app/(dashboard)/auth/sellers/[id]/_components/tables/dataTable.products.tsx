@@ -27,10 +27,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         key: "image",
         width: 60,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["md" as const],
 =======
         responsive: ["md"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["md" as const],
+>>>>>>> a0afd81 (Done)
         render: (item: string) => (
           <div className="table__image-wrapper">
             <Image
@@ -57,10 +61,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         key: "unit",
         width: 80,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["lg" as const],
 =======
         responsive: ["lg"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["lg" as const],
+>>>>>>> a0afd81 (Done)
         render: (item: any) => (
           <span
             className={`table__badge ${
@@ -77,10 +85,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         key: "price",
         width: 100,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["md" as const],
 =======
         responsive: ["md"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["md" as const],
+>>>>>>> a0afd81 (Done)
         render: (item: number) => (
           <span className="table__price">
             {Number(item)?.toFixed(2)} {Settings?.currency ?? ""}
@@ -93,10 +105,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         key: "status",
         width: 90,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["md" as const],
 =======
         responsive: ["md"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["md" as const],
+>>>>>>> a0afd81 (Done)
         render: (item: boolean) => (
           <Tag
             color={
@@ -115,10 +131,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         key: "createdAt",
         width: 110,
 <<<<<<< HEAD
+<<<<<<< HEAD
         responsive: ["lg" as const],
 =======
         responsive: ["lg"],
 >>>>>>> b6726a9 (Done)
+=======
+        responsive: ["lg" as const],
+>>>>>>> a0afd81 (Done)
         render: (text: any) => (
           <span className="table__date">
             {moment(text).format("MMM DD, YY")}
