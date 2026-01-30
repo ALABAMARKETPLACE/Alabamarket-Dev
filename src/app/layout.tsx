@@ -14,10 +14,14 @@ import { StoreProvider } from "@/util/storeProvider";
 import ReactQueryProvider from "@/util/queryProvider";
 
 import CONFIG from "@/config/configuration";
+<<<<<<< HEAD
 // import ChatBot from "@/components/chatbot/ChatBot"; // Commented out - using WhatsApp instead
 import RuleBasedChatBot from "@/components/chatbot/RuleBasedChatBot";
 // import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 import LayoutContent from "@/components/LayoutContent";
+=======
+import ChatBot from "@/components/chatbot/ChatBot";
+>>>>>>> 2b3b6c8 (Done)
 
 export const metadata: Metadata = {
   title: CONFIG.NAME,
@@ -81,6 +85,7 @@ export default function RootLayout({
               <ConfigProvider theme={theme}>
                 <App>
                   <StoreProvider>
+<<<<<<< HEAD
                     <LayoutContent>
                       <div className="layout-container">
                         <Header />
@@ -90,6 +95,14 @@ export default function RootLayout({
                         <RuleBasedChatBot />
                       </div>
                     </LayoutContent>
+=======
+                    <div className="layout-container">
+                      <Header />
+                      <main className="layout-main">{children}</main>
+                      <Footer />
+                      <ChatBot />
+                    </div>
+>>>>>>> 2b3b6c8 (Done)
                   </StoreProvider>
                 </App>
               </ConfigProvider>

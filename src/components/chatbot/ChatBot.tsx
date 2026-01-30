@@ -100,6 +100,7 @@ const ChatBot: React.FC = () => {
     navigator.clipboard.writeText(text);
   };
 
+<<<<<<< HEAD
   // Parse message and make phone numbers clickable
   const renderMessageWithLinks = (text: string) => {
     // Pattern to match Nigerian phone numbers and formatted numbers
@@ -130,6 +131,8 @@ const ChatBot: React.FC = () => {
     });
   };
 
+=======
+>>>>>>> 2b3b6c8 (Done)
   return (
     <>
       {/* Floating Button */}
@@ -169,7 +172,11 @@ const ChatBot: React.FC = () => {
               messages.map((msg) => (
                 <div key={msg.id} className={`message message-${msg.sender}`}>
                   <div className="message-content">
+<<<<<<< HEAD
                     <p>{renderMessageWithLinks(msg.text)}</p>
+=======
+                    <p>{msg.text}</p>
+>>>>>>> 2b3b6c8 (Done)
                     <span className="message-time">
                       {msg.timestamp.toLocaleTimeString([], {
                         hour: "2-digit",

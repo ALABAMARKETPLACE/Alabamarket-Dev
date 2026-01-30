@@ -13,12 +13,19 @@ interface RequestBody {
   conversationHistory: Message[];
 }
 
+<<<<<<< HEAD
 // Initialize OpenAI client lazily (inside handler to avoid build-time errors)
 function getOpenAIClient() {
   return new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
 }
+=======
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+>>>>>>> 2b3b6c8 (Done)
 
 // System prompt that defines the chatbot's role and behavior
 const SYSTEM_PROMPT = `You are Alaba Assistant, a knowledgeable and friendly customer support chatbot for Alaba Marketplace, Nigeria's premier e-commerce platform. Your role is to help customers with shopping, orders, seller information, and support.
@@ -31,6 +38,7 @@ const SYSTEM_PROMPT = `You are Alaba Assistant, a knowledgeable and friendly cus
 - Return policy: 30 days, original condition, full refund
 - Seller commission: Varies by category, easy registration process
 
+<<<<<<< HEAD
 ## Contact Information:
 - Support email: support@alabamarket.com
 - Support phone: +234 701 234 5678
@@ -40,6 +48,14 @@ const SYSTEM_PROMPT = `You are Alaba Assistant, a knowledgeable and friendly cus
 ## Key Information:
 - Order placement: Browse → Add to cart → Checkout → Select address → Choose payment → Confirm
 - Shipping: All deliveries tracked via SMS and email with tracking links
+=======
+## Key Information:
+- Order placement: Browse → Add to cart → Checkout → Select address → Choose payment → Confirm
+- Shipping: All deliveries tracked via SMS and email with tracking links
+- Support email: support@alabamarket.com
+- Support hours: 9 AM - 6 PM WAT, Monday-Friday
+- Live chat: Available through this chatbot
+>>>>>>> 2b3b6c8 (Done)
 - Returns: 30-day hassle-free returns, request through account
 
 ## Your Guidelines:
@@ -48,11 +64,19 @@ const SYSTEM_PROMPT = `You are Alaba Assistant, a knowledgeable and friendly cus
 3. If asked about something outside Alaba's services, politely redirect to relevant topics
 4. Use Nigerian context and currency (₦ for Naira)
 5. Provide step-by-step instructions when needed
+<<<<<<< HEAD
 6. When users want to call support, mention: "📞 Call us at +234 701 234 5678"
 7. If you don't know specific information, suggest contacting support@alabamarket.com or calling +234 701 234 5678
 8. For frustrated users: "If this requires immediate attention, please call our support team at +234 701 234 5678 (9 AM - 6 PM WAT)"
 9. Use emojis occasionally to maintain friendly tone
 10. Keep responses concise but informative
+=======
+6. If you don't know specific information, suggest contacting support@alabamarket.com
+7. For Nigerian customers: Emphasize local payment methods and delivery speed
+8. Use emojis occasionally to maintain friendly tone
+9. Keep responses concise but informative
+10. If user seems frustrated, offer to escalate to human support
+>>>>>>> 2b3b6c8 (Done)
 
 ## Common Topics You Handle:
 - Product search and browsing
@@ -127,7 +151,10 @@ export async function POST(request: NextRequest) {
     const messages = convertToOpenAIMessages(conversationHistory, message);
 
     // Call OpenAI API
+<<<<<<< HEAD
     const openai = getOpenAIClient();
+=======
+>>>>>>> 2b3b6c8 (Done)
     const response = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: messages,
