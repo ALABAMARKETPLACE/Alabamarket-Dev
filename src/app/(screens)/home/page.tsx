@@ -266,6 +266,9 @@ function Home() {
         const isAvailable =
           item?.status === true ||
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 802ee6b (Done)
           (typeof item?.status === "string" &&
             item.status.toLowerCase() === "active");
         const hasStock = (item?.unit ?? 0) > 0;
@@ -428,6 +431,7 @@ function Home() {
       const isAvailable =
         item?.status === true ||
 <<<<<<< HEAD
+<<<<<<< HEAD
         (typeof item?.status === "string" &&
           item.status.toLowerCase() === "active");
       const hasStock = (item?.unit ?? 0) > 0;
@@ -443,6 +447,10 @@ function Home() {
 >>>>>>> 2680899 (Done)
 =======
         (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+=======
+        (typeof item?.status === "string" &&
+          item.status.toLowerCase() === "active");
+>>>>>>> 802ee6b (Done)
       const hasStock = (item?.unit ?? 0) > 0;
       return isAvailable && hasStock;
     });
@@ -469,6 +477,7 @@ function Home() {
       const isAvailable =
         item?.status === true ||
 <<<<<<< HEAD
+<<<<<<< HEAD
         (typeof item?.status === "string" &&
           item.status.toLowerCase() === "active");
       const hasStock = (item?.unit ?? 0) > 0;
@@ -483,6 +492,10 @@ function Home() {
 >>>>>>> 2680899 (Done)
 =======
         (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+=======
+        (typeof item?.status === "string" &&
+          item.status.toLowerCase() === "active");
+>>>>>>> 802ee6b (Done)
       const hasStock = (item?.unit ?? 0) > 0;
       return isAvailable && hasStock;
     });

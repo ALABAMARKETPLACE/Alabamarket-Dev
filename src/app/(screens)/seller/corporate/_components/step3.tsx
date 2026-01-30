@@ -70,14 +70,20 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                   </Col>
                   <Col xs={12} md={6}>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 802ee6b (Done)
                     <Form.Item
                       label={
                         <span className="input-form-label">ID Proof Type</span>
                       }
+<<<<<<< HEAD
 =======
                     <Form.Item 
                       label={<span className="input-form-label">ID Proof Type</span>}
 >>>>>>> 3dcf364 (Done)
+=======
+>>>>>>> 802ee6b (Done)
                       name="id_type"
                     >
                       <Select placeholder="Select Type" size="large">
@@ -169,10 +175,14 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
 
                 <div className="mb-3">
 <<<<<<< HEAD
+<<<<<<< HEAD
                   <strong style={{ color: "#334155" }}>Seller Name</strong>
 =======
                   <strong style={{color: '#334155'}}>ID Proof Details</strong>
 >>>>>>> 3dcf364 (Done)
+=======
+                  <strong style={{ color: "#334155" }}>Seller Name</strong>
+>>>>>>> 802ee6b (Done)
                   <p className="mt-1">
                     Provide the full name as it appears on your official ID
                     document.
