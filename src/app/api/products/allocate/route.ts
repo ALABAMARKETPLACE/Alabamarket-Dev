@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { allocateProductsToSections, ensureNoProductDuplicateAcrossSections } from "@/lib/productAllocationAlgorithm";
+import {
+  allocateProductsToSections,
+  ensureNoProductDuplicateAcrossSections,
+} from "@/lib/productAllocationAlgorithm";
 
 interface Product {
   _id?: string;
@@ -34,7 +37,7 @@ export async function POST(request: NextRequest) {
           unallocated: [],
           message: "No products provided",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
       allocationDetails.platinum,
       allocationDetails.gold,
       allocationDetails.silver,
-      allocationDetails.discounted
+      allocationDetails.discounted,
     );
 
     return NextResponse.json(
@@ -97,26 +100,27 @@ export async function POST(request: NextRequest) {
             deduplicated.gold.length +
             deduplicated.silver.length +
             deduplicated.discounted.length,
-          unallocatedProducts: products.length - (
-            deduplicated.platinum.length +
-            deduplicated.gold.length +
-            deduplicated.silver.length +
-            deduplicated.discounted.length
-          ),
+          unallocatedProducts:
+            products.length -
+            (deduplicated.platinum.length +
+              deduplicated.gold.length +
+              deduplicated.silver.length +
+              deduplicated.discounted.length),
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Product allocation error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       {
         success: false,
         error: "Failed to allocate products",
         message: errorMessage,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -140,6 +144,6 @@ export async function GET() {
         },
       },
     },
-    { status: 200 }
+    { status: 200 },
   );
 }

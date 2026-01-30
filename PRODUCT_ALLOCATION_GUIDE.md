@@ -7,26 +7,32 @@ The product allocation algorithm intelligently distributes all products across 4
 ## Architecture
 
 ### 1. Algorithm Module
+
 **Location:** `/src/lib/productAllocationAlgorithm.ts`
 
 **Functions:**
+
 - `scoreProduct(product)` - Calculates product score (0-100)
 - `allocateProductsToSections(products)` - Main allocation logic
 - `rotateProductsInSection(products, showNew, rotationIndex)` - Rotation for freshness
 - `ensureNoProductDuplicateAcrossSections(...)` - Deduplication validation
 
 ### 2. API Endpoint
+
 **Location:** `/src/app/api/products/allocate/route.ts`
 
 **Purpose:** Centralized allocation endpoint for consistency
+
 - Method: POST
 - Request: `{ products: Product[], showNew?: boolean, rotationIndex?: number }`
 - Response: `{ success: boolean, sections: {...}, summary: {...} }`
 
 ### 3. Hook Integration
+
 **Location:** `/src/hooks/useAllocatedProducts.ts`
 
 **Usage:** Directly allocate products without API call
+
 ```typescript
 const allocated = useAllocatedProducts({
   position1Products,
@@ -41,6 +47,7 @@ const allocated = useAllocatedProducts({
 ## Scoring System
 
 Products are scored on 6 criteria (max 100 points):
+
 - **Rating (30 pts):** 1.0-5.0 star rating normalized
 - **Sales (25 pts):** Based on total orders
 - **Recency (20 pts):** Products created within 7 days get 20pts (tiered decay)
@@ -51,6 +58,7 @@ Products are scored on 6 criteria (max 100 points):
 ## Section Distribution
 
 Products are distributed across sections based on these percentages:
+
 - **Platinum (15%):** Top-tier products (scores 80-100)
 - **Gold (25%):** High-quality products (scores 60-80)
 - **Silver (30%):** Good products (scores 40-60)
@@ -59,6 +67,7 @@ Products are distributed across sections based on these percentages:
 ## Implementation Options
 
 ### Option 1: Hook-Based (Recommended for Performance)
+
 Direct in-component allocation without API calls
 
 ```typescript
@@ -86,6 +95,7 @@ function Home() {
 ```
 
 ### Option 2: API-Based (Recommended for Backend Sync)
+
 Centralized allocation on server
 
 ```typescript
@@ -98,7 +108,7 @@ const allocateProducts = async (allProducts) => {
       showNew: showNewProducts,
     }),
   });
-  
+
   const { sections } = await response.json();
   return sections;
 };
@@ -107,14 +117,17 @@ const allocateProducts = async (allProducts) => {
 ## Features
 
 ### Deduplication Guarantee
+
 ✅ No product appears in multiple sections
 ✅ Products filtered in priority order (Platinum > Gold > Silver > Discounted)
 
 ### Rotation Support
+
 ✅ Every 30 seconds, product visibility rotates between new and old
 ✅ Uses `showNewProducts` flag to prioritize different product pools
 
 ### Edge Case Handling
+
 ✅ Fewer products than capacity → Sections filled up to available products
 ✅ New products auto-prioritized based on recency score
 ✅ Empty sections skipped in rendering
@@ -134,6 +147,7 @@ const allocateProducts = async (allProducts) => {
 ## Testing
 
 ### Unit Test: Score Calculation
+
 ```typescript
 const product = {
   rating: 4.5,
@@ -147,6 +161,7 @@ const score = scoreProduct(product); // Should be 80-90
 ```
 
 ### Integration Test: No Duplicates
+
 ```typescript
 const products = [...allProducts];
 const allocated = allocateProductsToSections(products);
@@ -161,6 +176,7 @@ expect(allIds.length).toBe(uniqueIds.size); // No duplicates
 ```
 
 ### Allocation Distribution Test
+
 ```typescript
 const total = products.length;
 expect(allocated.platinum.length).toBeGreaterThanOrEqual(total * 0.12);
@@ -171,11 +187,13 @@ expect(allocated.platinum.length).toBeLessThanOrEqual(total * 0.18);
 ## Performance Considerations
 
 ### Computation Cost
+
 - **Score calculation:** O(n) where n = number of products
 - **Allocation:** O(n log n) due to sorting
 - **Total:** ~500ms for 5000 products on modern hardware
 
 ### Optimization Tips
+
 1. **Cache scores:** Store scores for 5 minutes
 2. **Batch processing:** Calculate once, reuse across requests
 3. **Pagination:** Process products in chunks for large datasets
@@ -184,6 +202,7 @@ expect(allocated.platinum.length).toBeLessThanOrEqual(total * 0.18);
 ## Monitoring & Analytics
 
 ### Key Metrics to Track
+
 1. **Section fill rates:** Are all sections reaching target capacity?
 2. **Score distribution:** What's the average score per section?
 3. **Rotation effectiveness:** How many unique products seen in 24h?
@@ -191,6 +210,7 @@ expect(allocated.platinum.length).toBeLessThanOrEqual(total * 0.18);
 5. **Duplicate prevention:** Verify zero duplicates daily
 
 ### Logging Points
+
 ```typescript
 // In API endpoint
 console.log(`Allocation Stats:
@@ -214,16 +234,19 @@ console.log(`Allocation Stats:
 ## Support & Troubleshooting
 
 ### Issue: Sections not filling up
+
 - Check if products have required fields (rating, orders, createdAt)
 - Verify product database has sufficient data
 - Check scoring logic isn't filtering out valid products
 
 ### Issue: Same products appearing after rotation
+
 - Verify `showNewProducts` state is toggling correctly
 - Check if fallback products are different from featured
 - Increase fallback product count
 
 ### Issue: Performance degradation with large datasets
+
 - Implement caching of scores
 - Use API endpoint with pagination
 - Consider background batch processing
@@ -233,12 +256,12 @@ console.log(`Allocation Stats:
 - **Core Algorithm:** [src/lib/productAllocationAlgorithm.ts](src/lib/productAllocationAlgorithm.ts)
 - **API Endpoint:** [src/app/api/products/allocate/route.ts](src/app/api/products/allocate/route.ts)
 - **Integration Hook:** [src/hooks/useAllocatedProducts.ts](src/hooks/useAllocatedProducts.ts)
-- **Home Page:** [src/app/(screens)/home/page.tsx](src/app/(screens)/home/page.tsx)
+- **Home Page:** [src/app/(screens)/home/page.tsx](<src/app/(screens)/home/page.tsx>)
 - **Section Components:**
-  - [src/app/(screens)/home/_components/platinumSection.tsx](src/app/(screens)/home/_components/platinumSection.tsx)
-  - [src/app/(screens)/home/_components/goldSection.tsx](src/app/(screens)/home/_components/goldSection.tsx)
-  - [src/app/(screens)/home/_components/silverSection.tsx](src/app/(screens)/home/_components/silverSection.tsx)
-  - [src/app/(screens)/home/_components/discountedDealsSection.tsx](src/app/(screens)/home/_components/discountedDealsSection.tsx)
+  - [src/app/(screens)/home/\_components/platinumSection.tsx](<src/app/(screens)/home/_components/platinumSection.tsx>)
+  - [src/app/(screens)/home/\_components/goldSection.tsx](<src/app/(screens)/home/_components/goldSection.tsx>)
+  - [src/app/(screens)/home/\_components/silverSection.tsx](<src/app/(screens)/home/_components/silverSection.tsx>)
+  - [src/app/(screens)/home/\_components/discountedDealsSection.tsx](<src/app/(screens)/home/_components/discountedDealsSection.tsx>)
 
 ## Summary
 

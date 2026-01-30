@@ -1,5 +1,8 @@
 import { useMemo } from "react";
-import { allocateProductsToSections, ensureNoProductDuplicateAcrossSections } from "@/lib/productAllocationAlgorithm";
+import {
+  allocateProductsToSections,
+  ensureNoProductDuplicateAcrossSections,
+} from "@/lib/productAllocationAlgorithm";
 
 interface Product {
   _id?: string;
@@ -55,7 +58,13 @@ export const useAllocatedProducts = ({
     });
 
     return Array.from(uniqueMap.values());
-  }, [position1Products, position2Products, position3Products, position4Products, recentFallback]);
+  }, [
+    position1Products,
+    position2Products,
+    position3Products,
+    position4Products,
+    recentFallback,
+  ]);
 
   // Allocate products intelligently
   const allocatedProducts = useMemo(() => {
@@ -70,7 +79,7 @@ export const useAllocatedProducts = ({
 
     const allocation = allocateProductsToSections(allProducts);
     const productMap = new Map(
-      allProducts.map((p) => [p._id || p.pid || p.id, p])
+      allProducts.map((p) => [p._id || p.pid || p.id, p]),
     );
 
     // Get product objects for each section
@@ -78,12 +87,8 @@ export const useAllocatedProducts = ({
       platinum: allocation.platinum
         .map((id) => productMap.get(id))
         .filter(Boolean),
-      gold: allocation.gold
-        .map((id) => productMap.get(id))
-        .filter(Boolean),
-      silver: allocation.silver
-        .map((id) => productMap.get(id))
-        .filter(Boolean),
+      gold: allocation.gold.map((id) => productMap.get(id)).filter(Boolean),
+      silver: allocation.silver.map((id) => productMap.get(id)).filter(Boolean),
       discounted: allocation.discounted
         .map((id) => productMap.get(id))
         .filter(Boolean),
@@ -94,7 +99,7 @@ export const useAllocatedProducts = ({
       sections.platinum,
       sections.gold,
       sections.silver,
-      sections.discounted
+      sections.discounted,
     );
   }, [allProducts]);
 
