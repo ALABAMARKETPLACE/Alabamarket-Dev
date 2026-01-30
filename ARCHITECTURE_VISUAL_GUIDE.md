@@ -309,10 +309,14 @@
 ---
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Scoring System Visualiza
 =======
 ## Scoring System Visualization
 >>>>>>> 2f2bb25 (Done)
+=======
+## Scoring System Visualiza
+>>>>>>> 1263ef7 (Done)
 
 ### Score Distribution Example
 
