@@ -106,7 +106,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         ),
       },
     ],
-    [Settings?.currency]
+    [Settings?.currency],
   );
 
   return (
