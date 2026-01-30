@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
-import React from "react";
-import { IoChevronBackOutline } from "react-icons/io5";
+import React, { useState } from "react";
+import { IoChevronBackOutline, IoMenu, IoClose } from "react-icons/io5";
 
 interface PageHeaderProps {
   title: string;
@@ -12,6 +12,7 @@ interface PageHeaderProps {
 
 function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleBack = () => {
     if (onBack) {
@@ -21,30 +22,56 @@ function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
     }
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
   return (
     <div className="dashboard-pageHeader">
-      {/* Back Button & Title Section */}
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <button
-            className="dashboard-pageHeaderBox2"
-            onClick={handleBack}
-            aria-label="Go back"
-            type="button"
-          >
-            <IoChevronBackOutline size={20} />
-          </button>
-          <div>
-            <div className="dashboard-pageHeadertxt1">{title}</div>
-            {bredcume && (
-              <div className="dashboard-pageHeadertxt2">{bredcume}</div>
-            )}
-          </div>
+      {/* Left Section: Back Button & Title */}
+      <div className="dashboard-pageHeader__left">
+        <button
+          className="dashboard-pageHeader__back-btn"
+          onClick={handleBack}
+          aria-label="Go back"
+          type="button"
+        >
+          <IoChevronBackOutline size={20} />
+        </button>
+        <div className="dashboard-pageHeader__title-group">
+          <h1 className="dashboard-pageHeader__title">{title}</h1>
+          {bredcume && (
+            <p className="dashboard-pageHeader__breadcrumb">{bredcume}</p>
+          )}
         </div>
       </div>
 
-      {/* Action Buttons Section */}
-      {children && <div className="dashboard-pageHeaderBox">{children}</div>}
+      {/* Mobile Menu Toggle */}
+      {children && (
+        <button
+          className="dashboard-pageHeader__mobile-toggle"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+          type="button"
+        >
+          {mobileMenuOpen ? (
+            <IoClose size={24} />
+          ) : (
+            <IoMenu size={24} />
+          )}
+        </button>
+      )}
+
+      {/* Right Section: Action Buttons (Desktop & Mobile) */}
+      {children && (
+        <div
+          className={`dashboard-pageHeader__actions ${
+            mobileMenuOpen ? "dashboard-pageHeader__actions--open" : ""
+          }`}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 }
