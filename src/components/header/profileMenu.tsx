@@ -48,11 +48,11 @@ const ProfileMenu = (props: any) => {
         const wishlistCount =
           typeof refreshedUser?.wishlist === "number"
             ? refreshedUser?.wishlist
-            : User?.user?.wishlist ?? 0;
+            : (User?.user?.wishlist ?? 0);
         const notificationCount =
           typeof refreshedUser?.notifications === "number"
             ? refreshedUser?.notifications
-            : User?.user?.notifications ?? 0;
+            : (User?.user?.notifications ?? 0);
 
         await updateSession({
           user: {
@@ -137,7 +137,14 @@ const ProfileMenu = (props: any) => {
         ) : (
           <HiOutlineUserCircle size={50} color="#d9d9d9" />
         )}
-        <div style={{ marginTop: 8, marginBottom: 4, fontWeight: "600", fontSize: 16 }}>
+        <div
+          style={{
+            marginTop: 8,
+            marginBottom: 4,
+            fontWeight: "600",
+            fontSize: 16,
+          }}
+        >
           {User?.user?.first_name || "Guest User"}
         </div>
         <div style={{ fontSize: 12, color: "#666" }}>
@@ -219,18 +226,18 @@ const ProfileMenu = (props: any) => {
       )}
 
       <div style={{ margin: "10px 0" }} />
-      
+
       <div className="profileMenu-mobileCTA">
         {!User?.user && (
-           <Button 
-             size="large" 
-             block 
-             onClick={() => navigation.push("/signup")} 
-             className="profileMenu-btn profileMenu-btn-outline"
-             style={{marginBottom: 8}}
-           >
-             Create Account
-           </Button>
+          <Button
+            size="large"
+            block
+            onClick={() => navigation.push("/signup")}
+            className="profileMenu-btn profileMenu-btn-outline"
+            style={{ marginBottom: 8 }}
+          >
+            Create Account
+          </Button>
         )}
         {User?.user?.type !== "user" && (
           <Button
@@ -248,7 +255,11 @@ const ProfileMenu = (props: any) => {
       <div style={{ padding: "0 4px" }}>
         <Button
           size="large"
-          className={User?.user ? "profileMenu-btn profileMenu-btn-danger w-100 mt-2" : "profileMenu-btn profileMenu-btn-primary w-100 mt-2"}
+          className={
+            User?.user
+              ? "profileMenu-btn profileMenu-btn-danger w-100 mt-2"
+              : "profileMenu-btn profileMenu-btn-primary w-100 mt-2"
+          }
           onClick={() => logotFunction()}
           loading={loading}
         >
@@ -257,7 +268,14 @@ const ProfileMenu = (props: any) => {
       </div>
 
       {!User?.user && (
-        <div style={{ marginTop: "12px", textAlign: "center", fontSize: 13, color: "#666" }}>
+        <div
+          style={{
+            marginTop: "12px",
+            textAlign: "center",
+            fontSize: 13,
+            color: "#666",
+          }}
+        >
           New customer?{" "}
           <Link
             href="/signup"

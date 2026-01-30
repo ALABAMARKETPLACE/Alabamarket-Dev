@@ -187,8 +187,8 @@ const SideMenu = ({
                                 onClick={() =>
                                   handleNavigation(
                                     `/category/${sub.slug}?id=${window.btoa(
-                                      subId
-                                    )}&type=${encodeURIComponent(sub.name)}`
+                                      subId,
+                                    )}&type=${encodeURIComponent(sub.name)}`,
                                   )
                                 }
                               >
