@@ -15,14 +15,20 @@ export const useSessionExpiration = () => {
   useEffect(() => {
     // Check if session was previously active but is now inactive
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 011d0e8 (Done)
     if (
       previousSessionRef.current &&
       !session &&
       status === "unauthenticated"
     ) {
+<<<<<<< HEAD
 =======
     if (previousSessionRef.current && !session && status === "unauthenticated") {
 >>>>>>> 864a271 (Done)
+=======
+>>>>>>> 011d0e8 (Done)
       // Session has expired - redirect to home
       router.push("/");
     }
