@@ -273,7 +273,7 @@
 
 ---
 
-## Scoring System Visualization
+## Scoring System Visualiza
 
 ### Score Distribution Example
 
