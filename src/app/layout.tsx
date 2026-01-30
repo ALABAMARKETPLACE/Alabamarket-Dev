@@ -16,6 +16,7 @@ import ReactQueryProvider from "@/util/queryProvider";
 import CONFIG from "@/config/configuration";
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 // import ChatBot from "@/components/chatbot/ChatBot"; // Commented out - using WhatsApp instead
 import RuleBasedChatBot from "@/components/chatbot/RuleBasedChatBot";
 // import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
@@ -28,6 +29,9 @@ import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 import RuleBasedChatBot from "@/components/chatbot/RuleBasedChatBot";
 // import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 >>>>>>> 4f483f9 (Done)
+=======
+import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
+>>>>>>> 7d88ed1 (Done)
 import LayoutContent from "@/components/LayoutContent";
 =======
 import ChatBot from "@/components/chatbot/ChatBot";
@@ -110,8 +114,12 @@ export default function RootLayout({
                         <Footer />
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                         {/* <ChatBot /> */}
                         <RuleBasedChatBot />
+=======
+                        <WhatsAppChatTab />
+>>>>>>> 7d88ed1 (Done)
                       </div>
                     </LayoutContent>
 =======
