@@ -104,17 +104,17 @@ const ChatBot: React.FC = () => {
   const renderMessageWithLinks = (text: string) => {
     // Pattern to match Nigerian phone numbers and formatted numbers
     const phonePattern = /(\+234\s?\d{3}\s?\d{3}\s?\d{4}|\+234\d{10}|0\d{10})/g;
-    
+
     const parts = text.split(phonePattern);
-    
+
     return parts.map((part, index) => {
       if (phonePattern.test(part)) {
         // Remove spaces and format for tel: link
-        const cleanNumber = part.replace(/\s/g, '');
-        const telNumber = cleanNumber.startsWith('+') 
-          ? cleanNumber 
-          : '+234' + cleanNumber.slice(1);
-        
+        const cleanNumber = part.replace(/\s/g, "");
+        const telNumber = cleanNumber.startsWith("+")
+          ? cleanNumber
+          : "+234" + cleanNumber.slice(1);
+
         return (
           <a
             key={index}
