@@ -54,11 +54,7 @@ function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
           aria-label="Toggle menu"
           type="button"
         >
-          {mobileMenuOpen ? (
-            <IoClose size={24} />
-          ) : (
-            <IoMenu size={24} />
-          )}
+          {mobileMenuOpen ? <IoClose size={24} /> : <IoMenu size={24} />}
         </button>
       )}
 
