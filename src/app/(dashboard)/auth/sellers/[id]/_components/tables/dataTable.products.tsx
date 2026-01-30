@@ -127,10 +127,14 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
       },
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     [Settings?.currency],
 =======
     [Settings?.currency]
 >>>>>>> b6726a9 (Done)
+=======
+    [Settings?.currency],
+>>>>>>> 305b61f (Done)
   );
 
   return (

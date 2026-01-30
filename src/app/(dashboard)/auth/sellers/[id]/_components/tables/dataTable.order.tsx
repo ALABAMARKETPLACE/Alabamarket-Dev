@@ -123,8 +123,13 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         responsive: ["md"],
         render: (status: string) => {
           let color = "default";
+<<<<<<< HEAD
           const displayStatus = status?.charAt(0)?.toUpperCase() + status?.slice(1);
 >>>>>>> b6726a9 (Done)
+=======
+          const displayStatus =
+            status?.charAt(0)?.toUpperCase() + status?.slice(1);
+>>>>>>> 305b61f (Done)
 
           if (status === "pending") {
             color = "processing";
@@ -165,10 +170,14 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       },
     ],
 <<<<<<< HEAD
+<<<<<<< HEAD
     [Settings?.currency, route],
 =======
     [Settings?.currency, route]
 >>>>>>> b6726a9 (Done)
+=======
+    [Settings?.currency, route],
+>>>>>>> 305b61f (Done)
   );
 
   return (
