@@ -21,8 +21,13 @@ import RuleBasedChatBot from "@/components/chatbot/RuleBasedChatBot";
 // import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 =======
 // import ChatBot from "@/components/chatbot/ChatBot"; // Commented out - using WhatsApp instead
+<<<<<<< HEAD
 import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 >>>>>>> 8fffec4 (Done)
+=======
+import RuleBasedChatBot from "@/components/chatbot/RuleBasedChatBot";
+// import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
+>>>>>>> 4f483f9 (Done)
 import LayoutContent from "@/components/LayoutContent";
 =======
 import ChatBot from "@/components/chatbot/ChatBot";
