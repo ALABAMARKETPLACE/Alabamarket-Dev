@@ -26,7 +26,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "image",
         key: "image",
         width: 60,
-        responsive: ["md"],
+        responsive: ["md" as const],
         render: (item: string) => (
           <div className="table__image-wrapper">
             <Image
@@ -52,7 +52,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "unit",
         key: "unit",
         width: 80,
-        responsive: ["lg"],
+        responsive: ["lg" as const],
         render: (item: any) => (
           <span
             className={`table__badge ${
@@ -68,7 +68,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "retail_rate",
         key: "price",
         width: 100,
-        responsive: ["md"],
+        responsive: ["md" as const],
         render: (item: number) => (
           <span className="table__price">
             {Number(item)?.toFixed(2)} {Settings?.currency ?? ""}
@@ -80,7 +80,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "status",
         key: "status",
         width: 90,
-        responsive: ["md"],
+        responsive: ["md" as const],
         render: (item: boolean) => (
           <Tag
             color={
@@ -98,7 +98,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "createdAt",
         key: "createdAt",
         width: 110,
-        responsive: ["lg"],
+        responsive: ["lg" as const],
         render: (text: any) => (
           <span className="table__date">
             {moment(text).format("MMM DD, YY")}
