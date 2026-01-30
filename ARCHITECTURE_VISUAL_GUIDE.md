@@ -59,6 +59,7 @@
 ## Data Flow Diagram
 
 ### Phase 1: Data Collection
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ FETCH PHASE (React Query)                              │
@@ -77,6 +78,7 @@
 ```
 
 ### Phase 2: Deduplication
+
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ DEDUPLICATE PHASE                                       │
@@ -94,6 +96,7 @@
 ```
 
 ### Phase 3: Scoring
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ SCORING PHASE                                               │
@@ -124,6 +127,7 @@
 ```
 
 ### Phase 4: Allocation
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ ALLOCATION PHASE                                             │
@@ -155,6 +159,7 @@
 ```
 
 ### Phase 5: Output
+
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ FINAL SECTIONS                                               │
@@ -398,30 +403,30 @@ Product
 
 ```sql
 -- Pseudo SQL for scoring
-SELECT 
+SELECT
   id,
   name,
   -- Rating Score (0-30)
   (COALESCE(rating, 0) / 5 * 30) AS rating_score,
-  
+
   -- Sales Score (0-25)
   (LEAST(COALESCE(orders, 0) / 100 * 25, 25)) AS sales_score,
-  
+
   -- Recency Score (0-20)
-  CASE 
+  CASE
     WHEN DATEDIFF(NOW(), createdAt) <= 7 THEN 20
     ELSE (20 * EXP(-DATEDIFF(NOW(), createdAt) / 30))
   END AS recency_score,
-  
+
   -- Price Score (0-15)
   CASE WHEN price > 50000 THEN 15 ELSE (price / 50000 * 15) END AS price_score,
-  
+
   -- Discount Score (0-10)
   CASE WHEN discount > 0 THEN 10 ELSE 0 END AS discount_score,
-  
+
   -- Store Rating Score (0-5)
   (COALESCE(storeRating, 0) / 5 * 5) AS store_score
-  
+
 FROM products
 ORDER BY (rating_score + sales_score + recency_score + price_score + discount_score + store_score) DESC
 LIMIT 1000
@@ -432,6 +437,7 @@ LIMIT 1000
 ## Deduplication Logic Visualization
 
 ### Before Deduplication
+
 ```
 All Products Combined:
 [A, B, C, D, B, E, F, A, G, H, I]
@@ -441,6 +447,7 @@ All Products Combined:
 ```
 
 ### During Deduplication
+
 ```
 Products Map (ID → Product):
 A → {name: "Product A", ...}
@@ -455,6 +462,7 @@ I → {name: "Product I", ...}
 ```
 
 ### After Deduplication
+
 ```
 Unique Products:
 [A, B, C, D, E, F, G, H, I]
@@ -467,6 +475,7 @@ Unique Products:
 ## Rotation Example (30-second cycle)
 
 ### Time: 00:00
+
 ```
 showNewProducts = true
 
@@ -477,6 +486,7 @@ Position 4: [Deal H, Deal I]
 ```
 
 ### Time: 00:30
+
 ```
 showNewProducts = false
 
@@ -489,6 +499,7 @@ Position 4: [Deal H, Deal I]
 ```
 
 ### Time: 01:00
+
 ```
 showNewProducts = true
 
@@ -505,6 +516,7 @@ Position 4: [Deal H, Deal I]
 ## Performance Characteristics
 
 ### Time Complexity
+
 ```
 Phase 1: Combine products        O(n)
 Phase 2: Remove duplicates       O(n)
@@ -516,6 +528,7 @@ Total:                           O(n log n)
 ```
 
 ### Space Complexity
+
 ```
 Input products array:    O(n)
 Deduplication map:       O(n)
@@ -526,6 +539,7 @@ Total:                   O(n)
 ```
 
 ### Benchmark Results
+
 ```
 Products | Time      | Sections | Duplicates
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -578,7 +592,7 @@ Output
 ✅ Zero Duplicates
    └─ No product ID appears in multiple sections
 
-✅ Balanced Distribution  
+✅ Balanced Distribution
    └─ Platinum ≈ 15%, Gold ≈ 25%, Silver ≈ 30%, Discounted ≈ 20%
 
 ✅ Intelligent Scoring

@@ -60,8 +60,9 @@ function scoreProduct(product: Product): number {
   if (product.createdAt) {
     const now = new Date();
     const createdDate = new Date(product.createdAt);
-    const daysOld = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
-    
+    const daysOld =
+      (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+
     if (daysOld < 7) {
       score += 20; // New products
     } else if (daysOld < 30) {
@@ -101,7 +102,9 @@ function scoreProduct(product: Product): number {
  * Main allocation algorithm
  * Distributes products into 4 sections ensuring no duplicates
  */
-export function allocateProductsToSections(products: Product[]): AllocationResult {
+export function allocateProductsToSections(
+  products: Product[],
+): AllocationResult {
   if (!Array.isArray(products) || products.length === 0) {
     return {
       platinum: [],
@@ -114,7 +117,7 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
 
   // Remove duplicates
   const uniqueProducts = Array.from(
-    new Map(products.map((p) => [p._id || p.pid, p])).values()
+    new Map(products.map((p) => [p._id || p.pid, p])).values(),
   );
 
   // Score all products
@@ -136,10 +139,22 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
 
   // Define section allocations (percentages)
   const sections = {
-    platinum: { count: Math.ceil(uniqueProducts.length * 0.15), items: [] as string[] }, // Top 15%
-    gold: { count: Math.ceil(uniqueProducts.length * 0.25), items: [] as string[] }, // Next 25%
-    silver: { count: Math.ceil(uniqueProducts.length * 0.30), items: [] as string[] }, // Next 30%
-    discounted: { count: Math.ceil(uniqueProducts.length * 0.20), items: [] as string[] }, // Next 20%
+    platinum: {
+      count: Math.ceil(uniqueProducts.length * 0.15),
+      items: [] as string[],
+    }, // Top 15%
+    gold: {
+      count: Math.ceil(uniqueProducts.length * 0.25),
+      items: [] as string[],
+    }, // Next 25%
+    silver: {
+      count: Math.ceil(uniqueProducts.length * 0.3),
+      items: [] as string[],
+    }, // Next 30%
+    discounted: {
+      count: Math.ceil(uniqueProducts.length * 0.2),
+      items: [] as string[],
+    }, // Next 20%
   };
 
   // Track used product IDs
@@ -149,7 +164,11 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
   let productIndex = 0;
 
   // Platinum section (top tier - highest scores + ratings + premium)
-  for (let i = 0; i < sections.platinum.count && productIndex < scoredProducts.length; i++) {
+  for (
+    let i = 0;
+    i < sections.platinum.count && productIndex < scoredProducts.length;
+    i++
+  ) {
     const productId = scoredProducts[productIndex].productId;
     if (!usedProductIds.has(productId)) {
       sections.platinum.items.push(productId);
@@ -159,7 +178,11 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
   }
 
   // Gold section
-  for (let i = 0; i < sections.gold.count && productIndex < scoredProducts.length; i++) {
+  for (
+    let i = 0;
+    i < sections.gold.count && productIndex < scoredProducts.length;
+    i++
+  ) {
     const productId = scoredProducts[productIndex].productId;
     if (!usedProductIds.has(productId)) {
       sections.gold.items.push(productId);
@@ -169,7 +192,11 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
   }
 
   // Silver section
-  for (let i = 0; i < sections.silver.count && productIndex < scoredProducts.length; i++) {
+  for (
+    let i = 0;
+    i < sections.silver.count && productIndex < scoredProducts.length;
+    i++
+  ) {
     const productId = scoredProducts[productIndex].productId;
     if (!usedProductIds.has(productId)) {
       sections.silver.items.push(productId);
@@ -183,11 +210,17 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
     (p) =>
       !usedProductIds.has(p.productId) &&
       uniqueProducts.find(
-        (prod) => (prod._id || prod.pid) === p.productId && (prod.discount || prod.tag === "discount")
-      )
+        (prod) =>
+          (prod._id || prod.pid) === p.productId &&
+          (prod.discount || prod.tag === "discount"),
+      ),
   );
 
-  for (let i = 0; i < Math.min(discountedProducts.length, sections.discounted.count); i++) {
+  for (
+    let i = 0;
+    i < Math.min(discountedProducts.length, sections.discounted.count);
+    i++
+  ) {
     sections.discounted.items.push(discountedProducts[i].productId);
     usedProductIds.add(discountedProducts[i].productId);
   }
@@ -227,13 +260,13 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
 export function rotateProductsInSection(
   sectionProducts: string[],
   showNew: boolean,
-  rotationIndex: number = 0
+  rotationIndex: number = 0,
 ): string[] {
   if (sectionProducts.length === 0) return [];
 
   const batchSize = Math.ceil(sectionProducts.length / 3);
   const startIdx = (rotationIndex * batchSize) % sectionProducts.length;
-  
+
   // Rotate through the array
   const rotated = [
     ...sectionProducts.slice(startIdx),
@@ -250,7 +283,7 @@ export function ensureNoProductDuplicateAcrossSections(
   platinum: Product[],
   gold: Product[],
   silver: Product[],
-  discounted: Product[]
+  discounted: Product[],
 ): {
   platinum: Product[];
   gold: Product[];
