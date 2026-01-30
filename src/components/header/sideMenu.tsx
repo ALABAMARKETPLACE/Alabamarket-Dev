@@ -212,7 +212,7 @@ const SideMenu = ({
               <button
                 className={styles.logoutBtn}
                 onClick={() => {
-                  signOut();
+                  signOut({ callbackUrl: "/" });
                   onClose();
                 }}
               >

@@ -15,6 +15,7 @@ import ReactQueryProvider from "@/util/queryProvider";
 
 import CONFIG from "@/config/configuration";
 import ChatBot from "@/components/chatbot/ChatBot";
+import LayoutContent from "@/components/LayoutContent";
 
 export const metadata: Metadata = {
   title: CONFIG.NAME,
@@ -78,12 +79,14 @@ export default function RootLayout({
               <ConfigProvider theme={theme}>
                 <App>
                   <StoreProvider>
-                    <div className="layout-container">
-                      <Header />
-                      <main className="layout-main">{children}</main>
-                      <Footer />
-                      <ChatBot />
-                    </div>
+                    <LayoutContent>
+                      <div className="layout-container">
+                        <Header />
+                        <main className="layout-main">{children}</main>
+                        <Footer />
+                        <ChatBot />
+                      </div>
+                    </LayoutContent>
                   </StoreProvider>
                 </App>
               </ConfigProvider>

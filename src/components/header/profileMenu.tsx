@@ -73,7 +73,7 @@ const ProfileMenu = (props: any) => {
 
   const logotFunction = () => {
     if (User?.user) {
-      signOut();
+      signOut({ callbackUrl: "/" });
     } else {
       navigation.push("/login");
       props.close();
