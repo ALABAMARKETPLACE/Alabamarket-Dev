@@ -41,7 +41,11 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         dataIndex: "image",
         key: "image",
         width: 50,
+<<<<<<< HEAD
         responsive: ["md" as const],
+=======
+        responsive: ["md"],
+>>>>>>> b6726a9 (Done)
         render: (img: string | undefined) => (
           <div className="table__image-wrapper">
             <Avatar
@@ -77,7 +81,11 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         dataIndex: "createdAt",
         key: "createdAt",
         width: 110,
+<<<<<<< HEAD
         responsive: ["lg" as const],
+=======
+        responsive: ["lg"],
+>>>>>>> b6726a9 (Done)
         render: (item: string | number | Date) => (
           <span className="table__date">
             {moment(item).format("MMM DD, YY")}
@@ -89,7 +97,11 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         dataIndex: "grandTotal",
         key: "grandTotal",
         width: 110,
+<<<<<<< HEAD
         responsive: ["md" as const],
+=======
+        responsive: ["md"],
+>>>>>>> b6726a9 (Done)
         render: (item: number | string) => (
           <span className="table__amount">
             {Number(item)?.toFixed(2)} {Settings?.currency ?? ""}
@@ -101,11 +113,18 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         dataIndex: "status",
         key: "status",
         width: 100,
+<<<<<<< HEAD
         responsive: ["md" as const],
         render: (status: string) => {
           let color = "default";
           const displayStatus =
             status?.charAt(0)?.toUpperCase() + status?.slice(1);
+=======
+        responsive: ["md"],
+        render: (status: string) => {
+          let color = "default";
+          const displayStatus = status?.charAt(0)?.toUpperCase() + status?.slice(1);
+>>>>>>> b6726a9 (Done)
 
           if (status === "pending") {
             color = "processing";
@@ -145,7 +164,11 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         ),
       },
     ],
+<<<<<<< HEAD
     [Settings?.currency, route],
+=======
+    [Settings?.currency, route]
+>>>>>>> b6726a9 (Done)
   );
 
   return (

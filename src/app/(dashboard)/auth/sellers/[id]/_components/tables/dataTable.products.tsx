@@ -26,7 +26,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "image",
         key: "image",
         width: 60,
+<<<<<<< HEAD
         responsive: ["md" as const],
+=======
+        responsive: ["md"],
+>>>>>>> b6726a9 (Done)
         render: (item: string) => (
           <div className="table__image-wrapper">
             <Image
@@ -52,7 +56,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "unit",
         key: "unit",
         width: 80,
+<<<<<<< HEAD
         responsive: ["lg" as const],
+=======
+        responsive: ["lg"],
+>>>>>>> b6726a9 (Done)
         render: (item: any) => (
           <span
             className={`table__badge ${
@@ -68,7 +76,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "retail_rate",
         key: "price",
         width: 100,
+<<<<<<< HEAD
         responsive: ["md" as const],
+=======
+        responsive: ["md"],
+>>>>>>> b6726a9 (Done)
         render: (item: number) => (
           <span className="table__price">
             {Number(item)?.toFixed(2)} {Settings?.currency ?? ""}
@@ -80,7 +92,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "status",
         key: "status",
         width: 90,
+<<<<<<< HEAD
         responsive: ["md" as const],
+=======
+        responsive: ["md"],
+>>>>>>> b6726a9 (Done)
         render: (item: boolean) => (
           <Tag
             color={
@@ -98,7 +114,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         dataIndex: "createdAt",
         key: "createdAt",
         width: 110,
+<<<<<<< HEAD
         responsive: ["lg" as const],
+=======
+        responsive: ["lg"],
+>>>>>>> b6726a9 (Done)
         render: (text: any) => (
           <span className="table__date">
             {moment(text).format("MMM DD, YY")}
@@ -106,7 +126,11 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         ),
       },
     ],
+<<<<<<< HEAD
     [Settings?.currency],
+=======
+    [Settings?.currency]
+>>>>>>> b6726a9 (Done)
   );
 
   return (
