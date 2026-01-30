@@ -256,6 +256,7 @@ function Home() {
   const positionItems = useMemo(() => {
     // Helper function to filter out unavailable products
     const filterAvailableProducts = (products: any[]) => {
+<<<<<<< HEAD
       if (!Array.isArray(products)) return [];
       return products.filter((item) => {
         // Check if product is available
@@ -272,6 +273,17 @@ function Home() {
       const featured = filterAvailableProducts(
         featuredProducts[position] || [],
       );
+=======
+      return products.filter(
+        (item) =>
+          item?.status !== false && // Product must be active
+          item?.unit !== 0 // Product must have stock
+      );
+    };
+
+    const buildItems = (position: 1 | 2 | 3 | 4) => {
+      const featured = filterAvailableProducts(featuredProducts[position] || []);
+>>>>>>> 2680899 (Done)
       const fallback = filterAvailableProducts(recentFallback || []);
       const minRequired = minItemsByPosition[position] ?? 6;
 
@@ -293,9 +305,13 @@ function Home() {
         }
 
         const featuredIds = new Set(
+<<<<<<< HEAD
           shuffledFeatured.map(
             (item: any) => item?.id ?? item?._id ?? item?.slug,
           ),
+=======
+          shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+>>>>>>> 2680899 (Done)
         );
 
         const shuffledFallback = seededShuffle(fallback, positionSeed * 2);
@@ -317,9 +333,13 @@ function Home() {
         if (featured.length >= minRequired) {
           const shuffledFeatured = seededShuffle(featured, positionSeed * 4);
           const featuredIds = new Set(
+<<<<<<< HEAD
             shuffledFeatured.map(
               (item: any) => item?.id ?? item?._id ?? item?.slug,
             ),
+=======
+            shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+>>>>>>> 2680899 (Done)
           );
 
           const uniqueFeatured = shuffledFeatured.filter((item: any) => {
@@ -346,6 +366,7 @@ function Home() {
       3: buildItems(3),
       4: buildItems(4),
     };
+<<<<<<< HEAD
   }, [
     featuredProducts,
     recentFallback,
@@ -353,6 +374,9 @@ function Home() {
     showNewProducts,
     rotationTime,
   ]);
+=======
+  }, [featuredProducts, recentFallback, minItemsByPosition, showNewProducts, rotationTime]);
+>>>>>>> 2680899 (Done)
 
   const position1Items = positionItems[1];
   const position2Items = positionItems[2];
@@ -360,6 +384,7 @@ function Home() {
   const position4Items = positionItems[4];
   const recentVisitedPreview = useMemo(() => {
     const recent = Array.isArray(history) ? history.slice(0, 7) : [];
+<<<<<<< HEAD
     // Filter out unavailable products from recent history
     const filtered = recent.filter((item) => {
       // Check if product is available
@@ -373,6 +398,11 @@ function Home() {
     // Randomize recent products with different seed to show variety
     const recentSeed = rotationTime + 250;
     return seededShuffle(filtered, recentSeed);
+=======
+    // Randomize recent products with different seed to show variety
+    const recentSeed = rotationTime + 250;
+    return seededShuffle(recent, recentSeed);
+>>>>>>> 2680899 (Done)
   }, [history, rotationTime]);
 
   // Filter out unavailable products from all products with randomization
@@ -381,6 +411,7 @@ function Home() {
       (allProductsResponse?.data as any[]) ??
       (Array.isArray(allProductsResponse) ? allProductsResponse : []);
 
+<<<<<<< HEAD
     if (!Array.isArray(rawProducts)) return [];
 
     const filtered = rawProducts.filter((item) => {
@@ -392,6 +423,13 @@ function Home() {
       const hasStock = (item?.unit ?? 0) > 0;
       return isAvailable && hasStock;
     });
+=======
+    const filtered = rawProducts.filter(
+      (item) =>
+        item?.status !== false && // Product must be active
+        item?.unit !== 0 // Product must have stock
+    );
+>>>>>>> 2680899 (Done)
 
     // Randomize the order of all products using rotation time as seed
     // This creates a unique but deterministic randomization per time period
