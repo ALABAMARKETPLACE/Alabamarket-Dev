@@ -3,6 +3,9 @@ export const KNOWLEDGE_BASE = [
   // Greetings & Welcome
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "hi",
       "hello",
@@ -15,6 +18,7 @@ export const KNOWLEDGE_BASE = [
     ],
     response:
       "Hello! 👋 Welcome to Alaba Marketplace. I'm here to help! What can I assist you with today?",
+<<<<<<< HEAD
   },
   {
     patterns: ["how are you", "how's it going", "what's up", "hows you doing"],
@@ -39,24 +43,43 @@ export const KNOWLEDGE_BASE = [
 =======
     patterns: ["hi", "hello", "hey", "greetings", "good morning", "good afternoon", "good evening", "howdy"],
     response: "Hello! 👋 Welcome to Alaba Marketplace. I'm here to help! What can I assist you with today?",
+=======
+>>>>>>> c31a6de (Done)
   },
   {
     patterns: ["how are you", "how's it going", "what's up", "hows you doing"],
-    response: "I'm doing great, thanks for asking! 😊 Ready to help you with any questions about Alaba Marketplace. What do you need?",
+    response:
+      "I'm doing great, thanks for asking! 😊 Ready to help you with any questions about Alaba Marketplace. What do you need?",
   },
   {
     patterns: ["thanks", "thank you", "appreciate it", "thx", "thanks so much"],
-    response: "You're welcome! 🙏 Happy to help. Is there anything else I can assist you with?",
+    response:
+      "You're welcome! 🙏 Happy to help. Is there anything else I can assist you with?",
   },
   {
+<<<<<<< HEAD
     patterns: ["help", "support", "need help", "i need assistance", "can you help me"],
     response: "Of course! I'm here to help. 💪 You can ask me about:\n• Orders & Tracking\n• Shipping & Delivery\n• Payments\n• Returns & Refunds\n• Products & Sellers\n• Account Issues\nWhat do you need?",
 >>>>>>> 4f483f9 (Done)
+=======
+    patterns: [
+      "help",
+      "support",
+      "need help",
+      "i need assistance",
+      "can you help me",
+    ],
+    response:
+      "Of course! I'm here to help. 💪 You can ask me about:\n• Orders & Tracking\n• Shipping & Delivery\n• Payments\n• Returns & Refunds\n• Products & Sellers\n• Account Issues\nWhat do you need?",
+>>>>>>> c31a6de (Done)
   },
 
   // Shipping & Delivery - HIGHLY EXPANDED
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "shipping",
       "delivery",
@@ -66,14 +89,20 @@ export const KNOWLEDGE_BASE = [
       "delivery time",
       "track my package",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["shipping", "delivery", "how long", "track order", "where is my order", "delivery time", "track my package"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "📦 **Shipping & Delivery:**\n• Standard: 2-5 business days\n• Express: Next day available\n• Track your order in 'My Orders'\n• Free shipping on orders ₦5,000+\n• Nationwide coverage\n• Real-time tracking updates",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "free shipping",
       "shipping cost",
@@ -81,28 +110,40 @@ export const KNOWLEDGE_BASE = [
       "shipping charges",
       "how much is shipping",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["free shipping", "shipping cost", "delivery fee", "shipping charges", "how much is shipping"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "📍 **Shipping Costs:**\n• FREE on orders ₦5,000+\n• Standard: ₦500-₦2,000\n• Express: ₦2,000-₦5,000\n• Remote areas: May apply additional fee\n• Check the shipping calculator at checkout!",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "where is my package",
       "package status",
       "order not arrived",
       "still in transit",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["where is my package", "package status", "order not arrived", "still in transit"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🔍 **Track Your Package:**\n• Go to My Orders\n• Click on the order\n• See real-time tracking\n• Estimated delivery shown\nIf delayed by 7+ days, contact support immediately!",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "returns",
       "return policy",
@@ -113,14 +154,20 @@ export const KNOWLEDGE_BASE = [
       "wrong item",
       "broken item",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["returns", "return policy", "refund", "money back", "not satisfied", "damaged", "wrong item", "broken item"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "♻️ **Returns & Refunds (7-Day Policy):**\n• Valid from delivery date\n• Item must be unused/original condition\n• Full refund or exchange option\n• Steps: My Orders → Item → Request Return\n• Refund in 3-5 business days\nDamaged? Contact support within 24hrs!",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "exchange",
       "replace",
@@ -129,14 +176,20 @@ export const KNOWLEDGE_BASE = [
       "different size",
       "different color",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["exchange", "replace", "swap", "change item", "different size", "different color"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🔄 **Product Exchange:**\n• 7-day window from delivery\n• Item must be unused\n• Same/different product OK\n• Free shipping included\n• No extra charge!\nGo to My Orders → Select → Request Exchange",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "delivery address",
       "change address",
@@ -144,37 +197,52 @@ export const KNOWLEDGE_BASE = [
       "update delivery",
       "incorrect address",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["delivery address", "change address", "wrong address", "update delivery", "incorrect address"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "📍 **Changing Delivery Address:**\n✅ BEFORE Shipped: Easy edit\n❌ AFTER Shipped: Cannot change\n• Go to My Orders\n• Click Edit if available\n• Confirm new address\nIf shipped: Contact support ASAP!",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "express delivery",
       "fast shipping",
       "urgent delivery",
       "same day",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["express delivery", "fast shipping", "urgent delivery", "same day"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "⚡ **Express Delivery Available:**\n• Next-day delivery in major cities\n• Lagos, Abuja, Port Harcourt, Ibadan\n• Cost: ₦2,000-₦5,000\n• Order before 2 PM for next-day\n• Select at checkout",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "delivery areas",
       "where do you deliver",
       "service areas",
       "coverage",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["delivery areas", "where do you deliver", "service areas", "coverage"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🗺️ **Delivery Coverage:**\n• Nationwide delivery\n• All 36 states + FCT\n• Rural & urban areas\n• Some remote areas: Extra fee\n• Enter your location at checkout to see cost",
   },
@@ -182,6 +250,9 @@ export const KNOWLEDGE_BASE = [
   // Payment - HIGHLY EXPANDED
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "payment",
       "pay",
@@ -192,9 +263,12 @@ export const KNOWLEDGE_BASE = [
       "payment method",
       "checkout",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["payment", "pay", "card", "transfer", "bank", "how to pay", "payment method", "checkout"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "💳 **Payment Methods:**\n• Debit/Credit Cards (Visa, Mastercard, Verve)\n• Bank Transfer\n• Paystack Wallet\n• USSD codes\n• All 100% secure & encrypted ✅",
   },
@@ -205,15 +279,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "bank transfer",
       "wire transfer",
       "bank payment",
       "account number",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["bank transfer", "wire transfer", "bank payment", "account number"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🏦 **Bank Transfer:**\n• Transfer details at checkout\n• Include order number in description\n• Confirmation within 30 mins\n• 24/7 processing\n• No fees from us\nInstructions shown at checkout",
   },
@@ -224,15 +304,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "payment failed",
       "transaction declined",
       "payment not processed",
       "error during payment",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["payment failed", "transaction declined", "payment not processed", "error during payment"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "❌ **Payment Issues:**\n• Check internet connection\n• Verify card details\n• Ensure sufficient funds\n• Try different card\n• Clear browser cache\nStill failing? Contact support!\n📧 support@alabamarket.com or WhatsApp",
   },
@@ -243,15 +329,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "refund status",
       "where is my refund",
       "pending refund",
       "refund not received",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["refund status", "where is my refund", "pending refund", "refund not received"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "💸 **Refund Status:**\n• Standard: 3-5 business days\n• Check bank account\n• Verify payment method\n• Contact support if delayed 7+ days\n• Provide order number\n📧 Email: support@alabamarket.com",
   },
@@ -259,6 +351,9 @@ export const KNOWLEDGE_BASE = [
   // Orders - HIGHLY EXPANDED
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "order",
       "my order",
@@ -266,23 +361,32 @@ export const KNOWLEDGE_BASE = [
       "view order",
       "check order",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["order", "my order", "order status", "view order", "check order"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "📋 **View Your Orders:**\n• Dashboard → My Orders\n• See all past/current orders\n• Real-time status updates\n• Track packages\n• Download invoices\n• Return items if eligible",
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "track order",
       "order tracking",
       "where is order",
       "order number",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["track order", "order tracking", "where is order", "order number"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🔍 **Track Your Order:**\n• My Orders → Select order\n• See detailed tracking\n• Estimated delivery date\n• Carrier information\n• Status updates in real-time\nGet updates via email/SMS too!",
   },
@@ -298,15 +402,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "order not received",
       "missing items",
       "incomplete order",
       "order lost",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["order not received", "missing items", "incomplete order", "order lost"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🚨 **Order Issues:**\n• Missing items? Check packaging\n• Not arrived after 7 days?\n• Contact support with proof\n• Provide order number\n• Investigation started\n• Replacement sent if confirmed\n📧 support@alabamarket.com",
   },
@@ -319,15 +429,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "forgot password",
       "reset password",
       "change password",
       "password recovery",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["forgot password", "reset password", "change password", "password recovery"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🔑 **Password Reset:**\n• Click 'Forgot Password'\n• Enter registered email\n• Check email (check spam!)\n• Click reset link\n• Set new password\n• Login with new password\n🎉 You're back in!",
   },
@@ -338,15 +454,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "edit profile",
       "update profile",
       "change name",
       "update account",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["edit profile", "update profile", "change name", "update account"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "👤 **Edit Your Profile:**\n• Dashboard → Profile\n• Update name, email, phone\n• Change password\n• Add avatar\n• Manage preferences\n• Save changes\nChanges apply instantly!",
   },
@@ -362,15 +484,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "delete account",
       "close account",
       "deactivate",
       "remove account",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["delete account", "close account", "deactivate", "remove account"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🗑️ **Account Deletion:**\n• Permanent & irreversible\n• All data removed\n• Cannot undo!\n• Contact support first\n• Provide reason\n• Process takes 30 days\nMaybe we can help instead?",
   },
@@ -383,6 +511,9 @@ export const KNOWLEDGE_BASE = [
   // Products - HIGHLY EXPANDED
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "products",
       "find product",
@@ -390,9 +521,12 @@ export const KNOWLEDGE_BASE = [
       "where to buy",
       "looking for",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["products", "find product", "search", "where to buy", "looking for"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "🔍 **Finding Products:**\n• Use search bar (top)\n• Browse categories\n• Filter by price/rating\n• Sort by new/popular\n• View seller ratings\n• Read reviews first!\nMillion+ products available!",
   },
@@ -403,6 +537,9 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "product quality",
       "is this good",
@@ -410,9 +547,12 @@ export const KNOWLEDGE_BASE = [
       "quality check",
       "authentic",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["product quality", "is this good", "worth it", "quality check", "authentic"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "⭐ **Product Quality:**\n• Check seller ratings\n• Read real customer reviews\n• View product photos\n• 7-day return guarantee\n• Buy with confidence\n• Our top sellers verified\n✅ You're protected with us!",
   },
@@ -440,15 +580,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "seller rating",
       "review seller",
       "seller reviews",
       "trust seller",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["seller rating", "review seller", "seller reviews", "trust seller"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "⭐ **Seller Ratings:**\n• Check seller profile\n• See average rating\n• Read buyer reviews\n• View response time\n• Check return policy\n• More stars = More trusted!\n📊 Most sellers rated 4.5+",
   },
@@ -464,15 +610,21 @@ export const KNOWLEDGE_BASE = [
   },
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "seller not responding",
       "seller ignoring",
       "bad seller",
       "seller issue",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["seller not responding", "seller ignoring", "bad seller", "seller issue"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "⚠️ **Seller Problems:**\n• Document all chats\n• Take screenshots\n• Report to support\n• Provide evidence\n• We'll investigate\n• Your protection guaranteed\n• May result in seller penalties",
   },
@@ -541,15 +693,21 @@ export const KNOWLEDGE_BASE = [
   // Help & Support
   {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
     patterns: [
       "contact support",
       "customer service",
       "help desk",
       "support team",
     ],
+<<<<<<< HEAD
 =======
     patterns: ["contact support", "customer service", "help desk", "support team"],
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
     response:
       "📞 **Contact Support:**\n• 📧 Email: support@alabamarket.com\n• 💬 WhatsApp: [Link in app]\n• 🌐 Live chat: Available 9am-9pm\n• 📱 Phone: Available Mon-Fri\n• Response: Usually within 2 hours\n• We're here to help! 🤝",
   },

@@ -148,12 +148,18 @@ const RuleBasedChatBot: React.FC = () => {
                 className={`chatbot-message-wrapper chatbot-message-wrapper--${message.sender}`}
               >
 <<<<<<< HEAD
+<<<<<<< HEAD
                 <div
                   className={`chatbot-message chatbot-message--${message.sender}`}
                 >
 =======
                 <div className={`chatbot-message chatbot-message--${message.sender}`}>
 >>>>>>> 4f483f9 (Done)
+=======
+                <div
+                  className={`chatbot-message chatbot-message--${message.sender}`}
+                >
+>>>>>>> c31a6de (Done)
                   <div className="chatbot-message-bubble">
                     <p className="chatbot-message-text">{message.text}</p>
                   </div>

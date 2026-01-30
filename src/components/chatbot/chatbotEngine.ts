@@ -93,13 +93,19 @@ export function findBestMatch(userInput: string): MatchResult {
  * Otherwise returns a helpful fallback message
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c31a6de (Done)
 export function getChatbotResponse(userInput: string): {
   response: string;
   isKnowledgeBase: boolean;
 } {
+<<<<<<< HEAD
 =======
 export function getChatbotResponse(userInput: string): { response: string; isKnowledgeBase: boolean } {
 >>>>>>> 4f483f9 (Done)
+=======
+>>>>>>> c31a6de (Done)
   if (!userInput || userInput.trim().length === 0) {
     return {
       response:
@@ -128,11 +134,16 @@ export function getChatbotResponse(userInput: string): { response: string; isKno
 
   // Return a random fallback
 <<<<<<< HEAD
+<<<<<<< HEAD
   const randomFallback =
     fallbacks[Math.floor(Math.random() * fallbacks.length)];
 =======
   const randomFallback = fallbacks[Math.floor(Math.random() * fallbacks.length)];
 >>>>>>> 4f483f9 (Done)
+=======
+  const randomFallback =
+    fallbacks[Math.floor(Math.random() * fallbacks.length)];
+>>>>>>> c31a6de (Done)
 
   return {
     response: randomFallback,
