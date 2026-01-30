@@ -61,6 +61,7 @@ function scoreProduct(product: Product): number {
     const now = new Date();
     const createdDate = new Date(product.createdAt);
 <<<<<<< HEAD
+<<<<<<< HEAD
     const daysOld =
       (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
 
@@ -68,6 +69,11 @@ function scoreProduct(product: Product): number {
     const daysOld = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
     
 >>>>>>> 2f2bb25 (Done)
+=======
+    const daysOld =
+      (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+
+>>>>>>> 37193e2 (Done)
     if (daysOld < 7) {
       score += 20; // New products
     } else if (daysOld < 30) {
@@ -108,12 +114,18 @@ function scoreProduct(product: Product): number {
  * Distributes products into 4 sections ensuring no duplicates
  */
 <<<<<<< HEAD
+<<<<<<< HEAD
 export function allocateProductsToSections(
   products: Product[],
 ): AllocationResult {
 =======
 export function allocateProductsToSections(products: Product[]): AllocationResult {
 >>>>>>> 2f2bb25 (Done)
+=======
+export function allocateProductsToSections(
+  products: Product[],
+): AllocationResult {
+>>>>>>> 37193e2 (Done)
   if (!Array.isArray(products) || products.length === 0) {
     return {
       platinum: [],
@@ -127,10 +139,14 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
   // Remove duplicates
   const uniqueProducts = Array.from(
 <<<<<<< HEAD
+<<<<<<< HEAD
     new Map(products.map((p) => [p._id || p.pid, p])).values(),
 =======
     new Map(products.map((p) => [p._id || p.pid, p])).values()
 >>>>>>> 2f2bb25 (Done)
+=======
+    new Map(products.map((p) => [p._id || p.pid, p])).values(),
+>>>>>>> 37193e2 (Done)
   );
 
   // Score all products
@@ -153,6 +169,9 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
   // Define section allocations (percentages)
   const sections = {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
     platinum: {
       count: Math.ceil(uniqueProducts.length * 0.15),
       items: [] as string[],
@@ -169,12 +188,15 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
       count: Math.ceil(uniqueProducts.length * 0.2),
       items: [] as string[],
     }, // Next 20%
+<<<<<<< HEAD
 =======
     platinum: { count: Math.ceil(uniqueProducts.length * 0.15), items: [] as string[] }, // Top 15%
     gold: { count: Math.ceil(uniqueProducts.length * 0.25), items: [] as string[] }, // Next 25%
     silver: { count: Math.ceil(uniqueProducts.length * 0.30), items: [] as string[] }, // Next 30%
     discounted: { count: Math.ceil(uniqueProducts.length * 0.20), items: [] as string[] }, // Next 20%
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
   };
 
   // Track used product IDs
@@ -185,14 +207,20 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
 
   // Platinum section (top tier - highest scores + ratings + premium)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
   for (
     let i = 0;
     i < sections.platinum.count && productIndex < scoredProducts.length;
     i++
   ) {
+<<<<<<< HEAD
 =======
   for (let i = 0; i < sections.platinum.count && productIndex < scoredProducts.length; i++) {
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
     const productId = scoredProducts[productIndex].productId;
     if (!usedProductIds.has(productId)) {
       sections.platinum.items.push(productId);
@@ -203,14 +231,20 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
 
   // Gold section
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
   for (
     let i = 0;
     i < sections.gold.count && productIndex < scoredProducts.length;
     i++
   ) {
+<<<<<<< HEAD
 =======
   for (let i = 0; i < sections.gold.count && productIndex < scoredProducts.length; i++) {
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
     const productId = scoredProducts[productIndex].productId;
     if (!usedProductIds.has(productId)) {
       sections.gold.items.push(productId);
@@ -221,14 +255,20 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
 
   // Silver section
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
   for (
     let i = 0;
     i < sections.silver.count && productIndex < scoredProducts.length;
     i++
   ) {
+<<<<<<< HEAD
 =======
   for (let i = 0; i < sections.silver.count && productIndex < scoredProducts.length; i++) {
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
     const productId = scoredProducts[productIndex].productId;
     if (!usedProductIds.has(productId)) {
       sections.silver.items.push(productId);
@@ -243,10 +283,14 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
       !usedProductIds.has(p.productId) &&
       uniqueProducts.find(
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
         (prod) =>
           (prod._id || prod.pid) === p.productId &&
           (prod.discount || prod.tag === "discount"),
       ),
+<<<<<<< HEAD
   );
 
   for (
@@ -261,6 +305,15 @@ export function allocateProductsToSections(products: Product[]): AllocationResul
 
   for (let i = 0; i < Math.min(discountedProducts.length, sections.discounted.count); i++) {
 >>>>>>> 2f2bb25 (Done)
+=======
+  );
+
+  for (
+    let i = 0;
+    i < Math.min(discountedProducts.length, sections.discounted.count);
+    i++
+  ) {
+>>>>>>> 37193e2 (Done)
     sections.discounted.items.push(discountedProducts[i].productId);
     usedProductIds.add(discountedProducts[i].productId);
   }
@@ -301,20 +354,28 @@ export function rotateProductsInSection(
   sectionProducts: string[],
   showNew: boolean,
 <<<<<<< HEAD
+<<<<<<< HEAD
   rotationIndex: number = 0,
 =======
   rotationIndex: number = 0
 >>>>>>> 2f2bb25 (Done)
+=======
+  rotationIndex: number = 0,
+>>>>>>> 37193e2 (Done)
 ): string[] {
   if (sectionProducts.length === 0) return [];
 
   const batchSize = Math.ceil(sectionProducts.length / 3);
   const startIdx = (rotationIndex * batchSize) % sectionProducts.length;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
   
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
   // Rotate through the array
   const rotated = [
     ...sectionProducts.slice(startIdx),
@@ -332,10 +393,14 @@ export function ensureNoProductDuplicateAcrossSections(
   gold: Product[],
   silver: Product[],
 <<<<<<< HEAD
+<<<<<<< HEAD
   discounted: Product[],
 =======
   discounted: Product[]
 >>>>>>> 2f2bb25 (Done)
+=======
+  discounted: Product[],
+>>>>>>> 37193e2 (Done)
 ): {
   platinum: Product[];
   gold: Product[];

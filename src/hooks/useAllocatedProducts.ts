@@ -1,12 +1,18 @@
 import { useMemo } from "react";
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
 import {
   allocateProductsToSections,
   ensureNoProductDuplicateAcrossSections,
 } from "@/lib/productAllocationAlgorithm";
+<<<<<<< HEAD
 =======
 import { allocateProductsToSections, ensureNoProductDuplicateAcrossSections } from "@/lib/productAllocationAlgorithm";
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
 
 interface Product {
   _id?: string;
@@ -63,6 +69,9 @@ export const useAllocatedProducts = ({
 
     return Array.from(uniqueMap.values());
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
   }, [
     position1Products,
     position2Products,
@@ -70,9 +79,12 @@ export const useAllocatedProducts = ({
     position4Products,
     recentFallback,
   ]);
+<<<<<<< HEAD
 =======
   }, [position1Products, position2Products, position3Products, position4Products, recentFallback]);
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
 
   // Allocate products intelligently
   const allocatedProducts = useMemo(() => {
@@ -88,10 +100,14 @@ export const useAllocatedProducts = ({
     const allocation = allocateProductsToSections(allProducts);
     const productMap = new Map(
 <<<<<<< HEAD
+<<<<<<< HEAD
       allProducts.map((p) => [p._id || p.pid || p.id, p]),
 =======
       allProducts.map((p) => [p._id || p.pid || p.id, p])
 >>>>>>> 2f2bb25 (Done)
+=======
+      allProducts.map((p) => [p._id || p.pid || p.id, p]),
+>>>>>>> 37193e2 (Done)
     );
 
     // Get product objects for each section
@@ -99,6 +115,7 @@ export const useAllocatedProducts = ({
       platinum: allocation.platinum
         .map((id) => productMap.get(id))
         .filter(Boolean),
+<<<<<<< HEAD
 <<<<<<< HEAD
       gold: allocation.gold.map((id) => productMap.get(id)).filter(Boolean),
       silver: allocation.silver.map((id) => productMap.get(id)).filter(Boolean),
@@ -110,6 +127,10 @@ export const useAllocatedProducts = ({
         .map((id) => productMap.get(id))
         .filter(Boolean),
 >>>>>>> 2f2bb25 (Done)
+=======
+      gold: allocation.gold.map((id) => productMap.get(id)).filter(Boolean),
+      silver: allocation.silver.map((id) => productMap.get(id)).filter(Boolean),
+>>>>>>> 37193e2 (Done)
       discounted: allocation.discounted
         .map((id) => productMap.get(id))
         .filter(Boolean),
@@ -121,10 +142,14 @@ export const useAllocatedProducts = ({
       sections.gold,
       sections.silver,
 <<<<<<< HEAD
+<<<<<<< HEAD
       sections.discounted,
 =======
       sections.discounted
 >>>>>>> 2f2bb25 (Done)
+=======
+      sections.discounted,
+>>>>>>> 37193e2 (Done)
     );
   }, [allProducts]);
 

@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
 import {
   allocateProductsToSections,
   ensureNoProductDuplicateAcrossSections,
 } from "@/lib/productAllocationAlgorithm";
+<<<<<<< HEAD
 =======
 import { allocateProductsToSections, ensureNoProductDuplicateAcrossSections } from "@/lib/productAllocationAlgorithm";
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
 
 interface Product {
   _id?: string;
@@ -42,10 +48,14 @@ export async function POST(request: NextRequest) {
           message: "No products provided",
         },
 <<<<<<< HEAD
+<<<<<<< HEAD
         { status: 200 },
 =======
         { status: 200 }
 >>>>>>> 2f2bb25 (Done)
+=======
+        { status: 200 },
+>>>>>>> 37193e2 (Done)
       );
     }
 
@@ -78,10 +88,14 @@ export async function POST(request: NextRequest) {
       allocationDetails.gold,
       allocationDetails.silver,
 <<<<<<< HEAD
+<<<<<<< HEAD
       allocationDetails.discounted,
 =======
       allocationDetails.discounted
 >>>>>>> 2f2bb25 (Done)
+=======
+      allocationDetails.discounted,
+>>>>>>> 37193e2 (Done)
     );
 
     return NextResponse.json(
@@ -113,12 +127,16 @@ export async function POST(request: NextRequest) {
             deduplicated.silver.length +
             deduplicated.discounted.length,
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
           unallocatedProducts:
             products.length -
             (deduplicated.platinum.length +
               deduplicated.gold.length +
               deduplicated.silver.length +
               deduplicated.discounted.length),
+<<<<<<< HEAD
         },
       },
       { status: 200 },
@@ -134,14 +152,21 @@ export async function POST(request: NextRequest) {
             deduplicated.silver.length +
             deduplicated.discounted.length
           ),
+=======
+>>>>>>> 37193e2 (Done)
         },
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("Product allocation error:", error);
+<<<<<<< HEAD
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
 >>>>>>> 2f2bb25 (Done)
+=======
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+>>>>>>> 37193e2 (Done)
     return NextResponse.json(
       {
         success: false,
@@ -149,10 +174,14 @@ export async function POST(request: NextRequest) {
         message: errorMessage,
       },
 <<<<<<< HEAD
+<<<<<<< HEAD
       { status: 500 },
 =======
       { status: 500 }
 >>>>>>> 2f2bb25 (Done)
+=======
+      { status: 500 },
+>>>>>>> 37193e2 (Done)
     );
   }
 }
@@ -177,9 +206,13 @@ export async function GET() {
       },
     },
 <<<<<<< HEAD
+<<<<<<< HEAD
     { status: 200 },
 =======
     { status: 200 }
 >>>>>>> 2f2bb25 (Done)
+=======
+    { status: 200 },
+>>>>>>> 37193e2 (Done)
   );
 }

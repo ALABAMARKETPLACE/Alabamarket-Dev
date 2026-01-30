@@ -4,9 +4,13 @@
 
 A production-ready system that automatically allocates products to 4 featured sections with:
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 - ✅ **Zero duplicates** across all sections
 - ✅ **Intelligent scoring** based on 6 criteria
 - ✅ **Automatic balancing** (15% / 25% / 30% / 20%)
@@ -18,6 +22,9 @@ A production-ready system that automatically allocates products to 4 featured se
 ## 📦 Files Delivered
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
 | File                                     | Purpose                | Type              |
 | ---------------------------------------- | ---------------------- | ----------------- |
 | `src/lib/productAllocationAlgorithm.ts`  | Core algorithm         | TypeScript Module |
@@ -27,6 +34,7 @@ A production-ready system that automatically allocates products to 4 featured se
 | `INTEGRATION_EXAMPLES.md`                | Code examples          | Examples          |
 | `BEFORE_AFTER_INTEGRATION.md`            | Comparison & steps     | Tutorial          |
 | `ALLOCATION_COMPLETE.md`                 | Summary & checklist    | Summary           |
+<<<<<<< HEAD
 =======
 | File | Purpose | Type |
 |------|---------|------|
@@ -38,6 +46,8 @@ A production-ready system that automatically allocates products to 4 featured se
 | `BEFORE_AFTER_INTEGRATION.md` | Comparison & steps | Tutorial |
 | `ALLOCATION_COMPLETE.md` | Summary & checklist | Summary |
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
 
 ---
 
@@ -45,14 +55,19 @@ A production-ready system that automatically allocates products to 4 featured se
 
 ### 1. Add Import
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 import { useAllocatedProducts } from "@/hooks/useAllocatedProducts";
 ```
 
 ### 2. Replace This
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 ```typescript
@@ -64,12 +79,21 @@ const positionItems = useMemo(() => {
 ### 3. With This
 
 =======
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
-const positionItems = useMemo(() => { /* ... old logic ... */ });
+const positionItems = useMemo(() => {
+  /* ... old logic ... */
+});
 ```
 
 ### 3. With This
+<<<<<<< HEAD
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 const allocated = useAllocatedProducts({
   position1Products: featuredProducts[1] || [],
@@ -83,9 +107,13 @@ const allocated = useAllocatedProducts({
 
 ### 4. Update Rendering
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 <PlatinumSection products={allocated.platinum} />
 <GoldSection products={allocated.gold} />
@@ -117,12 +145,16 @@ Total Score:     85 pts → "Gold Section"
 ## 📊 Section Distribution
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
 | Section        | Capacity | Score Range | Tier            |
 | -------------- | -------- | ----------- | --------------- |
 | **Platinum**   | 15%      | 80-100      | 🥇 Premium      |
 | **Gold**       | 25%      | 60-80       | 🥈 High-Quality |
 | **Silver**     | 30%      | 40-60       | 🥉 Good         |
 | **Discounted** | 20%      | Any         | 💰 Best Deals   |
+<<<<<<< HEAD
 =======
 | Section | Capacity | Score Range | Tier |
 |---------|----------|-------------|------|
@@ -131,6 +163,8 @@ Total Score:     85 pts → "Gold Section"
 | **Silver** | 30% | 40-60 | 🥉 Good |
 | **Discounted** | 20% | Any | 💰 Best Deals |
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
 
 ---
 
@@ -138,9 +172,13 @@ Total Score:     85 pts → "Gold Section"
 
 ### Pattern 1: Hook (Recommended)
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 const allocated = useAllocatedProducts({...});
 // Used in: PlatinumSection, GoldSection, etc.
@@ -148,9 +186,13 @@ const allocated = useAllocatedProducts({...});
 
 ### Pattern 2: API
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 const response = await fetch("/api/products/allocate", {
   method: "POST",
@@ -160,9 +202,13 @@ const response = await fetch("/api/products/allocate", {
 
 ### Pattern 3: Direct Function
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 const result = allocateProductsToSections(products);
 ```
@@ -173,9 +219,13 @@ const result = allocateProductsToSections(products);
 
 ### Check Allocation Distribution
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 import { logAllocationStats } from "INTEGRATION_EXAMPLES.md";
 logAllocationStats(allocated, allProducts);
@@ -184,9 +234,13 @@ logAllocationStats(allocated, allProducts);
 
 ### Verify No Duplicates
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 import { verifyNoProductDuplicates } from "INTEGRATION_EXAMPLES.md";
 verifyNoProductDuplicates(allocated);
@@ -194,6 +248,7 @@ verifyNoProductDuplicates(allocated);
 ```
 
 ### Enable Console Logging
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 ```typescript
@@ -209,6 +264,16 @@ console.log(
 console.log("Allocated products:", allocated);
 console.log("Platinum products:", allocated.platinum.map(p => p._id));
 >>>>>>> 2f2bb25 (Done)
+=======
+
+```typescript
+// In hook:
+console.log("Allocated products:", allocated);
+console.log(
+  "Platinum products:",
+  allocated.platinum.map((p) => p._id),
+);
+>>>>>>> 37193e2 (Done)
 // etc.
 ```
 
@@ -217,6 +282,7 @@ console.log("Platinum products:", allocated.platinum.map(p => p._id));
 ## ⚙️ Customization
 
 ### Change Section Distribution
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 In `productAllocationAlgorithm.ts`:
@@ -227,18 +293,27 @@ const SECTION_CONFIG = {
   gold: { percent: 0.25, minScore: 60 },
   silver: { percent: 0.3, minScore: 40 },
 =======
+=======
+
+>>>>>>> 37193e2 (Done)
 In `productAllocationAlgorithm.ts`:
+
 ```typescript
 const SECTION_CONFIG = {
-  platinum: { percent: 0.20, minScore: 80 },  // Changed from 0.15
+  platinum: { percent: 0.2, minScore: 80 }, // Changed from 0.15
   gold: { percent: 0.25, minScore: 60 },
+<<<<<<< HEAD
   silver: { percent: 0.30, minScore: 40 },
 >>>>>>> 2f2bb25 (Done)
+=======
+  silver: { percent: 0.3, minScore: 40 },
+>>>>>>> 37193e2 (Done)
   discounted: { percent: 0.25, minScore: 0 },
 };
 ```
 
 ### Adjust Scoring Weights
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 ```typescript
@@ -249,14 +324,24 @@ const salesScore = Math.min((product.orders / 100) * 20, 20); // Decreased
 const ratingScore = (product.rating / 5) * 40;  // Increased from 30
 const salesScore = Math.min((product.orders / 100) * 20, 20);  // Decreased
 >>>>>>> 2f2bb25 (Done)
+=======
+
+```typescript
+const ratingScore = (product.rating / 5) * 40; // Increased from 30
+const salesScore = Math.min((product.orders / 100) * 20, 20); // Decreased
+>>>>>>> 37193e2 (Done)
 // Adjust other criteria...
 ```
 
 ### Add Custom Criteria
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 ```typescript
 export function scoreProduct(product: any): number {
   // ... existing scoring ...
@@ -270,6 +355,9 @@ export function scoreProduct(product: any): number {
 ## 📈 Performance Metrics
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
 | Metric                   | Value                |
 | ------------------------ | -------------------- |
 | **Time (100 products)**  | ~5ms                 |
@@ -278,6 +366,7 @@ export function scoreProduct(product: any): number {
 | **Complexity**           | O(n log n)           |
 | **Memory**               | O(n)                 |
 | **Duplicates**           | ✅ Zero (guaranteed) |
+<<<<<<< HEAD
 =======
 | Metric | Value |
 |--------|-------|
@@ -288,6 +377,8 @@ export function scoreProduct(product: any): number {
 | **Memory** | O(n) |
 | **Duplicates** | ✅ Zero (guaranteed) |
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
 
 ---
 
@@ -336,6 +427,7 @@ export function scoreProduct(product: any): number {
 
 ### Deduplication
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 Once a product is allocated to a section, it's removed from consideration for other sections. This is guaranteed by the algorithm.
 
@@ -350,16 +442,25 @@ Each product receives a score 0-100 based on multiple criteria. Higher-scoring p
 ### Distribution
 
 =======
+=======
+
+>>>>>>> 37193e2 (Done)
 Once a product is allocated to a section, it's removed from consideration for other sections. This is guaranteed by the algorithm.
 
 ### Rotation
+
 Every 30 seconds, the home page toggles `showNewProducts` between `true` and `false`, which rotates the visible products while maintaining allocation integrity.
 
 ### Scoring
+
 Each product receives a score 0-100 based on multiple criteria. Higher-scoring products go to premium sections (Platinum/Gold), lower-scoring to Silver/Discounted.
 
 ### Distribution
+<<<<<<< HEAD
 >>>>>>> 2f2bb25 (Done)
+=======
+
+>>>>>>> 37193e2 (Done)
 Section sizes are calculated as percentages of total available products, ensuring balanced content across all 4 sections.
 
 ---
@@ -383,6 +484,9 @@ A: This shouldn't happen. Check deduplication logic in `ensureNoProductDuplicate
 ## 📞 Quick Links
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 37193e2 (Done)
 | Resource           | Link                                     |
 | ------------------ | ---------------------------------------- |
 | **Core Algorithm** | `src/lib/productAllocationAlgorithm.ts`  |
@@ -391,6 +495,7 @@ A: This shouldn't happen. Check deduplication logic in `ensureNoProductDuplicate
 | **Full Guide**     | `PRODUCT_ALLOCATION_GUIDE.md`            |
 | **Examples**       | `INTEGRATION_EXAMPLES.md`                |
 | **Integration**    | `BEFORE_AFTER_INTEGRATION.md`            |
+<<<<<<< HEAD
 =======
 | Resource | Link |
 |----------|------|
@@ -401,6 +506,8 @@ A: This shouldn't happen. Check deduplication logic in `ensureNoProductDuplicate
 | **Examples** | `INTEGRATION_EXAMPLES.md` |
 | **Integration** | `BEFORE_AFTER_INTEGRATION.md` |
 >>>>>>> 2f2bb25 (Done)
+=======
+>>>>>>> 37193e2 (Done)
 
 ---
 
