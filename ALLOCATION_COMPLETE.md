@@ -7,18 +7,27 @@ A comprehensive product allocation system has been implemented that automaticall
 ## ✅ Completed Components
 
 ### 1. Core Algorithm Module
+<<<<<<< HEAD
 
 **File:** `src/lib/productAllocationAlgorithm.ts`
 
 **Exports:**
 
+=======
+**File:** `src/lib/productAllocationAlgorithm.ts`
+
+**Exports:**
+>>>>>>> 2f2bb25 (Done)
 - `scoreProduct(product)` - Multi-criteria scoring (0-100 points)
 - `allocateProductsToSections(products)` - Main allocation engine
 - `rotateProductsInSection(products, showNew, rotationIndex)` - Rotation support
 - `ensureNoProductDuplicateAcrossSections()` - Deduplication validator
 
 **Scoring Criteria:**
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - Rating: 30 points (1-5 star normalized)
 - Sales/Orders: 25 points (transaction volume)
 - Recency: 20 points (products <7 days old prioritized)
@@ -27,20 +36,29 @@ A comprehensive product allocation system has been implemented that automaticall
 - Store Reliability: 5 points
 
 **Section Distribution:**
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - Platinum: 15% of products (top scorers: 80-100 pts)
 - Gold: 25% of products (high quality: 60-80 pts)
 - Silver: 30% of products (good items: 40-60 pts)
 - Discounted: 20% of products (best deals, prioritized)
 
 ### 2. API Endpoint
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 **File:** `src/app/api/products/allocate/route.ts`
 
 **Endpoint:** `POST /api/products/allocate`
 
 **Request:**
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```json
 {
   "products": [...],
@@ -50,7 +68,10 @@ A comprehensive product allocation system has been implemented that automaticall
 ```
 
 **Response:**
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```json
 {
   "success": true,
@@ -69,11 +90,17 @@ A comprehensive product allocation system has been implemented that automaticall
 ```
 
 ### 3. Integration Hook
+<<<<<<< HEAD
 
 **File:** `src/hooks/useAllocatedProducts.ts`
 
 **Usage:**
 
+=======
+**File:** `src/hooks/useAllocatedProducts.ts`
+
+**Usage:**
+>>>>>>> 2f2bb25 (Done)
 ```typescript
 const allocated = useAllocatedProducts({
   position1Products,
@@ -90,7 +117,10 @@ const allocated = useAllocatedProducts({
 ### 4. Documentation
 
 **Main Guide:** `PRODUCT_ALLOCATION_GUIDE.md`
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - Complete architecture overview
 - Scoring system explanation
 - Implementation patterns
@@ -99,7 +129,10 @@ const allocated = useAllocatedProducts({
 - Troubleshooting guide
 
 **Integration Examples:** `INTEGRATION_EXAMPLES.md`
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - 3 implementation patterns (Hook, API, Hybrid)
 - Step-by-step integration instructions
 - Code examples
@@ -109,35 +142,50 @@ const allocated = useAllocatedProducts({
 ## 🎯 Key Features
 
 ### ✨ Intelligent Scoring
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - Automatic product ranking based on 6 criteria
 - Adaptive scoring (0-100 scale)
 - Easy to customize weights
 - Supports custom scoring logic
 
 ### 🔒 Deduplication Guarantee
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - No product appears in multiple sections
 - Automatic duplicate removal
 - Cross-section validation
 - Safe for concurrent operations
 
 ### 🔄 Rotation Support
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - Products rotate every 30 seconds
 - Supports `showNew` and `showOld` modes
 - Ensures fresh content display
 - Batch rotation for efficiency
 
 ### ⚡ Performance Optimized
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - O(n log n) complexity
 - Client-side calculation (no roundtrips)
 - Memoization support
 - Scales to 10,000+ products
 
 ### 🛡️ Error Handling
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - Graceful fallbacks
 - Missing field handling
 - Type safety (TypeScript)
@@ -161,7 +209,10 @@ Output: All sections filled, zero duplicates
 ## 🚀 Quick Start
 
 ### Option 1: Hook-Based (Recommended)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```typescript
 import { useAllocatedProducts } from "@/hooks/useAllocatedProducts";
 
@@ -181,7 +232,10 @@ const allocated = useAllocatedProducts({
 ```
 
 ### Option 2: API-Based
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```typescript
 const response = await fetch("/api/products/allocate", {
   method: "POST",
@@ -228,7 +282,10 @@ Documentation/
 ## 📈 Monitoring & Analytics
 
 ### Metrics to Track
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 1. **Section fill rates** - Are sections reaching target capacity?
 2. **Score distribution** - Average score per section
 3. **Rotation effectiveness** - Unique products in 24h
@@ -236,7 +293,10 @@ Documentation/
 5. **Performance** - Allocation time per 1000 products
 
 ### Debug Tools Included
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - `logAllocationStats()` - Print distribution statistics
 - `verifyNoProductDuplicates()` - Validate deduplication
 - Console logging at each allocation step
@@ -262,6 +322,7 @@ Total product references: 90, Unique: 90
 ## 🛠️ Customization
 
 ### Adjust Section Distribution
+<<<<<<< HEAD
 
 Edit `SECTION_CONFIG` in `productAllocationAlgorithm.ts`:
 
@@ -269,14 +330,25 @@ Edit `SECTION_CONFIG` in `productAllocationAlgorithm.ts`:
 const SECTION_CONFIG = {
   platinum: { percent: 0.15, minScore: 80 }, // Change to 0.20
   gold: { percent: 0.25, minScore: 60 }, // Change to 0.30
+=======
+Edit `SECTION_CONFIG` in `productAllocationAlgorithm.ts`:
+```typescript
+const SECTION_CONFIG = {
+  platinum: { percent: 0.15, minScore: 80 },   // Change to 0.20
+  gold: { percent: 0.25, minScore: 60 },       // Change to 0.30
+>>>>>>> 2f2bb25 (Done)
   // ...
 };
 ```
 
 ### Customize Scoring Weights
+<<<<<<< HEAD
 
 Edit `scoreProduct()` function:
 
+=======
+Edit `scoreProduct()` function:
+>>>>>>> 2f2bb25 (Done)
 ```typescript
 const ratingScore = (product.rating / 5) * 40; // Increase from 30 to 40
 const salesScore = Math.min((product.orders / 100) * 15, 15); // Adjust
@@ -284,9 +356,13 @@ const salesScore = Math.min((product.orders / 100) * 15, 15); // Adjust
 ```
 
 ### Add Custom Criteria
+<<<<<<< HEAD
 
 Extend `scoreProduct()` with new metrics:
 
+=======
+Extend `scoreProduct()` with new metrics:
+>>>>>>> 2f2bb25 (Done)
 ```typescript
 const customScore = calculateCustomMetric(product) * 0.1;
 return Math.min(finalScore + customScore, 100);
@@ -295,7 +371,10 @@ return Math.min(finalScore + customScore, 100);
 ## 🔐 Type Safety
 
 All types are defined with TypeScript:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```typescript
 interface Product {
   _id?: string;
@@ -339,7 +418,10 @@ interface AllocationResult {
 ## 📞 Support
 
 For questions about:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - **Algorithm logic** - See PRODUCT_ALLOCATION_GUIDE.md (Scoring System section)
 - **Integration** - See INTEGRATION_EXAMPLES.md
 - **Customization** - See Customization section above
@@ -348,7 +430,10 @@ For questions about:
 ## ✅ Validation Checklist
 
 Before deploying:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 - [ ] No products appear in multiple sections
 - [ ] All sections have expected number of products
 - [ ] Performance acceptable (<500ms for 5000 products)

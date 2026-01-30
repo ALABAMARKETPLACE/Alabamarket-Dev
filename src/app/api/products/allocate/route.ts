@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+<<<<<<< HEAD
 import {
   allocateProductsToSections,
   ensureNoProductDuplicateAcrossSections,
 } from "@/lib/productAllocationAlgorithm";
+=======
+import { allocateProductsToSections, ensureNoProductDuplicateAcrossSections } from "@/lib/productAllocationAlgorithm";
+>>>>>>> 2f2bb25 (Done)
 
 interface Product {
   _id?: string;
@@ -37,7 +41,11 @@ export async function POST(request: NextRequest) {
           unallocated: [],
           message: "No products provided",
         },
+<<<<<<< HEAD
         { status: 200 },
+=======
+        { status: 200 }
+>>>>>>> 2f2bb25 (Done)
       );
     }
 
@@ -69,7 +77,11 @@ export async function POST(request: NextRequest) {
       allocationDetails.platinum,
       allocationDetails.gold,
       allocationDetails.silver,
+<<<<<<< HEAD
       allocationDetails.discounted,
+=======
+      allocationDetails.discounted
+>>>>>>> 2f2bb25 (Done)
     );
 
     return NextResponse.json(
@@ -100,6 +112,7 @@ export async function POST(request: NextRequest) {
             deduplicated.gold.length +
             deduplicated.silver.length +
             deduplicated.discounted.length,
+<<<<<<< HEAD
           unallocatedProducts:
             products.length -
             (deduplicated.platinum.length +
@@ -114,13 +127,32 @@ export async function POST(request: NextRequest) {
     console.error("Product allocation error:", error);
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+=======
+          unallocatedProducts: products.length - (
+            deduplicated.platinum.length +
+            deduplicated.gold.length +
+            deduplicated.silver.length +
+            deduplicated.discounted.length
+          ),
+        },
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Product allocation error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+>>>>>>> 2f2bb25 (Done)
     return NextResponse.json(
       {
         success: false,
         error: "Failed to allocate products",
         message: errorMessage,
       },
+<<<<<<< HEAD
       { status: 500 },
+=======
+      { status: 500 }
+>>>>>>> 2f2bb25 (Done)
     );
   }
 }
@@ -144,6 +176,10 @@ export async function GET() {
         },
       },
     },
+<<<<<<< HEAD
     { status: 200 },
+=======
+    { status: 200 }
+>>>>>>> 2f2bb25 (Done)
   );
 }

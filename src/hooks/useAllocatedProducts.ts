@@ -1,8 +1,12 @@
 import { useMemo } from "react";
+<<<<<<< HEAD
 import {
   allocateProductsToSections,
   ensureNoProductDuplicateAcrossSections,
 } from "@/lib/productAllocationAlgorithm";
+=======
+import { allocateProductsToSections, ensureNoProductDuplicateAcrossSections } from "@/lib/productAllocationAlgorithm";
+>>>>>>> 2f2bb25 (Done)
 
 interface Product {
   _id?: string;
@@ -58,6 +62,7 @@ export const useAllocatedProducts = ({
     });
 
     return Array.from(uniqueMap.values());
+<<<<<<< HEAD
   }, [
     position1Products,
     position2Products,
@@ -65,6 +70,9 @@ export const useAllocatedProducts = ({
     position4Products,
     recentFallback,
   ]);
+=======
+  }, [position1Products, position2Products, position3Products, position4Products, recentFallback]);
+>>>>>>> 2f2bb25 (Done)
 
   // Allocate products intelligently
   const allocatedProducts = useMemo(() => {
@@ -79,7 +87,11 @@ export const useAllocatedProducts = ({
 
     const allocation = allocateProductsToSections(allProducts);
     const productMap = new Map(
+<<<<<<< HEAD
       allProducts.map((p) => [p._id || p.pid || p.id, p]),
+=======
+      allProducts.map((p) => [p._id || p.pid || p.id, p])
+>>>>>>> 2f2bb25 (Done)
     );
 
     // Get product objects for each section
@@ -87,8 +99,17 @@ export const useAllocatedProducts = ({
       platinum: allocation.platinum
         .map((id) => productMap.get(id))
         .filter(Boolean),
+<<<<<<< HEAD
       gold: allocation.gold.map((id) => productMap.get(id)).filter(Boolean),
       silver: allocation.silver.map((id) => productMap.get(id)).filter(Boolean),
+=======
+      gold: allocation.gold
+        .map((id) => productMap.get(id))
+        .filter(Boolean),
+      silver: allocation.silver
+        .map((id) => productMap.get(id))
+        .filter(Boolean),
+>>>>>>> 2f2bb25 (Done)
       discounted: allocation.discounted
         .map((id) => productMap.get(id))
         .filter(Boolean),
@@ -99,7 +120,11 @@ export const useAllocatedProducts = ({
       sections.platinum,
       sections.gold,
       sections.silver,
+<<<<<<< HEAD
       sections.discounted,
+=======
+      sections.discounted
+>>>>>>> 2f2bb25 (Done)
     );
   }, [allProducts]);
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /\*\*
 
 - EXAMPLE INTEGRATION: How to use the Product Allocation Algorithm in Home Page
@@ -5,20 +6,36 @@
 - This file demonstrates how to integrate the allocation algorithm into the existing
 - home page component. Choose one of the implementation patterns below.
   \*/
+=======
+/**
+ * EXAMPLE INTEGRATION: How to use the Product Allocation Algorithm in Home Page
+ * 
+ * This file demonstrates how to integrate the allocation algorithm into the existing
+ * home page component. Choose one of the implementation patterns below.
+ */
+>>>>>>> 2f2bb25 (Done)
 
 // ============================================================================
 // PATTERN 1: Hook-Based Integration (RECOMMENDED - No API calls)
 // ============================================================================
 
+<<<<<<< HEAD
 /\*\*
 
 - Updated home page with hook-based allocation
 - Use this approach for best performance - calculation happens in-component
   \*/
+=======
+/**
+ * Updated home page with hook-based allocation
+ * Use this approach for best performance - calculation happens in-component
+ */
+>>>>>>> 2f2bb25 (Done)
 
 import { useAllocatedProducts } from "@/hooks/useAllocatedProducts";
 
 export function HomeWithHookAllocation() {
+<<<<<<< HEAD
 // ... existing code ...
 
 // After all your existing useState and useQuery hooks, add:
@@ -40,6 +57,29 @@ return (
 <div className="HomeSCreen-space" />
 </>
 ) : null}
+=======
+  // ... existing code ...
+  
+  // After all your existing useState and useQuery hooks, add:
+  const allocated = useAllocatedProducts({
+    position1Products: featuredProducts[1] || [],
+    position2Products: featuredProducts[2] || [],
+    position3Products: featuredProducts[3] || [],
+    position4Products: featuredProducts[4] || [],
+    recentFallback: recentFallback || [],
+    showNewProducts,
+  });
+
+  // Then use allocated.platinum, allocated.gold, etc. in your render:
+  return (
+    <div className="page-Box">
+      {Banner?.length ? (
+        <>
+          <Banners data={Banner} />
+          <div className="HomeSCreen-space" />
+        </>
+      ) : null}
+>>>>>>> 2f2bb25 (Done)
 
       {allocated.discounted.length > 0 && (
         <>
@@ -72,23 +112,35 @@ return (
       <FeaturedItems />
       {/* ... rest of component ... */}
     </div>
+<<<<<<< HEAD
 
 );
+=======
+  );
+>>>>>>> 2f2bb25 (Done)
 }
 
 // ============================================================================
 // PATTERN 2: API-Based Integration (For backend synchronization)
 // ============================================================================
 
+<<<<<<< HEAD
 /\*\*
 
 - Use this approach if you want to centralize allocation logic on backend
 - Useful for logging, analytics, and consistent behavior across devices
   \*/
+=======
+/**
+ * Use this approach if you want to centralize allocation logic on backend
+ * Useful for logging, analytics, and consistent behavior across devices
+ */
+>>>>>>> 2f2bb25 (Done)
 
 import { useEffect, useState } from "react";
 
 interface AllocationResult {
+<<<<<<< HEAD
 platinum: any[];
 gold: any[];
 silver: any[];
@@ -113,6 +165,32 @@ const combined = [
 ...(featuredProducts[4] || []),
 ...(recentFallback || []),
 ];
+=======
+  platinum: any[];
+  gold: any[];
+  silver: any[];
+  discounted: any[];
+}
+
+export function HomeWithApiAllocation() {
+  const [allocated, setAllocated] = useState<AllocationResult>({
+    platinum: [],
+    gold: [],
+    silver: [],
+    discounted: [],
+  });
+  const [isAllocating, setIsAllocating] = useState(false);
+
+  // Collect all products from all positions
+  const allProductsData = useMemo(() => {
+    const combined = [
+      ...(featuredProducts[1] || []),
+      ...(featuredProducts[2] || []),
+      ...(featuredProducts[3] || []),
+      ...(featuredProducts[4] || []),
+      ...(recentFallback || []),
+    ];
+>>>>>>> 2f2bb25 (Done)
 
     // Remove duplicates
     const seen = new Set();
@@ -122,6 +200,7 @@ const combined = [
       seen.add(id);
       return true;
     });
+<<<<<<< HEAD
 
 }, [featuredProducts, recentFallback]);
 
@@ -136,6 +215,21 @@ discounted: [],
 });
 return;
 }
+=======
+  }, [featuredProducts, recentFallback]);
+
+  // Call allocation API when data changes
+  useEffect(() => {
+    if (allProductsData.length === 0) {
+      setAllocated({
+        platinum: [],
+        gold: [],
+        silver: [],
+        discounted: [],
+      });
+      return;
+    }
+>>>>>>> 2f2bb25 (Done)
 
     const performAllocation = async () => {
       setIsAllocating(true);
@@ -178,25 +272,39 @@ return;
     };
 
     performAllocation();
+<<<<<<< HEAD
 
 }, [allProductsData, showNewProducts]);
 
 // Rest of component same as Pattern 1...
+=======
+  }, [allProductsData, showNewProducts]);
+
+  // Rest of component same as Pattern 1...
+>>>>>>> 2f2bb25 (Done)
 }
 
 // ============================================================================
 // PATTERN 3: Hybrid Approach (Best for Production)
 // ============================================================================
 
+<<<<<<< HEAD
 /\*\*
 
 - Use hook for immediate allocation, refresh from API periodically
 - This gives you best of both worlds: performance + backend sync
   \*/
+=======
+/**
+ * Use hook for immediate allocation, refresh from API periodically
+ * This gives you best of both worlds: performance + backend sync
+ */
+>>>>>>> 2f2bb25 (Done)
 
 import { useAllocatedProducts } from "@/hooks/useAllocatedProducts";
 
 export function HomeHybridAllocation() {
+<<<<<<< HEAD
 // Immediate allocation using hook
 const allocated = useAllocatedProducts({
 position1Products: featuredProducts[1] || [],
@@ -238,12 +346,55 @@ return (
 {/_ ... render code ... _/}
 </div>
 );
+=======
+  // Immediate allocation using hook
+  const allocated = useAllocatedProducts({
+    position1Products: featuredProducts[1] || [],
+    position2Products: featuredProducts[2] || [],
+    position3Products: featuredProducts[3] || [],
+    position4Products: featuredProducts[4] || [],
+    recentFallback: recentFallback || [],
+    showNewProducts,
+  });
+
+  // Sync with backend every 5 minutes for analytics/logging
+  useEffect(() => {
+    const syncWithBackend = async () => {
+      try {
+        await fetch("/api/products/allocate/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            platinumCount: allocated.platinum.length,
+            goldCount: allocated.gold.length,
+            silverCount: allocated.silver.length,
+            discountedCount: allocated.discounted.length,
+            timestamp: new Date().toISOString(),
+          }),
+        });
+      } catch (error) {
+        console.error("Failed to sync allocation stats:", error);
+      }
+    };
+
+    const syncInterval = setInterval(syncWithBackend, 5 * 60 * 1000);
+    return () => clearInterval(syncInterval);
+  }, [allocated]);
+
+  // Render using allocated products (same as Pattern 1)
+  return (
+    <div className="page-Box">
+      {/* ... render code ... */}
+    </div>
+  );
+>>>>>>> 2f2bb25 (Done)
 }
 
 // ============================================================================
 // STEP-BY-STEP INTEGRATION INSTRUCTIONS
 // ============================================================================
 
+<<<<<<< HEAD
 /\*\*
 
 - To integrate into your home page:
@@ -288,12 +439,58 @@ return (
 - - Wait 30 seconds and verify rotation
 - - Check allocation distribution (platinum should have ~15%)
     \*/
+=======
+/**
+ * To integrate into your home page:
+ * 
+ * 1. IMPORT the hook at the top of src/app/(screens)/home/page.tsx:
+ *    import { useAllocatedProducts } from "@/hooks/useAllocatedProducts";
+ * 
+ * 2. REPLACE your positionItems useMemo with:
+ *    const allocated = useAllocatedProducts({
+ *      position1Products: featuredProducts[1] || [],
+ *      position2Products: featuredProducts[2] || [],
+ *      position3Products: featuredProducts[3] || [],
+ *      position4Products: featuredProducts[4] || [],
+ *      recentFallback: recentFallback || [],
+ *      showNewProducts,
+ *    });
+ * 
+ * 3. REMOVE the old positionItems logic (lines 222-264 in current version)
+ * 
+ * 4. UPDATE all section references:
+ *    Old: <PlatinumSection products={position1Items} />
+ *    New: <PlatinumSection products={allocated.platinum} />
+ *    
+ *    Old: <GoldSection products={position2Items} />
+ *    New: <GoldSection products={allocated.gold} />
+ *    
+ *    Old: <SilverSection products={position3Items} />
+ *    New: <SilverSection products={allocated.silver} />
+ *    
+ *    Old: <DiscountedDealsSection products={position4Items} />
+ *    New: <DiscountedDealsSection products={allocated.discounted} />
+ * 
+ * 5. TEST:
+ *    - Check that no products appear in multiple sections
+ *    - Verify all 4 sections render with correct products
+ *    - Test rotation every 30 seconds
+ *    - Monitor performance in browser DevTools
+ * 
+ * 6. VERIFY INTEGRATION:
+ *    - Open home page
+ *    - Check each section in console (verify product IDs)
+ *    - Wait 30 seconds and verify rotation
+ *    - Check allocation distribution (platinum should have ~15%)
+ */
+>>>>>>> 2f2bb25 (Done)
 
 // ============================================================================
 // LOGGING & DEBUGGING HELPERS
 // ============================================================================
 
 export const logAllocationStats = (allocated: AllocationResult, allProducts: any[]) => {
+<<<<<<< HEAD
 const stats = {
 total: allProducts.length,
 platinum: {
@@ -342,4 +539,54 @@ console.warn("Duplicate product IDs:", [...new Set(duplicates)]);
 }
 
 return !hasDuplicates;
+=======
+  const stats = {
+    total: allProducts.length,
+    platinum: {
+      count: allocated.platinum.length,
+      percentage: ((allocated.platinum.length / allProducts.length) * 100).toFixed(2) + "%",
+      avgScore: allocated.platinum.reduce((sum, p) => sum + (p.score || 0), 0) / allocated.platinum.length,
+    },
+    gold: {
+      count: allocated.gold.length,
+      percentage: ((allocated.gold.length / allProducts.length) * 100).toFixed(2) + "%",
+      avgScore: allocated.gold.reduce((sum, p) => sum + (p.score || 0), 0) / allocated.gold.length,
+    },
+    silver: {
+      count: allocated.silver.length,
+      percentage: ((allocated.silver.length / allProducts.length) * 100).toFixed(2) + "%",
+      avgScore: allocated.silver.reduce((sum, p) => sum + (p.score || 0), 0) / allocated.silver.length,
+    },
+    discounted: {
+      count: allocated.discounted.length,
+      percentage: ((allocated.discounted.length / allProducts.length) * 100).toFixed(2) + "%",
+      avgScore: allocated.discounted.reduce((sum, p) => sum + (p.score || 0), 0) / allocated.discounted.length,
+    },
+  };
+
+  console.table(stats);
+  return stats;
+};
+
+export const verifyNoProductDuplicates = (allocated: AllocationResult) => {
+  const allIds = [
+    ...allocated.platinum.map(p => p._id || p.id),
+    ...allocated.gold.map(p => p._id || p.id),
+    ...allocated.silver.map(p => p._id || p.id),
+    ...allocated.discounted.map(p => p._id || p.id),
+  ];
+
+  const uniqueIds = new Set(allIds);
+  const hasDuplicates = allIds.length !== uniqueIds.size;
+
+  console.log(`Duplicate Check: ${hasDuplicates ? "❌ FAILED" : "✅ PASSED"}`);
+  console.log(`Total product references: ${allIds.length}, Unique: ${uniqueIds.size}`);
+
+  if (hasDuplicates) {
+    const duplicates = allIds.filter((id, index) => allIds.indexOf(id) !== index);
+    console.warn("Duplicate product IDs:", [...new Set(duplicates)]);
+  }
+
+  return !hasDuplicates;
+>>>>>>> 2f2bb25 (Done)
 };

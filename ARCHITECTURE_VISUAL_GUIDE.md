@@ -59,7 +59,10 @@
 ## Data Flow Diagram
 
 ### Phase 1: Data Collection
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ FETCH PHASE (React Query)                              │
@@ -78,7 +81,10 @@
 ```
 
 ### Phase 2: Deduplication
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ DEDUPLICATE PHASE                                       │
@@ -96,7 +102,10 @@
 ```
 
 ### Phase 3: Scoring
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ SCORING PHASE                                               │
@@ -127,7 +136,10 @@
 ```
 
 ### Phase 4: Allocation
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ ALLOCATION PHASE                                             │
@@ -159,7 +171,10 @@
 ```
 
 ### Phase 5: Output
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 ┌──────────────────────────────────────────────────────────────┐
 │ FINAL SECTIONS                                               │
@@ -273,7 +288,11 @@
 
 ---
 
+<<<<<<< HEAD
 ## Scoring System Visualiza
+=======
+## Scoring System Visualization
+>>>>>>> 2f2bb25 (Done)
 
 ### Score Distribution Example
 
@@ -403,11 +422,16 @@ Product
 
 ```sql
 -- Pseudo SQL for scoring
+<<<<<<< HEAD
 SELECT
+=======
+SELECT 
+>>>>>>> 2f2bb25 (Done)
   id,
   name,
   -- Rating Score (0-30)
   (COALESCE(rating, 0) / 5 * 30) AS rating_score,
+<<<<<<< HEAD
 
   -- Sales Score (0-25)
   (LEAST(COALESCE(orders, 0) / 100 * 25, 25)) AS sales_score,
@@ -427,6 +451,27 @@ SELECT
   -- Store Rating Score (0-5)
   (COALESCE(storeRating, 0) / 5 * 5) AS store_score
 
+=======
+  
+  -- Sales Score (0-25)
+  (LEAST(COALESCE(orders, 0) / 100 * 25, 25)) AS sales_score,
+  
+  -- Recency Score (0-20)
+  CASE 
+    WHEN DATEDIFF(NOW(), createdAt) <= 7 THEN 20
+    ELSE (20 * EXP(-DATEDIFF(NOW(), createdAt) / 30))
+  END AS recency_score,
+  
+  -- Price Score (0-15)
+  CASE WHEN price > 50000 THEN 15 ELSE (price / 50000 * 15) END AS price_score,
+  
+  -- Discount Score (0-10)
+  CASE WHEN discount > 0 THEN 10 ELSE 0 END AS discount_score,
+  
+  -- Store Rating Score (0-5)
+  (COALESCE(storeRating, 0) / 5 * 5) AS store_score
+  
+>>>>>>> 2f2bb25 (Done)
 FROM products
 ORDER BY (rating_score + sales_score + recency_score + price_score + discount_score + store_score) DESC
 LIMIT 1000
@@ -437,7 +482,10 @@ LIMIT 1000
 ## Deduplication Logic Visualization
 
 ### Before Deduplication
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 All Products Combined:
 [A, B, C, D, B, E, F, A, G, H, I]
@@ -447,7 +495,10 @@ All Products Combined:
 ```
 
 ### During Deduplication
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 Products Map (ID → Product):
 A → {name: "Product A", ...}
@@ -462,7 +513,10 @@ I → {name: "Product I", ...}
 ```
 
 ### After Deduplication
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 Unique Products:
 [A, B, C, D, E, F, G, H, I]
@@ -475,7 +529,10 @@ Unique Products:
 ## Rotation Example (30-second cycle)
 
 ### Time: 00:00
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 showNewProducts = true
 
@@ -486,7 +543,10 @@ Position 4: [Deal H, Deal I]
 ```
 
 ### Time: 00:30
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 showNewProducts = false
 
@@ -499,7 +559,10 @@ Position 4: [Deal H, Deal I]
 ```
 
 ### Time: 01:00
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 showNewProducts = true
 
@@ -516,7 +579,10 @@ Position 4: [Deal H, Deal I]
 ## Performance Characteristics
 
 ### Time Complexity
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 Phase 1: Combine products        O(n)
 Phase 2: Remove duplicates       O(n)
@@ -528,7 +594,10 @@ Total:                           O(n log n)
 ```
 
 ### Space Complexity
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 Input products array:    O(n)
 Deduplication map:       O(n)
@@ -539,7 +608,10 @@ Total:                   O(n)
 ```
 
 ### Benchmark Results
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2f2bb25 (Done)
 ```
 Products | Time      | Sections | Duplicates
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -592,7 +664,11 @@ Output
 ✅ Zero Duplicates
    └─ No product ID appears in multiple sections
 
+<<<<<<< HEAD
 ✅ Balanced Distribution
+=======
+✅ Balanced Distribution  
+>>>>>>> 2f2bb25 (Done)
    └─ Platinum ≈ 15%, Gold ≈ 25%, Silver ≈ 30%, Discounted ≈ 20%
 
 ✅ Intelligent Scoring
