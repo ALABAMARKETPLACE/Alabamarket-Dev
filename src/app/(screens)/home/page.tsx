@@ -277,13 +277,19 @@ function Home() {
       return products.filter(
         (item) =>
           item?.status !== false && // Product must be active
-          item?.unit !== 0 // Product must have stock
+          item?.unit !== 0, // Product must have stock
       );
     };
 
     const buildItems = (position: 1 | 2 | 3 | 4) => {
+<<<<<<< HEAD
       const featured = filterAvailableProducts(featuredProducts[position] || []);
 >>>>>>> 2680899 (Done)
+=======
+      const featured = filterAvailableProducts(
+        featuredProducts[position] || [],
+      );
+>>>>>>> 4c3b678 (Done)
       const fallback = filterAvailableProducts(recentFallback || []);
       const minRequired = minItemsByPosition[position] ?? 6;
 
@@ -306,12 +312,18 @@ function Home() {
 
         const featuredIds = new Set(
 <<<<<<< HEAD
+<<<<<<< HEAD
           shuffledFeatured.map(
             (item: any) => item?.id ?? item?._id ?? item?.slug,
           ),
 =======
           shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
 >>>>>>> 2680899 (Done)
+=======
+          shuffledFeatured.map(
+            (item: any) => item?.id ?? item?._id ?? item?.slug,
+          ),
+>>>>>>> 4c3b678 (Done)
         );
 
         const shuffledFallback = seededShuffle(fallback, positionSeed * 2);
@@ -334,12 +346,18 @@ function Home() {
           const shuffledFeatured = seededShuffle(featured, positionSeed * 4);
           const featuredIds = new Set(
 <<<<<<< HEAD
+<<<<<<< HEAD
             shuffledFeatured.map(
               (item: any) => item?.id ?? item?._id ?? item?.slug,
             ),
 =======
             shuffledFeatured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
 >>>>>>> 2680899 (Done)
+=======
+            shuffledFeatured.map(
+              (item: any) => item?.id ?? item?._id ?? item?.slug,
+            ),
+>>>>>>> 4c3b678 (Done)
           );
 
           const uniqueFeatured = shuffledFeatured.filter((item: any) => {
@@ -367,6 +385,9 @@ function Home() {
       4: buildItems(4),
     };
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 4c3b678 (Done)
   }, [
     featuredProducts,
     recentFallback,
@@ -374,9 +395,12 @@ function Home() {
     showNewProducts,
     rotationTime,
   ]);
+<<<<<<< HEAD
 =======
   }, [featuredProducts, recentFallback, minItemsByPosition, showNewProducts, rotationTime]);
 >>>>>>> 2680899 (Done)
+=======
+>>>>>>> 4c3b678 (Done)
 
   const position1Items = positionItems[1];
   const position2Items = positionItems[2];
@@ -427,7 +451,7 @@ function Home() {
     const filtered = rawProducts.filter(
       (item) =>
         item?.status !== false && // Product must be active
-        item?.unit !== 0 // Product must have stock
+        item?.unit !== 0, // Product must have stock
     );
 >>>>>>> 2680899 (Done)
 
