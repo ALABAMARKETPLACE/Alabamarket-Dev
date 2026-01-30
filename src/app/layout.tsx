@@ -15,7 +15,8 @@ import ReactQueryProvider from "@/util/queryProvider";
 
 import CONFIG from "@/config/configuration";
 // import ChatBot from "@/components/chatbot/ChatBot"; // Commented out - using WhatsApp instead
-import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
+import RuleBasedChatBot from "@/components/chatbot/RuleBasedChatBot";
+// import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 import LayoutContent from "@/components/LayoutContent";
 
 export const metadata: Metadata = {
@@ -86,7 +87,7 @@ export default function RootLayout({
                         <main className="layout-main">{children}</main>
                         <Footer />
                         {/* <ChatBot /> */}
-                        <WhatsAppChatTab />
+                        <RuleBasedChatBot />
                       </div>
                     </LayoutContent>
                   </StoreProvider>
