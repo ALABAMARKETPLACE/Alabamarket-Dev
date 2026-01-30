@@ -109,6 +109,7 @@ const ChatBot: React.FC = () => {
     // Pattern to match Nigerian phone numbers and formatted numbers
     const phonePattern = /(\+234\s?\d{3}\s?\d{3}\s?\d{4}|\+234\d{10}|0\d{10})/g;
 <<<<<<< HEAD
+<<<<<<< HEAD
 
     const parts = text.split(phonePattern);
 
@@ -122,17 +123,28 @@ const ChatBot: React.FC = () => {
 
 =======
     
+=======
+
+>>>>>>> 5b93bdd (Done)
     const parts = text.split(phonePattern);
-    
+
     return parts.map((part, index) => {
       if (phonePattern.test(part)) {
         // Remove spaces and format for tel: link
+<<<<<<< HEAD
         const cleanNumber = part.replace(/\s/g, '');
         const telNumber = cleanNumber.startsWith('+') 
           ? cleanNumber 
           : '+234' + cleanNumber.slice(1);
         
 >>>>>>> 7be3989 (Done)
+=======
+        const cleanNumber = part.replace(/\s/g, "");
+        const telNumber = cleanNumber.startsWith("+")
+          ? cleanNumber
+          : "+234" + cleanNumber.slice(1);
+
+>>>>>>> 5b93bdd (Done)
         return (
           <a
             key={index}
