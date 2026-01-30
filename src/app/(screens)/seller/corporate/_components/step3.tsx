@@ -23,8 +23,6 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                 initialValues={{
                   seller_name: formData?.seller_name,
                   citizenship_country: formData?.citizenship_country,
-                  birth_country: formData?.birth_country,
-                  dob: formData?.dob ? dayjs(formData?.dob) : null,
                   issue_country: formData?.issue_country,
                   expiry_date: formData?.expiry_date
                     ? dayjs(formData?.expiry_date)
@@ -60,39 +58,6 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                           </Option>
                         ))}
                       </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">Birth Country</span>}
-                      name="birth_country"
-                    >
-                      <Select
-                        placeholder="Select Country"
-                        size="large"
-                        showSearch={true}
-                      >
-                        {Country?.map((item: any) => (
-                          <Option key={item.name} value={item.name}>
-                            {item.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">Date of Birth</span>}
-                      name="dob"
-                    >
-                      <DatePicker
-                        placeholder="Select DOB"
-                        style={{ width: "100%" }}
-                        size="large"
-                      />
                     </Form.Item>
                   </Col>
                   <Col xs={12} md={6}>
@@ -170,11 +135,6 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                 <div className="mb-3">
                   <strong style={{color: '#334155'}}>Seller Name</strong>
                   <p className="mt-1">Provide the full name as it appears on your official ID document.</p>
-                </div>
-
-                <div className="mb-3">
-                  <strong style={{color: '#334155'}}>Birth Country & DOB</strong>
-                  <p className="mt-1">Select your country of birth and date of birth accurately.</p>
                 </div>
 
                 <div className="mb-3">

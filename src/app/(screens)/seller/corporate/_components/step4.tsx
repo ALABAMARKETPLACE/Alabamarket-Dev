@@ -143,8 +143,8 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
 
                 <hr className="my-4" style={{borderColor: '#e2e8f0'}} />
 
-                {/* Subscription Plan Selection */}
-                <h5 className="sellerRegister-subHeading mb-3" style={{ fontSize: 18 }}>
+                {/* Subscription Plan Selection - DISABLED */}
+                {/* <h5 className="sellerRegister-subHeading mb-3" style={{ fontSize: 18 }}>
                   Choose Subscription Plan
                 </h5>
                 
@@ -195,7 +195,7 @@ function Step4({ moveToNextStep, goBack, formData }: any) {
                       </Col>
                     ))}
                   </Row>
-                </Radio.Group>
+                </Radio.Group> */}
 
                 <div className="mt-4">
                   <Alert
