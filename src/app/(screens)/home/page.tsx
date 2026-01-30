@@ -256,11 +256,15 @@ function Home() {
   const positionItems = useMemo(() => {
     // Helper function to filter out unavailable products
     const filterAvailableProducts = (products: any[]) => {
-      return products.filter(
-        (item) =>
-          item?.status !== false && // Product must be active
-          item?.unit !== 0, // Product must have stock
-      );
+      if (!Array.isArray(products)) return [];
+      return products.filter((item) => {
+        // Check if product is available
+        const isAvailable =
+          item?.status === true ||
+          (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+        const hasStock = (item?.unit ?? 0) > 0;
+        return isAvailable && hasStock;
+      });
     };
 
     const buildItems = (position: 1 | 2 | 3 | 4) => {
@@ -355,9 +359,18 @@ function Home() {
   const position4Items = positionItems[4];
   const recentVisitedPreview = useMemo(() => {
     const recent = Array.isArray(history) ? history.slice(0, 7) : [];
+    // Filter out unavailable products from recent history
+    const filtered = recent.filter((item) => {
+      // Check if product is available
+      const isAvailable =
+        item?.status === true ||
+        (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+      const hasStock = (item?.unit ?? 0) > 0;
+      return isAvailable && hasStock;
+    });
     // Randomize recent products with different seed to show variety
     const recentSeed = rotationTime + 250;
-    return seededShuffle(recent, recentSeed);
+    return seededShuffle(filtered, recentSeed);
   }, [history, rotationTime]);
 
   // Filter out unavailable products from all products with randomization
@@ -366,11 +379,16 @@ function Home() {
       (allProductsResponse?.data as any[]) ??
       (Array.isArray(allProductsResponse) ? allProductsResponse : []);
 
-    const filtered = rawProducts.filter(
-      (item) =>
-        item?.status !== false && // Product must be active
-        item?.unit !== 0, // Product must have stock
-    );
+    if (!Array.isArray(rawProducts)) return [];
+
+    const filtered = rawProducts.filter((item) => {
+      // Check if product is available
+      const isAvailable =
+        item?.status === true ||
+        (typeof item?.status === "string" && item.status.toLowerCase() === "active");
+      const hasStock = (item?.unit ?? 0) > 0;
+      return isAvailable && hasStock;
+    });
 
     // Randomize the order of all products using rotation time as seed
     // This creates a unique but deterministic randomization per time period

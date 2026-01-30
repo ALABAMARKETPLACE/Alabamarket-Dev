@@ -91,8 +91,6 @@ function Page() {
         //step3
         seller_name: formData?.step3Data?.seller_name,
         seller_country: formData?.step3Data?.citizenship_country,
-        birth_country: formData?.step3Data?.birth_country,
-        dob: formData?.step3Data?.dob,
         id_issue_country: formData?.step3Data?.issue_country,
         id_expiry_date: formData?.step3Data?.expiry_date,
         id_type: formData?.step3Data?.id_type,
