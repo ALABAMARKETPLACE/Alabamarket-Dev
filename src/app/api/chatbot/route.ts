@@ -14,18 +14,24 @@ interface RequestBody {
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> e246411 (Done)
 // Initialize OpenAI client lazily (inside handler to avoid build-time errors)
 function getOpenAIClient() {
   return new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
   });
 }
+<<<<<<< HEAD
 =======
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 >>>>>>> 2b3b6c8 (Done)
+=======
+>>>>>>> e246411 (Done)
 
 // System prompt that defines the chatbot's role and behavior
 const SYSTEM_PROMPT = `You are Alaba Assistant, a knowledgeable and friendly customer support chatbot for Alaba Marketplace, Nigeria's premier e-commerce platform. Your role is to help customers with shopping, orders, seller information, and support.
@@ -167,9 +173,13 @@ export async function POST(request: NextRequest) {
 
     // Call OpenAI API
 <<<<<<< HEAD
+<<<<<<< HEAD
     const openai = getOpenAIClient();
 =======
 >>>>>>> 2b3b6c8 (Done)
+=======
+    const openai = getOpenAIClient();
+>>>>>>> e246411 (Done)
     const response = await openai.chat.completions.create({
       model: "gpt-4-turbo",
       messages: messages,
