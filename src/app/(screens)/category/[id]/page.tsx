@@ -193,7 +193,7 @@ const ProductByCategory = () => {
         try {
           setLoading(true);
           const results = await Promise.allSettled(
-            subCategoryIds.map((subId) =>
+            subCategoryIds.map((subId: string) =>
               GET(
                 `${API.PRODUCT_SEARCH_BOOSTED_CATEGORY}?${(() => {
                   const p = new URLSearchParams(baseParams.toString());
