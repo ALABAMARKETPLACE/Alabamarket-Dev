@@ -92,18 +92,10 @@ function Page() {
         seller_name: formData?.step3Data?.seller_name,
         seller_country: formData?.step3Data?.citizenship_country,
         id_issue_country: formData?.step3Data?.issue_country,
-        id_expiry_date: formData?.step3Data?.expiry_date,
         id_type: formData?.step3Data?.id_type,
         //step4
         id_proof: id_proof_upload,
         trn_upload: trn_upload,
-        subscription_plan_id: formData?.step4Data?.subscription_plan_id || null,
-        subscription_plan: formData?.step4Data?.subscription_plan || "standard",
-        subscription_plan_name:
-          formData?.step4Data?.subscription_data?.name || "Standard Seller",
-        subscription_price: formData?.step4Data?.subscription_data?.price || 0,
-        subscription_boosts:
-          formData?.step4Data?.subscription_data?.boosts || 0,
         logo_upload: "",
         status: "pending",
         userId: userId,

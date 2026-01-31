@@ -22,7 +22,6 @@ import SilverSection from "./_components/silverSection";
 
 function Home() {
   const [Banner, setBanners] = useState([]);
-  const [showNewProducts, setShowNewProducts] = useState(true);
   const data = useSelector(reduxLatLong);
   const subCategories = useSelector(reduxSubcategoryItems);
   const [history, setHistory] = useState<any[]>([]);
@@ -69,10 +68,21 @@ function Home() {
   const featuredTakeLimits = useMemo(
     () =>
       ({
-        1: 10,
-        2: 12,
-        3: 30,
-        4: 12,
+        1: 40,
+        2: 40,
+        3: 60,
+        4: 40,
+      }) as Record<1 | 2 | 3 | 4, number>,
+    [],
+  );
+
+  const displayCountByPosition = useMemo(
+    () =>
+      ({
+        1: 16,
+        2: 16,
+        3: 16,
+        4: 16,
       }) as Record<1 | 2 | 3 | 4, number>,
     [],
   );
@@ -80,10 +90,10 @@ function Home() {
   const minItemsByPosition = useMemo(
     () =>
       ({
-        1: 5,
-        2: 8,
-        3: 20,
-        4: 12,
+        1: 16,
+        2: 16,
+        3: 16,
+        4: 16,
       }) as Record<1 | 2 | 3 | 4, number>,
     [],
   );
@@ -157,8 +167,6 @@ function Home() {
     })),
   });
 
-  const featuredLoading = featuredQueries.some((query) => query.isLoading);
-
   const featuredProducts = useMemo<Record<1 | 2 | 3 | 4, any[]>>(
     () => ({
       1: featuredQueries[0]?.data ?? [],
@@ -174,33 +182,18 @@ function Home() {
     ],
   );
 
-  const needsRecent = useMemo(() => {
-    if (featuredLoading) {
-      return false;
-    }
-    return featuredPositions.some((position) => {
-      const minRequired = minItemsByPosition[position];
-      return (featuredProducts[position]?.length ?? 0) < minRequired;
-    });
-  }, [
-    featuredLoading,
-    featuredProducts,
-    featuredPositions,
-    minItemsByPosition,
-  ]);
-
-  const { data: recentFallback = [], isLoading: recentLoading } = useQuery({
+  const { data: recentFallback = [] } = useQuery({
     queryKey: ["featured-recent-fallback"],
     queryFn: async () => {
-      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=10&tag=recent`;
+      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=80&tag=recent`;
       const response: any = await GET(url);
       if (response?.status && Array.isArray(response?.data)) {
         return response.data;
       }
       return [];
     },
-    enabled: needsRecent,
-    refetchInterval: needsRecent ? 5 * 60 * 1000 : false,
+    enabled: true,
+    refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -236,7 +229,6 @@ function Home() {
     // Rotate products every 30 seconds - different sections get different products
     const rotationInterval = setInterval(() => {
       setRotationTime(Math.floor(Date.now() / 30000));
-      setShowNewProducts((prev) => !prev);
     }, 30000);
     return () => clearInterval(rotationInterval);
   }, [data, token]);
@@ -245,27 +237,162 @@ function Home() {
   const seededShuffle = (array: any[], seed: number): any[] => {
     if (!array || array.length === 0) return [];
     const shuffled = [...array];
-    // Simple seeded random using seed value
+    let t = (seed | 0) + 0x6d2b79f5;
+    const rand = () => {
+      t += 0x6d2b79f5;
+      let x = Math.imul(t ^ (t >>> 15), 1 | t);
+      x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+      return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+    };
     for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(((seed * (i + 1)) % 997) * (i + 1)) % (i + 1);
+      const j = Math.floor(rand() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
   };
 
   const positionItems = useMemo(() => {
-    // Helper function to filter out unavailable products
+    const isProductAvailable = (item: any) => {
+      const status = item?.status;
+      const isAvailable =
+        status === true ||
+        status === 1 ||
+        (typeof status === "string" && status.toLowerCase() === "active");
+      const unitCount = Number(item?.unit ?? 0);
+      const hasStock = Number.isFinite(unitCount) && unitCount > 0;
+      return isAvailable && hasStock;
+    };
+
     const filterAvailableProducts = (products: any[]) => {
       if (!Array.isArray(products)) return [];
-      return products.filter((item) => {
-        // Check if product is available
-        const isAvailable =
-          item?.status === true ||
-          (typeof item?.status === "string" &&
-            item.status.toLowerCase() === "active");
-        const hasStock = (item?.unit ?? 0) > 0;
-        return isAvailable && hasStock;
+      return products.filter(isProductAvailable);
+    };
+
+    const getCategoryKey = (item: any) => {
+      const raw =
+        item?.categoryId ??
+        item?.category_id ??
+        item?.category?._id ??
+        item?.category?.id ??
+        item?.category?.slug ??
+        item?.subCategoryId ??
+        item?.subCategory_id ??
+        item?.subCategory?._id ??
+        item?.subCategory?.id ??
+        item?.subCategory?.slug ??
+        item?.subcategoryId ??
+        item?.subcategory_id ??
+        item?.subcategory?._id ??
+        item?.subcategory?.id ??
+        item?.subcategory?.slug;
+      const key = raw == null ? "" : String(raw);
+      return key || "uncategorized";
+    };
+
+    const getCategoryLabel = (item: any) => {
+      const raw =
+        item?.categoryName ??
+        item?.category_name ??
+        item?.category?.name ??
+        item?.category?.title ??
+        item?.subCategoryName ??
+        item?.subCategory_name ??
+        item?.subCategory?.name ??
+        item?.subCategory?.title ??
+        item?.subcategoryName ??
+        item?.subcategory_name ??
+        item?.subcategory?.name ??
+        item?.subcategory?.title;
+      return typeof raw === "string" ? raw : "";
+    };
+
+    const diversifyByCategory = (items: any[], seed: number, take: number) => {
+      if (!Array.isArray(items) || items.length === 0) return [];
+      const byCategory = new Map<string, any[]>();
+      const categoryWeight = new Map<string, number>();
+
+      const weightFromLabel = (label: string) => {
+        const t = label.toLowerCase();
+        let weight = 0;
+        if (t.includes("phone") || t.includes("mobile")) weight = Math.max(weight, 3);
+        if (t.includes("solar")) weight = Math.max(weight, 3);
+        if (t.includes("electronic")) weight = Math.max(weight, 2);
+        return weight;
+      };
+
+      for (const item of items) {
+        const key = getCategoryKey(item);
+        const list = byCategory.get(key);
+        if (list) list.push(item);
+        else byCategory.set(key, [item]);
+
+        const labelWeight = weightFromLabel(getCategoryLabel(item));
+        if (labelWeight > (categoryWeight.get(key) ?? 0)) {
+          categoryWeight.set(key, labelWeight);
+        }
+      }
+
+      const categories = seededShuffle(Array.from(byCategory.keys()), seed).sort((a, b) => {
+        const wa = categoryWeight.get(a) ?? 0;
+        const wb = categoryWeight.get(b) ?? 0;
+        return wb - wa;
       });
+      const groups = categories.map((cat, idx) => ({
+        cat,
+        items: seededShuffle(byCategory.get(cat) ?? [], seed + (idx + 1) * 97),
+        cursor: 0,
+        weight: categoryWeight.get(cat) ?? 0,
+      }));
+
+      const result: any[] = [];
+      while (result.length < take) {
+        let progressed = false;
+        for (const g of groups) {
+          if (result.length >= take) break;
+          const pullsThisRound = g.weight > 0 ? 2 : 1;
+          for (let p = 0; p < pullsThisRound && result.length < take; p++) {
+            if (g.cursor < g.items.length) {
+              result.push(g.items[g.cursor]);
+              g.cursor += 1;
+              progressed = true;
+            }
+          }
+        }
+        if (!progressed) break;
+      }
+
+      return result;
+    };
+
+    const getIdentifier = (item: any) =>
+      item?.id ?? item?._id ?? item?.slug ?? item?.pid ?? null;
+
+    const isNewProduct = (item: any, nowMs: number) => {
+      const createdAt = item?.createdAt ?? item?.created_at ?? item?.created;
+      if (!createdAt) return false;
+      const t = new Date(createdAt).getTime();
+      if (!Number.isFinite(t)) return false;
+      return nowMs - t <= 7 * 24 * 60 * 60 * 1000;
+    };
+
+    const mergeMostlyOld = (oldItems: any[], newItems: any[], seed: number) => {
+      const result: any[] = [];
+      const old = seededShuffle(oldItems, seed + 401);
+      const neu = seededShuffle(newItems, seed + 701);
+      let oi = 0;
+      let ni = 0;
+      while (oi < old.length || ni < neu.length) {
+        for (let k = 0; k < 2 && oi < old.length; k++) {
+          result.push(old[oi]);
+          oi += 1;
+        }
+        if (ni < neu.length) {
+          result.push(neu[ni]);
+          ni += 1;
+        }
+        if (oi >= old.length && ni >= neu.length) break;
+      }
+      return result;
     };
 
     const buildItems = (position: 1 | 2 | 3 | 4) => {
@@ -274,70 +401,59 @@ function Home() {
       );
       const fallback = filterAvailableProducts(recentFallback || []);
       const minRequired = minItemsByPosition[position] ?? 6;
+      const desiredCount = displayCountByPosition[position] ?? minRequired;
 
       // Create unique seed for each position to ensure different products in each section
       // Combines rotation time with position number for consistent but different randomization
       const positionSeed = rotationTime + position * 100;
+      const nowMs = Date.now();
 
-      // If showing new products, prioritize featured with randomization
-      if (showNewProducts) {
-        // Shuffle featured products for this position
-        const shuffledFeatured = seededShuffle(featured, positionSeed);
+      const combinedPool = [...featured, ...fallback];
+      const seen = new Set<string>();
+      const uniquePool = combinedPool.filter((item) => {
+        const id = getIdentifier(item);
+        const key = id == null ? "" : String(id);
+        if (!key) return true;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
 
-        if (shuffledFeatured.length >= minRequired) {
-          return shuffledFeatured.slice(0, minRequired);
-        }
-
-        if (!fallback?.length) {
-          return shuffledFeatured;
-        }
-
-        const featuredIds = new Set(
-          shuffledFeatured.map(
-            (item: any) => item?.id ?? item?._id ?? item?.slug,
-          ),
-        );
-
-        const shuffledFallback = seededShuffle(fallback, positionSeed * 2);
-        const fillers = shuffledFallback.filter((item: any) => {
-          const identifier = item?.id ?? item?._id ?? item?.slug;
-          return identifier ? !featuredIds.has(identifier) : true;
-        });
-
-        const combined = [...shuffledFeatured, ...fillers];
-        return combined.slice(0, minRequired);
-      } else {
-        // If showing old products, prioritize recent/fallback with randomization
-        const shuffledFallback = seededShuffle(fallback, positionSeed * 3);
-
-        if (!shuffledFallback?.length) {
-          return seededShuffle(featured, positionSeed);
-        }
-
-        if (featured.length >= minRequired) {
-          const shuffledFeatured = seededShuffle(featured, positionSeed * 4);
-          const featuredIds = new Set(
-            shuffledFeatured.map(
-              (item: any) => item?.id ?? item?._id ?? item?.slug,
-            ),
-          );
-
-          const uniqueFeatured = shuffledFeatured.filter((item: any) => {
-            const identifier = item?.id ?? item?._id ?? item?.slug;
-            return identifier
-              ? !shuffledFallback.some((r: any) => {
-                  const rid = r?.id ?? r?._id ?? r?.slug;
-                  return rid === identifier;
-                })
-              : true;
-          });
-
-          const combined = [...shuffledFallback, ...uniqueFeatured];
-          return combined.slice(0, minRequired);
-        }
-
-        return shuffledFallback.slice(0, minRequired);
+      if (uniquePool.length < minRequired) {
+        return seededShuffle(uniquePool, positionSeed).slice(0, desiredCount);
       }
+
+      const newPool = uniquePool.filter((item) => isNewProduct(item, nowMs));
+      const oldPool = uniquePool.filter((item) => !isNewProduct(item, nowMs));
+
+      const oldTarget = Math.max(0, Math.min(desiredCount, Math.ceil(desiredCount * 0.6)));
+      const newTarget = Math.max(0, desiredCount - oldTarget);
+
+      const pickedOld = diversifyByCategory(oldPool, positionSeed + 17, oldTarget);
+      const pickedNew = diversifyByCategory(newPool, positionSeed + 31, newTarget);
+
+      const merged = mergeMostlyOld(pickedOld, pickedNew, positionSeed + 43);
+      const mergedSeen = new Set<string>();
+      const mergedUnique = merged.filter((item) => {
+        const id = getIdentifier(item);
+        const key = id == null ? "" : String(id);
+        if (!key) return true;
+        if (mergedSeen.has(key)) return false;
+        mergedSeen.add(key);
+        return true;
+      });
+
+      if (mergedUnique.length >= desiredCount) {
+        return mergedUnique.slice(0, desiredCount);
+      }
+
+      const remainder = uniquePool.filter((item) => {
+        const id = getIdentifier(item);
+        const key = id == null ? "" : String(id);
+        return key ? !mergedSeen.has(key) : true;
+      });
+      const filler = diversifyByCategory(remainder, positionSeed + 59, desiredCount - mergedUnique.length);
+      return [...mergedUnique, ...filler].slice(0, desiredCount);
     };
 
     return {
@@ -350,7 +466,7 @@ function Home() {
     featuredProducts,
     recentFallback,
     minItemsByPosition,
-    showNewProducts,
+    displayCountByPosition,
     rotationTime,
   ]);
 
@@ -363,11 +479,13 @@ function Home() {
     // Filter out unavailable products from recent history
     const filtered = recent.filter((item) => {
       // Check if product is available
+      const status = item?.status;
       const isAvailable =
-        item?.status === true ||
-        (typeof item?.status === "string" &&
-          item.status.toLowerCase() === "active");
-      const hasStock = (item?.unit ?? 0) > 0;
+        status === true ||
+        status === 1 ||
+        (typeof status === "string" && status.toLowerCase() === "active");
+      const unitCount = Number(item?.unit ?? 0);
+      const hasStock = Number.isFinite(unitCount) && unitCount > 0;
       return isAvailable && hasStock;
     });
     // Randomize recent products with different seed to show variety
@@ -385,11 +503,13 @@ function Home() {
 
     const filtered = rawProducts.filter((item) => {
       // Check if product is available
+      const status = item?.status;
       const isAvailable =
-        item?.status === true ||
-        (typeof item?.status === "string" &&
-          item.status.toLowerCase() === "active");
-      const hasStock = (item?.unit ?? 0) > 0;
+        status === true ||
+        status === 1 ||
+        (typeof status === "string" && status.toLowerCase() === "active");
+      const unitCount = Number(item?.unit ?? 0);
+      const hasStock = Number.isFinite(unitCount) && unitCount > 0;
       return isAvailable && hasStock;
     });
 
