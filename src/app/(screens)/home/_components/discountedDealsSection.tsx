@@ -12,7 +12,7 @@ interface DiscountedDealsSectionProps {
   title?: string;
 }
 
-const MAX_ITEMS = 12; // Increased from 10 to fit new grid layout (6x2 or 4x3)
+const MAX_ITEMS = 36;
 
 function DiscountedDealsSection({
   products = [],
