@@ -15,7 +15,8 @@ interface PlatinumSectionProps {
   image?: StaticImageData | string;
 }
 
-const MAX_ITEMS = 10;
+const MAX_ITEMS = 25;
+const SHOW_POSITION_IMAGE = false;
 
 function PlatinumSection({
   products = [],
@@ -36,61 +37,62 @@ function PlatinumSection({
 
   return (
     <section className="platinum-section container-fluid home-full-width">
-      <div className="platinum-section__wrapper">
-        <div className="platinum-section__content">
-          <div className="platinum-section__header">
-            <div className="platinum-section__title">
-              <SectionBadge
-                type="platinum"
-                text="Platinum"
-                className="homeSectionBadge"
-              />
-              <span className="homeSectionTitleText">{title}</span>
-            </div>
-            <span
-              role="button"
-              tabIndex={0}
-              className="platinum-section__see-more"
-              onClick={() =>
-                router.push(`/products/view?type=featured&position=1`)
+      <div className="platinum-section__content">
+        <div className="platinum-section__header">
+          <div className="platinum-section__title">
+            <SectionBadge
+              type="platinum"
+              text="Platinum"
+              className="homeSectionBadge"
+            />
+            <span className="homeSectionTitleText">{title}</span>
+          </div>
+          <span
+            role="button"
+            tabIndex={0}
+            className="platinum-section__see-more"
+            onClick={() =>
+              router.push(`/products/view?type=featured&position=1`)
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                router.push(`/products/view?type=featured&position=1`);
               }
-              onKeyDown={(event) => {
-                if (event.key === "Enter" || event.key === " ") {
-                  router.push(`/products/view?type=featured&position=1`);
-                }
-              }}
-            >
-              See More <TbArrowRight />
-            </span>
-          </div>
-          <div className="platinum-section__grid">
-            {displayedProducts.map((product, index) => (
-              <div
-                className="platinum-section__card"
-                key={
-                  product?.id ??
-                  product?._id ??
-                  product?.slug ??
-                  `platinum-${index}`
-                }
-              >
-                <ProductItem item={product} />
-              </div>
-            ))}
-          </div>
+            }}
+          >
+            See More <TbArrowRight />
+          </span>
         </div>
 
-        <div className="platinum-section__media" aria-hidden>
-          <div className="platinum-section__media-inner">
-            <Image
-              src={image}
-              alt="Platinum spotlight"
-              fill
-              sizes="(max-width: 991px) 100vw, 260px"
-              style={{ objectFit: "fill" }}
-              priority
-            />
+        {SHOW_POSITION_IMAGE ? (
+          <div className="platinum-section__media" aria-hidden>
+            <div className="platinum-section__media-inner">
+              <Image
+                src={image}
+                alt="Platinum spotlight"
+                fill
+                sizes="(max-width: 991px) 100vw, 260px"
+                style={{ objectFit: "cover" }}
+                priority
+              />
+            </div>
           </div>
+        ) : null}
+
+        <div className="platinum-section__grid">
+          {displayedProducts.map((product, index) => (
+            <div
+              className="platinum-section__card"
+              key={
+                product?.id ??
+                product?._id ??
+                product?.slug ??
+                `platinum-${index}`
+              }
+            >
+              <ProductItem item={product} />
+            </div>
+          ))}
         </div>
       </div>
     </section>
