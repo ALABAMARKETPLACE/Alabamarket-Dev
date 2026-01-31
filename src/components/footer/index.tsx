@@ -46,7 +46,7 @@ const Footer = () => {
               <br />
               <div className="Footer-text3">
                 Discover a world of exceptional products and unbeatable deals at
-                {API.NAME}. Your one-stop destination for the latest in fashion,
+                 {API.NAME}. Your one-stop destination for the latest in fashion,
                 electronics, home decor, beauty, and more.
               </div>
               <div style={{ margin: 10 }} />

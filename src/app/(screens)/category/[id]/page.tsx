@@ -21,6 +21,7 @@ import {
 import "./styles.scss";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import CategoryNav from "@/components/header/categoryNav";
+import { reduxCategoryItems } from "@/redux/slice/categorySlice";
 
 const getCategoryId = (cid: any): string => {
   try {
@@ -41,6 +42,7 @@ const ProductByCategory = () => {
   const [Notifications, contextHolder] = notification.useNotification();
   const [meta, setMeta] = useState<any>({});
   const Settings = useSelector(reduxSettings);
+  const categories = useSelector(reduxCategoryItems);
 
   const [page, setPage] = useState(Number(searchParams?.get("page")) || 1);
   const [initial, setInitial] = useState(true);
@@ -90,6 +92,42 @@ const ProductByCategory = () => {
   const ogcategory = searchParams.get("ogCategory");
   const categoryIdParam = searchParams.get("categoryId");
 
+  const getItemId = (item: any) => {
+    const raw = item?.id ?? item?._id ?? item?.pid ?? item?.slug;
+    if (raw === undefined || raw === null) return null;
+    return String(raw);
+  };
+
+  const dedupeList = (items: any[]) => {
+    if (!Array.isArray(items) || items.length === 0) return [];
+    const seen = new Set<string>();
+    const result: any[] = [];
+    for (const item of items) {
+      const id = getItemId(item);
+      if (!id) {
+        result.push(item);
+        continue;
+      }
+      if (seen.has(id)) continue;
+      seen.add(id);
+      result.push(item);
+    }
+    return result;
+  };
+
+  const getSubCategoryIdsForCategory = (catId: string) => {
+    if (!catId || !Array.isArray(categories)) return [];
+    const match = categories.find((cat: any) => {
+      const id = cat?.id ?? cat?._id;
+      return id != null && String(id) === String(catId);
+    });
+    const subs = Array.isArray(match?.sub_categories) ? match.sub_categories : [];
+    return subs
+      .map((sub: any) => sub?.id ?? sub?._id)
+      .filter((id: any) => id != null)
+      .map((id: any) => String(id));
+  };
+
   const updateSearchParams = useCallback(
     (updates: Record<string, string>) => {
       const params = new URLSearchParams(searchParams.toString());
@@ -137,28 +175,80 @@ const ProductByCategory = () => {
       : "RAND";
     const order = selectedTags[0].value;
 
-    const params = new URLSearchParams();
-    params.set("page", String(currentPage));
-    params.set("take", String(pageSize));
-    params.set("price", price);
-    params.set("order", order);
+    const baseParams = new URLSearchParams();
+    baseParams.set("page", String(currentPage));
+    baseParams.set("take", String(pageSize));
+    baseParams.set("price", price);
+    baseParams.set("order", order);
 
     // If categoryIdParam exists, use it to fetch all products for that category
     if (categoryIdParam) {
-      params.set("category", categoryIdParam);
+      const subCategoryIds = getSubCategoryIdsForCategory(categoryIdParam);
+      if (subCategoryIds.length > 0) {
+        const searchQuery = searchParams.get("query");
+        if (searchQuery) {
+          baseParams.set("search", searchQuery);
+        }
+
+        try {
+          setLoading(true);
+          const results = await Promise.allSettled(
+            subCategoryIds.map((subId) =>
+              GET(
+                `${API.PRODUCT_SEARCH_BOOSTED_CATEGORY}?${(() => {
+                  const p = new URLSearchParams(baseParams.toString());
+                  p.set("subCategory", subId);
+                  return p.toString();
+                })()}`,
+              ),
+            ),
+          );
+
+          const collected: any[] = [];
+          const metas: any[] = [];
+          for (const res of results) {
+            if (res.status !== "fulfilled") continue;
+            const payload: any = res.value;
+            if (!payload?.status) continue;
+            if (Array.isArray(payload?.data)) collected.push(...payload.data);
+            if (payload?.meta) metas.push(payload.meta);
+          }
+
+          const mergedMeta = {
+            hasNextPage: metas.some((m) => m?.hasNextPage === true),
+            page: currentPage,
+          };
+
+          setProducts(dedupeList(collected));
+          setMeta(mergedMeta);
+        } catch (err: any) {
+          Notifications["error"]({
+            message: "Something went wrong",
+            description: err.message,
+          });
+          setProducts([]);
+          setMeta({});
+        } finally {
+          setLoading(false);
+          setInitial(false);
+        }
+        return;
+      }
+
+      baseParams.set("category", categoryIdParam);
     } else if (!ogcategory && categoryId) {
       // Otherwise use subCategory if available
-      params.set("subCategory", categoryId);
+      baseParams.set("subCategory", categoryId);
     }
 
     if (ogcategory && !categoryIdParam) {
       // Legacy support for ogCategory
-      params.set("category", ogcategory);
+      baseParams.set("category", ogcategory);
     }
 
     const searchQuery = searchParams.get("query");
     if (searchQuery) {
-      params.set("search", searchQuery);
+      baseParams.set("search", searchQuery);
     }
 
     if (!categoryId && !ogcategory && !categoryIdParam) {
@@ -169,7 +259,7 @@ const ProductByCategory = () => {
     try {
       setLoading(true);
       const response = await GET(
-        `${API.PRODUCT_SEARCH_BOOSTED_CATEGORY}?${params.toString()}`
+        `${API.PRODUCT_SEARCH_BOOSTED_CATEGORY}?${baseParams.toString()}`
       );
       if (response?.status) {
         setProducts(response.data ?? []);

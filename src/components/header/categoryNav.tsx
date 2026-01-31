@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import "./categoryNav.scss";
@@ -9,10 +9,16 @@ import dynamic from "next/dynamic";
 
 const HamburgerIcon = dynamic(() => import("./HamburgerIcon"), { ssr: false });
 
+type Category = {
+  id?: string | number;
+  _id?: string | number;
+  name?: string;
+};
+
 function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
   const router = useRouter();
   const dispatch = useDispatch();
-  const categories = useSelector(reduxCategoryItems);
+  const categories = useSelector(reduxCategoryItems) as Category[];
   const containerRef = useRef<HTMLDivElement | null>(null);
   const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
@@ -66,34 +72,37 @@ function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
     };
   }, [isAutoScrolling, categories]);
 
-  const handleCategoryClick = (category: any) => {
-    // Use 'id' field instead of '_id'
-    const categoryId = category?.id || category?._id;
+  const normalizedCategories = useMemo(() => {
+    if (!Array.isArray(categories)) return [];
+    return categories
+      .map((category) => {
+        const categoryIdRaw = category?.id ?? category?._id;
+        const categoryId =
+          categoryIdRaw === undefined || categoryIdRaw === null
+            ? null
+            : String(categoryIdRaw);
+        const name = typeof category?.name === "string" ? category.name : "";
+        return { categoryId, name };
+      })
+      .filter((item) => Boolean(item.categoryId && item.name));
+  }, [categories]);
 
-    if (!category || !categoryId) {
-      console.warn("[CategoryNav] Category missing id:", category);
-      return;
-    }
-
-    // Remove " Line" suffix from category name if present
-    const cleanCategoryName = category.name.replace(/\s*line\s*$/i, "");
-
-    console.log(
-      `[CategoryNav] Navigating to category: ${cleanCategoryName} (id: ${categoryId})`
-    );
+  const handleCategoryClick = (categoryId: string, name: string) => {
+    if (!categoryId) return;
 
     const encodedId =
       typeof window !== "undefined" ? window.btoa(categoryId) : categoryId;
 
-    // Pass both the category ID and the clean name
-    const navUrl = `/category/${categoryId}?id=${encodedId}&type=${encodeURIComponent(
-      cleanCategoryName
-    )}&categoryId=${encodeURIComponent(categoryId)}`;
+    const cleanCategoryName = name.replace(/\s*line\s*$/i, "");
 
-    router.push(navUrl);
+    router.push(
+      `/category/${categoryId}?id=${encodedId}&type=${encodeURIComponent(
+        cleanCategoryName,
+      )}&categoryId=${encodeURIComponent(categoryId)}`,
+    );
   };
 
-  if (!categories || categories.length === 0) {
+  if (!normalizedCategories.length) {
     return null;
   }
 
@@ -108,18 +117,23 @@ function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
 
         <div className="category-lines-scroll" ref={containerRef}>
           <div className="category-lines-container">
-            {categories.map((category: any, index: number) => (
-              <div
-                key={index}
-                className={"category-line-item beautiful small-card"}
-                onClick={() => handleCategoryClick(category)}
-                style={{ cursor: "pointer", position: "relative" }}
-                title={category.name}
-              >
-                <div className="category-line-label">{category.name}</div>
-                <div className="category-line-decor" />
-              </div>
-            ))}
+            {normalizedCategories.map(({ categoryId, name }) => {
+              const cleanCategoryName = name.replace(/\s*line\s*$/i, "");
+              return (
+                <div
+                  key={String(categoryId)}
+                  className="category-line-item beautiful small-card"
+                  onClick={() =>
+                    handleCategoryClick(String(categoryId), cleanCategoryName)
+                  }
+                  style={{ cursor: "pointer", position: "relative" }}
+                  title={cleanCategoryName}
+                >
+                  <div className="category-line-label">{cleanCategoryName}</div>
+                  <div className="category-line-decor" />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
