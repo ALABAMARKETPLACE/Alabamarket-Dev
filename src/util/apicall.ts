@@ -35,7 +35,7 @@ const GET = async (
   try {
     const state = store.getState() as AuthState;
     const token: string = opts?.token ?? state?.Auth?.token ?? " ";
-    // Convert params to string-compatible format for URLSearchParams o
+    // Convert params to string-compatible format for URLSearchParams
     const cleanParams = Object.entries(params).reduce(
       (acc, [key, value]) => {
         if (value !== undefined && value !== null) {
