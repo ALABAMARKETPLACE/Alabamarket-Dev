@@ -1,5 +1,4 @@
-import { Form, Input, Button, Select, DatePicker } from "antd";
-import dayjs from "dayjs";
+import { Form, Input, Button, Select } from "antd";
 import { Col, Row, Container } from "react-bootstrap";
 import Country from "../../../../../shared/helpers/countryCode.json";
 import React from "react";
@@ -26,9 +25,6 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                   seller_name: formData?.seller_name,
                   citizenship_country: formData?.citizenship_country,
                   issue_country: formData?.issue_country,
-                  expiry_date: formData?.expiry_date
-                    ? dayjs(formData?.expiry_date)
-                    : null,
                   id_type: formData?.id_type,
                 }}
               >
@@ -116,20 +112,6 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                           </Option>
                         ))}
                       </Select>
-                    </Form.Item>
-                  </Col>
-                  <Col xs={12} md={6}>
-                    <Form.Item
-                      label={
-                        <span className="input-form-label">Expiry Date</span>
-                      }
-                      name="expiry_date"
-                    >
-                      <DatePicker
-                        placeholder="Select Date"
-                        style={{ width: "100%" }}
-                        size="large"
-                      />
                     </Form.Item>
                   </Col>
                 </Row>

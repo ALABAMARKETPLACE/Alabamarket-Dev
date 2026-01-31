@@ -251,11 +251,10 @@
 // export default Step4;
 import { useState } from "react";
 import { Col, Row, Container } from "react-bootstrap";
-import { Tag, Button, notification, Spin, Card } from "antd";
+import { Tag, Button, notification, Spin } from "antd";
 import { FaMobileAlt } from "react-icons/fa";
 import { FiMail } from "react-icons/fi";
 import { LoadingOutlined } from "@ant-design/icons";
-import { BiSolidOffer } from "react-icons/bi";
 import { useRouter } from "next/navigation";
 import Success from "../../../../../assets/images/success.gif";
 import React from "react";
@@ -365,36 +364,6 @@ function Step5({
                           Business Reg: {formData?.step4Data?.trn_upload?.file?.name || formData?.step4Data?.trn_upload?.file?.path}
                         </span>
                         <Tag color="blue">Ready to Upload</Tag>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="text-start p-4 mb-5" style={{ background: '#f8fafc', borderRadius: 12 }}>
-                    <h6 className="sellerRegister-text2 mb-3">Subscription Plan</h6>
-                    {formData?.step4Data?.subscription_data ? (
-                      <div className="d-flex align-items-center p-3 bg-white rounded border" style={{borderLeft: `4px solid ${formData.step4Data.subscription_data.color}`}}>
-                        <div className="me-3">
-                           <BiSolidOffer color={formData.step4Data.subscription_data.color} size={32} />
-                        </div>
-                        <div>
-                          <div style={{fontWeight: 700, fontSize: 16, color: formData.step4Data.subscription_data.color}}>
-                            {formData.step4Data.subscription_data.name}
-                          </div>
-                          <div style={{fontSize: 14}}>
-                            {formData.step4Data.subscription_data.currency}
-                            {formData.step4Data.subscription_data.price.toLocaleString()} / {formData.step4Data.subscription_data.duration}
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                       <div className="d-flex align-items-center p-3 bg-white rounded border" style={{borderLeft: `4px solid #808080`}}>
-                        <div className="me-3">
-                           <BiSolidOffer color="#808080" size={32} />
-                        </div>
-                        <div>
-                          <div style={{fontWeight: 700, fontSize: 16, color: "#808080"}}>Standard Seller</div>
-                          <div style={{fontSize: 14}}>Free Forever</div>
-                        </div>
                       </div>
                     )}
                   </div>
