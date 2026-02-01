@@ -11,8 +11,8 @@ interface SilverSectionProps {
   products: any[];
 }
 
-const ITEMS_PER_COLUMN = 4;
-const COLUMNS = 3;
+const TOTAL_ITEMS = 36;
+const COLUMN_COUNTS = [12, 12, 12] as const;
 const PANEL_TITLES = ["Silver Essentials", "Silver Spotlights", "Silver Finds"];
 
 function SilverSection({ products = [] }: SilverSectionProps) {
@@ -23,11 +23,14 @@ function SilverSection({ products = [] }: SilverSectionProps) {
   );
 
   const columns = useMemo(() => {
-    return Array.from({ length: COLUMNS }, (_, columnIndex) => {
-      const start = columnIndex * ITEMS_PER_COLUMN;
-      const end = start + ITEMS_PER_COLUMN;
-      return silverProducts.slice(start, end);
-    });
+    const limited = silverProducts.slice(0, TOTAL_ITEMS);
+    const first = COLUMN_COUNTS[0] ?? 0;
+    const second = (COLUMN_COUNTS[0] ?? 0) + (COLUMN_COUNTS[1] ?? 0);
+    return [
+      limited.slice(0, first),
+      limited.slice(first, second),
+      limited.slice(second, TOTAL_ITEMS),
+    ];
   }, [silverProducts]);
 
   const hasContent = columns.some((list) => list.length > 0);

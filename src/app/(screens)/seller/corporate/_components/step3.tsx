@@ -1,5 +1,4 @@
-import { Form, Input, Button, Select, DatePicker } from "antd";
-import dayjs from "dayjs";
+import { Form, Input, Button, Select } from "antd";
 import { Col, Row, Container } from "react-bootstrap";
 import Country from "../../../../../shared/helpers/countryCode.json";
 import React from "react";
@@ -15,7 +14,9 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
         <Row className="gy-4">
           <Col xs={12} md={7}>
             <div className="seller-card">
-              <h5 className="sellerRegister-subHeading mb-4">Seller Identity</h5>
+              <h5 className="sellerRegister-subHeading mb-4">
+                Seller Identity
+              </h5>
               <Form
                 form={form}
                 onFinish={onFinish}
@@ -23,17 +24,14 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                 initialValues={{
                   seller_name: formData?.seller_name,
                   citizenship_country: formData?.citizenship_country,
-                  birth_country: formData?.birth_country,
-                  dob: formData?.dob ? dayjs(formData?.dob) : null,
                   issue_country: formData?.issue_country,
-                  expiry_date: formData?.expiry_date
-                    ? dayjs(formData?.expiry_date)
-                    : null,
                   id_type: formData?.id_type,
                 }}
               >
                 <Form.Item
-                  label={<span className="input-form-label">Seller Full Name</span>}
+                  label={
+                    <span className="input-form-label">Seller Full Name</span>
+                  }
                   name="seller_name"
                   rules={[
                     { required: true, message: "Please Provide Seller name" },
@@ -45,8 +43,12 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
 
                 <Row>
                   <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">Citizenship Country</span>}
+                    <Form.Item
+                      label={
+                        <span className="input-form-label">
+                          Citizenship Country
+                        </span>
+                      }
                       name="citizenship_country"
                     >
                       <Select
@@ -63,47 +65,18 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                     </Form.Item>
                   </Col>
                   <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">Birth Country</span>}
-                      name="birth_country"
-                    >
-                      <Select
-                        placeholder="Select Country"
-                        size="large"
-                        showSearch={true}
-                      >
-                        {Country?.map((item: any) => (
-                          <Option key={item.name} value={item.name}>
-                            {item.name}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">Date of Birth</span>}
-                      name="dob"
-                    >
-                      <DatePicker
-                        placeholder="Select DOB"
-                        style={{ width: "100%" }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </Col>
-                  <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">ID Proof Type</span>}
+                    <Form.Item
+                      label={
+                        <span className="input-form-label">ID Proof Type</span>
+                      }
                       name="id_type"
                     >
                       <Select placeholder="Select Type" size="large">
                         <Option key="NIN">NIN</Option>
                         <Option key="Passport">Passport</Option>
-                        <Option value="Driving Liscence">Drivers License</Option>
+                        <Option value="Driving Liscence">
+                          Drivers License
+                        </Option>
                       </Select>
                     </Form.Item>
                   </Col>
@@ -111,8 +84,10 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
 
                 <Row>
                   <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">Issue Country</span>}
+                    <Form.Item
+                      label={
+                        <span className="input-form-label">Issue Country</span>
+                      }
                       name="issue_country"
                     >
                       <Select
@@ -128,29 +103,28 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
                       </Select>
                     </Form.Item>
                   </Col>
-                  <Col xs={12} md={6}>
-                    <Form.Item 
-                      label={<span className="input-form-label">Expiry Date</span>}
-                      name="expiry_date"
-                    >
-                      <DatePicker
-                        placeholder="Select Date"
-                        style={{ width: "100%" }}
-                        size="large"
-                      />
-                    </Form.Item>
-                  </Col>
                 </Row>
 
                 <Row className="mt-4">
                   <Col md={6} xs={6}>
-                    <Button onClick={() => goBack()} block size="large" className="btn-secondary-custom">
+                    <Button
+                      onClick={() => goBack()}
+                      block
+                      size="large"
+                      className="btn-secondary-custom"
+                    >
                       Back
                     </Button>
                   </Col>
                   <Col md={6} xs={6}>
                     <Form.Item>
-                      <Button type="primary" htmlType="submit" block size="large" className="btn-primary-custom">
+                      <Button
+                        type="primary"
+                        htmlType="submit"
+                        block
+                        size="large"
+                        className="btn-primary-custom"
+                      >
                         Continue
                       </Button>
                     </Form.Item>
@@ -161,27 +135,29 @@ function Step3({ moveToNextStep, goBack, formData }: any) {
           </Col>
           <Col xs={12} md={5}>
             <div className="seller-info-panel">
-              <h4 className="sellerRegister-subHeading">Identity Verification</h4>
+              <h4 className="sellerRegister-subHeading">
+                Identity Verification
+              </h4>
               <div className="sellerRegister-text1">
                 <p className="mb-4">
-                  To comply with regulations and ensure a safe marketplace, we need to verify the identity of the account holder.
+                  To comply with regulations and ensure a safe marketplace, we
+                  need to verify the identity of the account holder.
                 </p>
-                
-                <div className="mb-3">
-                  <strong style={{color: '#334155'}}>Seller Name</strong>
-                  <p className="mt-1">Provide the full name as it appears on your official ID document.</p>
-                </div>
 
                 <div className="mb-3">
-                  <strong style={{color: '#334155'}}>Birth Country & DOB</strong>
-                  <p className="mt-1">Select your country of birth and date of birth accurately.</p>
-                </div>
-
-                <div className="mb-3">
-                  <strong style={{color: '#334155'}}>ID Proof Details</strong>
+                  <strong style={{ color: "#334155" }}>Seller Name</strong>
                   <p className="mt-1">
-                    Select the type of ID you will be uploading in the next step (Passport, Driver's License, or NIN).
-                    Ensure the Issue Country and Expiry Date match the document.
+                    Provide the full name as it appears on your official ID
+                    document.
+                  </p>
+                </div>
+
+                <div className="mb-3">
+                  <strong style={{ color: "#334155" }}>ID Proof Details</strong>
+                  <p className="mt-1">
+                    Select the type of ID you will be uploading in the next step
+                    (Passport, Driver's License, or NIN). Ensure the Issue
+                    Country and Expiry Date match the document.
                   </p>
                 </div>
               </div>

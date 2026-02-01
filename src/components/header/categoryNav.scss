@@ -63,6 +63,7 @@
       align-items: center;
       justify-content: center;
       white-space: nowrap;
+      position: relative;
 
       &:hover {
         background: #fff0e6; // Light orange background
@@ -94,5 +95,35 @@
         display: none;
       }
     }
+  }
+}
+
+.category-nav-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  min-width: 220px;
+  max-width: 320px;
+  max-height: 360px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+}
+
+.category-nav-dropdown-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: vars.$Medium;
+  font-size: 14px;
+  color: #111827;
+  white-space: normal;
+
+  &:hover {
+    background: #fff0e6;
+    color: vars.$primary;
   }
 }

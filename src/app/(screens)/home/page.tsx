@@ -1,59 +1,288 @@
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Banners from "./_components/banner";
 import API from "../../../config/API";
 import { useSelector } from "react-redux";
 import { reduxLatLong } from "../../../redux/slice/locationSlice";
 import { GET } from "../../../util/apicall";
 import "./style.scss";
-import SubCategoryList from "./_components/subCategoryList";
-import { reduxSubcategoryItems } from "../../../redux/slice/categorySlice";
 import PopularItems from "./_components/popularItems";
 import FeaturedItems from "./_components/featured_items";
 import { reduxAccessToken } from "../../../redux/slice/authSlice";
 import { jwtDecode } from "jwt-decode";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import FeaturedPosition from "./_components/featuredPosition";
 import PlatinumSection from "./_components/platinumSection";
 import DiscountedDealsSection from "./_components/discountedDealsSection";
 import GoldSection from "./_components/goldSection";
 import SilverSection from "./_components/silverSection";
 // import CategoryFeaturedProducts from "./_components/categoryFeaturedProducts";
 
+type Product = {
+  id?: string | number;
+  _id?: string | number;
+  pid?: string | number;
+  slug?: string;
+  name?: string;
+  createdAt?: string | number;
+  status?: boolean;
+  unit?: number | string;
+  categoryName?: { name?: string };
+  subCategoryName?: { name?: string };
+  [key: string]: unknown;
+};
+
+type ApiResponse = {
+  status?: boolean;
+  data?: unknown;
+};
+
+function getSuccessfulArrayData(response: unknown) {
+  if (!response || typeof response !== "object") return [];
+  const res = response as ApiResponse;
+  if (res.status !== true) return [];
+  if (!Array.isArray(res.data)) return [];
+  return res.data;
+}
+
+function isDisplayableProduct(item: unknown): item is Product {
+  if (!item || typeof item !== "object") return false;
+  const product = item as Product;
+  if (product.status === false) return false;
+
+  const unitNumber = Number(product.unit);
+  if (Number.isFinite(unitNumber) && unitNumber <= 0) return false;
+
+  return true;
+}
+
+function filterDisplayableProducts(items: unknown): Product[] {
+  if (!Array.isArray(items) || items.length === 0) return [];
+  return items.filter(isDisplayableProduct);
+}
+
+function getProductIdentifier(item: Product) {
+  const raw = item.id ?? item._id ?? item.pid ?? item.slug;
+  if (raw === undefined || raw === null) return null;
+  return String(raw);
+}
+
+function getCategoryKey(item: Product) {
+  const raw =
+    item.categoryId ??
+    item.category_id ??
+    item.categoryName?.name ??
+    item.subCategoryName?.name;
+  if (raw === undefined || raw === null) return null;
+  const key = String(raw).trim();
+  return key.length > 0 ? key : null;
+}
+
+const PREFERRED_CATEGORY_TOKENS = [
+  "handset",
+  "television",
+  "refrigerator",
+  "kitchen",
+  "generator",
+  "electronics",
+  "electrical",
+  "furniture",
+  "funiture",
+] as const;
+
+function normalizeCategoryText(value: unknown) {
+  if (value === undefined || value === null) return "";
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function productMatchesCategoryToken(item: Product, token: string) {
+  const tokenNorm = normalizeCategoryText(token);
+  if (!tokenNorm) return false;
+
+  const categoryName = normalizeCategoryText(item.categoryName?.name);
+  const subCategoryName = normalizeCategoryText(item.subCategoryName?.name);
+  const categoryKey = normalizeCategoryText(getCategoryKey(item));
+
+  return (
+    (categoryName.length > 0 && categoryName.includes(tokenNorm)) ||
+    (subCategoryName.length > 0 && subCategoryName.includes(tokenNorm)) ||
+    (categoryKey.length > 0 && categoryKey.includes(tokenNorm))
+  );
+}
+
+function mulberry32(seed: number) {
+  return () => {
+    let t = (seed += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function dedupeProducts(items: Product[]) {
+  if (!Array.isArray(items) || items.length === 0) return [];
+
+  const seen = new Set<string>();
+  const unique: Product[] = [];
+  for (const item of items) {
+    const id = getProductIdentifier(item);
+    if (!id) continue;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    unique.push(item);
+  }
+
+  return unique;
+}
+
+function shuffleCandidates(items: Product[], seed: number) {
+  const unique = dedupeProducts(items);
+  if (unique.length === 0) return [];
+
+  const rand = mulberry32(seed);
+  return unique
+    .map((item) => ({ item, tiebreak: rand() }))
+    .sort((a, b) => a.tiebreak - b.tiebreak)
+    .map((x) => x.item);
+}
+
+function getCreatedAtMs(item: Product) {
+  if (typeof item.createdAt === "number") return item.createdAt;
+  if (typeof item.createdAt === "string") {
+    const parsed = Date.parse(item.createdAt);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function splitNewOldPools(items: Product[]) {
+  const unique = dedupeProducts(items);
+  if (unique.length === 0) return { newPool: [], oldPool: [] };
+
+  const byCreatedAt = [...unique].sort(
+    (a, b) => getCreatedAtMs(b) - getCreatedAtMs(a),
+  );
+  const newSize = Math.ceil(byCreatedAt.length * 0.3);
+  return {
+    newPool: byCreatedAt.slice(0, newSize),
+    oldPool: byCreatedAt.slice(newSize),
+  };
+}
+
+function takeUniqueProducts(
+  candidates: Product[],
+  used: Set<string>,
+  count: number,
+  fallbackCandidates: Product[],
+) {
+  const result: Product[] = [];
+
+  const tryAdd = (item: Product) => {
+    const id = getProductIdentifier(item);
+    if (!id) return false;
+    if (used.has(id)) return false;
+    used.add(id);
+    result.push(item);
+    return true;
+  };
+
+  for (const item of candidates) {
+    if (result.length >= count) break;
+    tryAdd(item);
+  }
+
+  if (result.length < count && Array.isArray(fallbackCandidates)) {
+    for (const item of fallbackCandidates) {
+      if (result.length >= count) break;
+      tryAdd(item);
+    }
+  }
+
+  return result;
+}
+
+function takeUniqueProductsByCategory(
+  candidates: Product[],
+  used: Set<string>,
+  count: number,
+  fallbackCandidates: Product[],
+  categoryCounts: Map<string, number>,
+  maxPerCategory: number,
+) {
+  const result: Product[] = [];
+
+  const tryAdd = (item: Product) => {
+    const id = getProductIdentifier(item);
+    if (!id) return false;
+    if (used.has(id)) return false;
+
+    const categoryKey = getCategoryKey(item);
+    if (categoryKey) {
+      const current = categoryCounts.get(categoryKey) ?? 0;
+      if (current >= maxPerCategory) return false;
+      categoryCounts.set(categoryKey, current + 1);
+    }
+
+    used.add(id);
+    result.push(item);
+    return true;
+  };
+
+  for (const item of candidates) {
+    if (result.length >= count) break;
+    tryAdd(item);
+  }
+
+  if (result.length < count && Array.isArray(fallbackCandidates)) {
+    for (const item of fallbackCandidates) {
+      if (result.length >= count) break;
+      tryAdd(item);
+    }
+  }
+
+  return result;
+}
+
 function Home() {
-  const [Banner, setBanners] = useState([]);
-  const [showNewProducts, setShowNewProducts] = useState(true);
+  const [rotationSeed, setRotationSeed] = useState(0);
   const data = useSelector(reduxLatLong);
-  const subCategories = useSelector(reduxSubcategoryItems);
-  const [history, setHistory] = useState<any[]>([]);
   const token = useSelector(reduxAccessToken);
 
-  const getBanners = async () => {
-    const url = API.GET_HOMESCREEN;
-    try {
-      const banners: any = await GET(url, {});
-      if (banners.status) {
-        setBanners(banners.data);
-      }
-    } catch (err) {
-      console.log("failed to get banneers");
-    }
-  };
+  const { data: banners = [] } = useQuery<unknown[]>({
+    queryKey: ["home-banners", data?.latitude ?? null, data?.longitude ?? null],
+    queryFn: async () => {
+      const response = await GET(API.GET_HOMESCREEN, {});
+      return getSuccessfulArrayData(response);
+    },
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    gcTime: 10 * 60 * 1000,
+  });
 
-  const getUserHistory = async () => {
-    const url = API.USER_HISTORY;
-    try {
-      let currentDate = new Date();
-      if (!token) return;
-      const decoded: any = jwtDecode(token);
-      if (decoded.exp && decoded.exp * 1000 + 10000 > currentDate.getTime()) {
-        const response: any = await GET(url);
-        if (response?.status) {
-          setHistory(response?.data);
+  const { data: history = [] } = useQuery<Product[]>({
+    queryKey: ["user-history", token ?? null],
+    queryFn: async () => {
+      if (!token) return [];
+      try {
+        const decoded = jwtDecode<{ exp?: number }>(token);
+        if (typeof decoded?.exp === "number") {
+          if (decoded.exp * 1000 + 10000 <= Date.now()) return [];
         }
+      } catch {
+        return [];
       }
-    } catch (err) {}
-  };
+      const response = await GET(API.USER_HISTORY);
+      return filterDisplayableProducts(getSuccessfulArrayData(response));
+    },
+    enabled: Boolean(token),
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    gcTime: 10 * 60 * 1000,
+  });
 
   const featuredEndpoints = useMemo(
     () =>
@@ -69,10 +298,10 @@ function Home() {
   const featuredTakeLimits = useMemo(
     () =>
       ({
-        1: 10,
+        1: 25,
         2: 12,
-        3: 30,
-        4: 12,
+        3: 36,
+        4: 36,
       }) as Record<1 | 2 | 3 | 4, number>,
     [],
   );
@@ -82,19 +311,18 @@ function Home() {
       ({
         1: 5,
         2: 8,
-        3: 20,
-        4: 12,
+        3: 24,
+        4: 24,
       }) as Record<1 | 2 | 3 | 4, number>,
     [],
   );
 
   const featuredPositions = useMemo(() => [1, 2, 3, 4] as const, []);
 
-  const [delayedPositions, setDelayedPositions] = useState<number[]>([]);
+  const [delayedPositions, setDelayedPositions] = useState<number[]>([1]);
 
   // Stagger the queries: Position 1 immediately, Position 2 after 200ms, Position 3 after 400ms, Position 4 after 600ms
   useEffect(() => {
-    setDelayedPositions([1]);
     const timer2 = setTimeout(
       () => setDelayedPositions((prev) => [...prev, 2]),
       200,
@@ -124,27 +352,21 @@ function Home() {
       ],
       queryFn: async () => {
         const url = featuredEndpoints[position];
-        // For position 4, add fallback to discount tag
         try {
-          const response: any = await GET(url, {
+          const response = await GET(url, {
             take: featuredTakeLimits[position],
           });
-          if (response?.status && Array.isArray(response?.data)) {
-            return response.data;
-          }
+          return filterDisplayableProducts(getSuccessfulArrayData(response));
         } catch (err) {
+          void err;
           if (position === 4) {
-            // Fallback to discount tag for position 4
             const fallbackUrl =
               API.PRODUCT_SEARCH_NEW_SINGLE +
               `?take=${featuredTakeLimits[position]}&tag=discount`;
-            const fallbackResponse: any = await GET(fallbackUrl);
-            if (
-              fallbackResponse?.status &&
-              Array.isArray(fallbackResponse?.data)
-            ) {
-              return fallbackResponse.data;
-            }
+            const fallbackResponse = await GET(fallbackUrl);
+            return filterDisplayableProducts(
+              getSuccessfulArrayData(fallbackResponse),
+            );
           }
         }
         return [];
@@ -159,45 +381,35 @@ function Home() {
 
   const featuredLoading = featuredQueries.some((query) => query.isLoading);
 
-  const featuredProducts = useMemo<Record<1 | 2 | 3 | 4, any[]>>(
+  const featuredProducts = useMemo<Record<1 | 2 | 3 | 4, Product[]>>(
     () => ({
-      1: featuredQueries[0]?.data ?? [],
-      2: featuredQueries[1]?.data ?? [],
-      3: featuredQueries[2]?.data ?? [],
-      4: featuredQueries[3]?.data ?? [],
+      1: filterDisplayableProducts(featuredQueries[0]?.data),
+      2: filterDisplayableProducts(featuredQueries[1]?.data),
+      3: filterDisplayableProducts(featuredQueries[2]?.data),
+      4: filterDisplayableProducts(featuredQueries[3]?.data),
     }),
-    [
-      featuredQueries[0]?.data,
-      featuredQueries[1]?.data,
-      featuredQueries[2]?.data,
-      featuredQueries[3]?.data,
-    ],
+    [featuredQueries],
   );
 
   const needsRecent = useMemo(() => {
-    if (featuredLoading) {
-      return false;
-    }
+    if (featuredLoading) return false;
     return featuredPositions.some((position) => {
       const minRequired = minItemsByPosition[position];
       return (featuredProducts[position]?.length ?? 0) < minRequired;
     });
   }, [
     featuredLoading,
-    featuredProducts,
     featuredPositions,
     minItemsByPosition,
+    featuredProducts,
   ]);
 
-  const { data: recentFallback = [], isLoading: recentLoading } = useQuery({
+  const { data: recentFallback = [] } = useQuery({
     queryKey: ["featured-recent-fallback"],
     queryFn: async () => {
       const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=10&tag=recent`;
-      const response: any = await GET(url);
-      if (response?.status && Array.isArray(response?.data)) {
-        return response.data;
-      }
-      return [];
+      const response = await GET(url);
+      return filterDisplayableProducts(getSuccessfulArrayData(response));
     },
     enabled: needsRecent,
     refetchInterval: needsRecent ? 5 * 60 * 1000 : false,
@@ -206,18 +418,52 @@ function Home() {
     gcTime: 10 * 60 * 1000,
   });
 
-  const { data: allProductsResponse } = useQuery({
-    queryKey: ["featured-products-all"],
+  const { data: allProductsPool = [] } = useQuery<Product[]>({
+    queryKey: ["home-products-pool"],
     queryFn: async () => {
-      const response: any = await GET(API.FEATURED_ALL_PRODUCTS, {
-        page: 1,
-        take: 20,
-        order: "DESC",
-      });
-      if (response?.status && Array.isArray(response?.data)) {
-        return response;
+      const pageSize = 50;
+      const maxPages = 50;
+
+      const collected: Product[] = [];
+      let page = 1;
+
+      while (page <= maxPages) {
+        const response = (await GET(API.FEATURED_ALL_PRODUCTS, {
+          page,
+          take: pageSize,
+          order: "DESC",
+        })) as unknown;
+
+        if (!response || typeof response !== "object") break;
+        const res = response as {
+          status?: boolean;
+          data?: unknown;
+          meta?: { hasNextPage?: boolean };
+        };
+
+        if (res.status !== true) break;
+
+        const pageItems = Array.isArray(res.data)
+          ? res.data
+          : res.data &&
+              typeof res.data === "object" &&
+              "data" in (res.data as Record<string, unknown>) &&
+              Array.isArray((res.data as { data?: unknown }).data)
+            ? ((res.data as { data?: unknown }).data as unknown[])
+            : [];
+
+        collected.push(...filterDisplayableProducts(pageItems));
+
+        const hasNext =
+          typeof res.meta?.hasNextPage === "boolean"
+            ? res.meta.hasNextPage
+            : pageItems.length >= pageSize;
+
+        if (!hasNext) break;
+        page += 1;
       }
-      return { data: [] };
+
+      return dedupeProducts(collected);
     },
     staleTime: 5 * 60 * 1000,
     refetchInterval: 5 * 60 * 1000,
@@ -226,103 +472,212 @@ function Home() {
   });
 
   useEffect(() => {
-    getBanners();
-    getUserHistory();
-    // Rotate between new and old products every 30 seconds
     const rotationInterval = setInterval(() => {
-      setShowNewProducts((prev) => !prev);
+      setRotationSeed((prev) => prev + 1);
     }, 30000);
     return () => clearInterval(rotationInterval);
-  }, [data, token]);
+  }, []);
 
   const positionItems = useMemo(() => {
-    const buildItems = (position: 1 | 2 | 3 | 4) => {
-      const featured = featuredProducts[position] || [];
-      const minRequired = minItemsByPosition[position] ?? 6;
+    const desiredCounts = { 1: 25, 2: 24, 3: 36, 4: 36 } as const;
+    const recent = filterDisplayableProducts(recentFallback);
 
-      // If showing new products, prioritize featured
-      if (showNewProducts) {
-        if (featured.length >= minRequired) {
-          return featured;
-        }
+    const featuredByPosition = {
+      1: featuredProducts[1],
+      2: featuredProducts[2],
+      3: featuredProducts[3],
+      4: featuredProducts[4],
+    } as const;
 
-        if (!recentFallback?.length) {
-          return featured;
-        }
+    const globalPool = dedupeProducts([
+      ...allProductsPool,
+      ...recent,
+      ...featuredByPosition[1],
+      ...featuredByPosition[2],
+      ...featuredByPosition[3],
+      ...featuredByPosition[4],
+    ]);
 
-        const featuredIds = new Set(
-          featured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+    const { newPool, oldPool } = splitNewOldPools(globalPool);
+
+    const shuffledNew = shuffleCandidates(newPool, rotationSeed + 10);
+    const shuffledOld = shuffleCandidates(oldPool, rotationSeed + 20);
+    const shuffledAll = shuffleCandidates(globalPool, rotationSeed + 30);
+
+    const used = new Set<string>();
+    const allocationOrder: Array<1 | 2 | 3 | 4> = [4, 1, 2, 3];
+
+    const results: Record<1 | 2 | 3 | 4, Product[]> = {
+      1: [],
+      2: [],
+      3: [],
+      4: [],
+    };
+
+    const buildMixedSection = (position: 1 | 2 | 3 | 4) => {
+      const desired = desiredCounts[position];
+      const desiredNew = Math.round(desired * 0.3);
+      const desiredOld = desired - desiredNew;
+      const maxPerCategory = desired >= 30 ? 3 : 2;
+      const categoryCounts = new Map<string, number>();
+
+      const pickedNew = takeUniqueProductsByCategory(
+        shuffledNew,
+        used,
+        desiredNew,
+        [],
+        categoryCounts,
+        maxPerCategory,
+      );
+      const pickedOld = takeUniqueProductsByCategory(
+        shuffledOld,
+        used,
+        desiredOld,
+        [],
+        categoryCounts,
+        maxPerCategory,
+      );
+
+      const combined = [...pickedOld, ...pickedNew];
+
+      if (combined.length < desired) {
+        const fillers = takeUniqueProductsByCategory(
+          shuffledAll,
+          used,
+          desired - combined.length,
+          [],
+          categoryCounts,
+          maxPerCategory,
         );
+        combined.push(...fillers);
+      }
 
-        const fillers = recentFallback.filter((item: any) => {
-          const identifier = item?.id ?? item?._id ?? item?.slug;
-          return identifier ? !featuredIds.has(identifier) : true;
+      if (combined.length < desired) {
+        const fillers = takeUniqueProducts(
+          shuffledAll,
+          used,
+          desired - combined.length,
+          [],
+        );
+        combined.push(...fillers);
+      }
+
+      const normalizedPreferredTokens = Array.from(
+        new Set(
+          PREFERRED_CATEGORY_TOKENS.map((token) =>
+            normalizeCategoryText(token),
+          ),
+        ),
+      ).filter(Boolean);
+
+      const recomputeCategoryCounts = () => {
+        const map = new Map<string, number>();
+        for (const item of combined) {
+          const key = getCategoryKey(item);
+          if (!key) continue;
+          map.set(key, (map.get(key) ?? 0) + 1);
+        }
+        return map;
+      };
+
+      const sectionCounts = recomputeCategoryCounts();
+
+      for (const token of normalizedPreferredTokens) {
+        const alreadyHas = combined.some((item) =>
+          productMatchesCategoryToken(item, token),
+        );
+        if (alreadyHas) continue;
+
+        const candidate = shuffledAll.find((item) => {
+          const id = getProductIdentifier(item);
+          if (!id) return false;
+          if (used.has(id)) return false;
+          return productMatchesCategoryToken(item, token);
         });
 
-        const combined = [...featured, ...fillers];
-        return combined.slice(0, minRequired);
-      } else {
-        // If showing old products, prioritize recent/fallback
-        if (!recentFallback?.length) {
-          return featured;
+        if (!candidate) continue;
+
+        if (combined.length < desired) {
+          const id = getProductIdentifier(candidate);
+          if (id) used.add(id);
+          combined.push(candidate);
+          const key = getCategoryKey(candidate);
+          if (key) sectionCounts.set(key, (sectionCounts.get(key) ?? 0) + 1);
+          continue;
         }
 
-        if (featured.length >= minRequired) {
-          const featuredIds = new Set(
-            featured.map((item: any) => item?.id ?? item?._id ?? item?.slug),
+        const removableIndex = combined.findIndex((item) => {
+          const isPreferred = normalizedPreferredTokens.some((preferred) =>
+            productMatchesCategoryToken(item, preferred),
           );
+          if (isPreferred) return false;
+          const key = getCategoryKey(item);
+          if (!key) return true;
+          return (sectionCounts.get(key) ?? 0) > 1;
+        });
 
-          const uniqueFeatured = featured.filter((item: any) => {
-            const identifier = item?.id ?? item?._id ?? item?.slug;
-            return identifier
-              ? !recentFallback.some((r: any) => {
-                  const rid = r?.id ?? r?._id ?? r?.slug;
-                  return rid === identifier;
-                })
-              : true;
-          });
+        if (removableIndex < 0) continue;
 
-          const combined = [...recentFallback, ...uniqueFeatured];
-          return combined.slice(0, minRequired);
+        const removed = combined.splice(removableIndex, 1)[0];
+        const removedId = removed ? getProductIdentifier(removed) : null;
+        if (removedId) used.delete(removedId);
+        const removedKey = removed ? getCategoryKey(removed) : null;
+        if (removedKey) {
+          const next = (sectionCounts.get(removedKey) ?? 1) - 1;
+          if (next <= 0) sectionCounts.delete(removedKey);
+          else sectionCounts.set(removedKey, next);
         }
 
-        return recentFallback.slice(0, minRequired);
+        const candidateId = getProductIdentifier(candidate);
+        if (candidateId) used.add(candidateId);
+        combined.push(candidate);
+        const candidateKey = getCategoryKey(candidate);
+        if (candidateKey) {
+          sectionCounts.set(
+            candidateKey,
+            (sectionCounts.get(candidateKey) ?? 0) + 1,
+          );
+        }
       }
+
+      return shuffleCandidates(combined, rotationSeed + position * 1000);
     };
 
-    return {
-      1: buildItems(1),
-      2: buildItems(2),
-      3: buildItems(3),
-      4: buildItems(4),
-    };
-  }, [featuredProducts, recentFallback, minItemsByPosition, showNewProducts]);
+    for (const position of allocationOrder) {
+      results[position] = buildMixedSection(position);
+    }
+
+    return results;
+  }, [featuredProducts, recentFallback, rotationSeed, allProductsPool]);
 
   const position1Items = positionItems[1];
   const position2Items = positionItems[2];
   const position3Items = positionItems[3];
   const position4Items = positionItems[4];
-  const recentVisitedPreview = useMemo(
-    () => (Array.isArray(history) ? history.slice(0, 7) : []),
-    [history],
-  );
-  const allProducts =
-    (allProductsResponse?.data as any[]) ??
-    (Array.isArray(allProductsResponse) ? allProductsResponse : []);
+  const recentVisitedPreview = useMemo(() => {
+    const items = filterDisplayableProducts(
+      Array.isArray(history) ? history : [],
+    );
+    return items.slice(0, 7);
+  }, [history]);
 
   const showPosition1 = position1Items.length > 0;
   const showPosition2 = position2Items.length > 0;
   const showPosition3 = position3Items.length > 0;
   const showPosition4 = position4Items.length > 0;
+  const allProductsPreview = useMemo(
+    () => shuffleCandidates(allProductsPool, rotationSeed + 777).slice(0, 20),
+    [allProductsPool, rotationSeed],
+  );
 
   return (
     <div className="page-Box">
       {/* FEATURED PRODUCTS - POSITION 1 (Top Featured Section - ABOVE Banner) */}
       {/* CategoryNav is now responsible for all category navigation and scrolling */}
 
-      {Banner?.length ? (
+      {banners.length ? (
         <>
-          <Banners data={Banner} />
+          <Banners data={banners} />
           <div className="HomeSCreen-space" />
         </>
       ) : null}
@@ -368,13 +723,17 @@ function Home() {
       )} */}
 
       <FeaturedItems />
-      {Array.isArray(allProducts) && allProducts.length > 0 && (
+      {allProductsPreview.length > 0 && (
         <>
           {/* <div className="HomeSCreen-space" /> */}
-          <PopularItems data={allProducts} title="All Products" type="all" />
+          <PopularItems
+            data={allProductsPreview}
+            title="All Products"
+            type="all"
+          />
         </>
       )}
-      {history?.length > 0 && token ? (
+      {history.length > 0 && token ? (
         <>
           <div className="HomeSCreen-space" />
           <PopularItems

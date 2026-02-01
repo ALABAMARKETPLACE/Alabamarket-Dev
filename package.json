@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev -p 3001",
     "build": "next build",
-    "start": "next start -p 3000",
+    "start": "next start -p 3001",
     "lint": "set ESLINT_USE_FLAT_CONFIG=true&& node --max-old-space-size=4096 ./node_modules/eslint/bin/eslint.js src --max-warnings=0"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "moment": "^2.30.1",
     "next": "^16.1.0",
     "next-auth": "^4.24.7",
+    "openai": "^6.17.0",
     "peer": "^1.0.2",
     "react": "^18",
     "react-bootstrap": "^2.10.4",
