@@ -47,6 +47,35 @@ export const usePaystack = (): UsePaystackReturn => {
   // Get current error message
   const error = errors.initialization || errors.verification || errors.refund;
 
+  const shouldFallbackToNonSplitInitialize = (err: unknown): boolean => {
+    if (!err || typeof err !== "object") return false;
+    const maybeErr = err as Record<string, unknown>;
+    const nestedData =
+      typeof maybeErr.data === "object" && maybeErr.data !== null
+        ? (maybeErr.data as Record<string, unknown>)
+        : null;
+    const rawMessage =
+      (typeof nestedData?.message === "string" && nestedData.message) ||
+      (typeof maybeErr.message === "string" && maybeErr.message) ||
+      "";
+    const msg = String(rawMessage).toLowerCase().trim();
+    return (
+      msg.includes("invalid store subaccount") ||
+      msg.includes("no subaccount") ||
+      (msg.includes("subaccount") &&
+        (msg.includes("invalid") || msg.includes("missing") || msg.includes("not found")))
+    );
+  };
+
+  const toNonSplitPaymentData = (
+    data: PaystackInitializeRequest,
+  ): PaystackInitializeRequest => {
+    const next: PaystackInitializeRequest = { ...data };
+    delete next.store_id;
+    delete next.split_payment;
+    return next;
+  };
+
   const formatAmount = useCallback((amountInKobo: number): string => {
     return `₦${(amountInKobo / 100).toFixed(2)}`;
   }, []);
@@ -189,6 +218,18 @@ export const usePaystack = (): UsePaystackReturn => {
           );
         }
       } catch (err: unknown) {
+        if (shouldFallbackToNonSplitInitialize(err)) {
+          const fallbackResult = await handleInitializePayment(
+            toNonSplitPaymentData(data),
+          );
+          notificationApi.info({
+            message: "Split Not Available",
+            description: "Proceeding with regular payment initialization.",
+            duration: 4,
+          });
+          return fallbackResult;
+        }
+
         const message =
           err instanceof Error
             ? err.message
@@ -203,7 +244,13 @@ export const usePaystack = (): UsePaystackReturn => {
         throw err;
       }
     },
-    [dispatch, notificationApi, calculateSplit, formatSplitAmount]
+    [
+      dispatch,
+      notificationApi,
+      calculateSplit,
+      formatSplitAmount,
+      handleInitializePayment,
+    ]
   );
 
   // Verify payment
