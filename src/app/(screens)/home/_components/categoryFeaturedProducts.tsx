@@ -44,7 +44,7 @@ function CategoryFeaturedProducts({
     }
   }, [categories, selectedCategory]);
 
-  // Fetch products for the selected category and selected tag (sort/filter).
+  // Fetch products for the selected category and selected tag (sort/filter)
   const fetchProducts = useCallback(async () => {
     if (!selectedCategory) return;
     setLoading(true);
