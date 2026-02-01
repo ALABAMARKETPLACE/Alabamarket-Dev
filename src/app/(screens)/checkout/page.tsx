@@ -284,7 +284,45 @@ function Checkout() {
 
       // Try primary endpoint first
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let response: any = await POST(endpointPrimary, paymentData);
+      let response: any;
+      try {
+        response = await POST(endpointPrimary, paymentData);
+      } catch (primaryError: unknown) {
+        const err =
+          typeof primaryError === "object" && primaryError !== null
+            ? (primaryError as Record<string, unknown>)
+            : {};
+        const errResponse =
+          typeof err.response === "object" && err.response !== null
+            ? (err.response as Record<string, unknown>)
+            : {};
+        const errData =
+          typeof errResponse.data === "object" && errResponse.data !== null
+            ? (errResponse.data as Record<string, unknown>)
+            : {};
+        const messageCandidate = errData.message ?? err.message ?? "";
+        const primaryMessage =
+          typeof messageCandidate === "string"
+            ? messageCandidate.toLowerCase().trim()
+            : "";
+        const shouldFallbackToNonSplit =
+          wantsSplit &&
+          (primaryMessage.includes("invalid store subaccount") ||
+            primaryMessage.includes("no subaccount") ||
+            (primaryMessage.includes("subaccount") &&
+              (primaryMessage.includes("invalid") ||
+                primaryMessage.includes("missing") ||
+                primaryMessage.includes("not found"))));
+
+        if (shouldFallbackToNonSplit) {
+          const nonSplitPaymentData: Record<string, unknown> = { ...paymentData };
+          delete nonSplitPaymentData.store_id;
+          delete nonSplitPaymentData.split_payment;
+          response = await POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData);
+        } else {
+          throw primaryError;
+        }
+      }
       let rawUrl =
         response?.data?.data?.authorization_url ||
         response?.data?.authorization_url ||
@@ -297,7 +335,10 @@ function Checkout() {
 
       // Fallback to non-split initialize if split not available or URL missing
       if (!authUrl && wantsSplit) {
-        response = await POST(API.PAYSTACK_INITIALIZE, paymentData);
+        const nonSplitPaymentData: Record<string, unknown> = { ...paymentData };
+        delete nonSplitPaymentData.store_id;
+        delete nonSplitPaymentData.split_payment;
+        response = await POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData);
         rawUrl =
           response?.data?.data?.authorization_url ||
           response?.data?.authorization_url ||

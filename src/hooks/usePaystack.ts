@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { notification } from "antd";
 import {
   initializePayment,
+  initializeSplitPayment,
   verifyPayment,
   getPublicKey,
   processRefund,
@@ -21,14 +21,18 @@ import {
 } from "@/redux/slice/paystackSlice";
 import {
   PaystackInitializeRequest,
+  PaystackInitializeResponse,
+  PaystackPublicKeyResponse,
   PaystackRefundRequest,
+  PaystackRefundResponse,
+  PaystackVerificationResponse,
   UsePaystackReturn,
   SplitPaymentRequest,
   SplitPaymentCalculation,
 } from "@/types/paystack.types";
 
-export const usePaystack = (): any => {
-  const dispatch = useDispatch<any>();
+export const usePaystack = (): UsePaystackReturn => {
+  const dispatch = useAppDispatch();
   const [notificationApi] = notification.useNotification();
 
   // Selectors
@@ -42,6 +46,75 @@ export const usePaystack = (): any => {
 
   // Get current error message
   const error = errors.initialization || errors.verification || errors.refund;
+
+  const shouldFallbackToNonSplitInitialize = (err: unknown): boolean => {
+    if (!err || typeof err !== "object") return false;
+    const maybeErr = err as Record<string, unknown>;
+    const nestedData =
+      typeof maybeErr.data === "object" && maybeErr.data !== null
+        ? (maybeErr.data as Record<string, unknown>)
+        : null;
+    const rawMessage =
+      (typeof nestedData?.message === "string" && nestedData.message) ||
+      (typeof maybeErr.message === "string" && maybeErr.message) ||
+      "";
+    const msg = String(rawMessage).toLowerCase().trim();
+    return (
+      msg.includes("invalid store subaccount") ||
+      msg.includes("no subaccount") ||
+      (msg.includes("subaccount") &&
+        (msg.includes("invalid") || msg.includes("missing") || msg.includes("not found")))
+    );
+  };
+
+  const toNonSplitPaymentData = (
+    data: PaystackInitializeRequest,
+  ): PaystackInitializeRequest => {
+    const next: PaystackInitializeRequest = { ...data };
+    delete next.store_id;
+    delete next.split_payment;
+    return next;
+  };
+
+  const formatAmount = useCallback((amountInKobo: number): string => {
+    return `₦${(amountInKobo / 100).toFixed(2)}`;
+  }, []);
+
+  const calculateSplit = useCallback(
+    (amount: number, adminPercentage: number = 5): SplitPaymentCalculation => {
+      const sellerPercentage = 100 - adminPercentage;
+      const adminAmount = Math.round((amount * adminPercentage) / 100);
+      const sellerAmount = amount - adminAmount;
+
+      return {
+        total_amount: amount,
+        admin_amount: adminAmount,
+        seller_amount: sellerAmount,
+        admin_percentage: adminPercentage,
+        seller_percentage: sellerPercentage,
+      };
+    },
+    [],
+  );
+
+  const formatSplitAmount = useCallback(
+    (calculation: SplitPaymentCalculation) => {
+      return {
+        total: formatAmount(calculation.total_amount),
+        admin: formatAmount(calculation.admin_amount),
+        seller: formatAmount(calculation.seller_amount),
+      };
+    },
+    [formatAmount],
+  );
+
+  const toKobo = useCallback((amountInNaira: number): number => {
+    return Math.round(amountInNaira * 100);
+  }, []);
+
+  const fromKobo = useCallback((amountInKobo: number): number => {
+    return amountInKobo / 100;
+  }, []);
 
   // Initialize payment
   const handleInitializePayment = useCallback(
@@ -60,7 +133,9 @@ export const usePaystack = (): any => {
           throw new Error("Amount must be at least 100 kobo (1 NGN)");
         }
 
-        const result: any = await dispatch(initializePayment(data)).unwrap();
+        const result = (await dispatch(
+          initializePayment(data),
+        ).unwrap()) as PaystackInitializeResponse;
         if (result.status && result.data?.data?.authorization_url) {
           notificationApi.success({
             message: "Payment Initialized",
@@ -69,19 +144,21 @@ export const usePaystack = (): any => {
           });
           return result;
         } else {
-          throw new Error(result.message || "Payment initialization failed");
+          throw new Error(result?.message || "Payment initialization failed");
         }
-      } catch (error: any) {
-        console.error("Payment initialization error:", error);
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to initialize payment. Please try again.";
 
         notificationApi.error({
           message: "Payment Failed",
-          description:
-            error.message || "Failed to initialize payment. Please try again.",
+          description: message,
           duration: 5,
         });
 
-        throw error;
+        throw err;
       }
     },
     [dispatch, notificationApi]
@@ -123,7 +200,9 @@ export const usePaystack = (): any => {
           },
         };
 
-        const result: any = await dispatch(initializePayment(splitPaymentData)).unwrap();
+        const result = (await dispatch(
+          initializeSplitPayment(splitPaymentData),
+        ).unwrap()) as PaystackInitializeResponse;
         if (result.status && result.data?.data?.authorization_url) {
           const formattedAmounts = formatSplitAmount(splitCalculation);
           
@@ -134,22 +213,44 @@ export const usePaystack = (): any => {
           });
           return result;
         } else {
-          throw new Error(result.message || "Split payment initialization failed");
+          throw new Error(
+            result?.message || "Split payment initialization failed",
+          );
         }
-      } catch (error: any) {
-        console.error("Split payment initialization error:", error);
+      } catch (err: unknown) {
+        if (shouldFallbackToNonSplitInitialize(err)) {
+          const fallbackResult = await handleInitializePayment(
+            toNonSplitPaymentData(data),
+          );
+          notificationApi.info({
+            message: "Split Not Available",
+            description: "Proceeding with regular payment initialization.",
+            duration: 4,
+          });
+          return fallbackResult;
+        }
+
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to initialize split payment. Please try again.";
 
         notificationApi.error({
           message: "Split Payment Failed",
-          description:
-            error.message || "Failed to initialize split payment. Please try again.",
+          description: message,
           duration: 5,
         });
 
-        throw error;
+        throw err;
       }
     },
-    [dispatch, notificationApi]
+    [
+      dispatch,
+      notificationApi,
+      calculateSplit,
+      formatSplitAmount,
+      handleInitializePayment,
+    ]
   );
 
   // Verify payment
@@ -160,7 +261,9 @@ export const usePaystack = (): any => {
           throw new Error("Payment reference is required");
         }
 
-        const result = await dispatch(verifyPayment(reference)).unwrap();
+        const result = (await dispatch(
+          verifyPayment(reference),
+        ).unwrap()) as PaystackVerificationResponse;
 
         if (result.status) {
           const paymentData = result.data?.data;
@@ -184,20 +287,21 @@ export const usePaystack = (): any => {
 
           return result;
         } else {
-          throw new Error(result.message || "Payment verification failed");
+          throw new Error(result?.message || "Payment verification failed");
         }
-      } catch (error: any) {
-        console.error("Payment verification error:", error);
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to verify payment. Please contact support.";
 
         notificationApi.error({
           message: "Verification Failed",
-          description:
-            error.message ||
-            "Failed to verify payment. Please contact support.",
+          description: message,
           duration: 5,
         });
 
-        throw error;
+        throw err;
       }
     },
     [dispatch, notificationApi]
@@ -211,7 +315,9 @@ export const usePaystack = (): any => {
           throw new Error("Transaction reference is required for refund");
         }
 
-        const result = await dispatch(processRefund(data)).unwrap();
+        const result = (await dispatch(
+          processRefund(data),
+        ).unwrap()) as PaystackRefundResponse;
 
         if (result.status) {
           notificationApi.success({
@@ -221,20 +327,21 @@ export const usePaystack = (): any => {
           });
           return result;
         } else {
-          throw new Error(result.message || "Refund processing failed");
+          throw new Error(result?.message || "Refund processing failed");
         }
-      } catch (error: any) {
-        console.error("Refund processing error:", error);
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to process refund. Please contact support.";
 
         notificationApi.error({
           message: "Refund Failed",
-          description:
-            error.message ||
-            "Failed to process refund. Please contact support.",
+          description: message,
           duration: 5,
         });
 
-        throw error;
+        throw err;
       }
     },
     [dispatch, notificationApi]
@@ -243,11 +350,11 @@ export const usePaystack = (): any => {
   // Get public key
   const handleGetPublicKey = useCallback(async () => {
     try {
-      const result = await dispatch(getPublicKey()).unwrap();
+      const result = (await dispatch(getPublicKey()).unwrap()) as
+        PaystackPublicKeyResponse;
       return result;
-    } catch (error: any) {
-      console.error("Get public key error:", error);
-      throw error;
+    } catch (err: unknown) {
+      throw err;
     }
   }, [dispatch]);
 
@@ -278,45 +385,6 @@ export const usePaystack = (): any => {
       handleGetPublicKey().catch(console.error);
     }
   }, [publicKey, handleGetPublicKey]);
-
-  // Utility function to format amount
-  const formatAmount = useCallback((amountInKobo: number): string => {
-    return `₦${(amountInKobo / 100).toFixed(2)}`;
-  }, []);
-
-  // Utility function to convert amount to kobo
-  const toKobo = useCallback((amountInNaira: number): number => {
-    return Math.round(amountInNaira * 100);
-  }, []);
-
-  // Utility function to convert amount from kobo
-  const fromKobo = useCallback((amountInKobo: number): number => {
-    return amountInKobo / 100;
-  }, []);
-
-  // Calculate split amounts (5% admin, 95% seller)
-  const calculateSplit = useCallback((amount: number, adminPercentage: number = 5): SplitPaymentCalculation => {
-    const sellerPercentage = 100 - adminPercentage;
-    const adminAmount = Math.round((amount * adminPercentage) / 100);
-    const sellerAmount = amount - adminAmount;
-
-    return {
-      total_amount: amount,
-      admin_amount: adminAmount,
-      seller_amount: sellerAmount,
-      admin_percentage: adminPercentage,
-      seller_percentage: sellerPercentage,
-    };
-  }, []);
-
-  // Format split amounts for display
-  const formatSplitAmount = useCallback((calculation: SplitPaymentCalculation) => {
-    return {
-      total: formatAmount(calculation.total_amount),
-      admin: formatAmount(calculation.admin_amount),
-      seller: formatAmount(calculation.seller_amount),
-    };
-  }, [formatAmount]);
 
   // Check if payment is in progress
   const isPaymentInProgress = paymentStatus === "pending";
