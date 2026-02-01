@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useCallback } from 'react';
-import { Button, Card, Divider, Typography, notification, Spin, Alert } from 'antd';
+import { Button, Card, Divider, Typography, notification, Alert } from 'antd';
 import { ShoppingCartOutlined, BankOutlined, UserOutlined } from '@ant-design/icons';
 import { usePaystack } from '@/hooks/usePaystack';
 import { SplitPaymentRequest } from '@/types/paystack.types';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 interface SplitPaymentProps {
   amount: number; // Amount in Naira
@@ -27,7 +27,6 @@ export const SplitPayment: React.FC<SplitPaymentProps> = ({
   storeId,
   orderId,
   storeName,
-  onSuccess,
   onError,
   onCancel,
   className,
@@ -38,7 +37,6 @@ export const SplitPayment: React.FC<SplitPaymentProps> = ({
   
   const {
     initializeSplitPayment,
-    verifyPayment,
     calculateSplit,
     formatSplitAmount,
     toKobo,
@@ -79,9 +77,9 @@ export const SplitPayment: React.FC<SplitPaymentProps> = ({
       } else {
         throw new Error(result.message || 'Payment initialization failed');
       }
-    } catch (error: any) {
-      console.error('Split payment error:', error);
-      const errorMessage = error.message || 'Failed to initialize payment';
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to initialize payment';
       
       notificationApi.error({
         message: 'Payment Error',
@@ -94,7 +92,6 @@ export const SplitPayment: React.FC<SplitPaymentProps> = ({
       setIsProcessing(false);
     }
   }, [
-    amount,
     email,
     storeId,
     orderId,

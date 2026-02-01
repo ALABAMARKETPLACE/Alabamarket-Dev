@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
 import { createAppSlice } from "../createSlices";
 import {
   PaystackState,
@@ -88,6 +88,47 @@ export const paystackSlice = createAppSlice({
           state.initializationError =
             (action.payload as PaystackError)?.message ||
             "Payment initialization failed";
+          state.paymentStatus = "failed";
+        },
+      },
+    ),
+
+    initializeSplitPayment: create.asyncThunk(
+      async (paymentData: PaystackInitializeRequest, { rejectWithValue }) => {
+        try {
+          const response = await POST(
+            API.PAYSTACK_INITIALIZE_SPLIT,
+            paymentData as unknown as Record<string, unknown>,
+          );
+          return response;
+        } catch (err: unknown) {
+          const error = err as ApiError;
+          return rejectWithValue({
+            message: error.message || "Split payment initialization failed",
+            code: error.code || "INITIALIZATION_ERROR",
+            status: error.status || 500,
+            data: error.response?.data,
+          } as PaystackError);
+        }
+      },
+      {
+        pending: (state) => {
+          state.isInitializing = true;
+          state.initializationError = null;
+          state.paymentStatus = "pending";
+        },
+        fulfilled: (state, action) => {
+          state.isInitializing = false;
+          state.initializationError = null;
+          state.paymentData = action.meta.arg;
+          state.paymentReference = action.payload.data?.data?.reference || null;
+          state.paymentStatus = "pending";
+        },
+        rejected: (state, action) => {
+          state.isInitializing = false;
+          state.initializationError =
+            (action.payload as PaystackError)?.message ||
+            "Split payment initialization failed";
           state.paymentStatus = "failed";
         },
       },
@@ -250,6 +291,7 @@ export const paystackSlice = createAppSlice({
 // Export actions
 export const {
   initializePayment,
+  initializeSplitPayment,
   verifyPayment,
   getPublicKey,
   processRefund,

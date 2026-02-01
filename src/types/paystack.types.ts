@@ -16,7 +16,7 @@ export interface PaystackInitializeRequest {
       variable_name: string;
       value: string;
     }>;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -43,7 +43,7 @@ export interface PaystackCustomer {
   email: string;
   customer_code: string;
   phone: string;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
   risk_action: string;
 }
 
@@ -76,11 +76,11 @@ export interface PaystackVerificationData {
   channel: string;
   currency: string;
   ip_address: string;
-  metadata: any;
+  metadata: Record<string, unknown> | null;
   fees: number;
   customer: PaystackCustomer;
   authorization: PaystackAuthorization;
-  plan: any;
+  plan: unknown;
 }
 
 export interface PaystackVerificationResponse {
@@ -111,9 +111,9 @@ export interface PaystackRefundResponse {
         paid_at: string;
         channel: string;
         currency: string;
-        authorization: any;
-        customer: any;
-        plan: any;
+        authorization: Record<string, unknown> | null;
+        customer: Record<string, unknown> | null;
+        plan: unknown;
       };
       integration: number;
       deducted_amount: number;
@@ -163,7 +163,7 @@ export interface PaystackState {
   // Refund status
   isRefunding: boolean;
   refundError: string | null;
-  refundData: any | null;
+  refundData: unknown | null;
 }
 
 // Payment form data
@@ -192,7 +192,7 @@ export interface PaystackError {
   message: string;
   code?: string;
   status?: number;
-  data?: any;
+  data?: unknown;
 }
 
 // Split Payment specific types
@@ -252,6 +252,8 @@ export interface UsePaystackReturn {
   error: string | null;
   paymentData: PaystackVerificationData | null;
   publicKey: string | null;
+  paymentReference: string | null;
+  verificationData: PaystackVerificationData | null;
   
   // Actions
   initializePayment: (data: PaystackInitializeRequest) => Promise<PaystackInitializeResponse>;
@@ -260,6 +262,8 @@ export interface UsePaystackReturn {
   refundPayment: (data: PaystackRefundRequest) => Promise<PaystackRefundResponse>;
   getPublicKey: () => Promise<PaystackPublicKeyResponse>;
   clearPaymentData: () => void;
+  setPaymentReference: (reference: string | null) => void;
+  setPaymentStatus: (status: PaystackState['paymentStatus']) => void;
   
   // Split Payment utilities
   calculateSplit: (amount: number, adminPercentage?: number) => SplitPaymentCalculation;
@@ -268,7 +272,14 @@ export interface UsePaystackReturn {
     admin: string;
     seller: string;
   };
+  formatAmount: (amountInKobo: number) => string;
+  toKobo: (amountInNaira: number) => number;
+  fromKobo: (amountInKobo: number) => number;
   
   // Status
   paymentStatus: 'idle' | 'pending' | 'success' | 'failed' | 'cancelled';
+  isPaymentInProgress: boolean;
+  isPaymentSuccessful: boolean;
+  isPaymentFailed: boolean;
+  paystackState: PaystackState;
 }
