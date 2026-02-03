@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import OpenAI from 'openai';
-import CONFIG from '@/config/configuration';
+import { NextRequest, NextResponse } from "next/server";
+import OpenAI from "openai";
+import CONFIG from "@/config/configuration";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 interface ConversationMessage {
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   content: string;
 }
 
@@ -63,17 +63,17 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { message, conversationHistory = [] } = body;
 
-    if (!message || typeof message !== 'string') {
+    if (!message || typeof message !== "string") {
       return NextResponse.json(
-        { error: 'Invalid message format' },
-        { status: 400 }
+        { error: "Invalid message format" },
+        { status: 400 },
       );
     }
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: 'OpenAI API key not configured' },
-        { status: 500 }
+        { error: "OpenAI API key not configured" },
+        { status: 500 },
       );
     }
 
@@ -81,17 +81,17 @@ export async function POST(request: NextRequest) {
     const messages: ConversationMessage[] = [
       ...(conversationHistory as ConversationMessage[]),
       {
-        role: 'user',
+        role: "user",
         content: message,
       },
     ];
 
     // Call OpenAI API
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-turbo',
+      model: "gpt-4-turbo",
       messages: [
         {
-          role: 'system',
+          role: "system",
           content: SYSTEM_PROMPT,
         },
         ...messages,
@@ -107,32 +107,29 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ message: botMessage });
   } catch (error) {
-    console.error('Chatbot API Error:', error);
+    console.error("Chatbot API Error:", error);
 
     // Handle specific error types
     if (error instanceof SyntaxError) {
       return NextResponse.json(
-        { error: 'Invalid request format' },
-        { status: 400 }
+        { error: "Invalid request format" },
+        { status: 400 },
       );
     }
 
-    if (
-      error instanceof Error &&
-      error.message.includes('API key')
-    ) {
+    if (error instanceof Error && error.message.includes("API key")) {
       return NextResponse.json(
-        { error: 'Service configuration error' },
-        { status: 500 }
+        { error: "Service configuration error" },
+        { status: 500 },
       );
     }
 
     return NextResponse.json(
       {
         error:
-          'An error occurred while processing your message. Please try again later.',
+          "An error occurred while processing your message. Please try again later.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

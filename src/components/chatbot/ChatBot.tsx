@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from "react";
 import {
   Button,
   Input,
@@ -10,7 +10,7 @@ import {
   Space,
   Divider,
   Empty,
-} from 'antd';
+} from "antd";
 import {
   SendOutlined,
   RobotOutlined,
@@ -18,12 +18,12 @@ import {
   CopyOutlined,
   DeleteOutlined,
   MinusOutlined,
-} from '@ant-design/icons';
-import './chatbot.scss';
+} from "@ant-design/icons";
+import "./chatbot.scss";
 
 interface Message {
   id: string;
-  type: 'user' | 'bot';
+  type: "user" | "bot";
   content: string;
   timestamp: Date;
 }
@@ -32,20 +32,20 @@ const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
-      type: 'bot',
+      id: "1",
+      type: "bot",
       content: `Welcome to Alaba Marketplace! 👋 I'm your AI shopping assistant. I'm here to help you find products, track orders, answer questions about shipping, returns, and much more. How can I assist you today?`,
       timestamp: new Date(),
     },
   ]);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -57,51 +57,51 @@ const ChatBot: React.FC = () => {
 
     const userMessage: Message = {
       id: Date.now().toString(),
-      type: 'user',
+      type: "user",
       content: inputValue,
       timestamp: new Date(),
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInputValue('');
+    setInputValue("");
     setLoading(true);
 
     try {
-      const response = await fetch('/api/chatbot', {
-        method: 'POST',
+      const response = await fetch("/api/chatbot", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: inputValue,
           conversationHistory: messages.map((m) => ({
-            role: m.type === 'user' ? 'user' : 'assistant',
+            role: m.type === "user" ? "user" : "assistant",
             content: m.content,
           })),
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to get response');
+      if (!response.ok) throw new Error("Failed to get response");
 
       const data = await response.json();
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        type: 'bot',
+        type: "bot",
         content: data.message,
         timestamp: new Date(),
       };
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
-      console.error('Error:', error);
-      message.error('Failed to send message. Please try again.');
+      console.error("Error:", error);
+      message.error("Failed to send message. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
@@ -109,14 +109,14 @@ const ChatBot: React.FC = () => {
 
   const copyMessage = (content: string) => {
     navigator.clipboard.writeText(content);
-    message.success('Copied to clipboard!');
+    message.success("Copied to clipboard!");
   };
 
   const clearChat = () => {
     setMessages([
       {
-        id: '1',
-        type: 'bot',
+        id: "1",
+        type: "bot",
         content: `Welcome back! 👋 Ready to help you with anything. What can I do for you?`,
         timestamp: new Date(),
       },
@@ -131,14 +131,14 @@ const ChatBot: React.FC = () => {
           onClick={() => setIsOpen(true)}
           aria-label="Open chat"
         >
-          <RobotOutlined style={{ fontSize: '24px' }} />
+          <RobotOutlined style={{ fontSize: "24px" }} />
         </button>
       </Tooltip>
     );
   }
 
   return (
-    <div className={`chatbot-container ${isMinimized ? 'minimized' : ''}`}>
+    <div className={`chatbot-container ${isMinimized ? "minimized" : ""}`}>
       <div className="chatbot-header">
         <div className="chatbot-header-content">
           <RobotOutlined className="chatbot-icon" />
@@ -148,13 +148,13 @@ const ChatBot: React.FC = () => {
           </div>
         </div>
         <Space size={8}>
-          <Tooltip title={isMinimized ? 'Expand' : 'Minimize'}>
+          <Tooltip title={isMinimized ? "Expand" : "Minimize"}>
             <Button
               type="text"
               size="small"
               icon={<MinusOutlined />}
               onClick={() => setIsMinimized(!isMinimized)}
-              style={{ color: '#fff' }}
+              style={{ color: "#fff" }}
             />
           </Tooltip>
           <Tooltip title="Close">
@@ -163,7 +163,7 @@ const ChatBot: React.FC = () => {
               size="small"
               icon={<CloseOutlined />}
               onClick={() => setIsOpen(false)}
-              style={{ color: '#fff' }}
+              style={{ color: "#fff" }}
             />
           </Tooltip>
         </Space>
@@ -175,7 +175,7 @@ const ChatBot: React.FC = () => {
             {messages.length === 0 ? (
               <Empty
                 description="Start a conversation"
-                style={{ marginTop: '40px' }}
+                style={{ marginTop: "40px" }}
               />
             ) : (
               messages.map((msg) => (
@@ -184,12 +184,12 @@ const ChatBot: React.FC = () => {
                     <div className="message-content">{msg.content}</div>
                     <div className="message-footer">
                       <span className="message-time">
-                        {msg.timestamp.toLocaleTimeString('en-US', {
-                          hour: '2-digit',
-                          minute: '2-digit',
+                        {msg.timestamp.toLocaleTimeString("en-US", {
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </span>
-                      {msg.type === 'bot' && (
+                      {msg.type === "bot" && (
                         <Tooltip title="Copy">
                           <Button
                             type="text"
@@ -209,14 +209,14 @@ const ChatBot: React.FC = () => {
               <div className="message message-bot">
                 <div className="message-bubble loading-bubble">
                   <Spin size="small" />
-                  <span style={{ marginLeft: '8px' }}>Thinking...</span>
+                  <span style={{ marginLeft: "8px" }}>Thinking...</span>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          <Divider style={{ margin: '8px 0' }} />
+          <Divider style={{ margin: "8px 0" }} />
 
           <div className="chatbot-input-area">
             <Input.TextArea

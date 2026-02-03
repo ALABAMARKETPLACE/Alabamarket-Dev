@@ -1,4 +1,4 @@
-@import '@/config/styleVariable.scss';
+@import "@/config/styleVariable.scss";
 
 .chatbot-floating-button {
   position: fixed;
@@ -7,7 +7,7 @@
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF9500 0%, #FF7A00 100%);
+  background: linear-gradient(135deg, #ff9500 0%, #ff7a00 100%);
   border: none;
   color: white;
   cursor: pointer;
@@ -92,7 +92,7 @@
 }
 
 .chatbot-header {
-  background: linear-gradient(135deg, #FF9500 0%, #FF7A00 100%);
+  background: linear-gradient(135deg, #ff9500 0%, #ff7a00 100%);
   color: white;
   padding: 16px;
   display: flex;
@@ -184,7 +184,7 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 
   .message-user & {
-    background: linear-gradient(135deg, #FF9500 0%, #FF7A00 100%);
+    background: linear-gradient(135deg, #ff9500 0%, #ff7a00 100%);
     color: white;
     border-bottom-right-radius: 4px;
   }
@@ -261,7 +261,7 @@
 
     textarea {
       font-size: 14px;
-      font-family: 'Poppins', 'Roboto', sans-serif;
+      font-family: "Poppins", "Roboto", sans-serif;
       resize: none;
       padding: 8px 12px;
       color: #333;
@@ -295,7 +295,7 @@
 
   .send-button {
     height: 36px;
-    background: linear-gradient(135deg, #FF9500 0%, #FF7A00 100%);
+    background: linear-gradient(135deg, #ff9500 0%, #ff7a00 100%);
     border: none;
     white-space: nowrap;
     flex-shrink: 0;
