@@ -14,8 +14,9 @@ import { StoreProvider } from "@/util/storeProvider";
 import ReactQueryProvider from "@/util/queryProvider";
 
 import CONFIG from "@/config/configuration";
-import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
+// import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 import LayoutContent from "@/components/LayoutContent";
+import ChatBot from "@/components/chatbot/ChatBot";
 
 export const metadata: Metadata = {
   title: CONFIG.NAME,
@@ -84,7 +85,8 @@ export default function RootLayout({
                         <Header />
                         <main className="layout-main">{children}</main>
                         <Footer />
-                        <WhatsAppChatTab />
+                        {/* <WhatsAppChatTab /> */}
+                        <ChatBot />
                       </div>
                     </LayoutContent>
                   </StoreProvider>
