@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Button,
-  Input,
-  Spin,
-  message,
-  Tooltip,
-  Space,
-  Divider,
-  Empty,
-} from "antd";
+import { Button, Input, message, Tooltip, Space, Divider, Empty } from "antd";
 import {
   SendOutlined,
   RobotOutlined,
@@ -131,7 +122,8 @@ const ChatBot: React.FC = () => {
           onClick={() => setIsOpen(true)}
           aria-label="Open chat"
         >
-          <RobotOutlined style={{ fontSize: "24px" }} />
+          <span className="chat-icon">💬</span>
+          <span className="chat-text">Chat</span>
         </button>
       </Tooltip>
     );
@@ -208,8 +200,11 @@ const ChatBot: React.FC = () => {
             {loading && (
               <div className="message message-bot">
                 <div className="message-bubble loading-bubble">
-                  <Spin size="small" />
-                  <span style={{ marginLeft: "8px" }}>Thinking...</span>
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
                 </div>
               </div>
             )}

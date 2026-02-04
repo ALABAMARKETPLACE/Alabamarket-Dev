@@ -2,7 +2,7 @@ import API from "@/config/API";
 import { store } from "@/redux/store/store";
 import { message } from "antd";
 
-const getFullUrl = (url: string) => {
+const getFullUrl = (url: string): string => {
   if (!url) return "";
   try {
     if (url.startsWith("http://") || url.startsWith("https://")) {
