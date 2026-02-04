@@ -135,10 +135,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Generic error handler
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(
       {
         error:
           "An error occurred while processing your message. Please try again later.",
+        details: errorMessage,
       },
       { status: 500 },
     );
