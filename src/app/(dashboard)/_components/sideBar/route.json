@@ -183,7 +183,15 @@
           "admin"
         ]
       },
-      
+      {
+        "id": 33,
+        "menu": "Manage News",
+        "icon": "TbNews",
+        "route": "/auth/news/manage",
+        "role": [
+          "admin"
+        ]
+      },
       {
         "id": 24,
         "menu": "Settlements",

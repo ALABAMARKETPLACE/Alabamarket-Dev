@@ -46,7 +46,7 @@ function DetailsForm({ onContinue, onStoreIdChange }: DetailsFormProps) {
     error,
     refetch,
   } = useQuery<unknown>({
-    queryKey: [API.PRODUCTS_GETONE_STORE + params.id],
+    queryKey: [API.PRODUCTS_GETONE_STORE + params.id, { storeId: params.id }],
     select: (res) => {
       const response = res as {
         status: boolean;

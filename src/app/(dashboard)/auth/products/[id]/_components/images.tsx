@@ -29,7 +29,7 @@ function ImageUpdate({ onBack, onContinue }: ImageUpdateProps) {
     error,
     refetch,
   } = useQuery<any>({
-    queryKey: [API.PRODUCTS_GETONE_STORE + params.id],
+    queryKey: [API.PRODUCTS_GETONE_STORE + params.id, { storeId: params.id }],
     select: (res) => {
       if (res?.status) return res?.data;
       return {};
