@@ -15,6 +15,7 @@ import { storeToken } from "@/redux/slice/authSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import API from "@/config/API";
 import { GET } from "@/util/apicall";
+import { getErrorMessage } from "@/util/notifications.util";
 
 
 function PhoneLogin() {
@@ -117,7 +118,7 @@ function PhoneLogin() {
         navigation.replace("/auth");
       } else {
         notificationApi.error({
-          message: result.error || "something went wrong.",
+          message: "Phone login failed. Please try again.",
         });
       }
     } catch (err) {

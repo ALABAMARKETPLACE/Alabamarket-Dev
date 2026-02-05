@@ -2,6 +2,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { useAppDispatch } from "@/redux/hooks";
+import { clearReduxData } from "@/lib/clear_redux";
 
 /**
  * Hook that monitors session expiration and redirects to home page
@@ -10,6 +12,7 @@ import { useEffect, useRef } from "react";
 export const useSessionExpiration = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const previousSessionRef = useRef<any>(null);
 
   useEffect(() => {
@@ -19,13 +22,14 @@ export const useSessionExpiration = () => {
       !session &&
       status === "unauthenticated"
     ) {
-      // Session has expired - redirect to home
+      // Session has expired - clear Redux data and redirect to home
+      clearReduxData(dispatch);
       router.push("/");
     }
 
     // Update the previous session reference
     previousSessionRef.current = session;
-  }, [session, status, router]);
+  }, [session, status, router, dispatch]);
 
   return { session, status };
 };

@@ -13,13 +13,14 @@ import { Button, notification, Popconfirm, Steps } from "antd";
 
 function Page() {
   const [current, setCurrent] = useState(0);
+  const [storeId, setStoreId] = useState<string | number | null>(null);
   const [Notifications, contextHolder] = notification.useNotification();
   const params = useParams();
   const queryClient = useQueryClient();
   const router = useRouter();
   const mutationDelete = useMutation({
     mutationFn: (id: number | string) => {
-      return DELETE(API.PRODUCT_DELETE + params?.id);
+      return DELETE(API.PRODUCT_DELETE + params?.id, null, storeId ? { storeId } : undefined);
     },
     onError: (error, variables, context) => {
       Notifications["error"]({
@@ -79,7 +80,7 @@ function Page() {
       />
       <br />
       {current === 0 ? (
-        <DetailsForm onContinue={() => setCurrent(1)} />
+        <DetailsForm onContinue={() => setCurrent(1)} onStoreIdChange={setStoreId} />
       ) : current === 1 ? (
         <ImageUpdate
           onBack={() => setCurrent(0)}

@@ -3,6 +3,21 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import API from "@/config/API";
 
+// Store error messages globally (in memory, cleared after retrieval)
+const errorMessages: { [key: string]: string } = {};
+
+export const getAndClearLoginError = (key: string): string | null => {
+  const message = errorMessages[key];
+  if (message) delete errorMessages[key];
+  return message || null;
+};
+
+export const setLoginError = (message: string): string => {
+  const key = `error_${Date.now()}_${Math.random()}`;
+  errorMessages[key] = message;
+  return key;
+};
+
 export const options: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET as string,
   pages: {
@@ -57,7 +72,10 @@ export const options: NextAuthOptions = {
         } catch (error: any) {
           console.error("NextAuth Login Error:", error.message);
           console.error("Error details:", error?.response?.data);
-          throw new Error(error?.response?.data?.message || "Login Failed.");
+          const errorMessage = error?.response?.data?.message || "Invalid email or password";
+          // Return null to trigger auth failure, and store error message for retrieval
+          setLoginError(errorMessage);
+          return null;
         }
       },
     }),
@@ -79,7 +97,9 @@ export const options: NextAuthOptions = {
           );
           return response.data;
         } catch (error: any) {
-          throw new Error(error?.response?.data?.message || "Login Failed.");
+          const errorMessage = error?.response?.data?.message || "Google login failed";
+          setLoginError(errorMessage);
+          return null;
         }
       },
     }),
@@ -105,12 +125,22 @@ export const options: NextAuthOptions = {
           );
           return response.data;
         } catch (error: any) {
-          throw new Error(error?.response?.data?.message || "Login Failed.");
+          const errorMessage = error?.response?.data?.message || "Phone login failed";
+          setLoginError(errorMessage);
+          return null;
         }
       },
     }),
   ],
   callbacks: {
+    async redirect({ url, baseUrl }: any) {
+      // Handle error redirect
+      if (url.includes("error=")) {
+        return `${baseUrl}/login?error=CredentialsSignin`;
+      }
+      return baseUrl;
+    },
+
     async signIn({ user }: any) {
       //checking if the user is deactivated or not
       console.log("=== NEXTAUTH SIGNIN CALLBACK ===");

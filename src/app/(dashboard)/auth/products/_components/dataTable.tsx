@@ -86,10 +86,14 @@ function DataTable({
     </span>
   );
 
-  const handleDelete = async (id: string | number) => {
+  const handleDelete = async (id: string | number, storeId?: string | number) => {
     setDeleteLoadingId(id);
     try {
-      const response: any = await DELETE(API.PRODUCT_DELETE + id);
+      const response: any = await DELETE(
+        API.PRODUCT_DELETE + id,
+        null,
+        storeId ? { storeId } : undefined,
+      );
       if (response?.status) {
         notification.success({ message: "Product deleted successfully" });
         onDeleted?.();
@@ -179,7 +183,7 @@ function DataTable({
             description="Are you sure you want to delete this product?"
             okText="Delete"
             okType="danger"
-            onConfirm={() => handleDelete(id)}
+            onConfirm={() => handleDelete(id, record?.storeId)}
           >
             <Button type="text" size="small" loading={deleteLoadingId === id}>
               <MdDeleteOutline size={20} color="#ff4d4f" />
@@ -254,7 +258,7 @@ function DataTable({
               okText="Delete"
               okType="danger"
               placement="topRight"
-              onConfirm={() => handleDelete(id)}
+              onConfirm={() => handleDelete(id, record?.storeId)}
             >
               <Button
                 danger
