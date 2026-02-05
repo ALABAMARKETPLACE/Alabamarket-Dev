@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { Container } from "react-bootstrap";
 import {
   Form,
   Input,
@@ -194,14 +195,15 @@ export default function ManageNewsPage() {
         </Button>
       </PageHeader>
 
-      {/* Add/Edit News Modal */}
-      <Modal
-        title={editingNews ? "Edit News" : "Add New News"}
-        open={isModalVisible}
-        onCancel={handleModalClose}
-        footer={null}
-        width={800}
-      >
+      <Container fluid style={{ marginTop: 20 }}>
+        {/* Add/Edit News Modal */}
+        <Modal
+          title={editingNews ? "Edit News" : "Add New News"}
+          open={isModalVisible}
+          onCancel={handleModalClose}
+          footer={null}
+          width={800}
+        >
         <Form
           form={form}
           layout="vertical"
@@ -298,16 +300,16 @@ export default function ManageNewsPage() {
             </Space>
           </Form.Item>
         </Form>
-      </Modal>
+        </Modal>
 
-      {/* News List */}
-      <div style={{ marginTop: 30 }}>
-        <h2>News List</h2>
-        {isFetching ? (
-          <Spin />
-        ) : (
+        {/* News List */}
+        <div style={{ marginTop: 30 }}>
+          <h2>News List</h2>
+          {isFetching ? (
+            <Spin />
+          ) : (
           <Row gutter={[16, 16]}>
-            {newsListData?.data?.map((news) => (
+            {newsListData?.data?.map((news: any) => (
               <Col key={news.id} lg={6} md={8} sm={12}>
                 <Card
                   hoverable
@@ -372,7 +374,8 @@ export default function ManageNewsPage() {
             ))}
           </Row>
         )}
-      </div>
+        </div>
+      </Container>
     </div>
   );
 }
