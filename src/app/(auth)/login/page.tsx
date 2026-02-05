@@ -30,10 +30,15 @@ function LoginScreen() {
           title="Close"
         />
         {/* Left Side - Image */}
-        <div className="auth-image-side" style={{ backgroundImage: `url(${bgImage.src})` }}>
+        <div
+          className="auth-image-side"
+          style={{ backgroundImage: `url(${bgImage.src})` }}
+        >
           <div className="auth-image-text">
             <h3>Welcome to Alabamarket</h3>
-            <p>Your one-stop destination for quality products at the best prices.</p>
+            <p>
+              Your one-stop destination for quality products at the best prices.
+            </p>
           </div>
         </div>
 
@@ -41,7 +46,8 @@ function LoginScreen() {
         <div className="auth-form-side">
           <h2 className="LoginScreen-txt1">Welcome Back</h2>
           <div className="LoginScreen-txt2">
-            Sign in to manage your orders, check your wishlist, and continue shopping.
+            Sign in to manage your orders, check your wishlist, and continue
+            shopping.
           </div>
 
           <EmailLogin />

@@ -104,7 +104,10 @@ function DataTable({
         // Extract error message from nested structure
         let errorMessage = "Failed to delete product";
         if (response?.message) {
-          if (typeof response.message === "object" && response.message.message) {
+          if (
+            typeof response.message === "object" &&
+            response.message.message
+          ) {
             errorMessage = response.message.message;
           } else if (typeof response.message === "string") {
             errorMessage = response.message;

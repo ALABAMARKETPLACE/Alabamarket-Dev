@@ -2,7 +2,12 @@ import { Card } from "antd";
 import { Descriptions, Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { UserOutlined, PhoneOutlined, MailOutlined } from "@ant-design/icons";
-import { fetchUserContactDetails, getUserContactName, getUserEmail, getUserPhone } from "@/util/orderDetailsHelpers";
+import {
+  fetchUserContactDetails,
+  getUserContactName,
+  getUserEmail,
+  getUserPhone,
+} from "@/util/orderDetailsHelpers";
 
 interface UserData {
   id?: string | number;

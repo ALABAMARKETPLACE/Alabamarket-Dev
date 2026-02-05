@@ -1,40 +1,48 @@
 # Order Details Fetching - Seller & Customer Information
 
 ## Overview
+
 This solution provides utilities and components to fetch and display seller details and customer contact information on the order details page.
 
 ## Files Created
 
-### 1. **Order Details Helper Utilities** 
+### 1. **Order Details Helper Utilities**
+
 📄 `/src/util/orderDetailsHelpers.ts`
 
 Contains the following functions:
 
 #### Seller Details Functions
+
 - **`fetchSellerDetails(storeId)`** - Fetches seller/store information from backend
 - **`getSellerName(sellerData)`** - Extracts seller name from seller data object
 - **`getSellerPhone(sellerData)`** - Extracts seller phone number
 - **`getSellerEmail(sellerData)`** - Extracts seller email
 
 #### Customer Details Functions
+
 - **`fetchUserContactDetails(userId)`** - Fetches customer/user information from backend
 - **`getUserContactName(userData)`** - Extracts customer name from user data
 - **`getUserEmail(userData)`** - Extracts customer email
 - **`getUserPhone(userData, addressData)`** - Extracts customer phone with fallback to address phone
 
 #### Combined Function
+
 - **`fetchOrderRelatedDetails(storeId, userId)`** - Fetches both seller and customer details in parallel and returns formatted data
 
 ### 2. **Customer Details Card Component**
+
 📄 `/src/app/(dashboard)/auth/orders/_components/customerDetailsCard.tsx`
 
 A React component that displays customer contact information in a card layout:
+
 - Shows customer name, email, and phone number
 - Displays loading state while fetching data
 - Handles missing data gracefully with fallback messages
 - Uses Ant Design components for consistent styling
 
 ### 3. **Updated Order Details Page**
+
 📄 `/src/app/(dashboard)/auth/orders/[orderId]/page.tsx`
 
 - Added import for `CustomerDetailsCard` component
@@ -44,22 +52,24 @@ A React component that displays customer contact information in a card layout:
 ## Usage Example
 
 ### Direct Usage in Components
+
 ```tsx
-import { fetchOrderRelatedDetails } from '@/util/orderDetailsHelpers';
+import { fetchOrderRelatedDetails } from "@/util/orderDetailsHelpers";
 
 // Fetch both seller and customer details
 const details = await fetchOrderRelatedDetails(storeId, userId);
 
-console.log(details.seller.name);     // "Tease"
-console.log(details.seller.phone);    // "1234567890"
-console.log(details.customer.name);   // "John Doe"
-console.log(details.customer.email);  // "john@example.com"
+console.log(details.seller.name); // "Tease"
+console.log(details.seller.phone); // "1234567890"
+console.log(details.customer.name); // "John Doe"
+console.log(details.customer.email); // "john@example.com"
 ```
 
 ### In React Components (with useQuery)
+
 ```tsx
-import { useQuery } from '@tanstack/react-query';
-import { fetchUserContactDetails } from '@/util/orderDetailsHelpers';
+import { useQuery } from "@tanstack/react-query";
+import { fetchUserContactDetails } from "@/util/orderDetailsHelpers";
 
 const { data: customerData } = useQuery({
   queryFn: async () => await fetchUserContactDetails(userId),
@@ -69,15 +79,17 @@ const { data: customerData } = useQuery({
 ```
 
 ### Using the Card Component
-```tsx
-import CustomerDetailsCard from '@/app/(dashboard)/auth/orders/_components/customerDetailsCard';
 
-<CustomerDetailsCard data={order?.data} />
+```tsx
+import CustomerDetailsCard from "@/app/(dashboard)/auth/orders/_components/customerDetailsCard";
+
+<CustomerDetailsCard data={order?.data} />;
 ```
 
 ## Data Flow
 
 ### From Order Response
+
 ```json
 {
   "id": "373",
@@ -92,6 +104,7 @@ import CustomerDetailsCard from '@/app/(dashboard)/auth/orders/_components/custo
 ```
 
 ### Seller Details API Response
+
 ```json
 {
   "data": {
@@ -105,6 +118,7 @@ import CustomerDetailsCard from '@/app/(dashboard)/auth/orders/_components/custo
 ```
 
 ### Customer Details API Response
+
 ```json
 {
   "data": {
@@ -128,6 +142,7 @@ import CustomerDetailsCard from '@/app/(dashboard)/auth/orders/_components/custo
 ## Integration with Existing Code
 
 The solution integrates seamlessly with:
+
 - **React Query** for data fetching and caching
 - **Ant Design** components (Card, Descriptions, Icons)
 - **Existing SellerDetailsCard** component (placed above CustomerDetailsCard)
