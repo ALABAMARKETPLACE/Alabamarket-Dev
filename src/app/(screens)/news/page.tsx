@@ -1,11 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { Input, Pagination, Empty, Spin, Button } from "antd";
+import { Input, Pagination, Empty, Spin } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
-import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import NewsCard from "./_components/newsCard";
 import "./styles.scss";
 
@@ -62,11 +61,17 @@ export default function NewsPage() {
 
   return (
     <div className="news-page">
-      <PageHeader title="News & Updates" bredcume="Home / News & Updates">
-        <Button type="primary" href="/auth/news/manage">
-          Manage News (Admin)
-        </Button>
-      </PageHeader>
+      {/* Page Header */}
+      <div className="news-page-header">
+        <Container fluid>
+          <Row className="align-items-center">
+            <Col md={8}>
+              <h1 className="news-page-title">News & Updates</h1>
+              <p className="news-page-subtitle">Stay updated with our latest news and announcements</p>
+            </Col>
+          </Row>
+        </Container>
+      </div>
 
       <Container fluid className="news-container">
         {/* Search Bar */}

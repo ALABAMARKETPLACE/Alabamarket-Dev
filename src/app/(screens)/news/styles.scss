@@ -1,6 +1,38 @@
 .news-page {
   min-height: 100vh;
   background-color: #f5f5f5;
+
+  .news-page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 20px;
+    margin-bottom: 40px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    .news-page-title {
+      font-size: 42px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+      margin-bottom: 12px;
+
+      @media (max-width: 768px) {
+        font-size: 28px;
+      }
+    }
+
+    .news-page-subtitle {
+      font-size: 16px;
+      font-weight: 400;
+      margin: 0;
+      opacity: 0.95;
+      line-height: 1.5;
+
+      @media (max-width: 768px) {
+        font-size: 14px;
+      }
+    }
+  }
 }
 
 .news-container {
