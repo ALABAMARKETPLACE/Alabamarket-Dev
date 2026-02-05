@@ -19,7 +19,7 @@ function LoginScreen() {
   }, []);
 
   return (
-    <div className="Screen-box">
+    <div className="auth-login-wrapper">
       <div className="auth-container position-relative">
         <Button
           type="text"

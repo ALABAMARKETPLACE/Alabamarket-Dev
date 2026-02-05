@@ -6,6 +6,7 @@ import ProductTab from "../_components/productsTab";
 import PaymentStatusTab from "../_components/paymentStatusTab";
 import OrderStatusTab from "../_components/orderStatusTab";
 import SellerDetailsCard from "../_components/sellerDetailsCard";
+import CustomerDetailsCard from "../_components/customerDetailsCard";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
@@ -153,6 +154,7 @@ export default function OrderDetails() {
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
                 <SellerDetailsCard data={order?.data} />
+                <CustomerDetailsCard data={order?.data} />
                 <OrderStatusTab data={order?.data} />
               </div>
             </Col>

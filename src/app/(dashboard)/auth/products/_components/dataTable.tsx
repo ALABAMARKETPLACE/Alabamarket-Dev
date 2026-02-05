@@ -101,13 +101,31 @@ function DataTable({
         notification.success({ message: "Product deleted successfully" });
         onDeleted?.();
       } else {
+        // Extract error message from nested structure
+        let errorMessage = "Failed to delete product";
+        if (response?.message) {
+          if (typeof response.message === "object" && response.message.message) {
+            errorMessage = response.message.message;
+          } else if (typeof response.message === "string") {
+            errorMessage = response.message;
+          }
+        }
         notification.error({
-          message: response?.message ?? "Failed to delete product",
+          message: errorMessage,
         });
       }
     } catch (error: any) {
+      // Extract error message from nested structure
+      let errorMessage = "Failed to delete product";
+      if (error?.message) {
+        if (typeof error.message === "object" && error.message.message) {
+          errorMessage = error.message.message;
+        } else if (typeof error.message === "string") {
+          errorMessage = error.message;
+        }
+      }
       notification.error({
-        message: error?.message ?? "Failed to delete product",
+        message: errorMessage,
       });
     } finally {
       setDeleteLoadingId(null);

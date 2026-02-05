@@ -22,6 +22,11 @@ export const getErrorMessage = (error: any): string => {
       return "Invalid email or password";
     }
 
+    // Handle nested error messages (e.g., {message: {message: "error"}})
+    if (typeof error.message === "object" && error.message.message) {
+      return error.message.message;
+    }
+
     // Try standard error message properties
     const message =
       error.message ||

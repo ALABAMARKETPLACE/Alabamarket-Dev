@@ -1,12 +1,12 @@
 @use "../../../config/styleVariable.scss" as global;
 
-// Page Background
-.Screen-box {
+// Page Background - Scoped to login page only
+.auth-login-wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('../../../assets/images/position.jpg'); // Changed to position.jpg
+  background-image: url('../../../assets/images/position.jpg');
   background-size: cover;
   background-position: center;
   position: relative;
@@ -19,9 +19,19 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.25); // Reduced opacity for clearer image
+    background: rgba(0, 0, 0, 0.25);
     z-index: 0;
   }
+}
+
+// Screen-box without background (for other pages)
+.Screen-box {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 20px;
 }
 
 // Centered Layout Container

@@ -26,9 +26,14 @@ function Page() {
         storeId ? { storeId } : undefined,
       );
     },
-    onError: (error, variables, context) => {
+    onError: (error: any, variables, context) => {
+      // Extract error message from nested structure
+      let errorMessage = error?.message || "Failed to delete product";
+      if (typeof error?.message === "object" && error.message.message) {
+        errorMessage = error.message.message;
+      }
       Notifications["error"]({
-        message: error.message,
+        message: errorMessage,
       });
     },
     onSuccess: (data, variables, context) => {
