@@ -1,12 +1,12 @@
 @use "../../../config/styleVariable.scss" as global;
 
-// Page Background
-.Screen-box {
+// Page Background - Scoped to login page only
+.auth-login-wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('../../../assets/images/position.jpg'); // Changed to position.jpg
+  background-image: url("../../../assets/images/position.jpg");
   background-size: cover;
   background-position: center;
   position: relative;
@@ -19,16 +19,26 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.25); // Reduced opacity for clearer image
+    background: rgba(0, 0, 0, 0.25);
     z-index: 0;
   }
+}
+
+// Screen-box without background (for other pages)
+.Screen-box {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 20px;
 }
 
 // Centered Layout Container
 .auth-container {
   display: flex;
   width: 100%;
-  max-width: 480px; 
+  max-width: 480px;
   background: #ffffff; // Solid white background
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); // Softer shadow
@@ -69,7 +79,7 @@
   color: #1a1a1a;
   text-align: left; // Align left for split layout
   margin-bottom: 8px;
-  
+
   @media (max-width: 576px) {
     font-size: 24px;
     text-align: center;
@@ -93,7 +103,7 @@
 .auth-container {
   .ant-input-affix-wrapper-lg,
   .ant-input-lg,
-  .ant-input-password-lg { 
+  .ant-input-password-lg {
     padding: 14px 20px !important;
     border-radius: 100px !important;
     border: 1.5px solid #f1f5f9 !important;
@@ -101,26 +111,28 @@
     font-size: 16px !important;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     box-shadow: none !important;
-    
+
     &:hover {
       background-color: #fff !important;
       border-color: #cbd5e1 !important;
     }
 
-    &:focus, &:focus-within {
+    &:focus,
+    &:focus-within {
       background-color: #fff !important;
       border-color: global.$primary !important;
       box-shadow: 0 4px 12px rgba(255, 95, 21, 0.1) !important;
       transform: translateY(-1px);
     }
-    
+
     input {
       background-color: transparent !important;
       height: 100% !important;
     }
-    
+
     // Icon styling within input
-    .ant-input-prefix, .ant-input-suffix {
+    .ant-input-prefix,
+    .ant-input-suffix {
       color: #94a3b8;
     }
 
@@ -175,14 +187,14 @@
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 15px 30px rgba(255, 95, 21, 0.3) !important;
-    background: darken(#FF5F15, 5%) !important;
+    background: darken(#ff5f15, 5%) !important;
   }
-  
+
   &:active {
     transform: translateY(0);
     box-shadow: 0 5px 15px rgba(255, 95, 21, 0.2) !important;
   }
-  
+
   span {
     font-weight: 700;
   }
@@ -203,9 +215,9 @@
   cursor: pointer;
   margin-left: 6px;
   transition: color 0.2s;
-  
+
   &:hover {
-    color: darken(#FF5F15, 10%);
+    color: darken(#ff5f15, 10%);
     text-decoration: underline;
   }
 }
@@ -239,14 +251,14 @@
   transition: all 0.3s ease;
   margin-top: 24px;
   gap: 12px;
-  
+
   &:hover {
     background-color: #f8fafc;
     border-color: #cbd5e1;
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   }
-  
+
   // Assuming there's text inside or likely adding it via JS/Component
   font-family: global.$SemiBold;
   font-size: 16px;

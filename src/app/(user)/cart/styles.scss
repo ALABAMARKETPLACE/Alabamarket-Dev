@@ -25,8 +25,12 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
   position: relative;
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease,
-    background 0.25s ease, color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    filter 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease;
 
   svg {
     font-size: 16px;
@@ -44,7 +48,9 @@
     );
     transform: translateX(-50%) rotate(8deg);
     opacity: 0.9;
-    transition: transform 0.45s ease, opacity 0.45s ease;
+    transition:
+      transform 0.45s ease,
+      opacity 0.45s ease;
     pointer-events: none;
   }
 

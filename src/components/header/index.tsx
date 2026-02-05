@@ -172,6 +172,15 @@ function Header() {
                     </div>
                   </Popover>
 
+                  <Link href={"/news"}>
+                    <div className="Header-action-item">
+                      <BsShopWindow size={28} color={"#475569"} />
+                      <span className="d-none d-xl-block ms-2 text-dark fw-medium">
+                        News
+                      </span>
+                    </div>
+                  </Link>
+
                   <Link href={"/cart"}>
                     <div className="Header-action-item">
                       <Badge

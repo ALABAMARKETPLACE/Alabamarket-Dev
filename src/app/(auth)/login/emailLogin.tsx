@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";
 import { useAppDispatch } from "@/redux/hooks";
 import { storeToken } from "@/redux/slice/authSlice";
+import { getErrorMessage } from "@/util/notifications.util";
 
 function EmailLogin() {
   const navigation = useRouter();
@@ -31,13 +32,14 @@ function EmailLogin() {
           storeToken({
             token: session?.token,
             refreshToken: session?.refreshToken,
-          })
+          }),
         );
         navigation.replace("/auth");
       } else {
         setIsLoading(false);
+        // Always show "Invalid email or password" for failed login
         notificationApi.error({
-          message: result.error || "something went wrong.",
+          message: "Invalid email or password",
         });
       }
     } catch (err) {

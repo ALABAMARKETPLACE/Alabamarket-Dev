@@ -2,7 +2,7 @@ import API from "@/config/API";
 import { store } from "@/redux/store/store";
 import { message } from "antd";
 
-const getFullUrl = (url: string) => {
+const getFullUrl = (url: string): string => {
   if (!url) return "";
   try {
     if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -210,7 +210,11 @@ const EXCEL_UPLOAD = async (
     }
   });
 };
-const DELETE = async (url: string, signal: AbortSignal | null = null) => {
+const DELETE = async (
+  url: string,
+  signal: AbortSignal | null = null,
+  body?: Record<string, any>,
+) => {
   try {
     const state = store.getState();
     const token: string = (state as AuthState)?.Auth?.token ?? " ";
@@ -222,6 +226,7 @@ const DELETE = async (url: string, signal: AbortSignal | null = null) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      ...(body && { body: JSON.stringify(body) }),
     });
     if (!response.ok) {
       const errorData = await response.json();

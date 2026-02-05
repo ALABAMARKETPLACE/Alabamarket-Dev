@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";
 import { storeToken } from "@/redux/slice/authSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import { getErrorMessage } from "@/util/notifications.util";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 20 }} spin />;
 
@@ -33,12 +34,12 @@ function GmailLogin(props: any) {
           storeToken({
             token: session?.token,
             refreshToken: session?.refreshToken,
-          })
+          }),
         );
         navigation.replace("/auth");
       } else {
         notificationApi.error({
-          message: result.error || "something went wrong.",
+          message: "Google login failed. Please try again.",
         });
       }
     } catch (err) {

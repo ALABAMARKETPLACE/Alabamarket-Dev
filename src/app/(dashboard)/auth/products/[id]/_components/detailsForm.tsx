@@ -18,9 +18,10 @@ const QuillEditor = dynamic(
 
 type DetailsFormProps = {
   onContinue?: () => void;
+  onStoreIdChange?: (storeId: string | number) => void;
 };
 
-function DetailsForm({ onContinue }: DetailsFormProps) {
+function DetailsForm({ onContinue, onStoreIdChange }: DetailsFormProps) {
   const params = useParams();
   const [form] = Form.useForm();
   const [selectedC, setCategory] = useState<null | string | number>(null);
@@ -45,13 +46,18 @@ function DetailsForm({ onContinue }: DetailsFormProps) {
     error,
     refetch,
   } = useQuery<unknown>({
-    queryKey: [API.PRODUCTS_GETONE_STORE + params.id],
+    queryKey: [API.PRODUCTS_GETONE_STORE + params.id, { storeId: params.id }],
     select: (res) => {
       const response = res as {
         status: boolean;
         data: Record<string, unknown>;
       };
-      if (response?.status) return response?.data;
+      if (response?.status) {
+        if (onStoreIdChange && response.data?.storeId) {
+          onStoreIdChange(response.data.storeId as string | number);
+        }
+        return response?.data;
+      }
       return {};
     },
   });

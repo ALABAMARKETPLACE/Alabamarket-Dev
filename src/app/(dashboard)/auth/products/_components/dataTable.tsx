@@ -86,21 +86,49 @@ function DataTable({
     </span>
   );
 
-  const handleDelete = async (id: string | number) => {
+  const handleDelete = async (
+    id: string | number,
+    storeId?: string | number,
+  ) => {
     setDeleteLoadingId(id);
     try {
-      const response: any = await DELETE(API.PRODUCT_DELETE + id);
+      const response: any = await DELETE(
+        API.PRODUCT_DELETE + id,
+        null,
+        storeId ? { storeId } : undefined,
+      );
       if (response?.status) {
         notification.success({ message: "Product deleted successfully" });
         onDeleted?.();
       } else {
+        // Extract error message from nested structure
+        let errorMessage = "Failed to delete product";
+        if (response?.message) {
+          if (
+            typeof response.message === "object" &&
+            response.message.message
+          ) {
+            errorMessage = response.message.message;
+          } else if (typeof response.message === "string") {
+            errorMessage = response.message;
+          }
+        }
         notification.error({
-          message: response?.message ?? "Failed to delete product",
+          message: errorMessage,
         });
       }
     } catch (error: any) {
+      // Extract error message from nested structure
+      let errorMessage = "Failed to delete product";
+      if (error?.message) {
+        if (typeof error.message === "object" && error.message.message) {
+          errorMessage = error.message.message;
+        } else if (typeof error.message === "string") {
+          errorMessage = error.message;
+        }
+      }
       notification.error({
-        message: error?.message ?? "Failed to delete product",
+        message: errorMessage,
       });
     } finally {
       setDeleteLoadingId(null);
@@ -141,7 +169,7 @@ function DataTable({
       key: "price",
       render: (item: number) => (
         <span>
-          {Settings.currency === "NGN" ? "₦" : Settings.currency ?? ""}{" "}
+          {Settings.currency === "NGN" ? "₦" : (Settings.currency ?? "")}{" "}
           {formatCurrency(item)}
         </span>
       ),
@@ -179,7 +207,7 @@ function DataTable({
             description="Are you sure you want to delete this product?"
             okText="Delete"
             okType="danger"
-            onConfirm={() => handleDelete(id)}
+            onConfirm={() => handleDelete(id, record?.storeId)}
           >
             <Button type="text" size="small" loading={deleteLoadingId === id}>
               <MdDeleteOutline size={20} color="#ff4d4f" />
@@ -208,7 +236,7 @@ function DataTable({
       const price =
         typeof record?.retail_rate === "number"
           ? `${
-              Settings.currency === "NGN" ? "₦" : Settings.currency ?? ""
+              Settings.currency === "NGN" ? "₦" : (Settings.currency ?? "")
             } ${formatCurrency(record?.retail_rate)}`
           : "--";
 
@@ -254,7 +282,7 @@ function DataTable({
               okText="Delete"
               okType="danger"
               placement="topRight"
-              onConfirm={() => handleDelete(id)}
+              onConfirm={() => handleDelete(id, record?.storeId)}
             >
               <Button
                 danger

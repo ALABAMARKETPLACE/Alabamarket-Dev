@@ -29,7 +29,7 @@ function ImageUpdate({ onBack, onContinue }: ImageUpdateProps) {
     error,
     refetch,
   } = useQuery<any>({
-    queryKey: [API.PRODUCTS_GETONE_STORE + params.id],
+    queryKey: [API.PRODUCTS_GETONE_STORE + params.id, { storeId: params.id }],
     select: (res) => {
       if (res?.status) return res?.data;
       return {};
@@ -50,8 +50,8 @@ function ImageUpdate({ onBack, onContinue }: ImageUpdateProps) {
   const handleImageChange = (file: any, id: any) => {
     setImages((prevImages) =>
       prevImages.map((image) =>
-        image.id === id ? { ...image, file: file } : image
-      )
+        image.id === id ? { ...image, file: file } : image,
+      ),
     );
   };
 
@@ -288,7 +288,7 @@ function ImageUpdate({ onBack, onContinue }: ImageUpdateProps) {
           </div>
         </div>
       </div>
-      
+
       {/* Video Upload Section */}
       <hr className="my-4" />
       <h5 className="mb-3">Product Video (Optional)</h5>

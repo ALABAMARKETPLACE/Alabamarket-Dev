@@ -77,6 +77,7 @@ export default function AddressTab(props: Props) {
       typeof val === "string" &&
       val.trim() !== "";
 
+    // Priority order for contact name
     if (isValid(props?.data?.name)) return props.data.name;
     if (isValid(props?.data?.order_contact_name))
       return props.data.order_contact_name;
@@ -87,6 +88,9 @@ export default function AddressTab(props: Props) {
     }
     // Fallback to seller name if all else fails
     if (isValid(props?.data?.seller_name)) return props.data.seller_name;
+
+    // If still loading user data, show loading state
+    if (props?.data?.user_id && !user?.data) return "Loading...";
 
     return "N/A";
   };
