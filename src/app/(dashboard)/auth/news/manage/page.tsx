@@ -311,7 +311,7 @@ export default function ManageNewsPage() {
             <Spin />
           ) : (
             <Row gutter={[16, 16]}>
-              {newsListData?.data?.map((news: any) => (
+              {newsListData?.data?.map((news: NewsItem) => (
                 <Col key={news.id} lg={6} md={8} sm={12}>
                   <Card
                     hoverable
