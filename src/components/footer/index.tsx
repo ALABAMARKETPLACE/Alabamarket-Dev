@@ -45,7 +45,8 @@ const Footer = () => {
               </Link>
               <br />
               <div className="Footer-text3">
-                Discover a world of exceptional products and unbeatable deals at {API.NAME}. Your one-stop destination for the latest in fashion,
+                Discover a world of exceptional products and unbeatable deals at{" "}
+                {API.NAME}. Your one-stop destination for the latest in fashion,
                 electronics, home decor, beauty, and more.
               </div>
               <div style={{ margin: 10 }} />
@@ -209,7 +210,8 @@ const Footer = () => {
       </I18nextProvider>
       <br />
       <div className="Footer-Box1">
-        COPYRIGHT © {new Date().getFullYear()} Taxgoglobal Corporation. ALL RIGHTS RESERVED
+        COPYRIGHT © {new Date().getFullYear()} Taxgoglobal Corporation. ALL
+        RIGHTS RESERVED
       </div>
     </footer>
   );
