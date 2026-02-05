@@ -39,7 +39,7 @@ export default function NewsPage() {
   const { data: newsData, isLoading } = useQuery({
     queryFn: async () => {
       const response = await GET(
-        `${API.NEWS_AND_BLOGS_GETPGN}?page=${currentPage}&limit=${pageSize}`
+        `${API.NEWS_AND_BLOGS_GETPGN}?page=${currentPage}&limit=${pageSize}`,
       );
       return response as NewsResponse;
     },
@@ -48,10 +48,12 @@ export default function NewsPage() {
   });
 
   // Filter news based on search term
-  const filteredNews = newsData?.data?.filter((item) =>
-    item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
-  ) || [];
+  const filteredNews =
+    newsData?.data?.filter(
+      (item) =>
+        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchTerm.toLowerCase()),
+    ) || [];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -60,10 +62,7 @@ export default function NewsPage() {
 
   return (
     <div className="news-page">
-      <PageHeader
-        title="News & Updates"
-        bredcume="Home / News & Updates"
-      >
+      <PageHeader title="News & Updates" bredcume="Home / News & Updates">
         <Button type="primary" href="/auth/news/manage">
           Manage News (Admin)
         </Button>

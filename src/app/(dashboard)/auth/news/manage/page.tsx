@@ -51,7 +51,11 @@ export default function ManageNewsPage() {
   const [thumbnailFile, setThumbnailFile] = useState<UploadFile | null>(null);
 
   // Fetch all news
-  const { data: newsListData, isLoading: isFetching, refetch } = useQuery({
+  const {
+    data: newsListData,
+    isLoading: isFetching,
+    refetch,
+  } = useQuery({
     queryFn: async () => {
       const response = await GET(API.NEWS_AND_BLOGS_GETPGN + "?limit=100");
       return response as { data: NewsItem[] };
@@ -64,8 +68,14 @@ export default function ManageNewsPage() {
     mutationFn: async (data: FormData) => {
       // FormData is serialized by the HTTP client
       const response = editingNews
-        ? await PUT(API.NEWS_AND_BLOGS + editingNews.id, data as unknown as Record<string, unknown>)
-        : await POST(API.NEWS_AND_BLOGS, data as unknown as Record<string, unknown>);
+        ? await PUT(
+            API.NEWS_AND_BLOGS + editingNews.id,
+            data as unknown as Record<string, unknown>,
+          )
+        : await POST(
+            API.NEWS_AND_BLOGS,
+            data as unknown as Record<string, unknown>,
+          );
       return response;
     },
     onSuccess: () => {
@@ -265,7 +275,9 @@ export default function ManageNewsPage() {
                   {...uploadProps}
                   accept="image/*"
                   fileList={thumbnailFile ? [thumbnailFile] : []}
-                  onChange={(info) => setThumbnailFile(info.fileList[0] || null)}
+                  onChange={(info) =>
+                    setThumbnailFile(info.fileList[0] || null)
+                  }
                 >
                   <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
                 </Upload>
@@ -345,9 +357,7 @@ export default function ManageNewsPage() {
                       okText="Yes"
                       cancelText="No"
                     >
-                      <DeleteOutlined
-                        style={{ color: "red" }}
-                      />
+                      <DeleteOutlined style={{ color: "red" }} />
                     </Popconfirm>,
                   ]}
                 >

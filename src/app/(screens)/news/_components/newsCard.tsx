@@ -82,7 +82,9 @@ export default function NewsCard({ news }: NewsCardProps) {
             <span>{moment(news.createdAt).format("MMM DD, YYYY")}</span>
           </Space>
 
-          {news.author && <span className="news-card-author">{news.author}</span>}
+          {news.author && (
+            <span className="news-card-author">{news.author}</span>
+          )}
 
           {news.views !== undefined && (
             <Space size={4}>

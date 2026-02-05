@@ -51,7 +51,14 @@ export default function NewsDetailPage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div
+        style={{
+          minHeight: "80vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <Spin size="large" />
       </div>
     );
@@ -68,7 +75,14 @@ export default function NewsDetailPage() {
   const mediaUrl = news.video || news.thumbnail || news.image;
 
   return (
-    <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh", paddingTop: 20, paddingBottom: 40 }}>
+    <div
+      style={{
+        backgroundColor: "#f5f5f5",
+        minHeight: "100vh",
+        paddingTop: 20,
+        paddingBottom: 40,
+      }}
+    >
       <Container>
         <Button
           type="text"
@@ -117,9 +131,7 @@ export default function NewsDetailPage() {
                   </Tag>
                 )}
 
-                <h1 style={{ fontSize: 32, marginBottom: 16 }}>
-                  {news.title}
-                </h1>
+                <h1 style={{ fontSize: 32, marginBottom: 16 }}>{news.title}</h1>
 
                 <Space
                   className="news-detail-meta"
@@ -128,7 +140,9 @@ export default function NewsDetailPage() {
                 >
                   <Space size={4}>
                     <CalendarOutlined />
-                    <span>{moment(news.createdAt).format("MMMM DD, YYYY")}</span>
+                    <span>
+                      {moment(news.createdAt).format("MMMM DD, YYYY")}
+                    </span>
                   </Space>
 
                   {news.author && (

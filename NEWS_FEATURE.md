@@ -1,11 +1,13 @@
 # News & Updates Feature Documentation
 
 ## Overview
+
 A complete news management system where administrators can create, edit, and delete news articles with photo and video support. Users can browse, search, and view news articles on the public news page.
 
 ## File Structure
 
 ### Public News Page
+
 - **File**: `/src/app/(screens)/news/page.tsx`
 - **Route**: `/news`
 - **Features**:
@@ -16,6 +18,7 @@ A complete news management system where administrators can create, edit, and del
   - Quick access link to admin panel
 
 ### News Detail Page
+
 - **File**: `/src/app/(screens)/news/[id]/page.tsx`
 - **Route**: `/news/[id]`
 - **Features**:
@@ -26,6 +29,7 @@ A complete news management system where administrators can create, edit, and del
   - Responsive layout
 
 ### News Card Component
+
 - **File**: `/src/app/(screens)/news/_components/newsCard.tsx`
 - **Features**:
   - Reusable card component for displaying news items
@@ -34,6 +38,7 @@ A complete news management system where administrators can create, edit, and del
   - Hover effects and animations
 
 ### Admin Management Page
+
 - **File**: `/src/app/(dashboard)/auth/news/manage/page.tsx`
 - **Route**: `/auth/news/manage` (Protected - Admin only)
 - **Features**:
@@ -47,6 +52,7 @@ A complete news management system where administrators can create, edit, and del
   - Image preview in grid
 
 ### Styles
+
 - **File**: `/src/app/(screens)/news/styles.scss`
 - **Features**:
   - Grid layout styling
@@ -77,6 +83,7 @@ DELETE /newsandblogs/{id}
 ## Data Structure
 
 ### NewsItem Interface
+
 ```typescript
 interface NewsItem {
   id: string | number;
@@ -84,9 +91,9 @@ interface NewsItem {
   description: string;
   content?: string;
   category?: string;
-  image?: string;         // Featured image URL
-  video?: string;         // Video file URL
-  thumbnail?: string;     // Video thumbnail URL
+  image?: string; // Featured image URL
+  video?: string; // Video file URL
+  thumbnail?: string; // Video thumbnail URL
   author?: string;
   createdAt: string;
   views?: number;
@@ -96,6 +103,7 @@ interface NewsItem {
 ## Features & Capabilities
 
 ### For Users
+
 ✅ Browse news articles in grid layout
 ✅ Search news by title or description
 ✅ View full news article details
@@ -105,6 +113,7 @@ interface NewsItem {
 ✅ Responsive design for all devices
 
 ### For Administrators
+
 ✅ Create new news articles
 ✅ Edit existing articles
 ✅ Delete articles with confirmation
@@ -160,6 +169,7 @@ interface NewsItem {
 ## Styling Details
 
 ### News Card
+
 - Image/video container: 200px height with cover fit
 - Title: Bold, capitalized, 2-line clamp
 - Description: Dimmed text, 2-line clamp
@@ -167,12 +177,14 @@ interface NewsItem {
 - Hover effect: Slight lift animation with shadow
 
 ### Grid Layout
+
 - Desktop: 4 columns (lg=4)
 - Tablet: 2 columns (md=6)
 - Mobile: 1 column (sm=12)
 - Gap: 16px between cards
 
 ### Search Bar
+
 - Full width input with icon
 - Clear button for easy reset
 - Box shadow for depth
@@ -181,6 +193,7 @@ interface NewsItem {
 ## Database Considerations
 
 The following fields should be indexed for performance:
+
 - `title` - for search functionality
 - `category` - for filtering
 - `createdAt` - for sorting by date
@@ -191,6 +204,7 @@ The following fields should be indexed for performance:
 ⚠️ **Admin Routes**: The `/auth/news/manage` route should be protected by middleware to ensure only authenticated admin users can access it.
 
 ⚠️ **File Upload**: Ensure proper validation on the backend:
+
 - Check file sizes
 - Validate file types (jpg, png for images, mp4, webm for videos)
 - Scan for malicious content
@@ -239,6 +253,7 @@ The following fields should be indexed for performance:
 ✅ All TypeScript types validated
 ✅ No compilation errors
 ✅ Routes properly configured:
-   - `/news` - Public news listing
-   - `/news/[id]` - News detail view
-   - `/auth/news/manage` - Admin management panel
+
+- `/news` - Public news listing
+- `/news/[id]` - News detail view
+- `/auth/news/manage` - Admin management panel
