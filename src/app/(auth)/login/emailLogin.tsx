@@ -32,7 +32,7 @@ function EmailLogin() {
           storeToken({
             token: session?.token,
             refreshToken: session?.refreshToken,
-          })
+          }),
         );
         navigation.replace("/auth");
       } else {

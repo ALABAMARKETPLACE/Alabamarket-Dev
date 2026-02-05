@@ -72,7 +72,8 @@ export const options: NextAuthOptions = {
         } catch (error: any) {
           console.error("NextAuth Login Error:", error.message);
           console.error("Error details:", error?.response?.data);
-          const errorMessage = error?.response?.data?.message || "Invalid email or password";
+          const errorMessage =
+            error?.response?.data?.message || "Invalid email or password";
           // Return null to trigger auth failure, and store error message for retrieval
           setLoginError(errorMessage);
           return null;
@@ -93,11 +94,12 @@ export const options: NextAuthOptions = {
           const response = await axios.post(
             API.BASE_URL + API.LOGIN_GMAIL,
             credentials,
-            { headers: { "Content-Type": "application/json" } }
+            { headers: { "Content-Type": "application/json" } },
           );
           return response.data;
         } catch (error: any) {
-          const errorMessage = error?.response?.data?.message || "Google login failed";
+          const errorMessage =
+            error?.response?.data?.message || "Google login failed";
           setLoginError(errorMessage);
           return null;
         }
@@ -121,11 +123,12 @@ export const options: NextAuthOptions = {
           const response = await axios.post(
             API.BASE_URL + API.LOGIN_PHONE,
             credentials,
-            { headers: { "Content-Type": "application/json" } }
+            { headers: { "Content-Type": "application/json" } },
           );
           return response.data;
         } catch (error: any) {
-          const errorMessage = error?.response?.data?.message || "Phone login failed";
+          const errorMessage =
+            error?.response?.data?.message || "Phone login failed";
           setLoginError(errorMessage);
           return null;
         }

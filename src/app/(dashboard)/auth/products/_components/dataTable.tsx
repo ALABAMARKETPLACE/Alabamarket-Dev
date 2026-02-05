@@ -86,7 +86,10 @@ function DataTable({
     </span>
   );
 
-  const handleDelete = async (id: string | number, storeId?: string | number) => {
+  const handleDelete = async (
+    id: string | number,
+    storeId?: string | number,
+  ) => {
     setDeleteLoadingId(id);
     try {
       const response: any = await DELETE(
@@ -145,7 +148,7 @@ function DataTable({
       key: "price",
       render: (item: number) => (
         <span>
-          {Settings.currency === "NGN" ? "₦" : Settings.currency ?? ""}{" "}
+          {Settings.currency === "NGN" ? "₦" : (Settings.currency ?? "")}{" "}
           {formatCurrency(item)}
         </span>
       ),
@@ -212,7 +215,7 @@ function DataTable({
       const price =
         typeof record?.retail_rate === "number"
           ? `${
-              Settings.currency === "NGN" ? "₦" : Settings.currency ?? ""
+              Settings.currency === "NGN" ? "₦" : (Settings.currency ?? "")
             } ${formatCurrency(record?.retail_rate)}`
           : "--";
 

@@ -45,4 +45,3 @@ export const getErrorMessage = (error: any): string => {
 
   return String(error);
 };
-

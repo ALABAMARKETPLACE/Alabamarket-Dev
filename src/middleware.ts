@@ -41,8 +41,9 @@ export async function middleware(req: NextRequest) {
   const userRole = token?.user?.role || role;
   const allowedRoles = ["seller", "admin", "delivery_company", "driver"];
   const allowedTypes = ["seller", "admin", "delivery_company", "driver"];
-  const isAllowed = allowedRoles.includes(userRole) || allowedTypes.includes(userType);
-  
+  const isAllowed =
+    allowedRoles.includes(userRole) || allowedTypes.includes(userType);
+
   if (
     url.pathname.startsWith("/auth") &&
     (!isAllowed ||

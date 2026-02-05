@@ -34,7 +34,7 @@ function GmailLogin(props: any) {
           storeToken({
             token: session?.token,
             refreshToken: session?.refreshToken,
-          })
+          }),
         );
         navigation.replace("/auth");
       } else {

@@ -17,7 +17,6 @@ import API from "@/config/API";
 import { GET } from "@/util/apicall";
 import { getErrorMessage } from "@/util/notifications.util";
 
-
 function PhoneLogin() {
   const [isLoading, setIsLoading] = useState(false);
   const [verification, setverification] = useState(false);
@@ -40,27 +39,33 @@ function PhoneLogin() {
   };
 
   const LoginPhone = async (values: any) => {
-    const url = `${API.USER_CHECK_PHONE}${values.phone}`; 
-    const response: any = await GET(url); 
-    console.log('response',response)
+    const url = `${API.USER_CHECK_PHONE}${values.phone}`;
+    const response: any = await GET(url);
+    console.log("response", response);
     try {
       // Check if the user exists
-      const response: any = await GET(url); 
-      if (response?.data===false) { 
-        setError("This phone number is not registered. Please create an account.");
+      const response: any = await GET(url);
+      if (response?.data === false) {
+        setError(
+          "This phone number is not registered. Please create an account.",
+        );
         setIsLoading(false);
         return;
       }
-  
+
       setdata(values);
       setIsLoading(true);
       checkuser();
       setError("");
-  
+
       const recaptchas = await new RecaptchaVerifier(Auth, "recaptcha", {});
       const phone = `${values.code}${values.phone}`;
-  
-      const checkPhone: any = await signInWithPhoneNumber(Auth, phone, recaptchas);
+
+      const checkPhone: any = await signInWithPhoneNumber(
+        Auth,
+        phone,
+        recaptchas,
+      );
       if (checkPhone?.verificationId) {
         setautho(checkPhone);
         setverification(true);
@@ -79,7 +84,7 @@ function PhoneLogin() {
       setIsLoading(false);
     }
   };
-  
+
   const verifyOtp = async (values: any) => {
     try {
       setIsLoading(true);
@@ -113,7 +118,7 @@ function PhoneLogin() {
           storeToken({
             token: session?.token,
             refreshToken: session?.refreshToken,
-          })
+          }),
         );
         navigation.replace("/auth");
       } else {

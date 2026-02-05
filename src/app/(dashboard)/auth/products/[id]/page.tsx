@@ -20,7 +20,11 @@ function Page() {
   const router = useRouter();
   const mutationDelete = useMutation({
     mutationFn: (id: number | string) => {
-      return DELETE(API.PRODUCT_DELETE + params?.id, null, storeId ? { storeId } : undefined);
+      return DELETE(
+        API.PRODUCT_DELETE + params?.id,
+        null,
+        storeId ? { storeId } : undefined,
+      );
     },
     onError: (error, variables, context) => {
       Notifications["error"]({
@@ -80,7 +84,10 @@ function Page() {
       />
       <br />
       {current === 0 ? (
-        <DetailsForm onContinue={() => setCurrent(1)} onStoreIdChange={setStoreId} />
+        <DetailsForm
+          onContinue={() => setCurrent(1)}
+          onStoreIdChange={setStoreId}
+        />
       ) : current === 1 ? (
         <ImageUpdate
           onBack={() => setCurrent(0)}
