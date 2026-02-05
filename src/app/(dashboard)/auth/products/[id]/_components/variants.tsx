@@ -70,7 +70,7 @@ function UpdateVariants({ back, saveData, onContinue }: UpdateVariantsProps) {
     variants: any,
     currentIndex: any = 0,
     currentCombination: any = [],
-    combinations: any = []
+    combinations: any = [],
   ) {
     try {
       if (currentIndex === variants?.length) {
@@ -95,7 +95,7 @@ function UpdateVariants({ back, saveData, onContinue }: UpdateVariantsProps) {
           variants,
           currentIndex + 1,
           newCombination,
-          combinations
+          combinations,
         );
       }
     } catch (err) {

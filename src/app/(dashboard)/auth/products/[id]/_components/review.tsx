@@ -41,9 +41,12 @@ const UpdateReview = ({ onBack }: UpdateReviewProps) => {
             {product &&
               Object.keys(product).map((key) => {
                 if (
-                  ["productImages", "productVariant", "image", "specifications"].includes(
-                    key
-                  )
+                  [
+                    "productImages",
+                    "productVariant",
+                    "image",
+                    "specifications",
+                  ].includes(key)
                 ) {
                   return null;
                 }
@@ -75,7 +78,8 @@ const UpdateReview = ({ onBack }: UpdateReviewProps) => {
         </Collapse.Panel>
 
         <Collapse.Panel header="Variants" key="3">
-          {Array.isArray(product?.productVariant) && product?.productVariant.length ? (
+          {Array.isArray(product?.productVariant) &&
+          product?.productVariant.length ? (
             <Row>
               {product.productVariant.map((variant: any) => (
                 <Col md={3} key={variant?.id} className="mb-3">
@@ -88,10 +92,15 @@ const UpdateReview = ({ onBack }: UpdateReviewProps) => {
                     />
                     <div className="pt-2 fw-semibold">{variant?.price}</div>
                     <div className="text-muted small">SKU: {variant?.sku}</div>
-                    <div className="text-muted small">Units: {variant?.units}</div>
+                    <div className="text-muted small">
+                      Units: {variant?.units}
+                    </div>
                     <div className="mt-2">
                       {variant?.combination?.map((combo: any) => (
-                        <Tag bordered={false} key={`${variant?.id}-${combo?.value}`}>
+                        <Tag
+                          bordered={false}
+                          key={`${variant?.id}-${combo?.value}`}
+                        >
                           {combo?.variant}: {combo?.value}
                         </Tag>
                       ))}
@@ -138,4 +147,3 @@ const UpdateReview = ({ onBack }: UpdateReviewProps) => {
 };
 
 export default UpdateReview;
-

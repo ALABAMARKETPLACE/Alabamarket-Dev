@@ -7,18 +7,14 @@
         "menu": "Dashboard",
         "icon": "MdSpaceDashboard",
         "route": "/auth/dashboard",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 1,
         "menu": "Dashboard",
         "icon": "FaChartPie",
         "route": "/auth/overview",
-        "role": [
-          "seller"
-        ]
+        "role": ["seller"]
       }
     ]
   },
@@ -30,76 +26,57 @@
         "menu": "Orders",
         "icon": "TbListDetails",
         "route": "/auth/orders",
-        "role": [
-          "seller",
-          "admin"
-        ]
+        "role": ["seller", "admin"]
       },
       {
         "id": 9,
         "menu": "Products",
         "icon": "AiOutlineProduct",
         "route": "/auth/products",
-        "role": [
-          "seller",
-          "admin"
-        ]
+        "role": ["seller", "admin"]
       },
       {
         "id": 6,
         "menu": "Banner",
         "icon": "TfiLayoutSliderAlt",
         "route": "/auth/banners",
-        "role": [
-          "seller",
-          "admin"
-        ]
+        "role": ["seller", "admin"]
       },
-      
+
       {
         "id": 7,
         "menu": "Categories",
         "icon": "MdOutlineCategory",
         "route": "/auth/categories",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 8,
         "menu": "Sub Categories",
         "icon": "TbCategory2",
         "route": "/auth/sub-categories",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 16,
         "menu": "Manage Store",
         "icon": "RiStore2Line",
         "route": "/auth/manage-store",
-        "role": [
-          "seller"
-        ]
+        "role": ["seller"]
       },
       {
         "id": 17,
         "menu": "Boost Requests",
         "icon": "TbRocket",
         "route": "/auth/boost-request",
-        "role": [
-          "seller"
-        ]
+        "role": ["seller"]
       },
       {
         "id": 25,
         "menu": "Settings",
         "icon": "RiSettings5Fill",
         "route": "/auth/account-settings",
-        "role": [
-          "seller"
-        ]
+        "role": ["seller"]
       }
     ]
   },
@@ -111,63 +88,49 @@
         "menu": "Sellers",
         "icon": "IoStorefrontSharp",
         "route": "/auth/sellers",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 3,
         "menu": "Seller Requests",
         "icon": "RiUserReceived2Line",
         "route": "/auth/seller-request",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 18,
         "menu": "Boost Approvals",
         "icon": "TbRocket",
         "route": "/auth/boost-approvals",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 32,
         "menu": "Subaccount Approvals",
         "icon": "MdVerified",
         "route": "/auth/subaccount-approvals",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 26,
         "menu": "Delivery Partner Approvals",
         "icon": "TbTruckDelivery",
         "route": "/auth/delivery-partner-approvals",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 14,
         "menu": "Users",
         "icon": "HiUsers",
         "route": "/auth/users",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 15,
         "menu": "Enquiry",
         "icon": "IoChatbubbleEllipsesSharp",
         "route": "/auth/enquiry",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       }
     ]
   },
@@ -179,28 +142,21 @@
         "menu": "Invoices",
         "icon": "TbInvoice",
         "route": "/auth/invoices",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 33,
         "menu": "Manage News",
         "icon": "TbNews",
         "route": "/auth/news/manage",
-        "role": [
-          "admin"
-        ]
+        "role": ["admin"]
       },
       {
         "id": 24,
         "menu": "Settlements",
         "icon": "FaFileInvoice",
         "route": "/auth/settlements",
-        "role": [
-          "seller",
-          "admin"
-        ]
+        "role": ["seller", "admin"]
       }
     ]
   },
@@ -212,36 +168,24 @@
         "menu": "Orders",
         "icon": "TbListDetails",
         "route": "/auth/delivery-company-dashboard/orders",
-        "role": [
-          "delivery_company"
-        ],
-        "type": [
-          "delivery_company"
-        ]
+        "role": ["delivery_company"],
+        "type": ["delivery_company"]
       },
       {
         "id": 29,
         "menu": "Pickup",
         "icon": "TbTruckDelivery",
         "route": "/auth/delivery-company-dashboard/pickup",
-        "role": [
-          "delivery_company"
-        ],
-        "type": [
-          "delivery_company"
-        ]
+        "role": ["delivery_company"],
+        "type": ["delivery_company"]
       },
       {
         "id": 30,
         "menu": "Drivers",
         "icon": "HiUsers",
         "route": "/auth/delivery-company-dashboard/drivers",
-        "role": [
-          "delivery_company"
-        ],
-        "type": [
-          "delivery_company"
-        ]
+        "role": ["delivery_company"],
+        "type": ["delivery_company"]
       }
     ]
   },
@@ -253,12 +197,8 @@
         "menu": "Dashboard",
         "icon": "MdSpaceDashboard",
         "route": "/auth/driver-dashboard",
-        "role": [
-          "driver"
-        ],
-        "type": [
-          "driver"
-        ]
+        "role": ["driver"],
+        "type": ["driver"]
       }
     ]
   }
