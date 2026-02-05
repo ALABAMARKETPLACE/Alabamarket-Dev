@@ -204,102 +204,104 @@ export default function ManageNewsPage() {
           footer={null}
           width={800}
         >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleFormSubmit}
-          autoComplete="off"
-        >
-          <Form.Item
-            label="Title"
-            name="title"
-            rules={[{ required: true, message: "Please enter news title" }]}
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleFormSubmit}
+            autoComplete="off"
           >
-            <Input placeholder="Enter news title" />
-          </Form.Item>
+            <Form.Item
+              label="Title"
+              name="title"
+              rules={[{ required: true, message: "Please enter news title" }]}
+            >
+              <Input placeholder="Enter news title" />
+            </Form.Item>
 
-          <Form.Item
-            label="Description"
-            name="description"
-            rules={[{ required: true, message: "Please enter description" }]}
-          >
-            <Input.TextArea rows={3} placeholder="Enter short description" />
-          </Form.Item>
+            <Form.Item
+              label="Description"
+              name="description"
+              rules={[{ required: true, message: "Please enter description" }]}
+            >
+              <Input.TextArea rows={3} placeholder="Enter short description" />
+            </Form.Item>
 
-          <Form.Item label="Full Content" name="content">
-            <Input.TextArea rows={5} placeholder="Enter full content" />
-          </Form.Item>
+            <Form.Item label="Full Content" name="content">
+              <Input.TextArea rows={5} placeholder="Enter full content" />
+            </Form.Item>
 
-          <Form.Item label="Category" name="category">
-            <Select placeholder="Select category">
-              <Select.Option value="News">News</Select.Option>
-              <Select.Option value="Updates">Updates</Select.Option>
-              <Select.Option value="Events">Events</Select.Option>
-              <Select.Option value="Blog">Blog</Select.Option>
-              <Select.Option value="Press Release">Press Release</Select.Option>
-            </Select>
-          </Form.Item>
+            <Form.Item label="Category" name="category">
+              <Select placeholder="Select category">
+                <Select.Option value="News">News</Select.Option>
+                <Select.Option value="Updates">Updates</Select.Option>
+                <Select.Option value="Events">Events</Select.Option>
+                <Select.Option value="Blog">Blog</Select.Option>
+                <Select.Option value="Press Release">
+                  Press Release
+                </Select.Option>
+              </Select>
+            </Form.Item>
 
-          <Form.Item label="Author" name="author">
-            <Input placeholder="Author name (default: Admin)" />
-          </Form.Item>
+            <Form.Item label="Author" name="author">
+              <Input placeholder="Author name (default: Admin)" />
+            </Form.Item>
 
-          <Row gutter={16}>
-            <Col span={8}>
-              <Form.Item label="Featured Image">
-                <Upload
-                  {...uploadProps}
-                  accept="image/*"
-                  fileList={imageFile ? [imageFile] : []}
-                  onChange={(info) => setImageFile(info.fileList[0] || null)}
+            <Row gutter={16}>
+              <Col span={8}>
+                <Form.Item label="Featured Image">
+                  <Upload
+                    {...uploadProps}
+                    accept="image/*"
+                    fileList={imageFile ? [imageFile] : []}
+                    onChange={(info) => setImageFile(info.fileList[0] || null)}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload Image</Button>
+                  </Upload>
+                </Form.Item>
+              </Col>
+
+              <Col span={8}>
+                <Form.Item label="Video File">
+                  <Upload
+                    {...uploadProps}
+                    accept="video/*"
+                    fileList={videoFile ? [videoFile] : []}
+                    onChange={(info) => setVideoFile(info.fileList[0] || null)}
+                  >
+                    <Button icon={<UploadOutlined />}>Upload Video</Button>
+                  </Upload>
+                </Form.Item>
+              </Col>
+
+              <Col span={8}>
+                <Form.Item label="Video Thumbnail">
+                  <Upload
+                    {...uploadProps}
+                    accept="image/*"
+                    fileList={thumbnailFile ? [thumbnailFile] : []}
+                    onChange={(info) =>
+                      setThumbnailFile(info.fileList[0] || null)
+                    }
+                  >
+                    <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
+                  </Upload>
+                </Form.Item>
+              </Col>
+            </Row>
+
+            <Form.Item>
+              <Space>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={mutation.isPending}
                 >
-                  <Button icon={<UploadOutlined />}>Upload Image</Button>
-                </Upload>
-              </Form.Item>
-            </Col>
-
-            <Col span={8}>
-              <Form.Item label="Video File">
-                <Upload
-                  {...uploadProps}
-                  accept="video/*"
-                  fileList={videoFile ? [videoFile] : []}
-                  onChange={(info) => setVideoFile(info.fileList[0] || null)}
-                >
-                  <Button icon={<UploadOutlined />}>Upload Video</Button>
-                </Upload>
-              </Form.Item>
-            </Col>
-
-            <Col span={8}>
-              <Form.Item label="Video Thumbnail">
-                <Upload
-                  {...uploadProps}
-                  accept="image/*"
-                  fileList={thumbnailFile ? [thumbnailFile] : []}
-                  onChange={(info) =>
-                    setThumbnailFile(info.fileList[0] || null)
-                  }
-                >
-                  <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
-                </Upload>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Form.Item>
-            <Space>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={mutation.isPending}
-              >
-                {editingNews ? "Update News" : "Create News"}
-              </Button>
-              <Button onClick={handleModalClose}>Cancel</Button>
-            </Space>
-          </Form.Item>
-        </Form>
+                  {editingNews ? "Update News" : "Create News"}
+                </Button>
+                <Button onClick={handleModalClose}>Cancel</Button>
+              </Space>
+            </Form.Item>
+          </Form>
         </Modal>
 
         {/* News List */}
@@ -308,72 +310,72 @@ export default function ManageNewsPage() {
           {isFetching ? (
             <Spin />
           ) : (
-          <Row gutter={[16, 16]}>
-            {newsListData?.data?.map((news: any) => (
-              <Col key={news.id} lg={6} md={8} sm={12}>
-                <Card
-                  hoverable
-                  cover={
-                    news.image || news.video ? (
-                      <div
-                        style={{
-                          height: 200,
-                          backgroundColor: "#f0f0f0",
-                          overflow: "hidden",
-                        }}
+            <Row gutter={[16, 16]}>
+              {newsListData?.data?.map((news: any) => (
+                <Col key={news.id} lg={6} md={8} sm={12}>
+                  <Card
+                    hoverable
+                    cover={
+                      news.image || news.video ? (
+                        <div
+                          style={{
+                            height: 200,
+                            backgroundColor: "#f0f0f0",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {news.video ? (
+                            <video
+                              src={news.video}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
+                          ) : (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={news.image}
+                              alt={news.title}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
+                              }}
+                            />
+                          )}
+                        </div>
+                      ) : null
+                    }
+                    actions={[
+                      <EditOutlined
+                        key="edit"
+                        onClick={() => handleEdit(news)}
+                      />,
+                      <Popconfirm
+                        key={`delete-${news.id}`}
+                        title="Delete News"
+                        description="Are you sure you want to delete this news?"
+                        onConfirm={() => deleteMutation.mutate(news.id)}
+                        okText="Yes"
+                        cancelText="No"
                       >
-                        {news.video ? (
-                          <video
-                            src={news.video}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
-                        ) : (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={news.image}
-                            alt={news.title}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                            }}
-                          />
-                        )}
-                      </div>
-                    ) : null
-                  }
-                  actions={[
-                    <EditOutlined
-                      key="edit"
-                      onClick={() => handleEdit(news)}
-                    />,
-                    <Popconfirm
-                      key={`delete-${news.id}`}
-                      title="Delete News"
-                      description="Are you sure you want to delete this news?"
-                      onConfirm={() => deleteMutation.mutate(news.id)}
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <DeleteOutlined style={{ color: "red" }} />
-                    </Popconfirm>,
-                  ]}
-                >
-                  {news.category && <Tag color="blue">{news.category}</Tag>}
-                  <h4 style={{ marginTop: 8 }}>{news.title}</h4>
-                  <p style={{ color: "#999", fontSize: 12 }}>
-                    {news.author && `By ${news.author} • `}
-                    {new Date(news.createdAt).toLocaleDateString()}
-                  </p>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        )}
+                        <DeleteOutlined style={{ color: "red" }} />
+                      </Popconfirm>,
+                    ]}
+                  >
+                    {news.category && <Tag color="blue">{news.category}</Tag>}
+                    <h4 style={{ marginTop: 8 }}>{news.title}</h4>
+                    <p style={{ color: "#999", fontSize: 12 }}>
+                      {news.author && `By ${news.author} • `}
+                      {new Date(news.createdAt).toLocaleDateString()}
+                    </p>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          )}
         </div>
       </Container>
     </div>
