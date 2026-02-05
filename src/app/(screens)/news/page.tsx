@@ -67,7 +67,9 @@ export default function NewsPage() {
           <Row className="align-items-center">
             <Col md={8}>
               <h1 className="news-page-title">News & Updates</h1>
-              <p className="news-page-subtitle">Stay updated with our latest news and announcements</p>
+              <p className="news-page-subtitle">
+                Stay updated with our latest news and announcements
+              </p>
             </Col>
           </Row>
         </Container>
