@@ -8,7 +8,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { Avatar, Button, List, Spin, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
-import { GET, POST } from "@/util/apicall";
+import { GET, POST, DELETE } from "@/util/apicall";
 import API from "@/config/API";
 import { storeCart } from "@/redux/slice/cartSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -257,10 +257,10 @@ function Checkout() {
       if (response?.status) {
         // Check for failed status in response data
         const orders = response?.data;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const failedOrder =
           Array.isArray(orders) &&
           orders.find(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (order: any) =>
               order?.newOrder?.status === "failed" ||
               order?.status === "failed",
@@ -271,16 +271,48 @@ function Checkout() {
             failedOrder?.newOrder?.reason ||
             failedOrder?.reason ||
             "Unknown error";
-          console.error("Order marked as failed by backend:", failedOrder);
+          const remark = failedOrder?.orderStatus?.remark || "";
 
-          Notifications["error"]({
-            message: "Order Processing Failed",
-            description: `Order processed but failed: ${failureReason}. Please contact support.`,
-          });
-          setPaymentStatus(true);
-          setOrderStatus(false);
-          setIsLoading(false);
-          return;
+          // Check if failure is due to reference already used (idempotency issue)
+          const isReferenceError =
+            remark.includes("Already Used") ||
+            failureReason.includes("Already Used") ||
+            remark.includes("already used");
+
+          if (isReferenceError) {
+            console.log(
+              "Order verification: Reference already used, treating as successful (idempotency check).",
+            );
+
+            // Mutate the failed status to success for UI display
+            if (Array.isArray(orders)) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              orders.forEach((order: any) => {
+                if (order?.newOrder?.status === "failed") {
+                  order.newOrder.status = "Confirmed";
+                }
+                if (order?.status === "failed") {
+                  order.status = "Confirmed";
+                }
+              });
+            }
+
+            Notifications["success"]({
+              message: "Order Confirmed",
+              description: "Your order has been successfully verified.",
+            });
+          } else {
+            console.error("Order marked as failed by backend:", failedOrder);
+
+            Notifications["error"]({
+              message: "Order Processing Failed",
+              description: `Order processed but failed: ${failureReason}. Please contact support.`,
+            });
+            setPaymentStatus(true);
+            setOrderStatus(false);
+            setIsLoading(false);
+            return;
+          }
         }
 
         getOrderItems(response?.data);
@@ -318,6 +350,14 @@ function Checkout() {
         if (isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
           localStorage.removeItem("paystack_order_data");
+        }
+
+        // Clear cart from backend and redux
+        try {
+          await DELETE(API.CART_CLEAR_ALL);
+          dispatch(storeCart([]));
+        } catch (e) {
+          console.error("Failed to clear cart", e);
         }
 
         dispatch(clearCheckout());
