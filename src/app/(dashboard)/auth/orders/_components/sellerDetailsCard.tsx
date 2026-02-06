@@ -3,7 +3,11 @@ import { Descriptions } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
-import { ShopOutlined, PhoneOutlined } from "@ant-design/icons";
+import {
+  ShopOutlined,
+  PhoneOutlined,
+  EnvironmentOutlined,
+} from "@ant-design/icons";
 
 interface SellerData {
   seller_id?: string | number;
@@ -21,6 +25,8 @@ interface SellerDetailsResponse {
     phone?: string;
     email?: string;
     user_name?: string;
+    address?: string;
+    business_address?: string;
     [key: string]: unknown;
   };
 }
@@ -34,7 +40,7 @@ export default function SellerDetailsCard(props: Props) {
 
   const { data: sellerData, isLoading } = useQuery({
     queryFn: async () => {
-      const res = await GET(API_ADMIN.STORE_INFO_ADMIN + storeId);
+      const res = await GET(API_ADMIN.AUTH_SELLER_DETAILS + storeId);
       return res as SellerDetailsResponse;
     },
     queryKey: ["seller_details", storeId],
@@ -56,6 +62,11 @@ export default function SellerDetailsCard(props: Props) {
   const getPhoneNumber = () => {
     const phone = sellerData?.data?.phone;
     return phone || "N/A";
+  };
+
+  const getAddress = () => {
+    const seller = sellerData?.data;
+    return seller?.business_address || seller?.address || "N/A";
   };
 
   if (!storeId) {
@@ -94,6 +105,12 @@ export default function SellerDetailsCard(props: Props) {
             <span>
               <PhoneOutlined style={{ marginRight: 8 }} />
               {getPhoneNumber()}
+            </span>
+          </Descriptions.Item>
+          <Descriptions.Item label="Address">
+            <span>
+              <EnvironmentOutlined style={{ marginRight: 8 }} />
+              {getAddress()}
             </span>
           </Descriptions.Item>
           {sellerData?.data?.email && (

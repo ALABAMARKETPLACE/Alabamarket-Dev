@@ -54,6 +54,7 @@ const API_ADMIN = {
   STORE_INFO: "coorporate_store/details/", //get store details only for store owners
   STORE_UPDATE: "coorporate_store/update", // PUT
   STORE_INFO_ADMIN: "coorporate_store/sellerdetails/",
+  AUTH_SELLER_DETAILS: "auth/sellers/",
 
   BUSINESS_TYPE: "businesstype/", //POST,PUT,DELETE
 
