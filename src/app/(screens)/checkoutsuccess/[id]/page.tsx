@@ -173,6 +173,28 @@ function Checkout() {
 
         finalOrderData.user_id = resolvedUserId;
 
+        // Ensure IDs are numbers if they are numeric strings
+        if (finalOrderData.user_id && !isNaN(Number(finalOrderData.user_id))) {
+          finalOrderData.user_id = Number(finalOrderData.user_id);
+        }
+        if (finalOrderData.userId && !isNaN(Number(finalOrderData.userId))) {
+          finalOrderData.userId = Number(finalOrderData.userId);
+        }
+        if (
+          finalOrderData.address?.id &&
+          !isNaN(Number(finalOrderData.address.id))
+        ) {
+          finalOrderData.address.id = Number(finalOrderData.address.id);
+        }
+        if (
+          finalOrderData.address?.user_id &&
+          !isNaN(Number(finalOrderData.address.user_id))
+        ) {
+          finalOrderData.address.user_id = Number(
+            finalOrderData.address.user_id,
+          );
+        }
+
         if (!finalOrderData.userId && resolvedUserId) {
           finalOrderData.userId = resolvedUserId;
         }
@@ -217,23 +239,43 @@ function Checkout() {
         );
       }
 
+      // Ensure payment amount is in correct format (Paystack returns Kobo)
+      // We pass it as is, assuming backend handles Kobo/Naira conversion or comparison
+      console.log(
+        "Submitting order with payment amount:",
+        finalOrderData?.payment?.amount,
+      );
+
       // Create order (payment already verified above for Paystack)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await POST(API.ORDER, finalOrderData);
-      console.log("Order creation response:", response);
+      console.log(
+        "Order creation response:",
+        JSON.stringify(response, null, 2),
+      );
 
       if (response?.status) {
         // Check for failed status in response data
         const orders = response?.data;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const hasFailedOrder = Array.isArray(orders) && orders.some((order: any) => 
-          order?.newOrder?.status === "failed" || order?.status === "failed"
-        );
+        const failedOrder =
+          Array.isArray(orders) &&
+          orders.find(
+            (order: any) =>
+              order?.newOrder?.status === "failed" ||
+              order?.status === "failed",
+          );
 
-        if (hasFailedOrder) {
+        if (failedOrder) {
+          const failureReason =
+            failedOrder?.newOrder?.reason ||
+            failedOrder?.reason ||
+            "Unknown error";
+          console.error("Order marked as failed by backend:", failedOrder);
+
           Notifications["error"]({
             message: "Order Processing Failed",
-            description: "Your order was processed but marked as failed. Please contact support.",
+            description: `Order processed but failed: ${failureReason}. Please contact support.`,
           });
           setPaymentStatus(true);
           setOrderStatus(false);
