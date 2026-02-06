@@ -150,7 +150,8 @@ function Checkout() {
             type: "Pay Online",
             status: verificationResponse?.data?.status || "success",
             amount: verificationResponse?.data?.amount || null,
-            gateway_response: verificationResponse?.data?.gateway_response || null,
+            gateway_response:
+              verificationResponse?.data?.gateway_response || null,
           },
           cart: Checkout?.cart,
           address: Checkout?.address,
