@@ -223,6 +223,24 @@ function Checkout() {
       console.log("Order creation response:", response);
 
       if (response?.status) {
+        // Check for failed status in response data
+        const orders = response?.data;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const hasFailedOrder = Array.isArray(orders) && orders.some((order: any) => 
+          order?.newOrder?.status === "failed" || order?.status === "failed"
+        );
+
+        if (hasFailedOrder) {
+          Notifications["error"]({
+            message: "Order Processing Failed",
+            description: "Your order was processed but marked as failed. Please contact support.",
+          });
+          setPaymentStatus(true);
+          setOrderStatus(false);
+          setIsLoading(false);
+          return;
+        }
+
         getOrderItems(response?.data);
         setResponseData(response?.data);
 
