@@ -215,14 +215,36 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const customerId = (user as any)?.id || null;
 
-      // Extract store ID for split payment
-      const firstItem = Checkout?.Checkout?.[0];
-      const storeId = firstItem?.storeId || firstItem?.store_id;
+      // Extract store IDs and group items by store for split payment
+      // This supports both single-store and multi-store orders
+      const storeMap = new Map<
+        string | number,
+        { storeId: string | number; total: number }
+      >();
+
+      Checkout?.Checkout?.forEach((item: any) => {
+        const storeId = item?.storeId || item?.store_id;
+        if (storeId) {
+          const existing = storeMap.get(storeId) || { storeId, total: 0 };
+          existing.total += Number(item?.totalPrice || 0);
+          storeMap.set(storeId, existing);
+        }
+      });
+
+      const stores = Array.from(storeMap.values());
+      const hasMultipleStores = stores.length > 1;
+      const hasSingleStore = stores.length === 1;
+      const shouldUseSplitPayment = stores.length > 0; // Use split for any store(s)
 
       console.log("DEBUG: Payment Initialization", {
-        firstItem,
-        storeId,
-        hasStoreId: !!storeId,
+        cartLength: Checkout?.Checkout?.length,
+        stores: stores.map((s) => ({ storeId: s.storeId, total: s.total })),
+        hasMultipleStores,
+        hasSingleStore,
+        shouldUseSplitPayment,
+        cartStoreIds: Checkout?.Checkout?.map(
+          (item: any) => item?.storeId || item?.store_id,
+        ),
       });
 
       const paymentData = {
@@ -231,10 +253,12 @@ function Checkout() {
         currency: "NGN",
         reference: reference,
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
-        // Add split payment parameters if storeId exists
-        ...(storeId
+        // Add split payment parameters for both single and multi-store orders
+        ...(shouldUseSplitPayment
           ? {
-              store_id: Number(storeId),
+              ...(hasSingleStore
+                ? { store_id: Number(stores[0].storeId) }
+                : { stores: stores.map((s) => Number(s.storeId)) }),
               split_payment: true,
             }
           : {}),
@@ -272,13 +296,21 @@ function Checkout() {
       // Log split payment data for debugging
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if ((paymentData as any).split_payment) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const storeInfo = (paymentData as any).store_id
+          ? `Single Store (${(paymentData as any).store_id})`
+          : `Multiple Stores (${(paymentData as any).stores?.join(", ")})`;
         console.log("Initializing Split Payment:", {
           endpoint: endpointPrimary,
           paymentData,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          storeId: (paymentData as any).store_id,
+          storeInfo,
           amount: paymentData.amount,
-          split_type: "automatic (5% Platform / 95% Seller)",
+          split_type: "automatic (5% Platform / 95% Seller per store)",
+        });
+      } else {
+        console.log("Initializing Regular Payment (no stores in cart):", {
+          endpoint: endpointPrimary,
+          amount: paymentData.amount,
         });
       }
 
@@ -315,7 +347,9 @@ function Checkout() {
                 primaryMessage.includes("not found"))));
 
         if (shouldFallbackToNonSplit) {
-          const nonSplitPaymentData: Record<string, unknown> = { ...paymentData };
+          const nonSplitPaymentData: Record<string, unknown> = {
+            ...paymentData,
+          };
           delete nonSplitPaymentData.store_id;
           delete nonSplitPaymentData.split_payment;
           response = await POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData);
