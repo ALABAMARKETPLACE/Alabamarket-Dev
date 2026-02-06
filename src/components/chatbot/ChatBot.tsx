@@ -121,6 +121,7 @@ const ChatBot: React.FC = () => {
           className="chatbot-floating-button"
           onClick={() => setIsOpen(true)}
           aria-label="Open chat"
+          suppressHydrationWarning
         >
           <span className="chat-icon">💬</span>
           <span className="chat-text">Chat</span>

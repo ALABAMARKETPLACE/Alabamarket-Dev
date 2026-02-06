@@ -316,14 +316,16 @@
   }
 
   .Header-top {
-    grid-template-columns: 1fr auto auto;
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
+    align-items: center;
   }
 
   .Header-left {
+    flex: 1 1 100%;
     min-width: 0;
-    flex: 0 1 auto;
-    max-width: 70%;
+    max-width: 100%;
   }
 
   .Header_brandText {
@@ -352,21 +354,29 @@
 
 @media (max-width: 576px) {
   .Header-top {
-    grid-template-columns: 1fr auto auto;
-    gap: 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
   }
 
   .Header-right {
     gap: 6px;
+    flex: 0 1 auto;
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .Header-left {
+    flex: 1 1 100%;
     min-width: 0;
-    flex: 0 1 auto;
-    max-width: 55%;
+    max-width: 100%;
+    order: 1;
   }
 
   .Header-sellerCTA {
+    order: 2;
     flex: 0 0 auto;
     min-width: auto;
   }
@@ -400,9 +410,10 @@
 
 @media (max-width: 450px) {
   .Header-left {
+    flex: 1 1 100%;
     min-width: 0;
-    flex: 0 1 auto;
-    max-width: 45%;
+    max-width: 100%;
+    order: 1;
   }
 
   .Header_brand {
@@ -417,6 +428,11 @@
   .Header_logo {
     width: 30px;
     height: 30px;
+  }
+
+  .Header-sellerCTA {
+    order: 2;
+    flex: 0 0 auto;
   }
 
   .Header-sellerBtn {
@@ -434,6 +450,9 @@
   .Header-right {
     gap: 4px;
     flex-shrink: 0;
+    order: 3;
+    width: 100%;
+    flex: 0 1 auto;
   }
 
   .Header-actions {

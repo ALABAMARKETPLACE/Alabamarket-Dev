@@ -390,8 +390,8 @@ function Checkout() {
                     <div>
                       <div className="checkout-txt3">
                         <div>Order Status : </div>
-                        <div style={{ color: "orange" }}>
-                          {responseData?.[0]?.orderPayment?.status}
+                        <div style={{ color: "green" }}>
+                          {responseData?.[0]?.newOrder?.status || "Confirmed"}
                         </div>
                       </div>
                     </div>
