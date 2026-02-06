@@ -16,6 +16,10 @@
       line-height: 1.2;
       margin-bottom: 12px;
 
+      @media (max-width: 1024px) {
+        font-size: 32px;
+      }
+
       @media (max-width: 768px) {
         font-size: 28px;
       }
@@ -27,6 +31,10 @@
       margin: 0;
       opacity: 0.95;
       line-height: 1.5;
+
+      @media (max-width: 1024px) {
+        font-size: 15px;
+      }
 
       @media (max-width: 768px) {
         font-size: 14px;
