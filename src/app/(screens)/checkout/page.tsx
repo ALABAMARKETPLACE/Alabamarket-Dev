@@ -217,8 +217,11 @@ function Checkout() {
 
       // Extract store IDs and group items by store for split payment
       // This supports both single-store and multi-store orders
-      const storeMap = new Map<string | number, { storeId: string | number; total: number }>();
-      
+      const storeMap = new Map<
+        string | number,
+        { storeId: string | number; total: number }
+      >();
+
       Checkout?.Checkout?.forEach((item: any) => {
         const storeId = item?.storeId || item?.store_id;
         if (storeId) {
@@ -235,11 +238,13 @@ function Checkout() {
 
       console.log("DEBUG: Payment Initialization", {
         cartLength: Checkout?.Checkout?.length,
-        stores: stores.map(s => ({ storeId: s.storeId, total: s.total })),
+        stores: stores.map((s) => ({ storeId: s.storeId, total: s.total })),
         hasMultipleStores,
         hasSingleStore,
         shouldUseSplitPayment,
-        cartStoreIds: Checkout?.Checkout?.map((item: any) => item?.storeId || item?.store_id),
+        cartStoreIds: Checkout?.Checkout?.map(
+          (item: any) => item?.storeId || item?.store_id,
+        ),
       });
 
       const paymentData = {
@@ -253,7 +258,7 @@ function Checkout() {
           ? {
               ...(hasSingleStore
                 ? { store_id: Number(stores[0].storeId) }
-                : { stores: stores.map(s => Number(s.storeId)) }),
+                : { stores: stores.map((s) => Number(s.storeId)) }),
               split_payment: true,
             }
           : {}),
@@ -342,7 +347,9 @@ function Checkout() {
                 primaryMessage.includes("not found"))));
 
         if (shouldFallbackToNonSplit) {
-          const nonSplitPaymentData: Record<string, unknown> = { ...paymentData };
+          const nonSplitPaymentData: Record<string, unknown> = {
+            ...paymentData,
+          };
           delete nonSplitPaymentData.store_id;
           delete nonSplitPaymentData.split_payment;
           response = await POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData);
