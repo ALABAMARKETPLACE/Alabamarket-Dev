@@ -670,7 +670,15 @@ function Checkout() {
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
-                          responseData?.[0]?.newOrder?.deliveryCharge,
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                (acc: number, order: Order) =>
+                                  acc +
+                                  (Number(order?.newOrder?.deliveryCharge) ||
+                                    0),
+                                0,
+                              )
+                            : responseData?.[0]?.newOrder?.deliveryCharge || 0,
                         ).toFixed(2)}
                       </div>
                     </div>
@@ -680,7 +688,14 @@ function Checkout() {
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
-                          responseData?.[0]?.newOrder?.grandTotal,
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                (acc: number, order: Order) =>
+                                  acc +
+                                  (Number(order?.newOrder?.grandTotal) || 0),
+                                0,
+                              )
+                            : responseData?.[0]?.newOrder?.grandTotal || 0,
                         ).toFixed(2)}
                       </div>
                     </div>
