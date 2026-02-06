@@ -166,8 +166,8 @@ function CartPage() {
       <Container fluid style={{ minHeight: "80vh" }}>
         {Cart.items.length ? (
           <div className="Cart-box">
-            <Row>
-              <Col sm={7}>
+            <Row className="g-3 g-md-4">
+              <Col lg={7} md={12} className="cart-items-col">
                 <div
                   className="Cart-row"
                   style={{
@@ -223,7 +223,7 @@ function CartPage() {
                 </div>
                 <br />
               </Col>
-              <Col sm={5}>
+              <Col lg={5} md={12} className="cart-summary-col">
                 <div className="Cart-box2">
                   <SummaryCard
                     Cart={Cart}

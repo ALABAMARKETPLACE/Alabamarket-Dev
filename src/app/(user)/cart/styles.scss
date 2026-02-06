@@ -93,11 +93,32 @@
   }
 }
 
+.cart-items-col {
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    padding-bottom: 20px;
+  }
+}
+
+.cart-summary-col {
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    padding-top: 0;
+  }
+}
+
 .Cart-box2 {
   position: sticky;
   top: 6.2rem;
   border: none;
   position: -webkit-sticky;
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    position: relative;
+    top: auto;
+  }
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    top: 5rem;
+  }
 }
 
 .Cart-row {
@@ -109,6 +130,11 @@
 .Cart-txt1 {
   font-family: global.$Bold;
   font-size: 24px;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    font-size: 20px;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 18px;
   }
@@ -142,6 +168,11 @@
 .Cart-txt3 {
   font-family: global.$SemiBold;
   font-size: 16px;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    font-size: 14px;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 14px;
   }
@@ -151,6 +182,11 @@
   font-family: global.$Bold;
   font-size: 19px;
   text-align: right;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    font-size: 17px;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 16px;
   }
@@ -173,6 +209,11 @@
   font-family: global.$Bold;
   font-size: 35px;
   text-align: right;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    font-size: 28px;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 25px;
   }
@@ -183,9 +224,21 @@
   border-radius: 10px;
   padding-top: 10px;
   margin: 0px 0px 0px 30px;
+  background-color: #f9f9f9;
+  border: 1px solid #e8e8e8;
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     margin: 0px 0px;
     padding: 0px;
+    background-color: transparent;
+    border: none;
+  }
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    margin: 0px 0px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #e8e8e8;
   }
 }
 
@@ -230,6 +283,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    align-items: flex-start;
+    padding: 15px 0px;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     align-items: flex-start;
     padding: 10px 0px;
@@ -243,6 +302,14 @@
   border-radius: 10px;
   object-fit: contain;
   border: 1px solid rgb(229, 229, 229);
+  flex-shrink: 0;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    height: 60px;
+    width: 60px;
+    margin-right: 8px;
+  }
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     height: 45px;
     width: 45px;
@@ -253,12 +320,28 @@
   font-family: global.$Bold;
   font-size: 17px;
   text-transform: capitalize;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    font-size: 15px;
+  }
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 14px;
+  }
 }
 
 .Cart-CartItem-txt2 {
   font-family: global.$Medium;
   font-size: 14px;
   color: rgb(94, 94, 94);
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    font-size: 13px;
+  }
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 .Cart-CartItem-txt55 {
   font-family: global.$Medium;
@@ -270,6 +353,17 @@
   margin-right: 15px;
   font-family: global.$Bold;
   font-size: 20px;
+  flex-shrink: 0;
+
+  @media screen and (min-width: 769px) and (max-width: 1024px) {
+    font-size: 18px;
+    margin-right: 10px;
+  }
+
+  @media screen and (min-width: 320px) and (max-width: 768px) {
+    font-size: 15px;
+    margin-right: 8px;
+  }
 }
 
 .Cart-CartItem-txt4 {
