@@ -125,7 +125,12 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
             <Button
               type="text"
               size="small"
-              onClick={() => route.push("/auth/orders/" + record?.order_id)}
+              onClick={() =>
+                route.push(
+                  "/auth/orders/" +
+                    (record?._id ?? record?.id ?? record?.order_id),
+                )
+              }
             >
               <FaEye size={22} color={CONFIG.COLOR} />
             </Button>
@@ -145,9 +150,9 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
           pagination={false}
           size="small"
           rowKey={(record) =>
-            (record?.order_id ??
-              record?._id ??
+            (record?._id ??
               record?.id ??
+              record?.order_id ??
               "unknown") as React.Key
           }
           scroll={{ x: "max-content" }}
