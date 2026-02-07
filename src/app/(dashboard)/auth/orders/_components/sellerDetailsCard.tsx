@@ -22,6 +22,7 @@ interface SellerDetailsResponse {
     seller_name?: string;
     business_name?: string;
     store_name?: string;
+    name?: string;
     phone?: string;
     email?: string;
     user_name?: string;
@@ -40,8 +41,14 @@ export default function SellerDetailsCard(props: Props) {
 
   const { data: sellerData, isLoading } = useQuery({
     queryFn: async () => {
-      const res = await GET(API_ADMIN.AUTH_SELLER_DETAILS + storeId);
-      return res as SellerDetailsResponse;
+      const res = (await GET(
+        API_ADMIN.AUTH_SELLER_DETAILS + storeId,
+      )) as Record<string, unknown>;
+      // Handle both nested { data: ... } and flat response structures
+      if (res?.data) {
+        return res as unknown as SellerDetailsResponse;
+      }
+      return { data: res } as unknown as SellerDetailsResponse;
     },
     queryKey: ["seller_details", storeId],
     enabled: !!storeId,
@@ -55,6 +62,8 @@ export default function SellerDetailsCard(props: Props) {
     if (seller.business_name) return seller.business_name;
     if (seller.store_name) return seller.store_name;
     if (seller.user_name) return seller.user_name;
+    // Fallback for flat structure if properties are directly on data but named differently
+    if (seller.name) return seller.name;
 
     return "Unknown Seller";
   };

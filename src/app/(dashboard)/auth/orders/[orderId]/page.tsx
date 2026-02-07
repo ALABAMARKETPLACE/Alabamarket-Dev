@@ -50,7 +50,11 @@ export default function OrderDetails() {
     staleTime: 0,
   });
 
-  const order = orderData as OrderDetailsResponse;
+  const order = (
+    orderData && (orderData as { data?: unknown }).data
+      ? orderData
+      : { data: orderData }
+  ) as OrderDetailsResponse;
 
   const { data: storeOrderDataRaw } = useQuery({
     queryFn: async () => {

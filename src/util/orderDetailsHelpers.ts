@@ -88,6 +88,14 @@ export const fetchUserContactDetails = async (userId: string | number) => {
   try {
     if (!userId) return null;
     const response = await GET(API.USER_DETAILS + userId);
+    // Handle both nested { data: ... } and flat response structures
+    if (response?.data) {
+      return response.data;
+    }
+    // If response is an object and has some expected user fields, return it as is
+    if (response && (response.name || response.email || response.phone || response.user_name)) {
+      return response;
+    }
     return response?.data || null;
   } catch (error) {
     console.error("Error fetching user contact details:", error);
