@@ -24,7 +24,7 @@ jobs:
             echo "SERVER_HOST=${{ vars.PROD_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.PROD_SERVER_USER }}" >> $GITHUB_ENV
             echo "APP_DIR=/home/${{ vars.PROD_SERVER_USER }}/alaba-marketplace-production/website" >> $GITHUB_ENV
-            echo "APP_NAME=alabamarketplace" >> $GITHUB_ENV
+            echo "APP_NAME=alabama" >> $GITHUB_ENV
             echo "ENVIRONMENT=production" >> $GITHUB_ENV
 
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
