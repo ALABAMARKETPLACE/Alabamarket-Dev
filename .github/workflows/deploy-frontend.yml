@@ -12,19 +12,22 @@ jobs:
     environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
 
     steps:
+      # -------------------------------------------------
+      # Checkout
+      # -------------------------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # -----------------------------
+      # -------------------------------------------------
       # Set environment based on branch
-      # -----------------------------
+      # -------------------------------------------------
       - name: Set deployment environment
         run: |
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             echo "SERVER_HOST=${{ vars.PROD_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.PROD_SERVER_USER }}" >> $GITHUB_ENV
             echo "APP_DIR=/home/${{ vars.PROD_SERVER_USER }}/alaba-marketplace-production/website" >> $GITHUB_ENV
-            echo "APP_NAME=alabamarketplace" >> $GITHUB_ENV
+            echo "APP_NAME=alabamarketplace-frontend" >> $GITHUB_ENV
             echo "ENVIRONMENT=production" >> $GITHUB_ENV
 
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
@@ -42,51 +45,37 @@ jobs:
             echo "EOF" >> $GITHUB_ENV
           fi
 
-      # -----------------------------
-      # 🐛 DEBUG / BUG PRINT (SAFE)
-      # -----------------------------
+      # -------------------------------------------------
+      # Debug values
+      # -------------------------------------------------
       - name: Debug deployment variables
         run: |
-          echo "===== DEBUG INFO ====="
-          echo "Branch        : $GITHUB_REF_NAME"
-          echo "Environment   : $ENVIRONMENT"
-          echo "SERVER_HOST   : ${SERVER_HOST:-<EMPTY>}"
-          echo "SERVER_USER   : ${SERVER_USER:-<EMPTY>}"
-          echo "APP_DIR       : ${APP_DIR:-<EMPTY>}"
+          echo "Branch      : $GITHUB_REF_NAME"
+          echo "Environment : $ENVIRONMENT"
+          echo "Server      : $SERVER_USER@$SERVER_HOST"
+          echo "App Dir     : $APP_DIR"
+          echo "SSH Key     : ${SSH_KEY:+SET}"
 
-          if [[ -z "$SSH_KEY" ]]; then
-            echo "SSH_KEY       : ❌ MISSING"
-          else
-            echo "SSH_KEY       : ✅ SET"
-          fi
-
-          echo "======================"
-
-          if [[ -z "$SERVER_HOST" || -z "$SERVER_USER" || -z "$SSH_KEY" ]]; then
-            echo "❌ Required environment variables are missing. Aborting."
-            exit 1
-          fi
-
-      # -----------------------------
-      # Setup SSH
-      # -----------------------------
+      # -------------------------------------------------
+      # Setup SSH v
+      # -------------------------------------------------
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
-      # -----------------------------
+      # -------------------------------------------------
       # Ensure target directory exists
-      # -----------------------------
+      # -------------------------------------------------
       - name: Ensure target directory exists
         run: |
           ssh $SERVER_USER@$SERVER_HOST "mkdir -p $APP_DIR"
 
-      # -----------------------------
-      # Sync frontend files
-      # -----------------------------
+      # -------------------------------------------------
+      # Sync frontend source
+      # -------------------------------------------------
       - name: Sync frontend source
         run: |
           rsync -avz --delete \
@@ -95,44 +84,52 @@ jobs:
             --exclude .env \
             --exclude .git \
             --exclude .github \
-            --exclude .gitignore \
-            --exclude public \
             . \
             $SERVER_USER@$SERVER_HOST:$APP_DIR/
 
-      # -----------------------------
-      # Build & restart frontend
-      # -----------------------------
+      # -------------------------------------------------
+      # Build & restart frontend (PM2 SSR)
+      # -------------------------------------------------
       - name: Build & restart frontend
         run: |
           ssh $SERVER_USER@$SERVER_HOST << EOF
             set -e
 
+            # Load NVM
             export NVM_DIR="\$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
             nvm use 20.19.6
 
-            cd $APP_DIR
+            cd "$APP_DIR"
 
             npm install --legacy-peer-deps
             npm run build
 
             PM2="\$HOME/.nvm/versions/node/v20.19.6/bin/pm2"
 
-            if [[ "$ENVIRONMENT" == "production" ]]; then
-              \$PM2 delete $APP_NAME || true
-              \$PM2 start npm --name $APP_NAME -- start
+            # Check if app already exists
+            set +e
+            \$PM2 describe "$APP_NAME" > /dev/null 2>&1
+            EXISTS=\$?
+            set -e
+
+            if [ "\$EXISTS" -eq 0 ]; then
+              echo "Reloading frontend..."
+              \$PM2 reload "$APP_NAME"
             else
-              \$PM2 reload ../ecosystem.config.js --only $APP_NAME || \
-              \$PM2 start ../ecosystem.config.js
+              echo "Starting frontend..."
+              \$PM2 start npm \
+                --name "$APP_NAME" \
+                --cwd "$APP_DIR" \
+                -- start
             fi
 
             \$PM2 save
           EOF
 
-      # -----------------------------
+      # -------------------------------------------------
       # Deployment summary
-      # -----------------------------
+      # -------------------------------------------------
       - name: Deployment info
         run: |
           echo "✅ Branch: $GITHUB_REF_NAME"
