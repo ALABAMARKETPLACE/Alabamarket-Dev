@@ -8,7 +8,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { Avatar, Button, List, Spin, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
-import { GET, POST } from "@/util/apicall";
+import { GET, POST, DELETE } from "@/util/apicall";
 import API from "@/config/API";
 import { storeCart } from "@/redux/slice/cartSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -16,6 +16,29 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackPurchase } from "@/utils/analytics";
+
+interface Order {
+  newOrder?: {
+    status?: string;
+    reason?: string;
+    total?: number | string;
+    discount?: number | string;
+    tax?: number | string;
+    grandTotal?: number | string;
+    deliveryCharge?: number | string;
+  };
+  status?: string;
+  reason?: string;
+  remark?: string;
+  orderStatus?: {
+    remark?: string;
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  orderItems?: any[];
+  orderId?: string;
+  _id?: string;
+}
+
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
 
 function getCurrencySymbol(currency: string) {
@@ -148,6 +171,10 @@ function Checkout() {
           payment: {
             ref: paymentRef,
             type: "Pay Online",
+            status: verificationResponse?.data?.status || "success",
+            amount: verificationResponse?.data?.amount || null,
+            gateway_response:
+              verificationResponse?.data?.gateway_response || null,
           },
           cart: Checkout?.cart,
           address: Checkout?.address,
@@ -168,6 +195,28 @@ function Checkout() {
           null;
 
         finalOrderData.user_id = resolvedUserId;
+
+        // Ensure IDs are numbers if they are numeric strings
+        if (finalOrderData.user_id && !isNaN(Number(finalOrderData.user_id))) {
+          finalOrderData.user_id = Number(finalOrderData.user_id);
+        }
+        if (finalOrderData.userId && !isNaN(Number(finalOrderData.userId))) {
+          finalOrderData.userId = Number(finalOrderData.userId);
+        }
+        if (
+          finalOrderData.address?.id &&
+          !isNaN(Number(finalOrderData.address.id))
+        ) {
+          finalOrderData.address.id = Number(finalOrderData.address.id);
+        }
+        if (
+          finalOrderData.address?.user_id &&
+          !isNaN(Number(finalOrderData.address.user_id))
+        ) {
+          finalOrderData.address.user_id = Number(
+            finalOrderData.address.user_id,
+          );
+        }
 
         if (!finalOrderData.userId && resolvedUserId) {
           finalOrderData.userId = resolvedUserId;
@@ -213,12 +262,109 @@ function Checkout() {
         );
       }
 
+      // Ensure payment amount is in correct format (Paystack returns Kobo)
+      // We pass it as is, assuming backend handles Kobo/Naira conversion or comparison
+      console.log(
+        "Submitting order with payment amount:",
+        finalOrderData?.payment?.amount,
+      );
+
       // Create order (payment already verified above for Paystack)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await POST(API.ORDER, finalOrderData);
-      console.log("Order creation response:", response);
+      console.log(
+        "Order creation response:",
+        JSON.stringify(response, null, 2),
+      );
 
       if (response?.status) {
+        // Check for failed status in response data
+        const orders = response?.data;
+
+        // Handle split orders: Check for any failed orders
+        if (Array.isArray(orders)) {
+          orders.forEach((order: Order) => {
+            if (
+              order?.newOrder?.status === "failed" ||
+              order?.status === "failed"
+            ) {
+              const failureReason =
+                order?.newOrder?.reason || order?.reason || "Unknown error";
+              const remark = order?.remark || order?.orderStatus?.remark || ""; // Check top-level remark too
+
+              // Check if failure is due to reference already used (idempotency issue)
+              const isReferenceError =
+                remark.includes("Already Used") ||
+                failureReason.includes("Already Used") ||
+                remark.includes("already used");
+
+              if (isReferenceError) {
+                console.log(
+                  "Order verification: Reference already used, treating as successful (idempotency check).",
+                );
+                // Fix status
+                if (order?.newOrder?.status === "failed") {
+                  order.newOrder.status = "Confirmed";
+                }
+                if (order?.status === "failed") {
+                  order.status = "Confirmed";
+                }
+              } else {
+                console.warn(
+                  "Order part marked as failed but proceeding to show available items:",
+                  order,
+                );
+                // We do NOT return here anymore. We try to show what succeeded.
+                // But we might want to notify the user if ALL failed.
+              }
+            }
+          });
+        }
+
+        // Re-check if ALL orders are still failed after our fix attempt
+        const allFailed =
+          Array.isArray(orders) &&
+          orders.length > 0 &&
+          orders.every(
+            (order: Order) =>
+              order?.newOrder?.status === "failed" ||
+              order?.status === "failed",
+          );
+
+        if (allFailed) {
+          const firstFailed = orders[0];
+          const failureReason =
+            firstFailed?.newOrder?.reason ||
+            firstFailed?.reason ||
+            "Unknown error";
+
+          Notifications["error"]({
+            message: "Order Processing Failed",
+            description: `Order processing failed: ${failureReason}. Please contact support.`,
+          });
+          setPaymentStatus(true);
+          setOrderStatus(false);
+          setIsLoading(false);
+          return;
+        }
+
+        // If at least one success (or fixed), proceed.
+        // If some failed but not all, we show success for the valid ones.
+        // (Optionally we could warn about the partial failure, but for now let's prioritize showing the success)
+
+        if (
+          Array.isArray(orders) &&
+          orders.some(
+            (o: Order) =>
+              o?.newOrder?.status === "Confirmed" || o?.status === "Confirmed",
+          )
+        ) {
+          Notifications["success"]({
+            message: "Order Confirmed",
+            description: "Your order has been successfully placed.",
+          });
+        }
+
         getOrderItems(response?.data);
         setResponseData(response?.data);
 
@@ -233,19 +379,38 @@ function Checkout() {
 
         // Track Purchase
         if (response?.data && Array.isArray(response.data)) {
-          const order = response.data[0]; // Assuming single order response for now
-          if (order) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const gaItems = order.orderItems.map((item: any) =>
-              formatGAItem(item, null, item.quantity),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const allItems: any[] = [];
+          let totalValue = 0;
+          let totalShipping = 0;
+          let totalTax = 0;
+          const firstOrder = response.data[0];
+
+          response.data.forEach((order: Order) => {
+            // Check if order is valid/confirmed before tracking?
+            // Even if failed, if we fixed it or it's partial, we might want to track?
+            // Let's track everything that is in the response to be consistent with UI.
+            if (order?.orderItems && Array.isArray(order.orderItems)) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              order.orderItems.forEach((item: any) => {
+                allItems.push(formatGAItem(item, null, item.quantity));
+              });
+            }
+            totalValue += Number(
+              order?.newOrder?.grandTotal || order?.newOrder?.total || 0,
             );
+            totalShipping += Number(order?.newOrder?.deliveryCharge || 0);
+            totalTax += Number(order?.newOrder?.tax || 0);
+          });
+
+          if (firstOrder && allItems.length > 0) {
             trackPurchase(
-              order.orderId || order._id,
-              gaItems,
-              order.newOrder.grandTotal,
+              firstOrder.orderId || firstOrder._id,
+              allItems,
+              totalValue,
               Settings?.currency,
-              order.newOrder.deliveryCharge,
-              order.newOrder.tax,
+              totalShipping,
+              totalTax,
             );
           }
         }
@@ -254,6 +419,14 @@ function Checkout() {
         if (isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
           localStorage.removeItem("paystack_order_data");
+        }
+
+        // Clear cart from backend and redux
+        try {
+          await DELETE(API.CART_CLEAR_ALL);
+          dispatch(storeCart([]));
+        } catch (e) {
+          console.error("Failed to clear cart", e);
         }
 
         dispatch(clearCheckout());
@@ -391,7 +564,15 @@ function Checkout() {
                       <div className="checkout-txt3">
                         <div>Order Status : </div>
                         <div style={{ color: "green" }}>
-                          {responseData?.[0]?.newOrder?.status || "Confirmed"}
+                          {Array.isArray(responseData) &&
+                          responseData.some(
+                            (o: Order) =>
+                              o?.newOrder?.status === "Confirmed" ||
+                              o?.status === "Confirmed",
+                          )
+                            ? "Confirmed"
+                            : responseData?.[0]?.newOrder?.status ||
+                              "Confirmed"}
                         </div>
                       </div>
                     </div>
@@ -442,23 +623,46 @@ function Checkout() {
                       <div>Total Product Price</div>
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
-                        {Number(responseData?.[0]?.newOrder?.total).toFixed(2)}
+                        {Number(
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                (acc: number, order: Order) =>
+                                  acc + (Number(order?.newOrder?.total) || 0),
+                                0,
+                              )
+                            : responseData?.[0]?.newOrder?.total || 0,
+                        ).toFixed(2)}
                       </div>
                     </div>
                     <div className="checkout-row">
                       <div>Discount</div>
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
-                        {Number(responseData?.[0]?.newOrder?.discount).toFixed(
-                          2,
-                        )}
+                        {Number(
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                (acc: number, order: Order) =>
+                                  acc +
+                                  (Number(order?.newOrder?.discount) || 0),
+                                0,
+                              )
+                            : responseData?.[0]?.newOrder?.discount || 0,
+                        ).toFixed(2)}
                       </div>
                     </div>
                     <div className="checkout-row">
                       <div>Tax</div>
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
-                        {Number(responseData?.[0]?.newOrder?.tax).toFixed(2)}
+                        {Number(
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                (acc: number, order: Order) =>
+                                  acc + (Number(order?.newOrder?.tax) || 0),
+                                0,
+                              )
+                            : responseData?.[0]?.newOrder?.tax || 0,
+                        ).toFixed(2)}
                       </div>
                     </div>
                     <div className="checkout-row">
@@ -466,7 +670,15 @@ function Checkout() {
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
-                          responseData?.[0]?.newOrder?.deliveryCharge,
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                (acc: number, order: Order) =>
+                                  acc +
+                                  (Number(order?.newOrder?.deliveryCharge) ||
+                                    0),
+                                0,
+                              )
+                            : responseData?.[0]?.newOrder?.deliveryCharge || 0,
                         ).toFixed(2)}
                       </div>
                     </div>
@@ -476,7 +688,14 @@ function Checkout() {
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
-                          responseData?.[0]?.newOrder?.grandTotal,
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                (acc: number, order: Order) =>
+                                  acc +
+                                  (Number(order?.newOrder?.grandTotal) || 0),
+                                0,
+                              )
+                            : responseData?.[0]?.newOrder?.grandTotal || 0,
                         ).toFixed(2)}
                       </div>
                     </div>

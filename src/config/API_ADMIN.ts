@@ -24,7 +24,7 @@ const API_ADMIN = {
   PRODUCT_VARIANT_DELETE: "productvariant/delete/", //delete variant
 
   ORDER_GET_BYSTORE: "order/store/",
-  ORDER_DETAILS: "order/details/", //GET to get order details for seller and admin
+  ORDER_DETAILS: "order/get_one/admin/", //GET to get order details for seller and admin
   ORDER_STATUS_UPDATE: "order/update_status/", //put
   ORDER_GETONE_SELLER: "order/get_one/seller/", //get details of an order for seller.
   COMPLETE_PAYMENT: "order/update_payment/", //get update payment for seller only
@@ -54,6 +54,7 @@ const API_ADMIN = {
   STORE_INFO: "coorporate_store/details/", //get store details only for store owners
   STORE_UPDATE: "coorporate_store/update", // PUT
   STORE_INFO_ADMIN: "coorporate_store/sellerdetails/",
+  AUTH_SELLER_DETAILS: "auth/sellers/",
 
   BUSINESS_TYPE: "businesstype/", //POST,PUT,DELETE
 
