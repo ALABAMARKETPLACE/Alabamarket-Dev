@@ -8,11 +8,17 @@ interface responseType {
       if (Array.isArray(data) === true) {
         const checkoutItems: responseType = data.reduce(
           (items: responseType, item: any) => {
+            // Extract storeId from various possible field names
+            const storeId = item?.storeId || item?.store_id || item?.product?.storeId || item?.product?.store_id || null;
+            
             const product = {
               ...item,
               buyPrice: Number(item?.price),
               name: item?.name,
               totalPrice: Number(item?.price * item.quantity),
+              // Ensure storeId is included with consistent naming
+              storeId: storeId,
+              store_id: storeId,
             };
             if (
               item?.status == true &&
