@@ -53,9 +53,7 @@ export default function ProductTab(props: Props) {
       image:
         item?.image ||
         productDetails?.image ||
-        (Array.isArray(productDetails?.images)
-          ? productDetails.images?.[0]
-          : null) ||
+        (Array.isArray(productDetails?.images) ? productDetails.images?.[0] : null) ||
         "/images/placeholder-product.png",
 
       // Order specific details should be on the item itself

@@ -31,9 +31,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "OrderDate", //
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (item: string) => (
-        <span>{moment(item).format("MMM Do YYYY")}</span>
-      ),
+      render: (item: string) => <span>{moment(item).format("MMM Do YYYY")}</span>,
     },
     {
       title: "Total", //
