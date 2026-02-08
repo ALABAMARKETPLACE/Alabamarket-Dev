@@ -3,10 +3,15 @@ import { SplitPaymentCalculation, SplitPaymentRequest } from '@/types/paystack.t
 /**
  * Split Payment Utilities
  * Helper functions for handling split payments in the frontend
+ * 
+ * Split Logic:
+ * - Seller gets: 95% of product price
+ * - Platform gets: 5% of product price + 100% of delivery charge
  */
 
 /**
- * Calculate split payment amounts
+ * Calculate split payment amounts (product price only, no delivery)
+ * @deprecated Use calculateSplitWithDelivery for full split calculation
  */
 export const calculateSplitAmounts = (
   amount: number, 
@@ -22,6 +27,55 @@ export const calculateSplitAmounts = (
     seller_amount: sellerAmount,
     admin_percentage: adminPercentage,
     seller_percentage: sellerPercentage,
+  };
+};
+
+/**
+ * Extended split calculation interface including delivery
+ */
+export interface SplitWithDeliveryCalculation extends SplitPaymentCalculation {
+  product_total: number;
+  delivery_charge: number;
+  platform_product_fee: number; // 5% of product price
+  platform_delivery_fee: number; // 100% of delivery charge
+  platform_total: number; // platform_product_fee + platform_delivery_fee
+}
+
+/**
+ * Calculate split payment amounts with delivery charges
+ * - Seller gets 95% of product price
+ * - Platform gets 5% of product price + 100% of delivery charge
+ */
+export const calculateSplitWithDelivery = (
+  productTotal: number,
+  deliveryCharge: number,
+  sellerPercentage: number = 95
+): SplitWithDeliveryCalculation => {
+  const platformPercentage = 100 - sellerPercentage;
+  
+  // Calculate platform's share of product price (5%)
+  const platformProductFee = Math.round((productTotal * platformPercentage) / 100);
+  
+  // Seller gets 95% of product price (no delivery charge)
+  const sellerAmount = productTotal - platformProductFee;
+  
+  // Platform gets 5% of product + 100% of delivery
+  const platformTotal = platformProductFee + deliveryCharge;
+  
+  // Total order amount
+  const totalAmount = productTotal + deliveryCharge;
+
+  return {
+    total_amount: totalAmount,
+    product_total: productTotal,
+    delivery_charge: deliveryCharge,
+    admin_amount: platformTotal,
+    seller_amount: sellerAmount,
+    admin_percentage: platformPercentage,
+    seller_percentage: sellerPercentage,
+    platform_product_fee: platformProductFee,
+    platform_delivery_fee: deliveryCharge,
+    platform_total: platformTotal,
   };
 };
 

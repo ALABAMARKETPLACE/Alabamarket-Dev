@@ -167,6 +167,10 @@ function Checkout() {
         const storedOrderData = localStorage.getItem("paystack_order_data");
         const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
+        // Check if this is a multi-seller order
+        const isMultiSeller = orderData?.is_multi_seller || false;
+        const storeAllocations = orderData?.store_allocations || [];
+
         finalOrderData = orderData?.order_data || {
           payment: {
             ref: paymentRef,
@@ -175,6 +179,8 @@ function Checkout() {
             amount: verificationResponse?.data?.amount || null,
             gateway_response:
               verificationResponse?.data?.gateway_response || null,
+            split_payment: isMultiSeller || storeAllocations.length > 0,
+            is_multi_seller: isMultiSeller,
           },
           cart: Checkout?.cart,
           address: Checkout?.address,
@@ -182,6 +188,18 @@ function Checkout() {
           user_id:
             User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
           user: User ?? Checkout?.user ?? null,
+        };
+
+        // Ensure payment info includes verification data
+        finalOrderData.payment = {
+          ...finalOrderData.payment,
+          ref: paymentRef,
+          status: verificationResponse?.data?.status || "success",
+          amount: verificationResponse?.data?.amount || null,
+          gateway_response:
+            verificationResponse?.data?.gateway_response || null,
+          verified: true,
+          verified_at: new Date().toISOString(),
         };
 
         const resolvedUserId =
