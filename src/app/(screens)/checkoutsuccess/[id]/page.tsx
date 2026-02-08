@@ -256,7 +256,12 @@ function Checkout() {
       if (Array.isArray(finalOrderData?.cart)) {
         finalOrderData.cart = finalOrderData.cart.map((item: any) => {
           // Extract storeId from various possible field names
-          const storeId = item?.storeId || item?.store_id || item?.product?.storeId || item?.product?.store_id || null;
+          const storeId =
+            item?.storeId ||
+            item?.store_id ||
+            item?.product?.storeId ||
+            item?.product?.store_id ||
+            null;
           return {
             ...item,
             storeId: storeId,
@@ -266,32 +271,44 @@ function Checkout() {
       }
 
       // Debug: Log cart items to verify storeId is present
-      console.log("═══════════════════════════════════════════════════════════");
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
       console.log("📦 ORDER CREATION - CART ITEMS DEBUG");
-      console.log("═══════════════════════════════════════════════════════════");
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
       if (Array.isArray(finalOrderData?.cart)) {
         const storeGroups = new Map<number | string, any[]>();
         finalOrderData.cart.forEach((item: any, index: number) => {
-          const storeId = item?.storeId || item?.store_id || item?.product?.storeId || 'unknown';
+          const storeId =
+            item?.storeId ||
+            item?.store_id ||
+            item?.product?.storeId ||
+            "unknown";
           console.log(`Item ${index + 1}:`, {
             name: item?.name || item?.product?.name,
             storeId: storeId,
             quantity: item?.quantity,
             totalPrice: item?.totalPrice,
           });
-          
+
           if (!storeGroups.has(storeId)) {
             storeGroups.set(storeId, []);
           }
           storeGroups.get(storeId)?.push(item);
         });
-        
-        console.log("───────────────────────────────────────────────────────────");
+
+        console.log(
+          "───────────────────────────────────────────────────────────",
+        );
         console.log(`🏪 Total Stores: ${storeGroups.size}`);
         storeGroups.forEach((items, storeId) => {
           console.log(`   Store ${storeId}: ${items.length} items`);
         });
-        console.log("═══════════════════════════════════════════════════════════");
+        console.log(
+          "═══════════════════════════════════════════════════════════",
+        );
       }
 
       // Validate cart data
