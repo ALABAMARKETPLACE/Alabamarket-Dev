@@ -187,7 +187,7 @@ function Checkout() {
       // Convert amount to kobo (multiply by 100)
       const amountInKobo = Math.round(Number(grand_total) * 100);
       const deliveryChargeInKobo = Math.round(Number(delivery_charge) * 100);
-      
+
       // Calculate product total (grand_total minus delivery_charge)
       const productTotalInKobo = amountInKobo - deliveryChargeInKobo;
 
@@ -231,7 +231,11 @@ function Checkout() {
         // Ensure storeId is a valid number
         const storeId = rawStoreId ? Number(rawStoreId) : null;
         if (storeId && !isNaN(storeId) && storeId > 0) {
-          const existing = storeMap.get(storeId) || { storeId, total: 0, items: [] };
+          const existing = storeMap.get(storeId) || {
+            storeId,
+            total: 0,
+            items: [],
+          };
           existing.total += Number(item?.totalPrice || 0);
           existing.items.push(item);
           storeMap.set(storeId, existing);
@@ -248,17 +252,21 @@ function Checkout() {
       // - Platform gets 5% of product price + 100% of delivery charge
       const SELLER_PERCENTAGE = 95;
       const PLATFORM_PERCENTAGE = 5;
-      
+
       // Calculate total product price across all stores
       const totalProductPrice = stores.reduce((sum, s) => sum + s.total, 0);
       const totalProductPriceInKobo = Math.round(totalProductPrice * 100);
-      
+
       // Platform gets: 5% of product price + all delivery charges
-      const platformProductFeeInKobo = Math.round((totalProductPriceInKobo * PLATFORM_PERCENTAGE) / 100);
-      const platformTotalInKobo = platformProductFeeInKobo + deliveryChargeInKobo;
-      
+      const platformProductFeeInKobo = Math.round(
+        (totalProductPriceInKobo * PLATFORM_PERCENTAGE) / 100,
+      );
+      const platformTotalInKobo =
+        platformProductFeeInKobo + deliveryChargeInKobo;
+
       // Seller gets: 95% of their product price (no delivery charge)
-      const sellerTotalInKobo = totalProductPriceInKobo - platformProductFeeInKobo;
+      const sellerTotalInKobo =
+        totalProductPriceInKobo - platformProductFeeInKobo;
 
       console.log("DEBUG: Payment Initialization", {
         cartLength: Checkout?.Checkout?.length,
@@ -280,40 +288,70 @@ function Checkout() {
       });
 
       // Console log for split payment breakdown
-      console.log("═══════════════════════════════════════════════════════════");
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
       console.log("💰 SPLIT PAYMENT CALCULATION");
-      console.log("═══════════════════════════════════════════════════════════");
-      console.log(`📦 Product Total:      ₦${(totalProductPriceInKobo / 100).toLocaleString()}`);
-      console.log(`🚚 Delivery Charge:    ₦${(deliveryChargeInKobo / 100).toLocaleString()}`);
-      console.log(`💵 Grand Total:        ₦${(amountInKobo / 100).toLocaleString()}`);
-      console.log("───────────────────────────────────────────────────────────");
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
+      console.log(
+        `📦 Product Total:      ₦${(totalProductPriceInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `🚚 Delivery Charge:    ₦${(deliveryChargeInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `💵 Grand Total:        ₦${(amountInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        "───────────────────────────────────────────────────────────",
+      );
       console.log(`👤 SELLER GETS (95% of products):`);
       console.log(`   ₦${(sellerTotalInKobo / 100).toLocaleString()}`);
-      console.log("───────────────────────────────────────────────────────────");
+      console.log(
+        "───────────────────────────────────────────────────────────",
+      );
       console.log(`🏢 PLATFORM GETS (5% of products + 100% delivery):`);
-      console.log(`   5% of ₦${(totalProductPriceInKobo / 100).toLocaleString()} = ₦${(platformProductFeeInKobo / 100).toLocaleString()}`);
-      console.log(`   + Delivery: ₦${(deliveryChargeInKobo / 100).toLocaleString()}`);
-      console.log(`   = Total: ₦${(platformTotalInKobo / 100).toLocaleString()}`);
-      console.log("═══════════════════════════════════════════════════════════");
-      
+      console.log(
+        `   5% of ₦${(totalProductPriceInKobo / 100).toLocaleString()} = ₦${(platformProductFeeInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `   + Delivery: ₦${(deliveryChargeInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `   = Total: ₦${(platformTotalInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
+
       if (stores.length > 1) {
         console.log("🏪 MULTI-SELLER BREAKDOWN:");
         stores.forEach((s, idx) => {
           const storeProductInKobo = Math.round(s.total * 100);
-          const sellerAmountInKobo = Math.round((storeProductInKobo * SELLER_PERCENTAGE) / 100);
+          const sellerAmountInKobo = Math.round(
+            (storeProductInKobo * SELLER_PERCENTAGE) / 100,
+          );
           console.log(`   Store ${idx + 1} (ID: ${s.storeId}):`);
-          console.log(`     Products: ₦${(storeProductInKobo / 100).toLocaleString()} → Seller gets: ₦${(sellerAmountInKobo / 100).toLocaleString()}`);
+          console.log(
+            `     Products: ₦${(storeProductInKobo / 100).toLocaleString()} → Seller gets: ₦${(sellerAmountInKobo / 100).toLocaleString()}`,
+          );
         });
-        console.log("═══════════════════════════════════════════════════════════");
+        console.log(
+          "═══════════════════════════════════════════════════════════",
+        );
       }
 
       // Build store allocation for multi-store split payments
       // Each seller gets 95% of their product price, platform gets 5% + delivery
       const storeAllocations = stores.map((s) => {
         const storeProductInKobo = Math.round(s.total * 100);
-        const sellerAmountInKobo = Math.round((storeProductInKobo * SELLER_PERCENTAGE) / 100);
+        const sellerAmountInKobo = Math.round(
+          (storeProductInKobo * SELLER_PERCENTAGE) / 100,
+        );
         const platformFeeFromStore = storeProductInKobo - sellerAmountInKobo;
-        
+
         return {
           store_id: s.storeId,
           product_amount: storeProductInKobo, // Store's product total in kobo

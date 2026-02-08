@@ -63,7 +63,9 @@ export const usePaystack = (): UsePaystackReturn => {
       msg.includes("invalid store subaccount") ||
       msg.includes("no subaccount") ||
       (msg.includes("subaccount") &&
-        (msg.includes("invalid") || msg.includes("missing") || msg.includes("not found")))
+        (msg.includes("invalid") ||
+          msg.includes("missing") ||
+          msg.includes("not found")))
     );
   };
 
@@ -107,18 +109,24 @@ export const usePaystack = (): UsePaystackReturn => {
    * - Platform gets 5% of product price + 100% of delivery charge
    */
   const calculateSplitWithDelivery = useCallback(
-    (productTotal: number, deliveryCharge: number, sellerPercentage: number = 95) => {
+    (
+      productTotal: number,
+      deliveryCharge: number,
+      sellerPercentage: number = 95,
+    ) => {
       const platformPercentage = 100 - sellerPercentage;
-      
+
       // Platform's share of product price (5%)
-      const platformProductFee = Math.round((productTotal * platformPercentage) / 100);
-      
+      const platformProductFee = Math.round(
+        (productTotal * platformPercentage) / 100,
+      );
+
       // Seller gets 95% of product price (no delivery charge)
       const sellerAmount = productTotal - platformProductFee;
-      
+
       // Platform gets 5% of product + 100% of delivery
       const platformTotal = platformProductFee + deliveryCharge;
-      
+
       // Total order amount
       const totalAmount = productTotal + deliveryCharge;
 
@@ -202,7 +210,7 @@ export const usePaystack = (): UsePaystackReturn => {
         throw err;
       }
     },
-    [dispatch, notificationApi]
+    [dispatch, notificationApi],
   );
 
   // Initialize split payment (supports both single and multi-store)
@@ -218,16 +226,26 @@ export const usePaystack = (): UsePaystackReturn => {
         }
 
         // Check if this is a multi-store payment
-        const isMultiStore = 'stores' in data && Array.isArray(data.stores) && data.stores.length > 1;
-        const isSingleStore = 'store_id' in data && typeof data.store_id === 'number';
+        const isMultiStore =
+          "stores" in data &&
+          Array.isArray(data.stores) &&
+          data.stores.length > 1;
+        const isSingleStore =
+          "store_id" in data && typeof data.store_id === "number";
 
         // Validate store information
         if (!isMultiStore && !isSingleStore) {
           // Check if stores array exists with single store
-          if ('stores' in data && Array.isArray(data.stores) && data.stores.length === 1) {
+          if (
+            "stores" in data &&
+            Array.isArray(data.stores) &&
+            data.stores.length === 1
+          ) {
             // Single store in array format - still valid
           } else {
-            throw new Error("Store ID or stores array is required for split payments");
+            throw new Error(
+              "Store ID or stores array is required for split payments",
+            );
           }
         }
 
@@ -240,7 +258,9 @@ export const usePaystack = (): UsePaystackReturn => {
         const splitCalculation = calculateSplit(data.amount);
 
         // Build split payment data with appropriate metadata
-        const splitPaymentData: PaystackInitializeRequest & { split_payment: boolean } = {
+        const splitPaymentData: PaystackInitializeRequest & {
+          split_payment: boolean;
+        } = {
           ...data,
           split_payment: true,
           metadata: {
@@ -257,13 +277,15 @@ export const usePaystack = (): UsePaystackReturn => {
         ).unwrap()) as PaystackInitializeResponse;
         if (result.status && result.data?.data?.authorization_url) {
           const formattedAmounts = formatSplitAmount(splitCalculation);
-          
-          const description = isMultiStore 
+
+          const description = isMultiStore
             ? `Total: ${formattedAmounts.total} | Multi-seller split payment`
             : `Total: ${formattedAmounts.total} | Seller: ${formattedAmounts.seller} | Platform: ${formattedAmounts.admin}`;
-          
+
           notificationApi.success({
-            message: isMultiStore ? "Multi-Seller Payment Initialized" : "Split Payment Initialized",
+            message: isMultiStore
+              ? "Multi-Seller Payment Initialized"
+              : "Split Payment Initialized",
             description,
             duration: 4,
           });
@@ -306,7 +328,7 @@ export const usePaystack = (): UsePaystackReturn => {
       calculateSplit,
       formatSplitAmount,
       handleInitializePayment,
-    ]
+    ],
   );
 
   // Verify payment
@@ -328,7 +350,7 @@ export const usePaystack = (): UsePaystackReturn => {
             notificationApi.success({
               message: "Payment Successful",
               description: `Payment of ₦${(paymentData.amount / 100).toFixed(
-                2
+                2,
               )} verified successfully.`,
               duration: 5,
             });
@@ -360,7 +382,7 @@ export const usePaystack = (): UsePaystackReturn => {
         throw err;
       }
     },
-    [dispatch, notificationApi]
+    [dispatch, notificationApi],
   );
 
   // Process refund
@@ -400,14 +422,15 @@ export const usePaystack = (): UsePaystackReturn => {
         throw err;
       }
     },
-    [dispatch, notificationApi]
+    [dispatch, notificationApi],
   );
 
   // Get public key
   const handleGetPublicKey = useCallback(async () => {
     try {
-      const result = (await dispatch(getPublicKey()).unwrap()) as
-        PaystackPublicKeyResponse;
+      const result = (await dispatch(
+        getPublicKey(),
+      ).unwrap()) as PaystackPublicKeyResponse;
       return result;
     } catch (err: unknown) {
       throw err;
@@ -424,7 +447,7 @@ export const usePaystack = (): UsePaystackReturn => {
     (reference: string | null) => {
       dispatch(setPaymentReference(reference));
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Set payment status
@@ -432,7 +455,7 @@ export const usePaystack = (): UsePaystackReturn => {
     (status: "idle" | "pending" | "success" | "failed" | "cancelled") => {
       dispatch(setPaymentStatus(status));
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Auto-fetch public key on mount

@@ -179,22 +179,22 @@ export interface PaystackState {
   isInitializing: boolean;
   initializationError: string | null;
   paymentData: PaystackInitializeRequest | null;
-  
+
   // Payment verification
   isVerifying: boolean;
   verificationError: string | null;
   verificationData: PaystackVerificationData | null;
-  
+
   // Payment status
-  paymentStatus: 'idle' | 'pending' | 'success' | 'failed' | 'cancelled';
+  paymentStatus: "idle" | "pending" | "success" | "failed" | "cancelled";
   paymentReference: string | null;
-  
+
   // Public key
   publicKey: string | null;
-  
+
   // Transaction details
   currentTransaction: PaystackVerificationData | null;
-  
+
   // Refund status
   isRefunding: boolean;
   refundError: string | null;
@@ -245,7 +245,9 @@ export interface MultiStoreSplitPaymentRequest extends PaystackInitializeRequest
 }
 
 // Union type for any split payment request
-export type SplitPaymentRequest = SingleStoreSplitPaymentRequest | MultiStoreSplitPaymentRequest;
+export type SplitPaymentRequest =
+  | SingleStoreSplitPaymentRequest
+  | MultiStoreSplitPaymentRequest;
 
 export interface SplitPaymentCalculation {
   total_amount: number;
@@ -278,7 +280,7 @@ export interface PaymentSplitData {
   seller_amount: number;
   admin_percentage: number;
   seller_percentage: number;
-  split_status: 'pending' | 'completed' | 'failed';
+  split_status: "pending" | "completed" | "failed";
   admin_settled: boolean;
   seller_settled: boolean;
   admin_settled_at?: string;
@@ -292,18 +294,28 @@ export interface PaymentSplitData {
 export interface StoreInfo {
   id: number;
   store_name: string;
-  subaccount_status: 'pending' | 'active' | 'inactive';
+  subaccount_status: "pending" | "active" | "inactive";
   paystack_subaccount_code?: string;
 }
 
 // Payment methods
-export type PaymentMethod = 'Pay Online' | 'Cash On Delivery' | 'Pay On Credit';
+export type PaymentMethod = "Pay Online" | "Cash On Delivery" | "Pay On Credit";
 
 // Payment channels supported by Paystack
-export type PaystackChannel = 'card' | 'bank' | 'ussd' | 'mobile_money' | 'bank_transfer' | 'qr';
+export type PaystackChannel =
+  | "card"
+  | "bank"
+  | "ussd"
+  | "mobile_money"
+  | "bank_transfer"
+  | "qr";
 
 // Payment status from Paystack
-export type PaystackPaymentStatus = 'success' | 'failed' | 'abandoned' | 'pending';
+export type PaystackPaymentStatus =
+  | "success"
+  | "failed"
+  | "abandoned"
+  | "pending";
 
 // Split calculation with delivery
 export interface SplitWithDeliveryCalculation {
@@ -328,20 +340,33 @@ export interface UsePaystackReturn {
   publicKey: string | null;
   paymentReference: string | null;
   verificationData: PaystackVerificationData | null;
-  
+
   // Actions
-  initializePayment: (data: PaystackInitializeRequest) => Promise<PaystackInitializeResponse>;
-  initializeSplitPayment: (data: SplitPaymentRequest | PaystackInitializeRequest) => Promise<PaystackInitializeResponse>;
+  initializePayment: (
+    data: PaystackInitializeRequest,
+  ) => Promise<PaystackInitializeResponse>;
+  initializeSplitPayment: (
+    data: SplitPaymentRequest | PaystackInitializeRequest,
+  ) => Promise<PaystackInitializeResponse>;
   verifyPayment: (reference: string) => Promise<PaystackVerificationResponse>;
-  refundPayment: (data: PaystackRefundRequest) => Promise<PaystackRefundResponse>;
+  refundPayment: (
+    data: PaystackRefundRequest,
+  ) => Promise<PaystackRefundResponse>;
   getPublicKey: () => Promise<PaystackPublicKeyResponse>;
   clearPaymentData: () => void;
   setPaymentReference: (reference: string | null) => void;
-  setPaymentStatus: (status: PaystackState['paymentStatus']) => void;
-  
+  setPaymentStatus: (status: PaystackState["paymentStatus"]) => void;
+
   // Split Payment utilities
-  calculateSplit: (amount: number, adminPercentage?: number) => SplitPaymentCalculation;
-  calculateSplitWithDelivery: (productTotal: number, deliveryCharge: number, sellerPercentage?: number) => SplitWithDeliveryCalculation;
+  calculateSplit: (
+    amount: number,
+    adminPercentage?: number,
+  ) => SplitPaymentCalculation;
+  calculateSplitWithDelivery: (
+    productTotal: number,
+    deliveryCharge: number,
+    sellerPercentage?: number,
+  ) => SplitWithDeliveryCalculation;
   formatSplitAmount: (calculation: SplitPaymentCalculation) => {
     total: string;
     admin: string;
@@ -350,9 +375,9 @@ export interface UsePaystackReturn {
   formatAmount: (amountInKobo: number) => string;
   toKobo: (amountInNaira: number) => number;
   fromKobo: (amountInKobo: number) => number;
-  
+
   // Status
-  paymentStatus: 'idle' | 'pending' | 'success' | 'failed' | 'cancelled';
+  paymentStatus: "idle" | "pending" | "success" | "failed" | "cancelled";
   isPaymentInProgress: boolean;
   isPaymentSuccessful: boolean;
   isPaymentFailed: boolean;
