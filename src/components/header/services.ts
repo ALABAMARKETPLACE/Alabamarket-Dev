@@ -1,7 +1,7 @@
 import API from "@/config/API";
 import { GET, POST } from "@/util/apicall";
 import { storeCategory } from "@/redux/slice/categorySlice";
-import { storeCart } from "@/redux/slice/cartSlice";
+import { storeCart, loadGuestCart, getGuestCartFromStorage, clearGuestCartFromStorage } from "@/redux/slice/cartSlice";
 import { useEffect } from "react";
 import { storeSettings } from "@/redux/slice/settingsSlice";
 import { jwtDecode } from "jwt-decode";
@@ -36,6 +36,9 @@ export const useGetSettings = () => {
       }
     };
     fetchSettings();
+    
+    // Load guest cart from localStorage on initial load
+    dispatch(loadGuestCart());
   }, [dispatch]);
 };
 
@@ -47,6 +50,8 @@ export const useTokenExpiration = () => {
 
   useEffect(() => {
     if (!accessToken) {
+      // No token - load guest cart
+      dispatch(loadGuestCart());
       return;
     }
     try {
@@ -111,12 +116,41 @@ export const useTokenExpiration = () => {
 
   const fetchCartItems = async () => {
     try {
+      // Check if there are guest cart items to sync
+      const guestCartItems = getGuestCartFromStorage();
+      
+      if (guestCartItems.length > 0) {
+        console.log("🛒 Syncing guest cart items to backend:", guestCartItems.length, "items");
+        
+        // Sync each guest cart item to the backend
+        for (const item of guestCartItems) {
+          try {
+            const cartData = {
+              productId: item.productId || item._id,
+              storeId: item.storeId || item.store_id,
+              qty: item.qty || item.quantity || 1,
+            };
+            await POST(API.CART, cartData);
+            console.log("✅ Synced item:", item.name || item.productName);
+          } catch (syncError) {
+            console.error("❌ Failed to sync item:", item.name || item.productName, syncError);
+          }
+        }
+        
+        // Clear guest cart after syncing
+        clearGuestCartFromStorage();
+        console.log("🗑️ Guest cart cleared after sync");
+      }
+      
+      // Fetch all cart items from backend
       const url = API.CART_GET_ALL;
       const cartItems: any = await GET(url);
       if (cartItems.status) {
         dispatch(storeCart(cartItems.data));
       }
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error fetching cart items:", err);
+    }
   };
 
   const handleTokenExpiration = () => {

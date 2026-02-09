@@ -170,6 +170,41 @@ function Description(props: Props) {
       notification.error({ message: `Selected Quantity is Not Available.` });
       return;
     }
+
+    // Track Add to Cart for analytics
+    const gaItem = formatGAItem(props.data, props.currentVariant, quantity);
+    trackAddToCart(gaItem);
+
+    // Check if user is logged in
+    if (!user?.user) {
+      // Guest user - add to local cart
+      const { addToGuestCart } = await import("@/redux/slice/cartSlice");
+      
+      const guestCartItem = {
+        productId: props?.data?.pid,
+        name: props?.data?.name,
+        price: props?.currentVariant?.price ?? props?.data?.retail_rate,
+        quantity: quantity,
+        image: props?.currentVariant?.id
+          ? props?.currentVariant?.image
+          : props?.data?.image,
+        storeId: props?.data?.store_id,
+        storeName: props?.data?.storeDetails?.store_name,
+        variantId: props?.currentVariant?.id ?? null,
+        combination: props?.currentVariant?.combination,
+        unit: props?.data?.unit,
+        status: props?.data?.status,
+      };
+      
+      dispatch(addToGuestCart(guestCartItem));
+      Notifications.success({ message: "Added to cart successfully!" });
+      setTimeout(() => {
+        router.push("/cart");
+      }, 1000);
+      return;
+    }
+
+    // Logged in user - add to backend cart
     const obj = {
       productId: props?.data?.pid,
       quantity: quantity,
@@ -180,10 +215,6 @@ function Description(props: Props) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newCart: any = await POST(url, obj);
       if (newCart.status) {
-        // Track Add to Cart
-        const gaItem = formatGAItem(props.data, props.currentVariant, quantity);
-        trackAddToCart(gaItem);
-
         Notifications.success({ message: newCart?.message });
         setTimeout(() => {
           router.push("/cart");
