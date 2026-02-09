@@ -70,28 +70,29 @@ export const CartSlice = createAppSlice({
       state.items = action.payload;
       state.isGuestCart = false;
     },
-    
+
     // Clear cart
     clearCart: (state: CartState) => {
       state.items = [];
       state.isGuestCart = false;
       clearGuestCartFromStorage();
     },
-    
+
     // Add item to guest cart (for non-authenticated users)
     addToGuestCart: (state: CartState, action: PayloadAction<CartItem>) => {
       const newItem = action.payload;
       const existingIndex = state.items.findIndex(
-        (item) => 
-          item.productId === newItem.productId && 
-          item.variantId === newItem.variantId
+        (item) =>
+          item.productId === newItem.productId &&
+          item.variantId === newItem.variantId,
       );
-      
+
       if (existingIndex >= 0) {
         // Update quantity if item already exists
         state.items[existingIndex].quantity += newItem.quantity;
-        state.items[existingIndex].totalPrice = 
-          state.items[existingIndex].price * state.items[existingIndex].quantity;
+        state.items[existingIndex].totalPrice =
+          state.items[existingIndex].price *
+          state.items[existingIndex].quantity;
       } else {
         // Add new item
         state.items.push({
@@ -99,19 +100,23 @@ export const CartSlice = createAppSlice({
           totalPrice: newItem.price * newItem.quantity,
         });
       }
-      
+
       state.isGuestCart = true;
       saveGuestCartToStorage(state.items);
     },
-    
+
     // Update guest cart item quantity
     updateGuestCartQuantity: (
-      state: CartState, 
-      action: PayloadAction<{ productId: string; variantId?: string | null; quantity: number }>
+      state: CartState,
+      action: PayloadAction<{
+        productId: string;
+        variantId?: string | null;
+        quantity: number;
+      }>,
     ) => {
       const { productId, variantId, quantity } = action.payload;
       const item = state.items.find(
-        (i) => i.productId === productId && i.variantId === variantId
+        (i) => i.productId === productId && i.variantId === variantId,
       );
       if (item && quantity > 0) {
         item.quantity = quantity;
@@ -119,19 +124,20 @@ export const CartSlice = createAppSlice({
         saveGuestCartToStorage(state.items);
       }
     },
-    
+
     // Remove item from guest cart
     removeFromGuestCart: (
-      state: CartState, 
-      action: PayloadAction<{ productId: string; variantId?: string | null }>
+      state: CartState,
+      action: PayloadAction<{ productId: string; variantId?: string | null }>,
     ) => {
       const { productId, variantId } = action.payload;
       state.items = state.items.filter(
-        (item) => !(item.productId === productId && item.variantId === variantId)
+        (item) =>
+          !(item.productId === productId && item.variantId === variantId),
       );
       saveGuestCartToStorage(state.items);
     },
-    
+
     // Load guest cart from localStorage
     loadGuestCart: (state: CartState) => {
       const guestItems = getGuestCartFromStorage();
@@ -140,7 +146,7 @@ export const CartSlice = createAppSlice({
         state.isGuestCart = true;
       }
     },
-    
+
     // Set guest cart flag
     setIsGuestCart: (state: CartState, action: PayloadAction<boolean>) => {
       state.isGuestCart = action.payload;
@@ -153,17 +159,18 @@ export const CartSlice = createAppSlice({
   },
 });
 
-export const { 
-  storeCart, 
-  clearCart, 
-  addToGuestCart, 
-  updateGuestCartQuantity, 
-  removeFromGuestCart, 
+export const {
+  storeCart,
+  clearCart,
+  addToGuestCart,
+  updateGuestCartQuantity,
+  removeFromGuestCart,
   loadGuestCart,
   setIsGuestCart,
 } = CartSlice.actions;
 
-export const { reduxCartItems, reduxCartCount, reduxIsGuestCart } = CartSlice.selectors;
+export const { reduxCartItems, reduxCartCount, reduxIsGuestCart } =
+  CartSlice.selectors;
 
 // Export helper for syncing guest cart
 export { getGuestCartFromStorage };

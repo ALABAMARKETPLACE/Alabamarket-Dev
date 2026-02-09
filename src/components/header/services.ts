@@ -1,7 +1,12 @@
 import API from "@/config/API";
 import { GET, POST } from "@/util/apicall";
 import { storeCategory } from "@/redux/slice/categorySlice";
-import { storeCart, loadGuestCart, getGuestCartFromStorage, clearGuestCartFromStorage } from "@/redux/slice/cartSlice";
+import {
+  storeCart,
+  loadGuestCart,
+  getGuestCartFromStorage,
+  clearGuestCartFromStorage,
+} from "@/redux/slice/cartSlice";
 import { useEffect } from "react";
 import { storeSettings } from "@/redux/slice/settingsSlice";
 import { jwtDecode } from "jwt-decode";
@@ -16,7 +21,7 @@ import {
 } from "@/redux/slice/authSlice";
 const delay = 10000; //before this time the token will refreshed.
 
-export const useGetSettings = () => { 
+export const useGetSettings = () => {
   const dispatch = useAppDispatch();
   useEffect(() => {
     const fetchSettings = async () => {
@@ -36,7 +41,7 @@ export const useGetSettings = () => {
       }
     };
     fetchSettings();
-    
+
     // Load guest cart from localStorage on initial load
     dispatch(loadGuestCart());
   }, [dispatch]);
@@ -66,9 +71,12 @@ export const useTokenExpiration = () => {
       } else {
         fetchUser();
         fetchCartItems();
-        const timer = setTimeout(() => {
-          createRefreshToken();
-        }, decoded.exp * 1000 - Date.now() - delay);
+        const timer = setTimeout(
+          () => {
+            createRefreshToken();
+          },
+          decoded.exp * 1000 - Date.now() - delay,
+        );
 
         return () => clearTimeout(timer);
       }
@@ -91,7 +99,7 @@ export const useTokenExpiration = () => {
           storeToken({
             token: response?.token,
             refreshToken: response?.refreshToken,
-          })
+          }),
         );
       } else {
         handleTokenExpiration();
@@ -118,10 +126,14 @@ export const useTokenExpiration = () => {
     try {
       // Check if there are guest cart items to sync
       const guestCartItems = getGuestCartFromStorage();
-      
+
       if (guestCartItems.length > 0) {
-        console.log("🛒 Syncing guest cart items to backend:", guestCartItems.length, "items");
-        
+        console.log(
+          "🛒 Syncing guest cart items to backend:",
+          guestCartItems.length,
+          "items",
+        );
+
         // Sync each guest cart item to the backend
         for (const item of guestCartItems) {
           try {
@@ -133,15 +145,19 @@ export const useTokenExpiration = () => {
             await POST(API.CART, cartData);
             console.log("✅ Synced item:", item.name || item.productName);
           } catch (syncError) {
-            console.error("❌ Failed to sync item:", item.name || item.productName, syncError);
+            console.error(
+              "❌ Failed to sync item:",
+              item.name || item.productName,
+              syncError,
+            );
           }
         }
-        
+
         // Clear guest cart after syncing
         clearGuestCartFromStorage();
         console.log("🗑️ Guest cart cleared after sync");
       }
-      
+
       // Fetch all cart items from backend
       const url = API.CART_GET_ALL;
       const cartItems: any = await GET(url);

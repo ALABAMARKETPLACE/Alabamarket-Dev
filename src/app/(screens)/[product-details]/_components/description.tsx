@@ -179,7 +179,7 @@ function Description(props: Props) {
     if (!user?.user) {
       // Guest user - add to local cart
       const { addToGuestCart } = await import("@/redux/slice/cartSlice");
-      
+
       const guestCartItem = {
         productId: props?.data?.pid,
         name: props?.data?.name,
@@ -195,7 +195,7 @@ function Description(props: Props) {
         unit: props?.data?.unit,
         status: props?.data?.status,
       };
-      
+
       dispatch(addToGuestCart(guestCartItem));
       Notifications.success({ message: "Added to cart successfully!" });
       setTimeout(() => {
