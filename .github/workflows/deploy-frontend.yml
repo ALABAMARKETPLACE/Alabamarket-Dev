@@ -57,12 +57,12 @@ jobs:
           echo "SSH Key     : ${SSH_KEY:+SET}"
 
       # -------------------------------------------------
-      # Setup SSH v v
+      # Setup SSH
       # -------------------------------------------------
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          printf "%s\n" "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
@@ -71,7 +71,8 @@ jobs:
       # -------------------------------------------------
       - name: Ensure target directory exists
         run: |
-          ssh $SERVER_USER@$SERVER_HOST "mkdir -p $APP_DIR"
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=5 \
+            "$SERVER_USER@$SERVER_HOST" "mkdir -p $APP_DIR"
 
       # -------------------------------------------------
       # Sync frontend source
@@ -84,47 +85,56 @@ jobs:
             --exclude .env \
             --exclude .git \
             --exclude .github \
-            . \
-            $SERVER_USER@$SERVER_HOST:$APP_DIR/
+            ./ \
+            "$SERVER_USER@$SERVER_HOST:$APP_DIR/"
 
       # -------------------------------------------------
-      # Build & restart frontend (PM2 SSR)
+      # Build & restart frontend (PM2 / Next.js SSR)
       # -------------------------------------------------
       - name: Build & restart frontend
         run: |
-          ssh $SERVER_USER@$SERVER_HOST << EOF
-            set -e
+          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=5 \
+            "$SERVER_USER@$SERVER_HOST" << EOF
+            set -euo pipefail
 
+            # -------------------------------
             # Load NVM
+            # -------------------------------
             export NVM_DIR="\$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
             nvm use 20.19.6
 
+            # -------------------------------
+            # Ensure PM2 exists
+            # -------------------------------
+            if ! command -v pm2 >/dev/null 2>&1; then
+              echo "📦 Installing PM2..."
+              npm install -g pm2
+            fi
+
+            # -------------------------------
+            # Build app
+            # -------------------------------
             cd "$APP_DIR"
 
             npm install --legacy-peer-deps
             npm run build
 
-            PM2="\$HOME/.nvm/versions/node/v20.19.6/bin/pm2"
-
-            # Check if app already exists
-            set +e
-            \$PM2 describe "$APP_NAME" > /dev/null 2>&1
-            EXISTS=\$?
-            set -e
-
-            if [ "\$EXISTS" -eq 0 ]; then
-              echo "Reloading frontend..."
-              \$PM2 reload "$APP_NAME"
+            # -------------------------------
+            # Restart / Start frontend
+            # -------------------------------
+            if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
+              echo "♻️ Reloading frontend..."
+              pm2 reload "$APP_NAME"
             else
-              echo "Starting frontend..."
-              \$PM2 start npm \
+              echo "🚀 Starting frontend..."
+              pm2 start npm \
                 --name "$APP_NAME" \
                 --cwd "$APP_DIR" \
                 -- start
             fi
 
-            \$PM2 save
+            pm2 save
           EOF
 
       # -------------------------------------------------
