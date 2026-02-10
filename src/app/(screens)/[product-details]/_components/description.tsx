@@ -14,14 +14,20 @@ import { useSession } from "next-auth/react";
 import { formatGAItem, trackAddToCart } from "@/utils/analytics";
 
 // Helper functions for discount display (visual only - does not affect payment)
-const getDiscountPercentage = (productId: string | undefined | null): number => {
-  if (!productId || typeof productId !== 'string') return 20; // Default discount if no valid productId
-  const hash = productId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
+const getDiscountPercentage = (
+  productId: string | undefined | null,
+): number => {
+  if (!productId || typeof productId !== "string") return 20; // Default discount if no valid productId
+  const hash =
+    productId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
   const discounts = [15, 20, 25, 30, 35, 40, 45, 50];
   return discounts[hash % discounts.length];
 };
 
-const calculateOriginalPrice = (actualPrice: number, discountPercent: number): number => {
+const calculateOriginalPrice = (
+  actualPrice: number,
+  discountPercent: number,
+): number => {
   return Math.round(actualPrice / (1 - discountPercent / 100));
 };
 
@@ -93,7 +99,8 @@ function Description(props: Props) {
   const [Notifications, contextHolder] = notification.useNotification();
   const [quantity, setQuantity] = useState<number>(1);
   const [formattedPrice, setFormattedPrice] = useState<string>("");
-  const [formattedOriginalPrice, setFormattedOriginalPrice] = useState<string>("");
+  const [formattedOriginalPrice, setFormattedOriginalPrice] =
+    useState<string>("");
 
   // Calculate totalPrice directly instead of using state and useEffect
   const basePrice =
@@ -103,14 +110,14 @@ function Description(props: Props) {
   // Calculate discount info for display (visual only - does not affect payment)
   const discountInfo = useMemo(() => {
     // Use pid to match the discount calculation in ProductItem component
-    const productId = props?.data?.pid || props?.data?._id || '';
+    const productId = props?.data?.pid || props?.data?._id || "";
     const discountPercent = getDiscountPercentage(productId);
     const originalPrice = calculateOriginalPrice(basePrice, discountPercent);
     const originalTotalPrice = originalPrice * quantity;
     return {
       discountPercent,
       originalPrice,
-      originalTotalPrice
+      originalTotalPrice,
     };
   }, [props?.data?.pid, props?.data?._id, basePrice, quantity]);
 
@@ -303,11 +310,15 @@ function Description(props: Props) {
       ) : null}
       <br />
       <div className="d-flex align-items-center flex-wrap gap-2">
-        <span style={{ color: '#666', fontSize: '14px' }}>Total Price:</span>
+        <span style={{ color: "#666", fontSize: "14px" }}>Total Price:</span>
         <div className="productDetails-price-section">
           <span className="productDetails-current-price">{formattedPrice}</span>
-          <span className="productDetails-original-price">{formattedOriginalPrice}</span>
-          <span className="productDetails-discount-badge">-{discountInfo.discountPercent}%</span>
+          <span className="productDetails-original-price">
+            {formattedOriginalPrice}
+          </span>
+          <span className="productDetails-discount-badge">
+            -{discountInfo.discountPercent}%
+          </span>
         </div>
       </div>
       <br />

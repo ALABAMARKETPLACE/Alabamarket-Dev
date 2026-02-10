@@ -10,13 +10,18 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 // Generate a consistent discount percentage based on product id
 const getDiscountPercentage = (productId: string): number => {
   // Use the product ID to generate a consistent "random" discount
-  const hash = productId?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
+  const hash =
+    productId?.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) ||
+    0;
   const discounts = [15, 20, 25, 30, 35, 40, 45, 50];
   return discounts[hash % discounts.length];
 };
 
 // Calculate the "original" price based on the discount
-const calculateOriginalPrice = (actualPrice: number, discountPercent: number): number => {
+const calculateOriginalPrice = (
+  actualPrice: number,
+  discountPercent: number,
+): number => {
   // Original = Actual / (1 - discount/100)
   return Math.round(actualPrice / (1 - discountPercent / 100));
 };
@@ -33,7 +38,7 @@ function ProductItem(props: any) {
 
   // Calculate discount and original price
   const discountInfo = useMemo(() => {
-    const productId = props?.item?.pid || props?.item?.id || '';
+    const productId = props?.item?.pid || props?.item?.id || "";
     const discountPercent = getDiscountPercentage(productId);
     const actualPrice = props?.item?.retail_rate || 0;
     const originalPrice = calculateOriginalPrice(actualPrice, discountPercent);
@@ -64,7 +69,7 @@ function ProductItem(props: any) {
         style={{ fontSize: "12px" }}
       />
       <h6 className="my-0 fw-bold">{`${Number(
-        props?.item?.averageRating
+        props?.item?.averageRating,
       )?.toFixed(1)} out of 5`}</h6>
     </div>
   );
@@ -122,7 +127,10 @@ function ProductItem(props: any) {
           ) : null}
         </Popover>
 
-        <div className="ProductItem-price-section" onClick={() => openDetails()}>
+        <div
+          className="ProductItem-price-section"
+          onClick={() => openDetails()}
+        >
           <div className="ProductItem-txt3">
             {(() => {
               const currencyCode =

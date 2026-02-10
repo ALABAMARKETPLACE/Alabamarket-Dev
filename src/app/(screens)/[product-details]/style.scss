@@ -347,7 +347,9 @@
   object-fit: contain;
   position: relative;
   &.active {
-    box-shadow: rgba(14, 30, 37, 0.12) 0px 0px 6px 0px, #ff006a 0px 0px 6px 0px;
+    box-shadow:
+      rgba(14, 30, 37, 0.12) 0px 0px 6px 0px,
+      #ff006a 0px 0px 6px 0px;
   }
 }
 @keyframes wobble {
@@ -404,7 +406,7 @@
   font-weight: 700;
   color: #ff9500;
   font-family: "DM Sans", sans-serif;
-  
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 20px;
   }
@@ -415,7 +417,7 @@
   color: #999;
   text-decoration: line-through;
   font-family: "DM Sans", sans-serif;
-  
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 14px;
   }
@@ -431,7 +433,7 @@
   font-family: "DM Sans", sans-serif;
   box-shadow: 0 2px 8px rgba(255, 71, 87, 0.3);
   animation: pulse-badge 2s infinite;
-  
+
   @media screen and (min-width: 320px) and (max-width: 768px) {
     font-size: 11px;
     padding: 3px 8px;
@@ -439,7 +441,8 @@
 }
 
 @keyframes pulse-badge {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {

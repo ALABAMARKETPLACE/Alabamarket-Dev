@@ -24,10 +24,26 @@ interface Message {
 
 // Quick action suggestions
 const quickActions = [
-  { icon: <ShoppingOutlined />, label: "Track Order", query: "How can I track my order?" },
-  { icon: <GiftOutlined />, label: "Deals", query: "What are today's best deals?" },
-  { icon: <CustomerServiceOutlined />, label: "Support", query: "I need help with a purchase" },
-  { icon: <QuestionCircleOutlined />, label: "FAQ", query: "What are your shipping options?" },
+  {
+    icon: <ShoppingOutlined />,
+    label: "Track Order",
+    query: "How can I track my order?",
+  },
+  {
+    icon: <GiftOutlined />,
+    label: "Deals",
+    query: "What are today's best deals?",
+  },
+  {
+    icon: <CustomerServiceOutlined />,
+    label: "Support",
+    query: "I need help with a purchase",
+  },
+  {
+    icon: <QuestionCircleOutlined />,
+    label: "FAQ",
+    query: "What are your shipping options?",
+  },
 ];
 
 // Greeting based on time of day
@@ -281,7 +297,7 @@ const ChatBot: React.FC = () => {
                     </div>
                   </div>
                 ))}
-                
+
                 {/* Quick Actions */}
                 {showQuickActions && messages.length === 1 && !loading && (
                   <div className="quick-actions">
