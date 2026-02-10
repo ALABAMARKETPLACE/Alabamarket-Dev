@@ -50,35 +50,16 @@ export default function OrderDetails() {
     staleTime: 0,
   });
 
-  // Normalize order data - handle both nested { data: ... } and flat response structures
-  const normalizeOrderData = (
-    data: unknown,
-  ): OrderDetailsResponse | undefined => {
-    if (!data) return undefined;
-
-    const rawData = data as Record<string, unknown>;
-
-    // If response has a 'data' property that's an object, use it as is
-    if (rawData.data && typeof rawData.data === "object") {
-      return rawData as unknown as OrderDetailsResponse;
-    }
-
-    // If the response itself looks like order data (has id, orderItems, etc.), wrap it
-    if (rawData.id || rawData._id || rawData.order_id || rawData.orderItems) {
-      return { data: rawData as Order };
-    }
-
-    // Fallback: wrap whatever we got
-    return { data: rawData as Order };
-  };
-
-  const order = normalizeOrderData(orderData);
-
-  // Get storeId from normalized order data
-  const storeId = order?.data?.storeId;
+  const order = (
+    orderData && (orderData as { data?: unknown }).data
+      ? orderData
+      : { data: orderData }
+  ) as OrderDetailsResponse;
 
   const { data: storeOrderDataRaw } = useQuery({
     queryFn: async () => {
+      // Use the storeId from the fetched order details
+      const storeId = order?.data?.storeId;
       if (!storeId) return null;
 
       // Fetch orders for this store.
@@ -87,8 +68,8 @@ export default function OrderDetails() {
       // Assuming 'orderId' param works as a filter:
       return await GET(API.ORDER_GET_BYSTORE + storeId, { orderId });
     },
-    queryKey: ["store_order_lookup", orderId, storeId],
-    enabled: !!storeId && !!orderId,
+    queryKey: ["store_order_lookup", orderId, order?.data?.storeId],
+    enabled: !!order?.data?.storeId && !!orderId,
   });
 
   const storeOrderData = storeOrderDataRaw as StoreOrdersResponse;
@@ -134,7 +115,7 @@ export default function OrderDetails() {
         title={"Order Details"}
         bredcume={"Dashboard / Orders / Details"}
       >
-        {!isLoading && order?.data && (
+        {!isLoading && (
           <>
             <Tag>{formatDateRelative(order?.data?.createdAt || "")}</Tag>
             <Tag color={getOrderStatusColor(order?.data?.status || "")}>
@@ -151,19 +132,6 @@ export default function OrderDetails() {
       </PageHeader>
       {isLoading ? (
         <Loading />
-      ) : !order?.data ? (
-        <Container fluid>
-          <div className="text-center py-5">
-            <h4>Order Not Found</h4>
-            <p className="text-muted">
-              The order you are looking for could not be found or you don&apos;t
-              have permission to view it.
-            </p>
-            <Button type="primary" onClick={() => route.push("/auth/orders")}>
-              Back to Orders
-            </Button>
-          </div>
-        </Container>
       ) : (
         <Container fluid>
           <Row className="gy-4">

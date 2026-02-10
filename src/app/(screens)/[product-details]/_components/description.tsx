@@ -3,7 +3,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { Button, notification } from "antd";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +12,18 @@ import { storeCheckout } from "../../../../redux/slice/checkoutSlice";
 import { GET, POST } from "../../../../util/apicall";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackAddToCart } from "@/utils/analytics";
+
+// Helper functions for discount display (visual only - does not affect payment)
+const getDiscountPercentage = (productId: string | undefined | null): number => {
+  if (!productId || typeof productId !== 'string') return 20; // Default discount if no valid productId
+  const hash = productId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
+  const discounts = [15, 20, 25, 30, 35, 40, 45, 50];
+  return discounts[hash % discounts.length];
+};
+
+const calculateOriginalPrice = (actualPrice: number, discountPercent: number): number => {
+  return Math.round(actualPrice / (1 - discountPercent / 100));
+};
 
 interface ProductData {
   _id: string;
@@ -81,11 +93,26 @@ function Description(props: Props) {
   const [Notifications, contextHolder] = notification.useNotification();
   const [quantity, setQuantity] = useState<number>(1);
   const [formattedPrice, setFormattedPrice] = useState<string>("");
+  const [formattedOriginalPrice, setFormattedOriginalPrice] = useState<string>("");
 
   // Calculate totalPrice directly instead of using state and useEffect
   const basePrice =
     props?.currentVariant?.price ?? props?.data?.retail_rate ?? 0;
   const totalPrice = basePrice * quantity;
+
+  // Calculate discount info for display (visual only - does not affect payment)
+  const discountInfo = useMemo(() => {
+    // Use pid to match the discount calculation in ProductItem component
+    const productId = props?.data?.pid || props?.data?._id || '';
+    const discountPercent = getDiscountPercentage(productId);
+    const originalPrice = calculateOriginalPrice(basePrice, discountPercent);
+    const originalTotalPrice = originalPrice * quantity;
+    return {
+      discountPercent,
+      originalPrice,
+      originalTotalPrice
+    };
+  }, [props?.data?.pid, props?.data?._id, basePrice, quantity]);
 
   // const [favourited, setFavourited] = useState(props?.data ?? false);
   // const [isWobbling, setIsWobbling] = useState(false);
@@ -107,7 +134,15 @@ function Description(props: Props) {
     // Replace NGN with naira symbol ₦
     const finalFormatted = formatted.replace(/NGN\s?/, "₦");
     setFormattedPrice(finalFormatted);
-  }, [totalPrice, settings.currency]);
+
+    // Format original price for discount display
+    const formattedOriginal = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: settings.currency ?? "INR",
+    }).format(discountInfo.originalTotalPrice);
+    const finalFormattedOriginal = formattedOriginal.replace(/NGN\s?/, "₦");
+    setFormattedOriginalPrice(finalFormattedOriginal);
+  }, [totalPrice, settings.currency, discountInfo.originalTotalPrice]);
 
   const updateQuantity = (type: "increment" | "decrement") => {
     if (type === "increment" && quantity < availableQuantity) {
@@ -267,9 +302,13 @@ function Description(props: Props) {
         <h5 className="text-danger">{`Only ${availableQuantity} units left`}</h5>
       ) : null}
       <br />
-      <div className="d-flex align-items-center ">
-        Total Price:{" "}
-        <div className="fs-5 fw-bold pl-3 ms-3">{formattedPrice}</div>
+      <div className="d-flex align-items-center flex-wrap gap-2">
+        <span style={{ color: '#666', fontSize: '14px' }}>Total Price:</span>
+        <div className="productDetails-price-section">
+          <span className="productDetails-current-price">{formattedPrice}</span>
+          <span className="productDetails-original-price">{formattedOriginalPrice}</span>
+          <span className="productDetails-discount-badge">-{discountInfo.discountPercent}%</span>
+        </div>
       </div>
       <br />
       <div className="d-flex gap-2 align-items-center">

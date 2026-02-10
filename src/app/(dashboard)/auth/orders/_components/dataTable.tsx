@@ -17,21 +17,12 @@ export interface Order {
   _id?: string | number;
   order_id?: string | number;
   image?: string;
-  userId?: number | string;
-  storeId?: number | string;
-  store_id?: number | string;
+  userId?: number;
   name?: string;
   createdAt?: string;
   grandTotal?: number;
   status?: string;
   orderItems?: Record<string, unknown>[];
-  address?: Record<string, unknown>;
-  total?: number;
-  tax?: number;
-  discount?: number;
-  deliveryCharge?: number;
-  orderPayment?: Record<string, unknown>;
-  paymentType?: string;
   [key: string]: unknown;
 }
 

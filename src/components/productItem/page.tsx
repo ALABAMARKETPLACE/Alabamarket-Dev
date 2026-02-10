@@ -1,16 +1,28 @@
 "use client";
-import React from "react";
+import React, { useMemo } from "react";
 import "./styles.scss";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { FaStar } from "react-icons/fa6";
-import { IoCartOutline, IoHeartOutline, IoEyeOutline } from "react-icons/io5";
 import { Popover, Rate, App } from "antd";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 
+// Generate a consistent discount percentage based on product id
+const getDiscountPercentage = (productId: string): number => {
+  // Use the product ID to generate a consistent "random" discount
+  const hash = productId?.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
+  const discounts = [15, 20, 25, 30, 35, 40, 45, 50];
+  return discounts[hash % discounts.length];
+};
+
+// Calculate the "original" price based on the discount
+const calculateOriginalPrice = (actualPrice: number, discountPercent: number): number => {
+  // Original = Actual / (1 - discount/100)
+  return Math.round(actualPrice / (1 - discountPercent / 100));
+};
+
 function ProductItem(props: any) {
   const navigate = useRouter();
-  const { message } = App.useApp();
   const Settings = useSelector(reduxSettings);
   const givenDate: any = new Date(props?.item?.createdAt); // Parse given date string
   const currentDate: any = new Date(); // Get current date
@@ -18,6 +30,15 @@ function ProductItem(props: any) {
   const differenceInSeconds = Math.floor(differenceInMilliseconds / 1000)
     ? Math.floor(differenceInMilliseconds / 1000)
     : null;
+
+  // Calculate discount and original price
+  const discountInfo = useMemo(() => {
+    const productId = props?.item?.pid || props?.item?.id || '';
+    const discountPercent = getDiscountPercentage(productId);
+    const actualPrice = props?.item?.retail_rate || 0;
+    const originalPrice = calculateOriginalPrice(actualPrice, discountPercent);
+    return { discountPercent, originalPrice, actualPrice };
+  }, [props?.item?.pid, props?.item?.id, props?.item?.retail_rate]);
 
   const openDetails = () => {
     navigate.push(`/${props?.item?.slug}/?pid=${props?.item?.pid}&review=2`);
@@ -56,38 +77,6 @@ function ProductItem(props: any) {
           alt="ProductItem-img"
           onClick={() => openDetails()}
         />
-        <div className="action-overlay">
-          <div
-            className="action-btn"
-            title="Add to Cart"
-            onClick={(e) => {
-              e.stopPropagation();
-              message.success("Added to Cart");
-            }}
-          >
-            <IoCartOutline />
-          </div>
-          <div
-            className="action-btn"
-            title="Quick View"
-            onClick={(e) => {
-              e.stopPropagation();
-              openDetails();
-            }}
-          >
-            <IoEyeOutline />
-          </div>
-          <div
-            className="action-btn"
-            title="Add to Wishlist"
-            onClick={(e) => {
-              e.stopPropagation();
-              message.success("Added to Wishlist");
-            }}
-          >
-            <IoHeartOutline />
-          </div>
-        </div>
         {props?.item?.unit <= 0 ? (
           <div className="product_status_tag position-absolute">
             <div className="badge2 grey">Soldout</div>
@@ -133,21 +122,40 @@ function ProductItem(props: any) {
           ) : null}
         </Popover>
 
-        <div className="ProductItem-txt3" onClick={() => openDetails()}>
-          {(() => {
-            const currencyCode =
-              typeof Settings?.currency === "string" &&
-              Settings.currency.length === 3
-                ? Settings.currency
-                : "NGN";
-            const formatted = new Intl.NumberFormat("en-US", {
-              style: "currency",
-              currency: currencyCode,
-            }).format(props?.item?.retail_rate);
-            // Replace NGN with naira symbol ₦
-            return formatted.replace(/NGN\s?/, "₦");
-          })()}
-          <span className="text-secondary"></span>
+        <div className="ProductItem-price-section" onClick={() => openDetails()}>
+          <div className="ProductItem-txt3">
+            {(() => {
+              const currencyCode =
+                typeof Settings?.currency === "string" &&
+                Settings.currency.length === 3
+                  ? Settings.currency
+                  : "NGN";
+              const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: currencyCode,
+              }).format(props?.item?.retail_rate);
+              // Replace NGN with naira symbol ₦
+              return formatted.replace(/NGN\s?/, "₦");
+            })()}
+          </div>
+          <div className="ProductItem-original-price">
+            {(() => {
+              const currencyCode =
+                typeof Settings?.currency === "string" &&
+                Settings.currency.length === 3
+                  ? Settings.currency
+                  : "NGN";
+              const formatted = new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency: currencyCode,
+              }).format(discountInfo.originalPrice);
+              // Replace NGN with naira symbol ₦
+              return formatted.replace(/NGN\s?/, "₦");
+            })()}
+          </div>
+          <div className="ProductItem-discount-badge">
+            -{discountInfo.discountPercent}%
+          </div>
         </div>
       </div>
     </div>
