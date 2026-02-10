@@ -46,7 +46,7 @@ jobs:
           fi
 
       # -------------------------------------------------
-      # Validate critical SSH variables (FAIL FAST)
+      # Validate critical SSH variables (FAIL FAST)..
       # -------------------------------------------------
       - name: Validate SSH variables
         run: |
