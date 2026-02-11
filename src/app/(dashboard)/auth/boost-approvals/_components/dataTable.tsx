@@ -1,22 +1,33 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   Button,
   Modal,
   Pagination,
   Space,
   Table,
-  Tag,
   Typography,
   Input,
   message,
   InputNumber,
+  Tooltip,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { POST, PUT } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
+import {
+  FiEye,
+  FiCheck,
+  FiX,
+  FiZap,
+  FiUser,
+  FiCalendar,
+  FiPackage,
+  FiClock,
+  FiDollarSign,
+} from "react-icons/fi";
 
 type BoostRequestRow = {
   id: number;
@@ -50,6 +61,7 @@ function DataTable({
 }: Props) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [isMobile, setIsMobile] = useState(false);
   const [modal, setModal] = useState<{
     open: boolean;
     id?: number;
@@ -57,8 +69,15 @@ function DataTable({
   }>({ open: false });
   const [remarks, setRemarks] = useState<string>("");
   const [priorityDraft, setPriorityDraft] = useState<Record<number, number>>(
-    {}
+    {},
   );
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const mutationApprove = useMutation({
     mutationFn: (payload: {
@@ -102,15 +121,32 @@ function DataTable({
   });
 
   const statusTag = (status: BoostRequestRow["status"]) => {
-    const color =
-      status === "pending"
-        ? "orange"
-        : status === "approved"
-        ? "green"
-        : status === "rejected"
-        ? "red"
-        : "default";
-    return <Tag color={color}>{status.toUpperCase()}</Tag>;
+    switch (status) {
+      case "pending":
+        return (
+          <span className="dashboard-badge dashboard-badge--warning">
+            {status.toUpperCase()}
+          </span>
+        );
+      case "approved":
+        return (
+          <span className="dashboard-badge dashboard-badge--success">
+            {status.toUpperCase()}
+          </span>
+        );
+      case "rejected":
+        return (
+          <span className="dashboard-badge dashboard-badge--danger">
+            {status.toUpperCase()}
+          </span>
+        );
+      default:
+        return (
+          <span className="dashboard-badge dashboard-badge--default">
+            {status.toUpperCase()}
+          </span>
+        );
+    }
   };
 
   const columns: ColumnsType<BoostRequestRow> = useMemo(
@@ -182,49 +218,200 @@ function DataTable({
         key: "actions",
         render: (_, record) => (
           <Space>
-            <Button
-              size="small"
-              onClick={() => router.push(`/auth/boost-approvals/${record.id}`)}
-            >
-              View
-            </Button>
-            <Button
-              size="small"
-              type="primary"
-              disabled={record.status !== "pending"}
-              onClick={() =>
-                setModal({ open: true, id: record.id, action: "approved" })
-              }
-            >
-              Approve
-            </Button>
-            <Button
-              size="small"
-              danger
-              disabled={record.status !== "pending"}
-              onClick={() =>
-                setModal({ open: true, id: record.id, action: "rejected" })
-              }
-            >
-              Reject
-            </Button>
+            <Tooltip title="View details">
+              <Button
+                size="small"
+                icon={<FiEye size={14} />}
+                onClick={() =>
+                  router.push(`/auth/boost-approvals/${record.id}`)
+                }
+              />
+            </Tooltip>
+            <Tooltip title="Approve">
+              <Button
+                size="small"
+                type="primary"
+                icon={<FiCheck size={14} />}
+                disabled={record.status !== "pending"}
+                onClick={() =>
+                  setModal({ open: true, id: record.id, action: "approved" })
+                }
+              />
+            </Tooltip>
+            <Tooltip title="Reject">
+              <Button
+                size="small"
+                danger
+                icon={<FiX size={14} />}
+                disabled={record.status !== "pending"}
+                onClick={() =>
+                  setModal({ open: true, id: record.id, action: "rejected" })
+                }
+              />
+            </Tooltip>
           </Space>
         ),
       },
     ],
-    [priorityDraft, mutationPriority.isPending]
+    [priorityDraft, mutationPriority.isPending, router],
   );
 
+  const MobileCardView = useMemo(() => {
+    if (!Array.isArray(data) || data.length === 0) {
+      return (
+        <div className="dashboard-mobile-card__empty">
+          <FiZap size={48} />
+          <p>No boost approvals yet</p>
+        </div>
+      );
+    }
+
+    return data.map((record) => (
+      <div className="dashboard-mobile-card" key={record.id}>
+        <div className="dashboard-mobile-card__header">
+          <div
+            className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon"
+            style={{ backgroundColor: "#fff7e6" }}
+          >
+            <FiZap size={24} color="#fa8c16" />
+          </div>
+          <div className="dashboard-mobile-card__info">
+            <h4 className="dashboard-mobile-card__title">
+              Request #{record.id}
+            </h4>
+            <span className="dashboard-mobile-card__subtitle">
+              <FiUser size={12} /> {record?.seller?.name || "-"}
+            </span>
+          </div>
+          {statusTag(record.status)}
+        </div>
+        <div className="dashboard-mobile-card__body">
+          <div className="dashboard-mobile-card__row">
+            <span className="dashboard-mobile-card__label">
+              <FiZap size={14} /> Plan
+            </span>
+            <span className="dashboard-mobile-card__value">
+              {record?.plan?.name || "-"}
+            </span>
+          </div>
+          <div className="dashboard-mobile-card__row">
+            <span className="dashboard-mobile-card__label">
+              <FiPackage size={14} /> Products
+            </span>
+            <span className="dashboard-mobile-card__value">
+              {record?.product_ids?.length || 0}
+            </span>
+          </div>
+          <div className="dashboard-mobile-card__row">
+            <span className="dashboard-mobile-card__label">
+              <FiClock size={14} /> Days
+            </span>
+            <span className="dashboard-mobile-card__value">{record.days}</span>
+          </div>
+          <div className="dashboard-mobile-card__row">
+            <span className="dashboard-mobile-card__label">
+              <FiDollarSign size={14} /> Total
+            </span>
+            <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">
+              ₦{Number(record.total_amount).toFixed(2)}
+            </span>
+          </div>
+          {record.status === "approved" && (
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">Priority</span>
+              <Space size={8}>
+                <InputNumber
+                  size="small"
+                  min={0}
+                  value={
+                    priorityDraft[record.id] ?? record.boost_priority ?? 100
+                  }
+                  onChange={(v) =>
+                    setPriorityDraft((prev) => ({
+                      ...prev,
+                      [record.id]: Number(v ?? 0),
+                    }))
+                  }
+                  style={{ width: 70 }}
+                />
+                <Button
+                  size="small"
+                  loading={mutationPriority.isPending}
+                  onClick={() => {
+                    const value =
+                      priorityDraft[record.id] ?? record.boost_priority ?? 100;
+                    mutationPriority.mutate({
+                      id: record.id,
+                      priority: Number(value),
+                    });
+                  }}
+                >
+                  Save
+                </Button>
+              </Space>
+            </div>
+          )}
+        </div>
+        <div className="dashboard-mobile-card__actions">
+          <Button
+            type="primary"
+            ghost
+            icon={<FiEye size={14} />}
+            size="small"
+            onClick={() => router.push(`/auth/boost-approvals/${record.id}`)}
+          >
+            View
+          </Button>
+          <Button
+            type="primary"
+            icon={<FiCheck size={14} />}
+            size="small"
+            disabled={record.status !== "pending"}
+            onClick={() =>
+              setModal({ open: true, id: record.id, action: "approved" })
+            }
+          >
+            Approve
+          </Button>
+          <Button
+            danger
+            icon={<FiX size={14} />}
+            size="small"
+            disabled={record.status !== "pending"}
+            onClick={() =>
+              setModal({ open: true, id: record.id, action: "rejected" })
+            }
+          >
+            Reject
+          </Button>
+        </div>
+      </div>
+    ));
+  }, [data, priorityDraft, mutationPriority.isPending, router]);
+
   return (
-    <div style={{ overflowX: "auto" }}>
-      <Table
-        rowKey="id"
-        dataSource={data}
-        columns={columns}
-        pagination={false}
-        size="small"
-      />
-      <div style={{ display: "flex", justifyContent: "flex-end", padding: 12 }}>
+    <div className="dashboard-table-container">
+      {!isMobile ? (
+        <Table
+          rowKey="id"
+          dataSource={data}
+          columns={columns}
+          pagination={false}
+          size="small"
+          scroll={{ x: 1200 }}
+          locale={{
+            emptyText: (
+              <div className="dashboard-mobile-card__empty">
+                <FiZap size={48} />
+                <p>No boost approvals yet</p>
+              </div>
+            ),
+          }}
+        />
+      ) : (
+        <div className="dashboard-mobile-cards">{MobileCardView}</div>
+      )}
+      <div className="table__pagination-container">
         <Pagination
           current={page}
           pageSize={pageSize}

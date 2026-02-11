@@ -6,7 +6,14 @@ import { IoCartOutline, IoCloseCircleOutline } from "react-icons/io5";
 import { DELETE, GET, PUT } from "../../../util/apicall";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../../config/API";
-import { storeCart } from "../../../redux/slice/cartSlice";
+import {
+  storeCart,
+  loadGuestCart,
+  clearCart,
+  updateGuestCartQuantity,
+  removeFromGuestCart,
+  clearGuestCartFromStorage,
+} from "../../../redux/slice/cartSlice";
 import { useSession } from "next-auth/react";
 import "./styles.scss";
 import CartItem from "./_components/cartItem";
@@ -20,7 +27,8 @@ import { checkoutCartItems } from "./_components/checkoutFunction";
 function CartPage() {
   // const navigate = useNavigate();
   const dispatch = useDispatch();
-  const User = useSession();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && !!session?.user;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Cart = useSelector((state: any) => state.Cart);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,25 +44,33 @@ function CartPage() {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      if (User) {
+
+      if (isAuthenticated) {
+        // Authenticated user - fetch from backend
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cartItems: any = await GET(API.CART_GET_ALL);
         if (cartItems.status) {
           dispatch(storeCart(cartItems.data));
-          return;
         } else {
           notificationApi.error({ message: cartItems.message ?? "" });
         }
+      } else {
+        // Guest user - load from localStorage
+        dispatch(loadGuestCart());
       }
     } catch {
-      notificationApi.error({
-        message: `Something went wrong. please try again`,
-      });
-      return;
+      if (isAuthenticated) {
+        notificationApi.error({
+          message: `Something went wrong. please try again`,
+        });
+      } else {
+        // For guests, just load from localStorage
+        dispatch(loadGuestCart());
+      }
     } finally {
       setLoading(false);
     }
-  }, [User, dispatch, notificationApi]);
+  }, [isAuthenticated, dispatch, notificationApi]);
 
   const getRecommendations = useCallback(async () => {
     try {
@@ -72,11 +88,20 @@ function CartPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
     loadData();
-    getRecommendations();
+    if (isAuthenticated) {
+      getRecommendations();
+    }
     // dispatch(clearCheckout());
-  }, [loadData, getRecommendations]);
+  }, [loadData, getRecommendations, isAuthenticated]);
 
   const clear = async () => {
+    if (!isAuthenticated) {
+      // Guest user - clear local cart
+      dispatch(clearCart());
+      notificationApi.success({ message: "Cart cleared successfully" });
+      return;
+    }
+
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await DELETE(API.CART_CLEAR_ALL);
@@ -103,6 +128,24 @@ function CartPage() {
         });
         return;
       }
+
+      if (!isAuthenticated || Cart.isGuestCart) {
+        // Guest user - update local cart
+        const newQuantity =
+          action === "add" ? item.quantity + 1 : item.quantity - 1;
+        if (newQuantity > 0) {
+          dispatch(
+            updateGuestCartQuantity({
+              productId: item.productId,
+              variantId: item.variantId,
+              quantity: newQuantity,
+            }),
+          );
+          notificationApi.success({ message: "Cart updated" });
+        }
+        return;
+      }
+
       setLoading(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cartItems: any = await PUT(
@@ -126,7 +169,19 @@ function CartPage() {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  const removeItem = async (id: string, _item: any) => {
+  const removeItem = async (id: string, item: any) => {
+    if (!isAuthenticated || Cart.isGuestCart) {
+      // Guest user - remove from local cart
+      dispatch(
+        removeFromGuestCart({
+          productId: item.productId,
+          variantId: item.variantId,
+        }),
+      );
+      notificationApi.success({ message: "Product removed from cart" });
+      return;
+    }
+
     try {
       const url = API.CART + id;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -143,6 +198,7 @@ function CartPage() {
   };
 
   const goCheckout = async () => {
+    // Allow both authenticated and guest users to proceed to checkout
     try {
       setError(null);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

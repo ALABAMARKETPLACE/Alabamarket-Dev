@@ -3,7 +3,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { Button, notification } from "antd";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +12,25 @@ import { storeCheckout } from "../../../../redux/slice/checkoutSlice";
 import { GET, POST } from "../../../../util/apicall";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackAddToCart } from "@/utils/analytics";
+import GuestCheckoutModal from "@/components/guestCheckoutModal";
+
+// Helper functions for discount display (visual only - does not affect payment)
+const getDiscountPercentage = (
+  productId: string | undefined | null,
+): number => {
+  if (!productId || typeof productId !== "string") return 20; // Default discount if no valid productId
+  const hash =
+    productId.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) || 0;
+  const discounts = [15, 20, 25, 30, 35, 40, 45, 50];
+  return discounts[hash % discounts.length];
+};
+
+const calculateOriginalPrice = (
+  actualPrice: number,
+  discountPercent: number,
+): number => {
+  return Math.round(actualPrice / (1 - discountPercent / 100));
+};
 
 interface ProductData {
   _id: string;
@@ -81,15 +100,37 @@ function Description(props: Props) {
   const [Notifications, contextHolder] = notification.useNotification();
   const [quantity, setQuantity] = useState<number>(1);
   const [formattedPrice, setFormattedPrice] = useState<string>("");
+  const [formattedOriginalPrice, setFormattedOriginalPrice] =
+    useState<string>("");
 
   // Calculate totalPrice directly instead of using state and useEffect
   const basePrice =
     props?.currentVariant?.price ?? props?.data?.retail_rate ?? 0;
   const totalPrice = basePrice * quantity;
 
+  // Calculate discount info for display (visual only - does not affect payment)
+  const discountInfo = useMemo(() => {
+    // Use pid to match the discount calculation in ProductItem component
+    const productId = props?.data?.pid || props?.data?._id || "";
+    const discountPercent = getDiscountPercentage(productId);
+    const originalPrice = calculateOriginalPrice(basePrice, discountPercent);
+    const originalTotalPrice = originalPrice * quantity;
+    return {
+      discountPercent,
+      originalPrice,
+      originalTotalPrice,
+    };
+  }, [props?.data?.pid, props?.data?._id, basePrice, quantity]);
+
   // const [favourited, setFavourited] = useState(props?.data ?? false);
   // const [isWobbling, setIsWobbling] = useState(false);
   const [favourited, setFavourited] = useState(false);
+
+  // Guest checkout modal state
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
+    null,
+  );
 
   useEffect(() => {
     if (props?.data?.pid) {
@@ -107,7 +148,15 @@ function Description(props: Props) {
     // Replace NGN with naira symbol ₦
     const finalFormatted = formatted.replace(/NGN\s?/, "₦");
     setFormattedPrice(finalFormatted);
-  }, [totalPrice, settings.currency]);
+
+    // Format original price for discount display
+    const formattedOriginal = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: settings.currency ?? "INR",
+    }).format(discountInfo.originalTotalPrice);
+    const finalFormattedOriginal = formattedOriginal.replace(/NGN\s?/, "₦");
+    setFormattedOriginalPrice(finalFormattedOriginal);
+  }, [totalPrice, settings.currency, discountInfo.originalTotalPrice]);
 
   const updateQuantity = (type: "increment" | "decrement") => {
     if (type === "increment" && quantity < availableQuantity) {
@@ -141,6 +190,18 @@ function Description(props: Props) {
       notification.error({ message: `Selected Quantity is Not Available.` });
       return;
     }
+
+    // Show modal for guest users
+    if (!user?.user) {
+      setPendingAction("buy");
+      setShowGuestModal(true);
+      return;
+    }
+
+    executeBuyNow();
+  };
+
+  const executeBuyNow = () => {
     const obj = {
       name: props?.data?.name,
       buyPrice: props?.currentVariant?.price ?? props?.data?.retail_rate,
@@ -170,6 +231,52 @@ function Description(props: Props) {
       notification.error({ message: `Selected Quantity is Not Available.` });
       return;
     }
+
+    // Show modal for guest users
+    if (!user?.user) {
+      setPendingAction("cart");
+      setShowGuestModal(true);
+      return;
+    }
+
+    executeAddToCart();
+  };
+
+  const executeAddToCart = async () => {
+    // Track Add to Cart for analytics
+    const gaItem = formatGAItem(props.data, props.currentVariant, quantity);
+    trackAddToCart(gaItem);
+
+    // Check if user is logged in
+    if (!user?.user) {
+      // Guest user - add to local cart
+      const { addToGuestCart } = await import("@/redux/slice/cartSlice");
+
+      const guestCartItem = {
+        productId: props?.data?.pid,
+        name: props?.data?.name,
+        price: props?.currentVariant?.price ?? props?.data?.retail_rate,
+        quantity: quantity,
+        image: props?.currentVariant?.id
+          ? props?.currentVariant?.image
+          : props?.data?.image,
+        storeId: props?.data?.store_id,
+        storeName: props?.data?.storeDetails?.store_name,
+        variantId: props?.currentVariant?.id ?? null,
+        combination: props?.currentVariant?.combination,
+        unit: props?.data?.unit,
+        status: props?.data?.status,
+      };
+
+      dispatch(addToGuestCart(guestCartItem));
+      Notifications.success({ message: "Added to cart successfully!" });
+      setTimeout(() => {
+        router.push("/cart");
+      }, 1000);
+      return;
+    }
+
+    // Logged in user - add to backend cart
     const obj = {
       productId: props?.data?.pid,
       quantity: quantity,
@@ -180,10 +287,6 @@ function Description(props: Props) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newCart: any = await POST(url, obj);
       if (newCart.status) {
-        // Track Add to Cart
-        const gaItem = formatGAItem(props.data, props.currentVariant, quantity);
-        trackAddToCart(gaItem);
-
         Notifications.success({ message: newCart?.message });
         setTimeout(() => {
           router.push("/cart");
@@ -194,6 +297,16 @@ function Description(props: Props) {
     } catch {
       Notifications.error({ message: "Something went wrong!" });
     }
+  };
+
+  // Handle guest modal actions
+  const handleGuestContinue = () => {
+    if (pendingAction === "buy") {
+      executeBuyNow();
+    } else if (pendingAction === "cart") {
+      executeAddToCart();
+    }
+    setPendingAction(null);
   };
 
   const AddWishlist = async () => {
@@ -228,6 +341,18 @@ function Description(props: Props) {
   return (
     <div>
       {contextHolder}
+
+      {/* Guest Checkout Modal */}
+      <GuestCheckoutModal
+        open={showGuestModal}
+        onClose={() => {
+          setShowGuestModal(false);
+          setPendingAction(null);
+        }}
+        onContinueAsGuest={handleGuestContinue}
+        action={pendingAction || "cart"}
+      />
+
       <div>category: {props?.data?.categoryName?.name}</div>
       <div>subCategory: {props?.data?.subCategoryName?.name}</div>
       {availableQuantity === 0 ? (
@@ -236,9 +361,17 @@ function Description(props: Props) {
         <h5 className="text-danger">{`Only ${availableQuantity} units left`}</h5>
       ) : null}
       <br />
-      <div className="d-flex align-items-center ">
-        Total Price:{" "}
-        <div className="fs-5 fw-bold pl-3 ms-3">{formattedPrice}</div>
+      <div className="d-flex align-items-center flex-wrap gap-2">
+        <span style={{ color: "#666", fontSize: "14px" }}>Total Price:</span>
+        <div className="productDetails-price-section">
+          <span className="productDetails-current-price">{formattedPrice}</span>
+          <span className="productDetails-original-price">
+            {formattedOriginalPrice}
+          </span>
+          <span className="productDetails-discount-badge">
+            -{discountInfo.discountPercent}%
+          </span>
+        </div>
       </div>
       <br />
       <div className="d-flex gap-2 align-items-center">
@@ -263,12 +396,8 @@ function Description(props: Props) {
             className="buybtn btn-clr"
             // type="primary"
             onClick={() => {
-              if (user) {
-                props?.handleBuyNow(quantity);
-                buyNow();
-              } else {
-                router.push("/login");
-              }
+              props?.handleBuyNow(quantity);
+              buyNow();
             }}
           >
             Buy Now
@@ -280,11 +409,7 @@ function Description(props: Props) {
             if (isProductInCart) {
               router.push("/cart");
             } else {
-              if (user) {
-                addToCart();
-              } else {
-                router.push("/login");
-              }
+              addToCart();
             }
           }}
         >

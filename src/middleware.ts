@@ -15,11 +15,14 @@ const admin_only_routes = [
   "/auth/enquiry",
 ];
 
+// Routes that allow guest access (cart, checkout, checkout success)
+const guest_allowed_routes = ["/cart", "/checkout", "/checkoutsuccess"];
+
 export async function middleware(req: NextRequest) {
-  const token: any = await getToken({
+  const token = (await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-  });
+  })) as { user?: { role?: string; type?: string } } | null;
   const role = token?.user?.role;
   const url = req.nextUrl.clone();
 
@@ -29,10 +32,15 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  //===============================user routes (/cart,/user)
-  if (!token && /^\/(user|cart)/.test(url.pathname)) {
-    url.pathname = "/";
-    // Redirect to home instead of login when session expires
+  // Allow guest access to cart and checkout pages
+  if (guest_allowed_routes.some((route) => url.pathname.startsWith(route))) {
+    return NextResponse.next();
+  }
+
+  //===============================user routes (/user) - require authentication
+  if (!token && /^\/user/.test(url.pathname)) {
+    url.pathname = "/login";
+    url.searchParams.set("redirect", req.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
 
@@ -42,7 +50,8 @@ export async function middleware(req: NextRequest) {
   const allowedRoles = ["seller", "admin", "delivery_company", "driver"];
   const allowedTypes = ["seller", "admin", "delivery_company", "driver"];
   const isAllowed =
-    allowedRoles.includes(userRole) || allowedTypes.includes(userType);
+    allowedRoles.includes(userRole ?? "") ||
+    allowedTypes.includes(userType ?? "");
 
   if (
     url.pathname.startsWith("/auth") &&
@@ -64,5 +73,7 @@ export const config = {
     "/signup",
     "/login",
     "/cart",
+    "/checkout",
+    "/checkoutsuccess(/.*)?",
   ],
 };

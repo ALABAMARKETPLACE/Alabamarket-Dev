@@ -63,7 +63,9 @@ export const usePaystack = (): UsePaystackReturn => {
       msg.includes("invalid store subaccount") ||
       msg.includes("no subaccount") ||
       (msg.includes("subaccount") &&
-        (msg.includes("invalid") || msg.includes("missing") || msg.includes("not found")))
+        (msg.includes("invalid") ||
+          msg.includes("missing") ||
+          msg.includes("not found")))
     );
   };
 
@@ -80,6 +82,10 @@ export const usePaystack = (): UsePaystackReturn => {
     return `₦${(amountInKobo / 100).toFixed(2)}`;
   }, []);
 
+  /**
+   * Calculate split amounts for product price only (legacy)
+   * @deprecated Use calculateSplitWithDelivery for full split calculation
+   */
   const calculateSplit = useCallback(
     (amount: number, adminPercentage: number = 5): SplitPaymentCalculation => {
       const sellerPercentage = 100 - adminPercentage;
@@ -92,6 +98,49 @@ export const usePaystack = (): UsePaystackReturn => {
         seller_amount: sellerAmount,
         admin_percentage: adminPercentage,
         seller_percentage: sellerPercentage,
+      };
+    },
+    [],
+  );
+
+  /**
+   * Calculate split amounts with delivery charges
+   * - Seller gets 95% of product price
+   * - Platform gets 5% of product price + 100% of delivery charge
+   */
+  const calculateSplitWithDelivery = useCallback(
+    (
+      productTotal: number,
+      deliveryCharge: number,
+      sellerPercentage: number = 95,
+    ) => {
+      const platformPercentage = 100 - sellerPercentage;
+
+      // Platform's share of product price (5%)
+      const platformProductFee = Math.round(
+        (productTotal * platformPercentage) / 100,
+      );
+
+      // Seller gets 95% of product price (no delivery charge)
+      const sellerAmount = productTotal - platformProductFee;
+
+      // Platform gets 5% of product + 100% of delivery
+      const platformTotal = platformProductFee + deliveryCharge;
+
+      // Total order amount
+      const totalAmount = productTotal + deliveryCharge;
+
+      return {
+        total_amount: totalAmount,
+        product_total: productTotal,
+        delivery_charge: deliveryCharge,
+        admin_amount: platformTotal,
+        seller_amount: sellerAmount,
+        admin_percentage: platformPercentage,
+        seller_percentage: sellerPercentage,
+        platform_product_fee: platformProductFee,
+        platform_delivery_fee: deliveryCharge,
+        platform_total: platformTotal,
       };
     },
     [],
@@ -161,12 +210,12 @@ export const usePaystack = (): UsePaystackReturn => {
         throw err;
       }
     },
-    [dispatch, notificationApi]
+    [dispatch, notificationApi],
   );
 
-  // Initialize split payment
+  // Initialize split payment (supports both single and multi-store)
   const handleInitializeSplitPayment = useCallback(
-    async (data: SplitPaymentRequest) => {
+    async (data: SplitPaymentRequest | PaystackInitializeRequest) => {
       try {
         // Clear previous errors
         dispatch(clearErrors());
@@ -176,8 +225,28 @@ export const usePaystack = (): UsePaystackReturn => {
           throw new Error("Missing required payment data");
         }
 
-        if (!data?.store_id) {
-          throw new Error("Store ID is required for split payments");
+        // Check if this is a multi-store payment
+        const isMultiStore =
+          "stores" in data &&
+          Array.isArray(data.stores) &&
+          data.stores.length > 1;
+        const isSingleStore =
+          "store_id" in data && typeof data.store_id === "number";
+
+        // Validate store information
+        if (!isMultiStore && !isSingleStore) {
+          // Check if stores array exists with single store
+          if (
+            "stores" in data &&
+            Array.isArray(data.stores) &&
+            data.stores.length === 1
+          ) {
+            // Single store in array format - still valid
+          } else {
+            throw new Error(
+              "Store ID or stores array is required for split payments",
+            );
+          }
         }
 
         // Ensure amount is in kobo (minimum 100 kobo = 1 NGN)
@@ -188,15 +257,18 @@ export const usePaystack = (): UsePaystackReturn => {
         // Calculate split for display
         const splitCalculation = calculateSplit(data.amount);
 
-        // Set split_payment flag
-        const splitPaymentData = {
+        // Build split payment data with appropriate metadata
+        const splitPaymentData: PaystackInitializeRequest & {
+          split_payment: boolean;
+        } = {
           ...data,
           split_payment: true,
           metadata: {
             ...data.metadata,
-            split_type: "automatic",
+            split_type: isMultiStore ? "multi_seller" : "automatic",
             admin_amount: splitCalculation.admin_amount,
             seller_amount: splitCalculation.seller_amount,
+            is_multi_seller: isMultiStore,
           },
         };
 
@@ -205,10 +277,16 @@ export const usePaystack = (): UsePaystackReturn => {
         ).unwrap()) as PaystackInitializeResponse;
         if (result.status && result.data?.data?.authorization_url) {
           const formattedAmounts = formatSplitAmount(splitCalculation);
-          
+
+          const description = isMultiStore
+            ? `Total: ${formattedAmounts.total} | Multi-seller split payment`
+            : `Total: ${formattedAmounts.total} | Seller: ${formattedAmounts.seller} | Platform: ${formattedAmounts.admin}`;
+
           notificationApi.success({
-            message: "Split Payment Initialized",
-            description: `Total: ${formattedAmounts.total} | Seller: ${formattedAmounts.seller} | Platform: ${formattedAmounts.admin}`,
+            message: isMultiStore
+              ? "Multi-Seller Payment Initialized"
+              : "Split Payment Initialized",
+            description,
             duration: 4,
           });
           return result;
@@ -250,7 +328,7 @@ export const usePaystack = (): UsePaystackReturn => {
       calculateSplit,
       formatSplitAmount,
       handleInitializePayment,
-    ]
+    ],
   );
 
   // Verify payment
@@ -272,7 +350,7 @@ export const usePaystack = (): UsePaystackReturn => {
             notificationApi.success({
               message: "Payment Successful",
               description: `Payment of ₦${(paymentData.amount / 100).toFixed(
-                2
+                2,
               )} verified successfully.`,
               duration: 5,
             });
@@ -304,7 +382,7 @@ export const usePaystack = (): UsePaystackReturn => {
         throw err;
       }
     },
-    [dispatch, notificationApi]
+    [dispatch, notificationApi],
   );
 
   // Process refund
@@ -344,14 +422,15 @@ export const usePaystack = (): UsePaystackReturn => {
         throw err;
       }
     },
-    [dispatch, notificationApi]
+    [dispatch, notificationApi],
   );
 
   // Get public key
   const handleGetPublicKey = useCallback(async () => {
     try {
-      const result = (await dispatch(getPublicKey()).unwrap()) as
-        PaystackPublicKeyResponse;
+      const result = (await dispatch(
+        getPublicKey(),
+      ).unwrap()) as PaystackPublicKeyResponse;
       return result;
     } catch (err: unknown) {
       throw err;
@@ -368,7 +447,7 @@ export const usePaystack = (): UsePaystackReturn => {
     (reference: string | null) => {
       dispatch(setPaymentReference(reference));
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Set payment status
@@ -376,7 +455,7 @@ export const usePaystack = (): UsePaystackReturn => {
     (status: "idle" | "pending" | "success" | "failed" | "cancelled") => {
       dispatch(setPaymentStatus(status));
     },
-    [dispatch]
+    [dispatch],
   );
 
   // Auto-fetch public key on mount
@@ -423,6 +502,7 @@ export const usePaystack = (): UsePaystackReturn => {
 
     // Split Payment utilities
     calculateSplit,
+    calculateSplitWithDelivery, // New: calculates split with delivery (95% seller, 5% + delivery to platform)
     formatSplitAmount,
 
     // Utilities

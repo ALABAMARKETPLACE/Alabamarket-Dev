@@ -1,5 +1,5 @@
 import { Badge, Button, notification } from "antd";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { MdFavoriteBorder } from "react-icons/md";
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import { RiListUnordered } from "react-icons/ri";
@@ -22,6 +22,16 @@ const ProfileMenu = (props: any) => {
   const dispatch = useDispatch();
   const [Notifications, contextHolder] = notification.useNotification();
   const iconSize = 17;
+
+  // Track if we've already refreshed for this visibility state
+  const hasRefreshedRef = useRef(false);
+  const updateSessionRef = useRef(updateSession);
+
+  // Keep updateSession ref current
+  useEffect(() => {
+    updateSessionRef.current = updateSession;
+  }, [updateSession]);
+
   const OpenLink = (link: any) => {
     if (User?.user) {
       navigation.push(link);
@@ -31,16 +41,23 @@ const ProfileMenu = (props: any) => {
     props.close?.();
   };
 
+  // Reset refresh flag when menu closes
+  useEffect(() => {
+    if (!props?.isVisible) {
+      hasRefreshedRef.current = false;
+    }
+  }, [props?.isVisible]);
+
   useEffect(() => {
     let ignore = false;
     const refreshProfileStats = async () => {
-      if (
-        !props?.isVisible ||
-        !User?.user ||
-        typeof updateSession !== "function"
-      ) {
+      // Only refresh once per menu open, and only if user is logged in
+      if (!props?.isVisible || !User?.user?.id || hasRefreshedRef.current) {
         return;
       }
+
+      hasRefreshedRef.current = true;
+
       try {
         const response: any = await GET(API.USER_REFRESH);
         if (!response?.status || ignore) return;
@@ -54,13 +71,15 @@ const ProfileMenu = (props: any) => {
             ? refreshedUser?.notifications
             : (User?.user?.notifications ?? 0);
 
-        await updateSession({
-          user: {
-            ...User.user,
-            wishlist: wishlistCount,
-            notifications: notificationCount,
-          },
-        });
+        if (typeof updateSessionRef.current === "function") {
+          await updateSessionRef.current({
+            user: {
+              ...User.user,
+              wishlist: wishlistCount,
+              notifications: notificationCount,
+            },
+          });
+        }
       } catch (error) {
         console.error("Failed to refresh profile stats", error);
       }
@@ -69,7 +88,7 @@ const ProfileMenu = (props: any) => {
     return () => {
       ignore = true;
     };
-  }, [props?.isVisible, User?.user, updateSession]);
+  }, [props?.isVisible, User?.user?.id]);
 
   const logotFunction = () => {
     if (User?.user) {

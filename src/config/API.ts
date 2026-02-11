@@ -160,7 +160,7 @@ const API = {
   ORDER_CANCEL: "order/cancel_order/", //put cancel order for user
   ORDER_GETONE_SELLER: "order/get_one/seller/", //get details of an order for seller.
   ORDER_GETONE_USER: "order/get_one/user/", //get details of an order for user.
-  ORDER_GETONE_ADMIN: "order/get_one/admin/", //get details of an order for user.
+  ORDER_GETONE_ADMIN: "order/get_one/admin/", //get details of an order for admin.
   ORDER_GETCOUNT: "order/getall/", //get all orders count for a store only for seller
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
 
@@ -222,6 +222,7 @@ const API = {
 
   CALCULATE_DELIVERY_CHARGE: "calculate_delivery", //POST to get delivery charge of total (OLD - lat/long based)
   NEW_CALCULATE_DELIVERY_CHARGE: "calculate_delivery/new", //POST to get delivery charge by weight and location
+  PUBLIC_CALCULATE_DELIVERY_CHARGE: "calculate_delivery/public", //POST for guest checkout delivery calculation
 
   SETTLEMENT_DETAILS: "settlements/details/", //get total orders, total charges..etc of a store  get
   SETTLEMENT_DETAILS_HISTORY: "settlements/history/", //to get settlement history of a store    get

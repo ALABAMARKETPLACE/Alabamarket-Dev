@@ -4,17 +4,22 @@ import {
   Button,
   Table,
   Image,
-  Tag,
   Pagination,
   Popconfirm,
   notification,
+  Tooltip,
 } from "antd";
-import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
+import {
+  FiEdit2,
+  FiTrash2,
+  FiPackage,
+  FiCalendar,
+  FiDollarSign,
+  FiBox,
+} from "react-icons/fi";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { AiOutlineProduct } from "react-icons/ai";
 import Link from "next/link";
 import API from "@/config/API";
 import { DELETE } from "@/util/apicall";
@@ -57,22 +62,18 @@ function DataTable({
   const getStatusTag = (item: boolean) => {
     if (item === true) {
       return (
-        <Tag color="success" bordered={false}>
-          Active
-        </Tag>
+        <span className="dashboard-badge dashboard-badge--success">Active</span>
       );
     }
     if (item === false) {
       return (
-        <Tag color="warning" bordered={false}>
+        <span className="dashboard-badge dashboard-badge--warning">
           Inactive
-        </Tag>
+        </span>
       );
     }
     return (
-      <Tag color="default" bordered={false}>
-        Unknown
-      </Tag>
+      <span className="dashboard-badge dashboard-badge--default">Unknown</span>
     );
   };
 
@@ -194,14 +195,18 @@ function DataTable({
       title: "Action",
       dataIndex: "_id",
       key: "_id",
-      width: 100,
+      width: 120,
       render: (id: number, record: any) => (
         <div className="table-action">
-          <Link href={`/auth/products/${id}`}>
-            <Button type="text" size="small">
-              <TbEdit size={22} color="orange" />
-            </Button>
-          </Link>
+          <Tooltip title="Edit product">
+            <Link href={`/auth/products/${id}`}>
+              <Button
+                type="text"
+                size="small"
+                icon={<FiEdit2 size={16} color="#1890ff" />}
+              />
+            </Link>
+          </Tooltip>
           <Popconfirm
             title="Delete product"
             description="Are you sure you want to delete this product?"
@@ -209,9 +214,14 @@ function DataTable({
             okType="danger"
             onConfirm={() => handleDelete(id, record?.storeId)}
           >
-            <Button type="text" size="small" loading={deleteLoadingId === id}>
-              <MdDeleteOutline size={20} color="#ff4d4f" />
-            </Button>
+            <Tooltip title="Delete product">
+              <Button
+                type="text"
+                size="small"
+                loading={deleteLoadingId === id}
+                icon={<FiTrash2 size={16} color="#ff4d4f" />}
+              />
+            </Tooltip>
           </Popconfirm>
         </div>
       ),
@@ -221,9 +231,9 @@ function DataTable({
   const renderMobileCards = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
       return (
-        <div className="products-tableMobileEmpty">
-          <AiOutlineProduct size={40} />
-          <p>No Products yet</p>
+        <div className="dashboard-mobile-card__empty">
+          <FiPackage size={48} />
+          <p>No products yet</p>
         </div>
       );
     }
@@ -241,38 +251,54 @@ function DataTable({
           : "--";
 
       return (
-        <div className="products-tableMobileCard" key={id}>
-          <div className="products-tableMobileHeader">
-            <div className="products-tableMobileImage">
+        <div className="dashboard-mobile-card" key={id}>
+          <div className="dashboard-mobile-card__header">
+            <div className="dashboard-mobile-card__avatar">
               <Image
                 preview={false}
                 src={record?.image}
                 alt={record?.name}
-                height={50}
-                width={50}
+                height={56}
+                width={56}
+                style={{ borderRadius: "8px", objectFit: "cover" }}
               />
             </div>
-            <div className="products-tableMobileTitle">
-              <div className="title">{record?.name ?? "Unnamed Product"}</div>
-              <div className="sub">{createdAt}</div>
+            <div className="dashboard-mobile-card__info">
+              <h4 className="dashboard-mobile-card__title">
+                {record?.name ?? "Unnamed Product"}
+              </h4>
+              <span className="dashboard-mobile-card__subtitle">
+                <FiCalendar size={12} /> {createdAt}
+              </span>
             </div>
-            <div className="products-tableMobileStatus">
-              {getStatusTag(record?.status)}
+            {getStatusTag(record?.status)}
+          </div>
+          <div className="dashboard-mobile-card__body">
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiBox size={14} /> Quantity
+              </span>
+              <span className="dashboard-mobile-card__value">
+                {renderQuantity(record?.unit)}
+              </span>
+            </div>
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiDollarSign size={14} /> Price
+              </span>
+              <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">
+                {price}
+              </span>
             </div>
           </div>
-          <div className="products-tableMobileBody">
-            <div className="products-tableMobileRow">
-              <span className="label">Quantity</span>
-              <span className="value">{renderQuantity(record?.unit)}</span>
-            </div>
-            <div className="products-tableMobileRow">
-              <span className="label">Price</span>
-              <span className="value">{price}</span>
-            </div>
-          </div>
-          <div className="products-tableMobileActions">
+          <div className="dashboard-mobile-card__actions">
             <Link href={`/auth/products/${id}`}>
-              <Button type="primary" ghost icon={<TbEdit />} size="small">
+              <Button
+                type="primary"
+                ghost
+                icon={<FiEdit2 size={14} />}
+                size="small"
+              >
                 Edit
               </Button>
             </Link>
@@ -288,7 +314,7 @@ function DataTable({
                 danger
                 size="small"
                 loading={deleteLoadingId === id}
-                icon={<MdDeleteOutline size={16} />}
+                icon={<FiTrash2 size={14} />}
               >
                 Delete
               </Button>
@@ -297,30 +323,30 @@ function DataTable({
         </div>
       );
     });
-  }, [Settings?.currency, data]);
+  }, [Settings?.currency, data, deleteLoadingId]);
 
   return (
-    <>
+    <div className="dashboard-table-container">
       {!isMobile ? (
         <Table
           dataSource={data}
           columns={columns}
           pagination={false}
           size="small"
-          className="products-tableDesktop"
+          rowKey={(record) => record?._id ?? record?.id}
           locale={{
             emptyText: (
-              <div className="py-5">
-                <AiOutlineProduct size={40} />
-                <p>No Products yet</p>
+              <div className="dashboard-mobile-card__empty">
+                <FiPackage size={48} />
+                <p>No products yet</p>
               </div>
             ),
           }}
         />
       ) : (
-        <div className="products-tableMobile">{renderMobileCards}</div>
+        <div className="dashboard-mobile-cards">{renderMobileCards}</div>
       )}
-      <div className="table-pagination">
+      <div className="table__pagination-container">
         <Pagination
           showSizeChanger
           pageSize={pageSize}
@@ -333,7 +359,7 @@ function DataTable({
           }}
         />
       </div>
-    </>
+    </div>
   );
 }
 

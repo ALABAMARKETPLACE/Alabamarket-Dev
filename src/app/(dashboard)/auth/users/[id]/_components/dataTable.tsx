@@ -8,11 +8,13 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useRouter } from "next/navigation";
 import { FaEye } from "react-icons/fa6";
 import CONFIG from "@/config/configuration";
+import { Order } from "../../../orders/_components/dataTable";
+
 interface props {
-  data: any[];
+  data: Order[];
   count: number;
-  setPage: Function;
-  setTake: Function;
+  setPage: (page: number) => void;
+  setTake: (take: number) => void;
   pageSize: number;
   page: number;
 }
@@ -29,13 +31,13 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "OrderDate", //
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (item: any) => <span>{moment(item).format("MMM Do YYYY")}</span>,
+      render: (item: string) => <span>{moment(item).format("MMM Do YYYY")}</span>,
     },
     {
       title: "Total", //
       dataIndex: "grandTotal",
       key: "grandTotal",
-      render: (item: any) => (
+      render: (item: number) => (
         <span>
           {Number(item)?.toFixed(2)} {Settings.currency}
         </span>
@@ -50,12 +52,17 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     {
       title: "Action",
       width: 100,
-      render: (item: any, record: any) => (
+      render: (_: unknown, record: Order) => (
         <div className="table-action">
           <Button
             type="text"
             size="small"
-            onClick={() => route.push("/auth/orders/" + record?.order_id)}
+            onClick={() =>
+              route.push(
+                "/auth/orders/" +
+                  (record?._id ?? record?.id ?? record?.order_id),
+              )
+            }
           >
             <FaEye size={22} color={CONFIG.COLOR} />
           </Button>
@@ -71,6 +78,12 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         columns={columns}
         pagination={false}
         size="small"
+        rowKey={(record) =>
+          (record?._id ??
+            record?.id ??
+            record?.order_id ??
+            "unknown") as React.Key
+        }
         locale={{
           emptyText: (
             <div className="py-5">
@@ -86,7 +99,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           pageSize={pageSize}
           current={page}
           total={count ?? 0}
-          showTotal={(total: any) => `Total ${count ?? 0} Orders`}
+          showTotal={() => `Total ${count ?? 0} Orders`}
           onChange={(page, pageSize) => {
             setPage(page);
             setTake(pageSize);

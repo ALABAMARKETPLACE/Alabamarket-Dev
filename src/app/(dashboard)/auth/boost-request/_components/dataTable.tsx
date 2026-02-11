@@ -1,9 +1,25 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button, Table, Pagination, Tag, Popconfirm, notification } from "antd";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  Button,
+  Table,
+  Pagination,
+  Popconfirm,
+  notification,
+  Tooltip,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { MdHourglassEmpty } from "react-icons/md";
-import { FiEye, FiEdit, FiTrash2 } from "react-icons/fi";
+import {
+  FiEye,
+  FiEdit2,
+  FiTrash2,
+  FiZap,
+  FiCalendar,
+  FiPackage,
+  FiClock,
+  FiDollarSign,
+  FiUser,
+} from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE } from "@/util/apicall";
@@ -73,41 +89,60 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return "orange";
+        return (
+          <span className="dashboard-badge dashboard-badge--warning">
+            {status?.toUpperCase()}
+          </span>
+        );
       case "approved":
-        return "green";
+        return (
+          <span className="dashboard-badge dashboard-badge--success">
+            {status?.toUpperCase()}
+          </span>
+        );
       case "rejected":
-        return "red";
+        return (
+          <span className="dashboard-badge dashboard-badge--danger">
+            {status?.toUpperCase()}
+          </span>
+        );
       case "expired":
-        return "gray";
+        return (
+          <span className="dashboard-badge dashboard-badge--default">
+            {status?.toUpperCase()}
+          </span>
+        );
       default:
-        return "default";
+        return (
+          <span className="dashboard-badge dashboard-badge--default">
+            {status?.toUpperCase() || "UNKNOWN"}
+          </span>
+        );
     }
   };
 
   const renderDesktopActions = (id: number, record: BoostRequest) => (
     <div className="table-action">
-      <Button
-        type="text"
-        size="small"
-        title="View Details"
-        onClick={() => router.push(`/auth/boost-request/${id}`)}
-      >
-        <FiEye size={18} />
-      </Button>
-      {record.status === "pending" && (
+      <Tooltip title="View details">
         <Button
           type="text"
           size="small"
-          title="Edit"
-          onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
-          style={{ color: "#1890ff" }}
-        >
-          <FiEdit size={18} />
-        </Button>
+          onClick={() => router.push(`/auth/boost-request/${id}`)}
+          icon={<FiEye size={16} color="#1890ff" />}
+        />
+      </Tooltip>
+      {record.status === "pending" && (
+        <Tooltip title="Edit">
+          <Button
+            type="text"
+            size="small"
+            onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
+            icon={<FiEdit2 size={16} color="#1890ff" />}
+          />
+        </Tooltip>
       )}
       <Popconfirm
         title="Delete Boost Request"
@@ -117,15 +152,17 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         cancelText="Cancel"
         okButtonProps={{ danger: true }}
       >
-        <Button
-          type="text"
-          size="small"
-          title="Delete"
-          danger
-          loading={mutationDelete.isPending && mutationDelete.variables === id}
-        >
-          <FiTrash2 size={18} />
-        </Button>
+        <Tooltip title="Delete">
+          <Button
+            type="text"
+            size="small"
+            danger
+            loading={
+              mutationDelete.isPending && mutationDelete.variables === id
+            }
+            icon={<FiTrash2 size={16} />}
+          />
+        </Tooltip>
       </Popconfirm>
     </div>
   );
@@ -175,11 +212,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "status",
       key: "status",
       width: 100,
-      render: (status?: string) => (
-        <Tag color={getStatusColor(status || "")}>
-          {status?.toUpperCase() || "UNKNOWN"}
-        </Tag>
-      ),
+      render: (status?: string) => getStatusBadge(status || ""),
     },
     {
       title: "Start Date",
@@ -208,12 +241,12 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     },
   ];
 
-  const renderMobileCards = () => {
+  const renderMobileCards = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
       return (
-        <div className="boostRequests-tableMobileEmpty">
-          <MdHourglassEmpty size={40} />
-          <p>No Boost Requests yet</p>
+        <div className="dashboard-mobile-card__empty">
+          <FiZap size={48} />
+          <p>No boost requests yet</p>
         </div>
       );
     }
@@ -235,49 +268,71 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           : "--";
 
       return (
-        <div className="boostRequests-tableMobileCard" key={id}>
-          <div className="boostRequests-tableMobileHeader">
-            <div className="boostRequests-cardTitleBlock">
-              <div className="boostRequests-cardTitle">
+        <div className="dashboard-mobile-card" key={id}>
+          <div className="dashboard-mobile-card__header">
+            <div
+              className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon"
+              style={{ backgroundColor: "#fff7e6" }}
+            >
+              <FiZap size={24} color="#fa8c16" />
+            </div>
+            <div className="dashboard-mobile-card__info">
+              <h4 className="dashboard-mobile-card__title">
                 Request #{id ?? "--"}
-              </div>
-              <div className="boostRequests-cardSub">
-                {record?.seller?.name ?? "Unknown seller"}
-              </div>
+              </h4>
+              <span className="dashboard-mobile-card__subtitle">
+                <FiUser size={12} /> {record?.seller?.name ?? "Unknown seller"}
+              </span>
             </div>
-            <Tag color={getStatusColor(record?.status || "")}>
-              {record?.status?.toUpperCase() ?? "UNKNOWN"}
-            </Tag>
+            {getStatusBadge(record?.status || "")}
           </div>
-          <div className="boostRequests-tableMobileBody">
-            <div className="boostRequests-cardRow">
-              <span className="label">Plan</span>
-              <span className="value">{record?.plan?.name ?? "-"}</span>
+          <div className="dashboard-mobile-card__body">
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiZap size={14} /> Plan
+              </span>
+              <span className="dashboard-mobile-card__value">
+                {record?.plan?.name ?? "-"}
+              </span>
             </div>
-            <div className="boostRequests-cardRow">
-              <span className="label">Products</span>
-              <span className="value">{productsCount}</span>
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiPackage size={14} /> Products
+              </span>
+              <span className="dashboard-mobile-card__value">
+                {productsCount}
+              </span>
             </div>
-            <div className="boostRequests-cardRow">
-              <span className="label">Days</span>
-              <span className="value">{record?.days ?? "-"}</span>
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiClock size={14} /> Days
+              </span>
+              <span className="dashboard-mobile-card__value">
+                {record?.days ?? "-"}
+              </span>
             </div>
-            <div className="boostRequests-cardRow">
-              <span className="label">Amount</span>
-              <span className="value">{totalAmount}</span>
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiDollarSign size={14} /> Amount
+              </span>
+              <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">
+                {totalAmount}
+              </span>
             </div>
-            <div className="boostRequests-cardRow">
-              <span className="label">Period</span>
-              <span className="value">
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiCalendar size={14} /> Period
+              </span>
+              <span className="dashboard-mobile-card__value">
                 {startDate} - {endDate}
               </span>
             </div>
           </div>
-          <div className="boostRequests-tableMobileActions">
+          <div className="dashboard-mobile-card__actions">
             <Button
               type="primary"
               ghost
-              icon={<FiEye size={16} />}
+              icon={<FiEye size={14} />}
               size="small"
               onClick={() => router.push(`/auth/boost-request/${id}`)}
             >
@@ -285,7 +340,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             </Button>
             {record?.status === "pending" && (
               <Button
-                icon={<FiEdit size={16} />}
+                icon={<FiEdit2 size={14} />}
                 size="small"
                 onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
               >
@@ -295,15 +350,16 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             <Popconfirm
               title="Delete Boost Request"
               description="Are you sure you want to delete this boost request?"
-              onConfirm={() => mutationDelete.mutate(id)}
+              onConfirm={() => mutationDelete.mutate(id as number)}
               okText="Delete"
               cancelText="Cancel"
               okButtonProps={{ danger: true }}
+              placement="topRight"
             >
               <Button
                 danger
                 size="small"
-                icon={<FiTrash2 size={16} />}
+                icon={<FiTrash2 size={14} />}
                 loading={
                   mutationDelete.isPending && mutationDelete.variables === id
                 }
@@ -315,10 +371,10 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         </div>
       );
     });
-  };
+  }, [data, mutationDelete, router]);
 
   return (
-    <>
+    <div className="dashboard-table-container">
       {contextHolder}
       {!isMobile ? (
         <Table
@@ -330,20 +386,19 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           rowKey={(record: BoostRequest) =>
             (record?.id ?? record?._id) as number
           }
-          className="boostRequests-tableDesktop"
           locale={{
             emptyText: (
-              <div className="py-5">
-                <MdHourglassEmpty size={40} />
-                <p>No Boost Requests yet</p>
+              <div className="dashboard-mobile-card__empty">
+                <FiZap size={48} />
+                <p>No boost requests yet</p>
               </div>
             ),
           }}
         />
       ) : (
-        <div className="boostRequests-tableMobile">{renderMobileCards()}</div>
+        <div className="dashboard-mobile-cards">{renderMobileCards}</div>
       )}
-      <div className="table-pagination">
+      <div className="table__pagination-container">
         <Pagination
           showSizeChanger
           pageSize={pageSize}
@@ -356,7 +411,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           }}
         />
       </div>
-    </>
+    </div>
   );
 }
 

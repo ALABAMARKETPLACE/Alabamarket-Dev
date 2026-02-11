@@ -1,16 +1,24 @@
-import { SplitPaymentCalculation, SplitPaymentRequest } from '@/types/paystack.types';
+import {
+  SplitPaymentCalculation,
+  SplitPaymentRequest,
+} from "@/types/paystack.types";
 
 /**
  * Split Payment Utilities
  * Helper functions for handling split payments in the frontend
+ *
+ * Split Logic:
+ * - Seller gets: 95% of product price
+ * - Platform gets: 5% of product price + 100% of delivery charge
  */
 
 /**
- * Calculate split payment amounts
+ * Calculate split payment amounts (product price only, no delivery)
+ * @deprecated Use calculateSplitWithDelivery for full split calculation
  */
 export const calculateSplitAmounts = (
-  amount: number, 
-  adminPercentage: number = 5
+  amount: number,
+  adminPercentage: number = 5,
 ): SplitPaymentCalculation => {
   const sellerPercentage = 100 - adminPercentage;
   const adminAmount = Math.round((amount * adminPercentage) / 100);
@@ -22,6 +30,57 @@ export const calculateSplitAmounts = (
     seller_amount: sellerAmount,
     admin_percentage: adminPercentage,
     seller_percentage: sellerPercentage,
+  };
+};
+
+/**
+ * Extended split calculation interface including delivery
+ */
+export interface SplitWithDeliveryCalculation extends SplitPaymentCalculation {
+  product_total: number;
+  delivery_charge: number;
+  platform_product_fee: number; // 5% of product price
+  platform_delivery_fee: number; // 100% of delivery charge
+  platform_total: number; // platform_product_fee + platform_delivery_fee
+}
+
+/**
+ * Calculate split payment amounts with delivery charges
+ * - Seller gets 95% of product price
+ * - Platform gets 5% of product price + 100% of delivery charge
+ */
+export const calculateSplitWithDelivery = (
+  productTotal: number,
+  deliveryCharge: number,
+  sellerPercentage: number = 95,
+): SplitWithDeliveryCalculation => {
+  const platformPercentage = 100 - sellerPercentage;
+
+  // Calculate platform's share of product price (5%)
+  const platformProductFee = Math.round(
+    (productTotal * platformPercentage) / 100,
+  );
+
+  // Seller gets 95% of product price (no delivery charge)
+  const sellerAmount = productTotal - platformProductFee;
+
+  // Platform gets 5% of product + 100% of delivery
+  const platformTotal = platformProductFee + deliveryCharge;
+
+  // Total order amount
+  const totalAmount = productTotal + deliveryCharge;
+
+  return {
+    total_amount: totalAmount,
+    product_total: productTotal,
+    delivery_charge: deliveryCharge,
+    admin_amount: platformTotal,
+    seller_amount: sellerAmount,
+    admin_percentage: platformPercentage,
+    seller_percentage: sellerPercentage,
+    platform_product_fee: platformProductFee,
+    platform_delivery_fee: deliveryCharge,
+    platform_total: platformTotal,
   };
 };
 
@@ -43,7 +102,7 @@ export const koboToNaira = (amountInKobo: number): number => {
  * Format amount for display
  */
 export const formatAmount = (amountInKobo: number): string => {
-  return `₦${(amountInKobo / 100).toLocaleString('en-US', {
+  return `₦${(amountInKobo / 100).toLocaleString("en-US", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
@@ -72,7 +131,7 @@ export const createSplitPaymentRequest = (params: {
   metadata?: Record<string, any>;
 }): SplitPaymentRequest => {
   const { email, amount, storeId, orderId, callbackUrl, metadata } = params;
-  
+
   return {
     email,
     amount: nairaToKobo(amount),
@@ -82,7 +141,7 @@ export const createSplitPaymentRequest = (params: {
     callback_url: callbackUrl || `${window.location.origin}/payment/callback`,
     metadata: {
       ...metadata,
-      split_type: 'automatic',
+      split_type: "automatic",
       order_id: orderId?.toString(),
     },
   };
@@ -99,20 +158,20 @@ export const validateSplitPaymentData = (data: {
   const errors: string[] = [];
 
   // Validate email
-  if (!data.email || !data.email.includes('@')) {
-    errors.push('Valid email address is required');
+  if (!data.email || !data.email.includes("@")) {
+    errors.push("Valid email address is required");
   }
 
   // Validate amount
   if (!data.amount || data.amount <= 0) {
-    errors.push('Amount must be greater than 0');
+    errors.push("Amount must be greater than 0");
   } else if (data.amount < 1) {
-    errors.push('Minimum amount is ₦1');
+    errors.push("Minimum amount is ₦1");
   }
 
   // Validate store ID
   if (!data.storeId || data.storeId <= 0) {
-    errors.push('Valid store ID is required');
+    errors.push("Valid store ID is required");
   }
 
   return {
@@ -124,7 +183,7 @@ export const validateSplitPaymentData = (data: {
 /**
  * Generate payment reference
  */
-export const generatePaymentReference = (prefix: string = 'split'): string => {
+export const generatePaymentReference = (prefix: string = "split"): string => {
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 8);
   return `${prefix}_${timestamp}_${random}`;
@@ -140,7 +199,7 @@ export const isStoreEligibleForSplitPayment = (store: {
 }): boolean => {
   return !!(
     store.id &&
-    store.subaccount_status === 'active' &&
+    store.subaccount_status === "active" &&
     store.paystack_subaccount_code
   );
 };
@@ -150,11 +209,11 @@ export const isStoreEligibleForSplitPayment = (store: {
  */
 export const getSplitPaymentSummary = (
   calculation: SplitPaymentCalculation,
-  storeName?: string
+  storeName?: string,
 ): string => {
   const formatted = formatSplitAmounts(calculation);
-  const seller = storeName || 'Seller';
-  
+  const seller = storeName || "Seller";
+
   return `Total: ${formatted.total} | ${seller}: ${formatted.seller} (${calculation.seller_percentage}%) | Platform: ${formatted.admin} (${calculation.admin_percentage}%)`;
 };
 
@@ -166,12 +225,12 @@ export const SPLIT_PAYMENT_CONFIG = {
   DEFAULT_SELLER_PERCENTAGE: 95,
   MINIMUM_AMOUNT_NAIRA: 1,
   MINIMUM_AMOUNT_KOBO: 100,
-  CURRENCY: 'NGN',
+  CURRENCY: "NGN",
   CALLBACK_ENDPOINTS: {
-    SUCCESS: '/payment/success',
-    FAILED: '/payment/failed',
-    CANCELLED: '/payment/cancelled',
-  }
+    SUCCESS: "/payment/success",
+    FAILED: "/payment/failed",
+    CANCELLED: "/payment/cancelled",
+  },
 } as const;
 
 /**
@@ -179,17 +238,17 @@ export const SPLIT_PAYMENT_CONFIG = {
  */
 export const SPLIT_PAYMENT_MESSAGES = {
   INITIALIZATION: {
-    SUCCESS: 'Split payment initialized successfully',
-    ERROR: 'Failed to initialize split payment',
+    SUCCESS: "Split payment initialized successfully",
+    ERROR: "Failed to initialize split payment",
   },
   VERIFICATION: {
-    SUCCESS: 'Payment verified successfully',
-    ERROR: 'Failed to verify payment',
+    SUCCESS: "Payment verified successfully",
+    ERROR: "Failed to verify payment",
   },
   VALIDATION: {
-    INVALID_EMAIL: 'Please provide a valid email address',
-    INVALID_AMOUNT: 'Please provide a valid amount',
-    INVALID_STORE: 'Store is not eligible for split payments',
+    INVALID_EMAIL: "Please provide a valid email address",
+    INVALID_AMOUNT: "Please provide a valid amount",
+    INVALID_STORE: "Store is not eligible for split payments",
     MINIMUM_AMOUNT: `Minimum payment amount is ₦${SPLIT_PAYMENT_CONFIG.MINIMUM_AMOUNT_NAIRA}`,
   },
 } as const;

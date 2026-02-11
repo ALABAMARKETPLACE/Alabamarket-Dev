@@ -167,6 +167,10 @@ function Checkout() {
         const storedOrderData = localStorage.getItem("paystack_order_data");
         const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
+        // Check if this is a multi-seller order
+        const isMultiSeller = orderData?.is_multi_seller || false;
+        const storeAllocations = orderData?.store_allocations || [];
+
         finalOrderData = orderData?.order_data || {
           payment: {
             ref: paymentRef,
@@ -175,6 +179,8 @@ function Checkout() {
             amount: verificationResponse?.data?.amount || null,
             gateway_response:
               verificationResponse?.data?.gateway_response || null,
+            split_payment: isMultiSeller || storeAllocations.length > 0,
+            is_multi_seller: isMultiSeller,
           },
           cart: Checkout?.cart,
           address: Checkout?.address,
@@ -182,6 +188,18 @@ function Checkout() {
           user_id:
             User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
           user: User ?? Checkout?.user ?? null,
+        };
+
+        // Ensure payment info includes verification data
+        finalOrderData.payment = {
+          ...finalOrderData.payment,
+          ref: paymentRef,
+          status: verificationResponse?.data?.status || "success",
+          amount: verificationResponse?.data?.amount || null,
+          gateway_response:
+            verificationResponse?.data?.gateway_response || null,
+          verified: true,
+          verified_at: new Date().toISOString(),
         };
 
         const resolvedUserId =
@@ -234,6 +252,65 @@ function Checkout() {
 
       console.log("Final order data:", finalOrderData);
 
+      // Normalize cart items to ensure storeId is present for multi-seller order creation
+      if (Array.isArray(finalOrderData?.cart)) {
+        finalOrderData.cart = finalOrderData.cart.map((item: any) => {
+          // Extract storeId from various possible field names
+          const storeId =
+            item?.storeId ||
+            item?.store_id ||
+            item?.product?.storeId ||
+            item?.product?.store_id ||
+            null;
+          return {
+            ...item,
+            storeId: storeId,
+            store_id: storeId, // Include both for backend compatibility
+          };
+        });
+      }
+
+      // Debug: Log cart items to verify storeId is present
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
+      console.log("📦 ORDER CREATION - CART ITEMS DEBUG");
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
+      if (Array.isArray(finalOrderData?.cart)) {
+        const storeGroups = new Map<number | string, any[]>();
+        finalOrderData.cart.forEach((item: any, index: number) => {
+          const storeId =
+            item?.storeId ||
+            item?.store_id ||
+            item?.product?.storeId ||
+            "unknown";
+          console.log(`Item ${index + 1}:`, {
+            name: item?.name || item?.product?.name,
+            storeId: storeId,
+            quantity: item?.quantity,
+            totalPrice: item?.totalPrice,
+          });
+
+          if (!storeGroups.has(storeId)) {
+            storeGroups.set(storeId, []);
+          }
+          storeGroups.get(storeId)?.push(item);
+        });
+
+        console.log(
+          "───────────────────────────────────────────────────────────",
+        );
+        console.log(`🏪 Total Stores: ${storeGroups.size}`);
+        storeGroups.forEach((items, storeId) => {
+          console.log(`   Store ${storeId}: ${items.length} items`);
+        });
+        console.log(
+          "═══════════════════════════════════════════════════════════",
+        );
+      }
+
       // Validate cart data
       if (
         !finalOrderData?.cart ||
@@ -246,16 +323,24 @@ function Checkout() {
         );
       }
 
-      // Validate address data
-      if (!finalOrderData?.address || !finalOrderData.address.id) {
+      // Validate address data (guest addresses have IDs like "guest_123456")
+      if (
+        !finalOrderData?.address ||
+        (!finalOrderData.address.id && !finalOrderData.address.is_guest)
+      ) {
         console.error("Invalid address data:", finalOrderData?.address);
         throw new Error(
           "Delivery address is invalid. Please go back and select a valid address.",
         );
       }
 
-      // Validate charges data
-      if (!finalOrderData?.charges || !finalOrderData.charges.token) {
+      // Validate charges data (guest tokens start with "GUEST_DELIVERY_")
+      const isGuestToken =
+        finalOrderData?.charges?.token?.startsWith("GUEST_DELIVERY_");
+      if (
+        !finalOrderData?.charges ||
+        (!finalOrderData.charges.token && !isGuestToken)
+      ) {
         console.error("Invalid charges data:", finalOrderData?.charges);
         throw new Error(
           "Delivery charge calculation failed. Please go back and recalculate.",

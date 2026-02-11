@@ -110,6 +110,34 @@ const POST = async (
   }
 };
 
+// Public POST function that doesn't require authentication (for guest checkout)
+const PUBLIC_POST = async (
+  url: string,
+  body: Record<string, unknown> = {},
+  signal: AbortSignal | null = null,
+) => {
+  try {
+    const response = await fetch(getFullUrl(url), {
+      ...(signal && { signal }),
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      const error = new Error(errorData.message || "Something went wrong");
+      (error as Error & { status?: number }).status = response.status;
+      throw error;
+    }
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 const PUT = async (
   url: string,
   body: Record<string, unknown>,
@@ -414,6 +442,7 @@ const VIDEO_UPLOAD = async (file: File) => {
 export {
   GET,
   POST,
+  PUBLIC_POST,
   PUT,
   PATCH,
   DELETE,

@@ -8,9 +8,10 @@ import { notification } from "antd";
 import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
+import { getGuestAddress } from "./_components/guestAddressForm";
 
 import { useRouter } from "next/navigation";
-import { POST } from "@/util/apicall";
+import { POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { storeFinal } from "@/redux/slice/checkoutSlice";
 import { useSession } from "next-auth/react";
@@ -22,8 +23,9 @@ import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
 function Checkout() {
   const dispatch = useDispatch();
   const navigation = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user;
+  const isAuthenticated = status === "authenticated" && !!user;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const customerId = (user as any)?.id || null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,6 +38,9 @@ function Checkout() {
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
 
+  // Guest email state
+  const [guestEmail, setGuestEmail] = useState<string>("");
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [total, setTotal] = useState<any>(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -43,13 +48,22 @@ function Checkout() {
   const [discount, setDiscount] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [grand_total, setGrand_total] = useState<any>(0);
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
     // Clear any previous order creation status to allow new orders
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
-  }, []);
+
+    // Load guest email if available
+    if (!isAuthenticated) {
+      const savedData = getGuestAddress();
+      if (savedData?.email) {
+        setGuestEmail(savedData.email);
+      }
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (Checkout?.Checkout && Checkout.Checkout.length > 0) {
@@ -124,10 +138,35 @@ function Checkout() {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const response: any = await POST(
-          API.NEW_CALCULATE_DELIVERY_CHARGE,
-          obj,
-        );
+        let response: any;
+
+        // Use authenticated or public endpoint based on user status
+        if (isAuthenticated) {
+          response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
+        } else {
+          // For guest users, try public endpoint first, fallback to default estimation
+          try {
+            response = await PUBLIC_POST(
+              API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
+              obj,
+            );
+          } catch (publicErr: any) {
+            // If public endpoint fails (404 or not implemented), use default delivery charge
+            console.log(
+              "Public delivery calculation not available, using default estimation",
+            );
+
+            // Default delivery charge estimation for guests
+            const defaultDeliveryCharge = 2000; // Default delivery fee in Naira
+            // Generate a guest token for order processing
+            const guestToken = `GUEST_DELIVERY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+            setDeliveryToken(guestToken);
+            setDelivery_charge(defaultDeliveryCharge);
+            setGrand_total(totals + defaultDeliveryCharge);
+            setDiscount(0);
+            return;
+          }
+        }
 
         if (response?.status) {
           setDeliveryToken(response?.token);
@@ -169,6 +208,7 @@ function Checkout() {
     Checkout?.Checkout,
     Checkout?.address,
     isDeliveryCalculating,
+    isAuthenticated,
     notificationApi,
   ]);
 
@@ -186,6 +226,10 @@ function Checkout() {
 
       // Convert amount to kobo (multiply by 100)
       const amountInKobo = Math.round(Number(grand_total) * 100);
+      const deliveryChargeInKobo = Math.round(Number(delivery_charge) * 100);
+
+      // Calculate product total (grand_total minus delivery_charge)
+      const productTotalInKobo = amountInKobo - deliveryChargeInKobo;
 
       // Generate unique reference
       const reference = `ORDER_${Date.now()}_${Math.random()
@@ -194,7 +238,7 @@ function Checkout() {
         .toUpperCase()}`;
 
       // Email validation - log warning but don't block payment
-      if (!user?.email) {
+      if (!user?.email && !guestEmail) {
         console.warn(
           "Warning: User email not found. Proceeding with payment using available user data.",
         );
@@ -205,28 +249,36 @@ function Checkout() {
       const anyUser = user as any;
       const customerName = anyUser
         ? `${anyUser.first_name || "Customer"} ${anyUser.last_name || ""}`
-        : "Customer";
+        : Checkout?.address?.full_name || "Guest Customer";
       const customerEmail =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.email ||
+        guestEmail ||
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.id ||
         "customer@alabamarketplace.ng";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const customerId = (user as any)?.id || null;
+      const resolvedCustomerId = (user as any)?.id || null;
 
       // Extract store IDs and group items by store for split payment
       // This supports both single-store and multi-store orders
       const storeMap = new Map<
-        string | number,
-        { storeId: string | number; total: number }
+        number,
+        { storeId: number; total: number; items: any[] }
       >();
 
       Checkout?.Checkout?.forEach((item: any) => {
-        const storeId = item?.storeId || item?.store_id;
-        if (storeId) {
-          const existing = storeMap.get(storeId) || { storeId, total: 0 };
+        const rawStoreId = item?.storeId || item?.store_id;
+        // Ensure storeId is a valid number
+        const storeId = rawStoreId ? Number(rawStoreId) : null;
+        if (storeId && !isNaN(storeId) && storeId > 0) {
+          const existing = storeMap.get(storeId) || {
+            storeId,
+            total: 0,
+            items: [],
+          };
           existing.total += Number(item?.totalPrice || 0);
+          existing.items.push(item);
           storeMap.set(storeId, existing);
         }
       });
@@ -235,6 +287,27 @@ function Checkout() {
       const hasMultipleStores = stores.length > 1;
       const hasSingleStore = stores.length === 1;
       const shouldUseSplitPayment = stores.length > 0; // Use split for any store(s)
+
+      // Calculate split amounts:
+      // - Seller gets 95% of their product price
+      // - Platform gets 5% of product price + 100% of delivery charge
+      const SELLER_PERCENTAGE = 95;
+      const PLATFORM_PERCENTAGE = 5;
+
+      // Calculate total product price across all stores
+      const totalProductPrice = stores.reduce((sum, s) => sum + s.total, 0);
+      const totalProductPriceInKobo = Math.round(totalProductPrice * 100);
+
+      // Platform gets: 5% of product price + all delivery charges
+      const platformProductFeeInKobo = Math.round(
+        (totalProductPriceInKobo * PLATFORM_PERCENTAGE) / 100,
+      );
+      const platformTotalInKobo =
+        platformProductFeeInKobo + deliveryChargeInKobo;
+
+      // Seller gets: 95% of their product price (no delivery charge)
+      const sellerTotalInKobo =
+        totalProductPriceInKobo - platformProductFeeInKobo;
 
       console.log("DEBUG: Payment Initialization", {
         cartLength: Checkout?.Checkout?.length,
@@ -245,6 +318,88 @@ function Checkout() {
         cartStoreIds: Checkout?.Checkout?.map(
           (item: any) => item?.storeId || item?.store_id,
         ),
+        splitBreakdown: {
+          totalAmount: amountInKobo / 100,
+          productTotal: totalProductPriceInKobo / 100,
+          deliveryCharge: deliveryChargeInKobo / 100,
+          platformFee: `5% of products = ${platformProductFeeInKobo / 100}`,
+          platformTotal: `${platformProductFeeInKobo / 100} + ${deliveryChargeInKobo / 100} = ${platformTotalInKobo / 100}`,
+          sellerTotal: sellerTotalInKobo / 100,
+        },
+      });
+
+      // Console log for split payment breakdown
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
+      console.log("💰 SPLIT PAYMENT CALCULATION");
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
+      console.log(
+        `📦 Product Total:      ₦${(totalProductPriceInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `🚚 Delivery Charge:    ₦${(deliveryChargeInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `💵 Grand Total:        ₦${(amountInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        "───────────────────────────────────────────────────────────",
+      );
+      console.log(`👤 SELLER GETS (95% of products):`);
+      console.log(`   ₦${(sellerTotalInKobo / 100).toLocaleString()}`);
+      console.log(
+        "───────────────────────────────────────────────────────────",
+      );
+      console.log(`🏢 PLATFORM GETS (5% of products + 100% delivery):`);
+      console.log(
+        `   5% of ₦${(totalProductPriceInKobo / 100).toLocaleString()} = ₦${(platformProductFeeInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `   + Delivery: ₦${(deliveryChargeInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        `   = Total: ₦${(platformTotalInKobo / 100).toLocaleString()}`,
+      );
+      console.log(
+        "═══════════════════════════════════════════════════════════",
+      );
+
+      if (stores.length > 1) {
+        console.log("🏪 MULTI-SELLER BREAKDOWN:");
+        stores.forEach((s, idx) => {
+          const storeProductInKobo = Math.round(s.total * 100);
+          const sellerAmountInKobo = Math.round(
+            (storeProductInKobo * SELLER_PERCENTAGE) / 100,
+          );
+          console.log(`   Store ${idx + 1} (ID: ${s.storeId}):`);
+          console.log(
+            `     Products: ₦${(storeProductInKobo / 100).toLocaleString()} → Seller gets: ₦${(sellerAmountInKobo / 100).toLocaleString()}`,
+          );
+        });
+        console.log(
+          "═══════════════════════════════════════════════════════════",
+        );
+      }
+
+      // Build store allocation for multi-store split payments
+      // Each seller gets 95% of their product price, platform gets 5% + delivery
+      const storeAllocations = stores.map((s) => {
+        const storeProductInKobo = Math.round(s.total * 100);
+        const sellerAmountInKobo = Math.round(
+          (storeProductInKobo * SELLER_PERCENTAGE) / 100,
+        );
+        const platformFeeFromStore = storeProductInKobo - sellerAmountInKobo;
+
+        return {
+          store_id: s.storeId,
+          product_amount: storeProductInKobo, // Store's product total in kobo
+          seller_amount: sellerAmountInKobo, // 95% of product price goes to seller
+          platform_fee: platformFeeFromStore, // 5% of product price goes to platform
+          item_count: s.items.length,
+        };
       });
 
       const paymentData = {
@@ -257,14 +412,38 @@ function Checkout() {
         ...(shouldUseSplitPayment
           ? {
               ...(hasSingleStore
-                ? { store_id: Number(stores[0].storeId) }
-                : { stores: stores.map((s) => Number(s.storeId)) }),
+                ? { store_id: stores[0].storeId }
+                : {
+                    stores: stores.map((s) => s.storeId),
+                    store_allocations: storeAllocations,
+                  }),
               split_payment: true,
+              // Include split calculation details for backend
+              split_config: {
+                seller_percentage: SELLER_PERCENTAGE,
+                platform_percentage: PLATFORM_PERCENTAGE,
+                product_total: totalProductPriceInKobo,
+                delivery_charge: deliveryChargeInKobo,
+                platform_total: platformTotalInKobo, // 5% of products + 100% delivery
+                seller_total: sellerTotalInKobo, // 95% of products
+              },
             }
           : {}),
         metadata: {
           order_id: reference,
           customer_id: customerId,
+          stores: stores.map((s) => s.storeId),
+          store_allocations: storeAllocations,
+          is_multi_seller: hasMultipleStores,
+          // Split breakdown for transparency
+          split_breakdown: {
+            product_total: totalProductPriceInKobo,
+            delivery_charge: deliveryChargeInKobo,
+            seller_percentage: SELLER_PERCENTAGE,
+            platform_percentage: PLATFORM_PERCENTAGE,
+            seller_gets: sellerTotalInKobo,
+            platform_gets: platformTotalInKobo,
+          },
           custom_fields: [
             {
               display_name: "Customer Name",
@@ -277,9 +456,29 @@ function Checkout() {
               value: `₦${formatCurrency(grand_total)}`,
             },
             {
+              display_name: "Product Total",
+              variable_name: "product_total",
+              value: `₦${formatCurrency(totalProductPriceInKobo / 100)}`,
+            },
+            {
               display_name: "Delivery Charge",
               variable_name: "delivery_charge",
               value: `₦${formatCurrency(delivery_charge)}`,
+            },
+            {
+              display_name: "Seller Amount (95%)",
+              variable_name: "seller_amount",
+              value: `₦${formatCurrency(sellerTotalInKobo / 100)}`,
+            },
+            {
+              display_name: "Platform Fee (5% + Delivery)",
+              variable_name: "platform_fee",
+              value: `₦${formatCurrency(platformTotalInKobo / 100)}`,
+            },
+            {
+              display_name: "Number of Sellers",
+              variable_name: "seller_count",
+              value: String(stores.length),
             },
           ],
           cancel_url: `${window.location.origin}/checkout`,
@@ -393,10 +592,15 @@ function Checkout() {
             reference,
             amount: amountInKobo,
             email: paymentData.email,
+            stores: stores.map((s) => s.storeId),
+            is_multi_seller: hasMultipleStores,
+            store_allocations: storeAllocations,
             order_data: {
               payment: {
                 ref: reference,
                 type: payment_method,
+                split_payment: shouldUseSplitPayment,
+                is_multi_seller: hasMultipleStores,
               },
               cart: Checkout?.Checkout,
               address: Checkout?.address,
@@ -460,6 +664,16 @@ function Checkout() {
   };
 
   const PlaceOrder = async () => {
+    // Validate guest checkout has email
+    if (!isAuthenticated && !guestEmail) {
+      notificationApi.error({
+        message: "Email Required",
+        description:
+          "Please enter your email address in the delivery details form.",
+      });
+      return;
+    }
+
     if (deliveryToken) {
       try {
         const obj = {
@@ -471,6 +685,9 @@ function Checkout() {
           },
           user_id: customerId,
           user: user,
+          // Guest checkout data
+          is_guest: !isAuthenticated,
+          guest_email: guestEmail || null,
         };
         dispatch(storeFinal(obj));
         if (payment_method === "Pay Online") {
@@ -499,6 +716,11 @@ function Checkout() {
     }
   };
 
+  // Handler for guest email updates - wrapped in useCallback to prevent infinite loops
+  const handleGuestEmailChange = useCallback((email: string) => {
+    setGuestEmail(email);
+  }, []);
+
   return (
     <div className="Screen-box" style={{ backgroundImage: "none" }}>
       {contextHolder}
@@ -506,11 +728,12 @@ function Checkout() {
       <Container fluid style={{ minHeight: "80vh" }}>
         <Row>
           <Col sm={7}>
-            <NewAddressBox />
+            <NewAddressBox onGuestEmailChange={handleGuestEmailChange} />
             <PaymentBox
               method={payment_method}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(value: any) => setPayment_method(value)}
+              isGuest={!isAuthenticated}
             />
             <br />
           </Col>

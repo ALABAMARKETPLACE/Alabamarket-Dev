@@ -1,0 +1,158 @@
+.guest-checkout-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+  }
+
+  .ant-modal-close {
+    top: 12px;
+    right: 12px;
+  }
+}
+
+.guest-modal-content {
+  text-align: center;
+
+  .guest-modal-icon {
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    svg {
+      background: #f0f7ff;
+      padding: 12px;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+    }
+  }
+
+  .guest-modal-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+  }
+
+  .guest-modal-description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+}
+
+.guest-modal-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .guest-modal-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+
+    .option-hint {
+      font-size: 12px;
+      color: #888;
+    }
+  }
+
+  .guest-modal-divider {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #e8e8e8;
+    }
+
+    span {
+      padding: 0 16px;
+      color: #999;
+      font-size: 13px;
+    }
+  }
+
+  .guest-modal-btn {
+    height: 48px;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &.login-btn {
+      background: #1890ff;
+      border-color: #1890ff;
+
+      &:hover {
+        background: #40a9ff;
+        border-color: #40a9ff;
+      }
+    }
+
+    &.guest-btn {
+      background: #fff;
+      border: 2px solid #1890ff;
+      color: #1890ff;
+
+      &:hover {
+        background: #f0f7ff;
+        border-color: #40a9ff;
+        color: #40a9ff;
+      }
+    }
+
+    &.signup-btn {
+      background: #fff;
+      border: 2px solid #52c41a;
+      color: #52c41a;
+
+      &:hover {
+        background: #f6ffed;
+        border-color: #73d13d;
+        color: #73d13d;
+      }
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 480px) {
+  .guest-checkout-modal {
+    .ant-modal-content {
+      margin: 16px;
+    }
+  }
+
+  .guest-modal-content {
+    .guest-modal-title {
+      font-size: 20px;
+    }
+
+    .guest-modal-description {
+      font-size: 13px;
+    }
+  }
+
+  .guest-modal-options {
+    .guest-modal-btn {
+      height: 44px;
+      font-size: 14px;
+    }
+  }
+}
