@@ -185,10 +185,11 @@ function Checkout() {
         console.log("Delivery response:", response);
 
         if (response?.status) {
-          const deliveryToken = response?.token || response?.data?.token || "";
+          const deliveryToken = response?.token || "";
+          // API returns delivery charge in data.amount
           const delivery = Number(
-            response?.details?.totalCharge ||
-              response?.data?.details?.totalCharge ||
+            response?.data?.amount ||
+              response?.details?.totalCharge ||
               0,
           );
           const discountVal = Number(response?.data?.discount || 0);
