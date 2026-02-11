@@ -262,22 +262,8 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               size="small"
               className="table__action-btn"
               onClick={() => {
-                // Debug: log order record to see available IDs
-                console.log("=== ORDER DEBUG ===");
-                console.log(
-                  "Full order record:",
-                  JSON.stringify(record, null, 2),
-                );
-                console.log(
-                  "id:",
-                  record?.id,
-                  "| _id:",
-                  record?._id,
-                  "| order_id:",
-                  record?.order_id,
-                );
-                const orderId = record?.id ?? record?._id ?? record?.order_id;
-                console.log("Using orderId for navigation:", orderId);
+                // Use order_id (the reference number) for navigation - backend expects this
+                const orderId = record?.order_id ?? record?.id ?? record?._id;
                 route.push("/auth/orders/" + orderId);
               }}
               icon={<FiEye size={18} />}
@@ -377,7 +363,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 onClick={() =>
                   route.push(
                     "/auth/orders/" +
-                      (order?.id ?? order?._id ?? order?.order_id),
+                      (order?.order_id ?? order?.id ?? order?._id),
                   )
                 }
               >

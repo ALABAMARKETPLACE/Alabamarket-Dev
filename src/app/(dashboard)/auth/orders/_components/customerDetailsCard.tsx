@@ -43,7 +43,9 @@ type Props = {
 
 export default function CustomerDetailsCard(props: Props) {
   const userId = props.data?.userId || props.data?.user_id;
-  const isGuest = props.data?.is_guest_order || !userId;
+  // Only treat as guest if explicitly marked as guest order
+  // Don't assume guest just because userId is missing
+  const isGuest = props.data?.is_guest_order === true;
 
   const { data: customerData, isLoading } = useQuery({
     queryFn: async () => {
@@ -52,10 +54,10 @@ export default function CustomerDetailsCard(props: Props) {
       return result as UserData | null;
     },
     queryKey: ["customer_details", userId],
-    enabled: !!userId && !isGuest,
+    enabled: !!userId,
   });
 
-  // Handle guest order display
+  // Handle guest order display - only if explicitly marked as guest
   if (isGuest) {
     const guestName =
       props.data?.guest_name || props.data?.name || "Guest Customer";
@@ -97,6 +99,7 @@ export default function CustomerDetailsCard(props: Props) {
     );
   }
 
+  // For non-guest orders without userId, show a message
   if (!userId) {
     return (
       <Card
