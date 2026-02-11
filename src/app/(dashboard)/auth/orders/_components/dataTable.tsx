@@ -246,7 +246,14 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               onClick={() => {
                 // Debug: log order record to see available IDs
                 console.log("Order record:", record);
-                console.log("Available IDs - id:", record?.id, "_id:", record?._id, "order_id:", record?.order_id);
+                console.log(
+                  "Available IDs - id:",
+                  record?.id,
+                  "_id:",
+                  record?._id,
+                  "order_id:",
+                  record?.order_id,
+                );
                 const orderId = record?.id ?? record?._id ?? record?.order_id;
                 console.log("Navigating to order:", orderId);
                 route.push("/auth/orders/" + orderId);
