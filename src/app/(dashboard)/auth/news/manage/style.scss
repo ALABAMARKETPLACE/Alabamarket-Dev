@@ -1,0 +1,546 @@
+@use "@/config/styleVariable.scss" as vars;
+
+// =============================================================================
+// MANAGE NEWS PAGE STYLES
+// =============================================================================
+
+.manage-news-page {
+  padding-bottom: 40px;
+}
+
+// =============================================================================
+// NEWS LIST SECTION
+// =============================================================================
+.news-list-section {
+  margin-top: 24px;
+
+  @media (max-width: 768px) {
+    margin-top: 16px;
+  }
+}
+
+.news-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  h2 {
+    font-family: vars.$Bold;
+    font-size: 20px;
+    color: #1f2937;
+    margin: 0;
+
+    @media (max-width: 768px) {
+      font-size: 18px;
+    }
+  }
+
+  .news-count {
+    font-family: vars.$Regular;
+    font-size: 14px;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: 4px 12px;
+    border-radius: 20px;
+
+    @media (max-width: 480px) {
+      font-size: 12px;
+    }
+  }
+}
+
+// =============================================================================
+// NEWS CARDS
+// =============================================================================
+.news-card {
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  border: 1px solid #e5e7eb;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .ant-card-cover {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ant-card-body {
+    padding: 16px;
+
+    @media (max-width: 480px) {
+      padding: 12px;
+    }
+  }
+
+  .ant-card-actions {
+    border-top: 1px solid #f0f0f0;
+    
+    > li {
+      margin: 8px 0;
+    }
+  }
+}
+
+.news-card__media {
+  height: 180px;
+  background-color: #f8fafc;
+  overflow: hidden;
+  position: relative;
+
+  @media (max-width: 1200px) {
+    height: 160px;
+  }
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+
+  @media (max-width: 480px) {
+    height: 180px;
+  }
+
+  img, video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img,
+  &:hover video {
+    transform: scale(1.05);
+  }
+}
+
+.news-card__placeholder {
+  height: 180px;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+
+  @media (max-width: 1200px) {
+    height: 160px;
+  }
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+
+  svg {
+    font-size: 40px;
+    opacity: 0.5;
+  }
+}
+
+.news-card__category {
+  margin-bottom: 8px;
+}
+
+.news-card__title {
+  font-family: vars.$SemiBold;
+  font-size: 15px;
+  color: #1f2937;
+  margin: 0 0 8px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
+}
+
+.news-card__meta {
+  font-family: vars.$Regular;
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.news-card__description {
+  font-family: vars.$Regular;
+  font-size: 13px;
+  color: #6b7280;
+  margin: 8px 0 0;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+}
+
+// =============================================================================
+// EMPTY & ERROR STATES
+// =============================================================================
+.news-empty-state,
+.news-error-state {
+  background: #fff;
+  border-radius: 16px;
+  padding: 60px 20px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+
+  @media (max-width: 768px) {
+    padding: 40px 16px;
+  }
+
+  .state-icon {
+    width: 80px;
+    height: 80px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+
+    svg {
+      font-size: 36px;
+      color: #9ca3af;
+    }
+
+    @media (max-width: 480px) {
+      width: 64px;
+      height: 64px;
+
+      svg {
+        font-size: 28px;
+      }
+    }
+  }
+
+  h3 {
+    font-family: vars.$SemiBold;
+    font-size: 18px;
+    color: #374151;
+    margin: 0 0 8px;
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+    }
+  }
+
+  p {
+    font-family: vars.$Regular;
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 24px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media (max-width: 480px) {
+      font-size: 13px;
+    }
+  }
+}
+
+.news-error-state {
+  border-color: #fecaca;
+  background: #fef2f2;
+
+  .state-icon {
+    background: #fee2e2;
+
+    svg {
+      color: #ef4444;
+    }
+  }
+
+  h3 {
+    color: #dc2626;
+  }
+}
+
+// =============================================================================
+// LOADING STATE
+// =============================================================================
+.news-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+
+  p {
+    margin-top: 16px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+// =============================================================================
+// MODAL RESPONSIVE
+// =============================================================================
+.news-modal {
+  .ant-modal-content {
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .ant-modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+
+    @media (max-width: 480px) {
+      padding: 16px;
+    }
+  }
+
+  .ant-modal-body {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+
+    @media (max-width: 768px) {
+      padding: 16px;
+    }
+  }
+
+  .ant-modal-title {
+    font-family: vars.$SemiBold;
+    font-size: 18px;
+  }
+}
+
+// Upload buttons responsive
+.upload-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-item {
+    .ant-form-item-label {
+      label {
+        font-size: 13px;
+      }
+    }
+
+    .ant-btn {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+}
+
+// Form buttons responsive
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+
+    .ant-btn {
+      width: 100%;
+    }
+  }
+}
+
+// =============================================================================
+// MOBILE-SPECIFIC ADJUSTMENTS
+// =============================================================================
+@media (max-width: 480px) {
+  .manage-news-page {
+    .ant-card-actions {
+      > li {
+        > span {
+          font-size: 16px;
+        }
+      }
+    }
+  }
+}
+
+// Page header button text on mobile
+.add-news-btn {
+  .btn-text {
+    @media (max-width: 576px) {
+      display: none;
+    }
+  }
+
+  .btn-text-mobile {
+    display: none;
+
+    @media (max-width: 576px) {
+      display: inline;
+    }
+  }
+}
+
+// News card cover styles
+.news-card-cover {
+  height: 180px;
+  background-color: #f8fafc;
+  overflow: hidden;
+  position: relative;
+
+  @media (max-width: 1200px) {
+    height: 160px;
+  }
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+
+  @media (max-width: 480px) {
+    height: 180px;
+  }
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover img,
+  &:hover video {
+    transform: scale(1.05);
+  }
+}
+
+.news-card-placeholder {
+  height: 180px;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+
+  @media (max-width: 1200px) {
+    height: 160px;
+  }
+
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+
+  svg {
+    font-size: 40px;
+    opacity: 0.5;
+  }
+}
+
+.news-card-content {
+  .ant-tag {
+    margin-bottom: 8px;
+  }
+}
+
+.news-card-title {
+  font-family: vars.$SemiBold;
+  font-size: 15px;
+  color: #1f2937;
+  margin: 8px 0 !important;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
+}
+
+.news-card-meta {
+  font-family: vars.$Regular;
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+// Empty state icon styling
+.news-empty-state {
+  .empty-icon {
+    font-size: 48px;
+    color: #9ca3af;
+    margin-bottom: 16px;
+
+    @media (max-width: 480px) {
+      font-size: 40px;
+    }
+  }
+}
+
+.news-error-state {
+  .error-icon {
+    font-size: 48px;
+    color: #ef4444;
+    margin-bottom: 16px;
+
+    @media (max-width: 480px) {
+      font-size: 40px;
+    }
+  }
+}
+
+// News grid responsive improvements
+.news-grid {
+  @media (max-width: 576px) {
+    margin-left: -8px !important;
+    margin-right: -8px !important;
+
+    > .ant-col {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+  }
+}
+
+// News container spacing
+.news-container {
+  margin-top: 20px;
+
+  @media (max-width: 768px) {
+    margin-top: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }}

@@ -16,18 +16,23 @@ import {
   Card,
   Tag,
   Popconfirm,
+  Tooltip,
 } from "antd";
 import {
   UploadOutlined,
   PlusOutlined,
   DeleteOutlined,
   EditOutlined,
+  FileImageOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
+import { FiFileText, FiAlertCircle } from "react-icons/fi";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { POST, PUT, DELETE, GET } from "@/util/apicall";
 import API from "@/config/API";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import type { UploadFile } from "antd";
+import "./style.scss";
 
 interface NewsItem {
   id: string | number;
@@ -55,6 +60,8 @@ export default function ManageNewsPage() {
   const {
     data: newsListData,
     isLoading: isFetching,
+    isError,
+    error,
     refetch,
   } = useQuery({
     queryFn: async () => {
@@ -62,6 +69,7 @@ export default function ManageNewsPage() {
       return response as { data: NewsItem[] };
     },
     queryKey: ["manage_news"],
+    retry: 2,
   });
 
   // Create/Update news mutation
@@ -179,23 +187,26 @@ export default function ManageNewsPage() {
   };
 
   return (
-    <div>
+    <div className="manage-news-page">
       {contextHolder}
       <PageHeader
         title="Manage News & Updates"
         bredcume="Dashboard / Content / Manage News"
+        icon={<FiFileText />}
       >
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={handleAddNew}
           size="large"
+          className="add-news-btn"
         >
-          Add New News
+          <span className="btn-text">Add New News</span>
+          <span className="btn-text-mobile">Add</span>
         </Button>
       </PageHeader>
 
-      <Container fluid style={{ marginTop: 20 }}>
+      <Container fluid className="news-container">
         {/* Add/Edit News Modal */}
         <Modal
           title={editingNews ? "Edit News" : "Add New News"}
@@ -203,6 +214,7 @@ export default function ManageNewsPage() {
           onCancel={handleModalClose}
           footer={null}
           width={800}
+          className="news-modal"
         >
           <Form
             form={form}
@@ -246,8 +258,8 @@ export default function ManageNewsPage() {
               <Input placeholder="Author name (default: Admin)" />
             </Form.Item>
 
-            <Row gutter={16}>
-              <Col span={8}>
+            <div className="upload-grid">
+              <div className="upload-item">
                 <Form.Item label="Featured Image">
                   <Upload
                     {...uploadProps}
@@ -258,9 +270,9 @@ export default function ManageNewsPage() {
                     <Button icon={<UploadOutlined />}>Upload Image</Button>
                   </Upload>
                 </Form.Item>
-              </Col>
+              </div>
 
-              <Col span={8}>
+              <div className="upload-item">
                 <Form.Item label="Video File">
                   <Upload
                     {...uploadProps}
@@ -271,9 +283,9 @@ export default function ManageNewsPage() {
                     <Button icon={<UploadOutlined />}>Upload Video</Button>
                   </Upload>
                 </Form.Item>
-              </Col>
+              </div>
 
-              <Col span={8}>
+              <div className="upload-item">
                 <Form.Item label="Video Thumbnail">
                   <Upload
                     {...uploadProps}
@@ -286,44 +298,71 @@ export default function ManageNewsPage() {
                     <Button icon={<UploadOutlined />}>Upload Thumbnail</Button>
                   </Upload>
                 </Form.Item>
-              </Col>
-            </Row>
+              </div>
+            </div>
 
-            <Form.Item>
-              <Space>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={mutation.isPending}
-                >
-                  {editingNews ? "Update News" : "Create News"}
-                </Button>
-                <Button onClick={handleModalClose}>Cancel</Button>
-              </Space>
-            </Form.Item>
+            <div className="form-actions">
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={mutation.isPending}
+              >
+                {editingNews ? "Update News" : "Create News"}
+              </Button>
+              <Button onClick={handleModalClose}>Cancel</Button>
+            </div>
           </Form>
         </Modal>
 
         {/* News List */}
-        <div style={{ marginTop: 30 }}>
-          <h2>News List</h2>
+        <div className="news-list-section">
+          <div className="news-list-header">
+            <h2>News List</h2>
+            {(newsListData?.data?.length ?? 0) > 0 && (
+              <span className="news-count">{newsListData?.data?.length} articles</span>
+            )}
+          </div>
+          
           {isFetching ? (
-            <Spin />
+            <div className="news-loading">
+              <Spin size="large" />
+              <p>Loading news...</p>
+            </div>
+          ) : isError ? (
+            <div className="news-error-state">
+              <FiAlertCircle className="error-icon" />
+              <h3>Unable to load news</h3>
+              <p>
+                {(error as Error)?.message || 
+                  "There was a problem fetching the news list. Please check your connection and try again."}
+              </p>
+              <Button 
+                type="primary" 
+                icon={<ReloadOutlined />} 
+                onClick={() => refetch()}
+              >
+                Retry
+              </Button>
+            </div>
+          ) : newsListData?.data?.length === 0 ? (
+            <div className="news-empty-state">
+              <FileImageOutlined className="empty-icon" />
+              <h3>No news articles yet</h3>
+              <p>Get started by creating your first news article.</p>
+              <Button type="primary" icon={<PlusOutlined />} onClick={handleAddNew}>
+                Add News
+              </Button>
+            </div>
           ) : (
-            <Row gutter={[16, 16]}>
+            <Row gutter={[16, 16]} className="news-grid">
               {newsListData?.data?.map((news: NewsItem) => (
-                <Col key={news.id} lg={6} md={8} sm={12}>
+                <Col key={news.id} xl={6} lg={8} md={12} sm={12} xs={24}>
                   <Card
+                    className="news-card"
                     hoverable
                     cover={
                       news.image || news.video ? (
-                        <div
-                          style={{
-                            height: 200,
-                            backgroundColor: "#f0f0f0",
-                            overflow: "hidden",
-                          }}
-                        >
+                        <div className="news-card-cover">
                           {news.video ? (
                             <video
                               src={news.video}
@@ -346,13 +385,16 @@ export default function ManageNewsPage() {
                             />
                           )}
                         </div>
-                      ) : null
+                      ) : (
+                        <div className="news-card-placeholder">
+                          <FiFileText />
+                        </div>
+                      )
                     }
                     actions={[
-                      <EditOutlined
-                        key="edit"
-                        onClick={() => handleEdit(news)}
-                      />,
+                      <Tooltip title="Edit" key="edit">
+                        <EditOutlined onClick={() => handleEdit(news)} />
+                      </Tooltip>,
                       <Popconfirm
                         key={`delete-${news.id}`}
                         title="Delete News"
@@ -361,16 +403,20 @@ export default function ManageNewsPage() {
                         okText="Yes"
                         cancelText="No"
                       >
-                        <DeleteOutlined style={{ color: "red" }} />
+                        <Tooltip title="Delete">
+                          <DeleteOutlined style={{ color: "red" }} />
+                        </Tooltip>
                       </Popconfirm>,
                     ]}
                   >
-                    {news.category && <Tag color="blue">{news.category}</Tag>}
-                    <h4 style={{ marginTop: 8 }}>{news.title}</h4>
-                    <p style={{ color: "#999", fontSize: 12 }}>
-                      {news.author && `By ${news.author} • `}
-                      {new Date(news.createdAt).toLocaleDateString()}
-                    </p>
+                    <div className="news-card-content">
+                      {news.category && <Tag color="blue">{news.category}</Tag>}
+                      <h4 className="news-card-title">{news.title}</h4>
+                      <p className="news-card-meta">
+                        {news.author && `By ${news.author} • `}
+                        {new Date(news.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
                   </Card>
                 </Col>
               ))}

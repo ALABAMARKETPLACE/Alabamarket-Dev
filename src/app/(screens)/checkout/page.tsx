@@ -105,17 +105,24 @@ function Checkout() {
       setGrand_total(totals);
 
       if (Checkout?.address?.id) {
-        // Map address to ensure country_id and state_id are present
+        // Map address to ensure country_id and state_id are present and are numbers
         const addressData = {
           ...Checkout?.address,
-          country_id:
+          country_id: Number(
             Checkout?.address?.country_id ||
-            Checkout?.address?.countryDetails?.id,
-          state_id:
-            Checkout?.address?.state_id || Checkout?.address?.stateDetails?.id,
-          country:
+            Checkout?.address?.countryDetails?.id ||
+            0
+          ),
+          state_id: Number(
+            Checkout?.address?.state_id || 
+            Checkout?.address?.stateDetails?.id ||
+            0
+          ),
+          country: String(
             Checkout?.address?.country ||
-            Checkout?.address?.countryDetails?.country_name,
+            Checkout?.address?.countryDetails?.country_name ||
+            ""
+          ),
           state:
             Checkout?.address?.state || Checkout?.address?.stateDetails?.name,
         };
@@ -126,8 +133,12 @@ function Checkout() {
           ? [
               {
                 ...firstItem,
+                id: Number(firstItem?.id || 0),
+                productId: Number(firstItem?.productId || firstItem?.id || 0),
                 quantity: 1,
-                weight: firstItem?.weight || 1, // Ensure weight exists
+                weight: Number(firstItem?.weight || 1), // Ensure weight exists
+                totalPrice: Number(firstItem?.totalPrice || 0),
+                storeId: Number(firstItem?.storeId || 0),
               },
             ]
           : Checkout?.Checkout;
