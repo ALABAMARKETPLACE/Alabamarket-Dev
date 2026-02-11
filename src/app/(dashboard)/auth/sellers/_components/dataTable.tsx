@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Table, Pagination, Avatar, Tooltip } from "antd";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { FiEye, FiStore, FiPhone, FiDollarSign, FiUser } from "react-icons/fi";
+import { FiEye, FiShoppingBag, FiPhone, FiDollarSign, FiUser } from "react-icons/fi";
 import { MdHourglassEmpty } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/utils/formatNumber";
@@ -50,7 +50,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
           <Avatar
             size={44}
             src={record.logo_upload || undefined}
-            icon={!record.logo_upload && <FiStore />}
+            icon={!record.logo_upload && <FiShoppingBag />}
             style={{
               backgroundColor: !record.logo_upload ? "#f0f0f0" : undefined,
               color: !record.logo_upload ? "#999" : undefined,
@@ -139,7 +139,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 <Avatar
                   size={48}
                   src={seller.logo_upload || undefined}
-                  icon={!seller.logo_upload && <FiStore />}
+                  icon={!seller.logo_upload && <FiShoppingBag />}
                   style={{
                     backgroundColor: !seller.logo_upload
                       ? "#f0f0f0"
