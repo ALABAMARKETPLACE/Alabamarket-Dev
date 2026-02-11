@@ -73,7 +73,9 @@ const GuestCheckoutModal: React.FC<GuestCheckoutModalProps> = ({
             >
               Sign In
             </Button>
-            <span className="option-hint">Access your saved addresses & orders</span>
+            <span className="option-hint">
+              Access your saved addresses & orders
+            </span>
           </div>
 
           <div className="guest-modal-divider">
@@ -109,7 +111,9 @@ const GuestCheckoutModal: React.FC<GuestCheckoutModalProps> = ({
             >
               Create Account
             </Button>
-            <span className="option-hint">Save your info for faster checkout</span>
+            <span className="option-hint">
+              Save your info for faster checkout
+            </span>
           </div>
         </div>
       </div>

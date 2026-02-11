@@ -324,7 +324,10 @@ function Checkout() {
       }
 
       // Validate address data (guest addresses have IDs like "guest_123456")
-      if (!finalOrderData?.address || (!finalOrderData.address.id && !finalOrderData.address.is_guest)) {
+      if (
+        !finalOrderData?.address ||
+        (!finalOrderData.address.id && !finalOrderData.address.is_guest)
+      ) {
         console.error("Invalid address data:", finalOrderData?.address);
         throw new Error(
           "Delivery address is invalid. Please go back and select a valid address.",
@@ -332,8 +335,12 @@ function Checkout() {
       }
 
       // Validate charges data (guest tokens start with "GUEST_DELIVERY_")
-      const isGuestToken = finalOrderData?.charges?.token?.startsWith("GUEST_DELIVERY_");
-      if (!finalOrderData?.charges || (!finalOrderData.charges.token && !isGuestToken)) {
+      const isGuestToken =
+        finalOrderData?.charges?.token?.startsWith("GUEST_DELIVERY_");
+      if (
+        !finalOrderData?.charges ||
+        (!finalOrderData.charges.token && !isGuestToken)
+      ) {
         console.error("Invalid charges data:", finalOrderData?.charges);
         throw new Error(
           "Delivery charge calculation failed. Please go back and recalculate.",

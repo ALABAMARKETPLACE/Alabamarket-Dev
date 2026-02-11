@@ -125,10 +125,12 @@ function Description(props: Props) {
   // const [favourited, setFavourited] = useState(props?.data ?? false);
   // const [isWobbling, setIsWobbling] = useState(false);
   const [favourited, setFavourited] = useState(false);
-  
+
   // Guest checkout modal state
   const [showGuestModal, setShowGuestModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(null);
+  const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
+    null,
+  );
 
   useEffect(() => {
     if (props?.data?.pid) {
@@ -188,17 +190,17 @@ function Description(props: Props) {
       notification.error({ message: `Selected Quantity is Not Available.` });
       return;
     }
-    
+
     // Show modal for guest users
     if (!user?.user) {
       setPendingAction("buy");
       setShowGuestModal(true);
       return;
     }
-    
+
     executeBuyNow();
   };
-  
+
   const executeBuyNow = () => {
     const obj = {
       name: props?.data?.name,
@@ -239,7 +241,7 @@ function Description(props: Props) {
 
     executeAddToCart();
   };
-  
+
   const executeAddToCart = async () => {
     // Track Add to Cart for analytics
     const gaItem = formatGAItem(props.data, props.currentVariant, quantity);
@@ -296,7 +298,7 @@ function Description(props: Props) {
       Notifications.error({ message: "Something went wrong!" });
     }
   };
-  
+
   // Handle guest modal actions
   const handleGuestContinue = () => {
     if (pendingAction === "buy") {
@@ -339,7 +341,7 @@ function Description(props: Props) {
   return (
     <div>
       {contextHolder}
-      
+
       {/* Guest Checkout Modal */}
       <GuestCheckoutModal
         open={showGuestModal}
@@ -350,7 +352,7 @@ function Description(props: Props) {
         onContinueAsGuest={handleGuestContinue}
         action={pendingAction || "cart"}
       />
-      
+
       <div>category: {props?.data?.categoryName?.name}</div>
       <div>subCategory: {props?.data?.subCategoryName?.name}</div>
       {availableQuantity === 0 ? (

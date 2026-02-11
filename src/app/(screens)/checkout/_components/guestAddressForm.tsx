@@ -96,12 +96,12 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
     if (Array.isArray(states)) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const lagos = states.filter((s: any) =>
-        s.name.toLowerCase().includes("lagos")
+        s.name.toLowerCase().includes("lagos"),
       );
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const others = states.filter(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (s: any) => !s.name.toLowerCase().includes("lagos")
+        (s: any) => !s.name.toLowerCase().includes("lagos"),
       );
       setLagosStates(lagos);
       setOtherStates(others);
@@ -146,11 +146,11 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
         lagos_city: address.lagos_city,
         state_id: address.state_id,
       });
-      
+
       if (address.main_state_selection === "LAGOS_GROUP") {
         setIsLagosGroupSelected(true);
       }
-      
+
       // If we have a saved address, dispatch it
       if (address.id) {
         dispatch(storeAddress(address));
@@ -209,7 +209,7 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const selectedCountry = countries?.find(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (c: any) => c.id === values.country_id
+        (c: any) => c.id === values.country_id,
       );
 
       // Create a guest address object (not saved to backend)
@@ -223,7 +223,10 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
         country_code: values?.code ?? "+234",
         country_id: values.country_id || null,
         state_id: finalStateId || null,
-        stateDetails: selectedState || { id: finalStateId, name: selectedState?.name },
+        stateDetails: selectedState || {
+          id: finalStateId,
+          name: selectedState?.name,
+        },
         countryDetails: selectedCountry,
         main_state_selection: values.main_state_selection,
         lagos_city: values.lagos_city,
@@ -247,7 +250,7 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
       });
 
       setIsLoading(false);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setIsLoading(false);
       Notifications["error"]({
@@ -283,11 +286,7 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
                 { type: "email", message: "Please enter a valid email" },
               ]}
             >
-              <Input
-                size="large"
-                type="email"
-                placeholder="your@email.com"
-              />
+              <Input size="large" type="email" placeholder="your@email.com" />
             </Form.Item>
           </Col>
 

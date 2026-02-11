@@ -25,12 +25,12 @@ function NewAddressBox({ onGuestEmailChange }: NewAddressBoxProps) {
   const [addNew, setAddNew] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>([]);
-  
+
   // Use ref to track if we've already loaded guest data
   const guestDataLoadedRef = useRef(false);
   // Store callback in ref to avoid dependency issues
   const onGuestEmailChangeRef = useRef(onGuestEmailChange);
-  
+
   // Update ref when callback changes
   useEffect(() => {
     onGuestEmailChangeRef.current = onGuestEmailChange;
@@ -162,4 +162,3 @@ function NewAddressBox({ onGuestEmailChange }: NewAddressBoxProps) {
   );
 }
 export default NewAddressBox;
-

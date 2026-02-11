@@ -37,7 +37,7 @@ function Checkout() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
-  
+
   // Guest email state
   const [guestEmail, setGuestEmail] = useState<string>("");
 
@@ -48,14 +48,14 @@ function Checkout() {
   const [discount, setDiscount] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [grand_total, setGrand_total] = useState<any>(0);
-  
+
   useEffect(() => {
     window.scrollTo(0, 0);
 
     // Clear any previous order creation status to allow new orders
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
-    
+
     // Load guest email if available
     if (!isAuthenticated) {
       const savedData = getGuestAddress();
@@ -139,18 +139,23 @@ function Checkout() {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let response: any;
-        
+
         // Use authenticated or public endpoint based on user status
         if (isAuthenticated) {
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
         } else {
           // For guest users, try public endpoint first, fallback to default estimation
           try {
-            response = await PUBLIC_POST(API.PUBLIC_CALCULATE_DELIVERY_CHARGE, obj);
+            response = await PUBLIC_POST(
+              API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
+              obj,
+            );
           } catch (publicErr: any) {
             // If public endpoint fails (404 or not implemented), use default delivery charge
-            console.log("Public delivery calculation not available, using default estimation");
-            
+            console.log(
+              "Public delivery calculation not available, using default estimation",
+            );
+
             // Default delivery charge estimation for guests
             const defaultDeliveryCharge = 2000; // Default delivery fee in Naira
             // Generate a guest token for order processing
@@ -663,7 +668,8 @@ function Checkout() {
     if (!isAuthenticated && !guestEmail) {
       notificationApi.error({
         message: "Email Required",
-        description: "Please enter your email address in the delivery details form.",
+        description:
+          "Please enter your email address in the delivery details form.",
       });
       return;
     }
