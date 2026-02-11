@@ -97,7 +97,10 @@ function DataTable({
       key: "name",
       render: (name: string, record: any) => (
         <div className="table__user-cell">
-          <div className="table-img" style={{ borderRadius: 8, overflow: 'hidden' }}>
+          <div
+            className="table-img"
+            style={{ borderRadius: 8, overflow: "hidden" }}
+          >
             {record.image ? (
               <Image
                 style={{ height: 40, width: 40, objectFit: "cover" }}
@@ -105,14 +108,16 @@ function DataTable({
                 preview={false}
               />
             ) : (
-              <div style={{ 
-                width: 40, 
-                height: 40, 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                background: '#f5f5f5'
-              }}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#f5f5f5",
+                }}
+              >
                 <FiImage size={20} color="#999" />
               </div>
             )}
@@ -120,7 +125,10 @@ function DataTable({
           <div>
             <div className="table__user-name">{name || "N/A"}</div>
             {record.featured && (
-              <span className="dashboard-badge dashboard-badge--warning" style={{ fontSize: 10, padding: '2px 6px' }}>
+              <span
+                className="dashboard-badge dashboard-badge--warning"
+                style={{ fontSize: 10, padding: "2px 6px" }}
+              >
                 <FiStar size={10} /> Featured
               </span>
             )}
@@ -156,9 +164,7 @@ function DataTable({
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => (
-        <div className="table__date">
-          {moment(date).format("MMM DD, YYYY")}
-        </div>
+        <div className="table__date">{moment(date).format("MMM DD, YYYY")}</div>
       ),
       responsive: ["md"] as any,
     },
@@ -168,9 +174,9 @@ function DataTable({
       render: (_: any, record: any) => (
         <div className="table-action" style={{ gap: 4 }}>
           <Tooltip title="Edit">
-            <Button 
-              type="text" 
-              size="small" 
+            <Button
+              type="text"
+              size="small"
               className="table__action-btn"
               onClick={() => edit(record)}
               icon={<FiEdit2 size={16} />}
@@ -187,9 +193,9 @@ function DataTable({
             okButtonProps={{ danger: true }}
           >
             <Tooltip title="Delete">
-              <Button 
-                type="text" 
-                size="small" 
+              <Button
+                type="text"
+                size="small"
                 className="table__action-btn"
                 danger
                 icon={<FiTrash2 size={16} />}
@@ -217,7 +223,11 @@ function DataTable({
                     name="position"
                     rules={[{ required: true, message: "Required" }]}
                   >
-                    <Input style={{ width: 80 }} type="number" placeholder="0" />
+                    <Input
+                      style={{ width: 80 }}
+                      type="number"
+                      placeholder="0"
+                    />
                   </Form.Item>
                   <Button
                     type="primary"
@@ -232,7 +242,11 @@ function DataTable({
           >
             <Tooltip title="Change Position">
               <Button type="text" size="small" className="table__action-btn">
-                <Badge size="small" count={record?.position || 0} style={{ backgroundColor: '#3b82f6' }}>
+                <Badge
+                  size="small"
+                  count={record?.position || 0}
+                  style={{ backgroundColor: "#3b82f6" }}
+                >
                   <CgReorder size={18} />
                 </Badge>
               </Button>
@@ -248,9 +262,9 @@ function DataTable({
     <div className="dashboard-mobile-cards">
       {data.length === 0 ? (
         <div className="dashboard-mobile-card">
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 40, textAlign: "center" }}>
             <MdHourglassEmpty size={40} color="#999" />
-            <p style={{ color: '#666', marginTop: 16 }}>No Categories yet</p>
+            <p style={{ color: "#666", marginTop: 16 }}>No Categories yet</p>
           </div>
         </div>
       ) : (
@@ -260,25 +274,33 @@ function DataTable({
               <div className="dashboard-mobile-card__avatar">
                 {category.image ? (
                   <Image
-                    style={{ width: '100%', height: '100%', objectFit: "cover" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                     src={category.image}
                     preview={false}
                   />
                 ) : (
-                  <div style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    background: '#f5f5f5'
-                  }}>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: "#f5f5f5",
+                    }}
+                  >
                     <FiImage size={24} color="#999" />
                   </div>
                 )}
               </div>
               <div className="dashboard-mobile-card__title-group">
-                <h4 className="dashboard-mobile-card__title">{category.name || "N/A"}</h4>
+                <h4 className="dashboard-mobile-card__title">
+                  {category.name || "N/A"}
+                </h4>
                 <p className="dashboard-mobile-card__subtitle">
                   Position: #{category.position || 0}
                 </p>
@@ -291,10 +313,15 @@ function DataTable({
             </div>
             <div className="dashboard-mobile-card__body">
               <div className="dashboard-mobile-card__row">
-                <span className="dashboard-mobile-card__label">Description</span>
-                <span className="dashboard-mobile-card__value" style={{ maxWidth: 150, textAlign: 'right' }}>
+                <span className="dashboard-mobile-card__label">
+                  Description
+                </span>
+                <span
+                  className="dashboard-mobile-card__value"
+                  style={{ maxWidth: 150, textAlign: "right" }}
+                >
                   {category.description?.slice(0, 30) || "No description"}
-                  {category.description?.length > 30 ? '...' : ''}
+                  {category.description?.length > 30 ? "..." : ""}
                 </span>
               </div>
               <div className="dashboard-mobile-card__row">

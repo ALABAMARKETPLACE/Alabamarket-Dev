@@ -3,7 +3,14 @@ import React, { useState } from "react";
 import { Col, Row, Button, Card, DatePicker, Tooltip } from "antd";
 
 import { LuUsers } from "react-icons/lu";
-import { FiPackage, FiRefreshCw, FiCalendar, FiSun, FiMoon, FiCloud } from "react-icons/fi";
+import {
+  FiPackage,
+  FiRefreshCw,
+  FiCalendar,
+  FiSun,
+  FiMoon,
+  FiCloud,
+} from "react-icons/fi";
 import { TbUsersGroup } from "react-icons/tb";
 import { HiOutlineRectangleGroup } from "react-icons/hi2";
 
@@ -52,7 +59,11 @@ function DashboardAdmin() {
   const [date, setDate] = useState<string | null>(null);
   const greeting = getGreeting();
 
-  const { data: counts, isLoading, refetch: refetchCounts } = useQuery({
+  const {
+    data: counts,
+    isLoading,
+    refetch: refetchCounts,
+  } = useQuery({
     queryKey: [API.DASHBOARD_COUNTS],
     select: (data: ApiResponse<DashboardCounts>) => {
       if (data?.status) return data?.data;
@@ -103,15 +114,23 @@ function DashboardAdmin() {
           <DatePicker
             placeholder="Filter by date"
             suffixIcon={<FiCalendar />}
-            disabledDate={(current) => current && current.isAfter(dayjs(), "day")}
-            onChange={(date) => setDate(date ? date.format("YYYY-MM-DD") : null)}
+            disabledDate={(current) =>
+              current && current.isAfter(dayjs(), "day")
+            }
+            onChange={(date) =>
+              setDate(date ? date.format("YYYY-MM-DD") : null)
+            }
             className="dashboard-welcome__date-picker"
           />
           <Tooltip title="Refresh data">
-            <Button 
-              type="primary" 
-              ghost 
-              icon={<FiRefreshCw className={isFetchingStats ? 'spin-animation' : ''} />}
+            <Button
+              type="primary"
+              ghost
+              icon={
+                <FiRefreshCw
+                  className={isFetchingStats ? "spin-animation" : ""}
+                />
+              }
               onClick={handleRefresh}
               loading={isFetchingStats}
             >
@@ -181,7 +200,9 @@ function DashboardAdmin() {
               title={
                 <div className="dashboard-card-title">
                   <span>Weekly Order Statistics</span>
-                  <span className="dashboard-card-subtitle">Last 7 days performance</span>
+                  <span className="dashboard-card-subtitle">
+                    Last 7 days performance
+                  </span>
                 </div>
               }
               bordered={false}
@@ -204,7 +225,9 @@ function DashboardAdmin() {
                       ? `Orders - ${dayjs(date).format("MMM D, YYYY")}`
                       : "Today's Orders"}
                   </span>
-                  <span className="dashboard-card-subtitle">Order breakdown by status</span>
+                  <span className="dashboard-card-subtitle">
+                    Order breakdown by status
+                  </span>
                 </div>
               }
               bordered={false}
@@ -237,12 +260,14 @@ function DashboardAdmin() {
                   Object.keys(orderStatistics?.orderStatistics || {})?.map(
                     (item, key) => (
                       <div key={key} className="dashboard-stats-table__row">
-                        <span className="dashboard-stats-table__label">{item}</span>
+                        <span className="dashboard-stats-table__label">
+                          {item}
+                        </span>
                         <span className="dashboard-stats-table__value">
                           {orderStatistics?.orderStatistics[item]}
                         </span>
                       </div>
-                    )
+                    ),
                   )}
               </div>
             </Card>

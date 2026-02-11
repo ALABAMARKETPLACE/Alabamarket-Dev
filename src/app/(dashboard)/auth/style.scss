@@ -51,8 +51,12 @@ $shadow-xl:
 
 // Animation
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spin-animation {
@@ -2059,7 +2063,11 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     width: 44px;
     height: 44px;
     border-radius: $radius-lg;
-    background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($primary-color, 0.05) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba($primary-color, 0.1) 0%,
+      rgba($primary-color, 0.05) 100%
+    );
     color: $primary-color;
     font-size: 22px;
 
@@ -2132,7 +2140,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -2156,11 +2164,21 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
 
-  &--primary::before { background: $primary-color; }
-  &--success::before { background: $success-color; }
-  &--warning::before { background: $warning-color; }
-  &--danger::before { background: $danger-color; }
-  &--info::before { background: $info-color; }
+  &--primary::before {
+    background: $primary-color;
+  }
+  &--success::before {
+    background: $success-color;
+  }
+  &--warning::before {
+    background: $warning-color;
+  }
+  &--danger::before {
+    background: $danger-color;
+  }
+  &--info::before {
+    background: $info-color;
+  }
 
   &__header {
     display: flex;
@@ -2841,4 +2859,3 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     }
   }
 }
-

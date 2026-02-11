@@ -1,8 +1,25 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
-import { Button, Table, Pagination, Popconfirm, notification, Tooltip } from "antd";
+import {
+  Button,
+  Table,
+  Pagination,
+  Popconfirm,
+  notification,
+  Tooltip,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { FiEye, FiEdit2, FiTrash2, FiZap, FiCalendar, FiPackage, FiClock, FiDollarSign, FiUser } from "react-icons/fi";
+import {
+  FiEye,
+  FiEdit2,
+  FiTrash2,
+  FiZap,
+  FiCalendar,
+  FiPackage,
+  FiClock,
+  FiDollarSign,
+  FiUser,
+} from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE } from "@/util/apicall";
@@ -75,15 +92,35 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
-        return <span className="dashboard-badge dashboard-badge--warning">{status?.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--warning">
+            {status?.toUpperCase()}
+          </span>
+        );
       case "approved":
-        return <span className="dashboard-badge dashboard-badge--success">{status?.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--success">
+            {status?.toUpperCase()}
+          </span>
+        );
       case "rejected":
-        return <span className="dashboard-badge dashboard-badge--danger">{status?.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--danger">
+            {status?.toUpperCase()}
+          </span>
+        );
       case "expired":
-        return <span className="dashboard-badge dashboard-badge--default">{status?.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--default">
+            {status?.toUpperCase()}
+          </span>
+        );
       default:
-        return <span className="dashboard-badge dashboard-badge--default">{status?.toUpperCase() || "UNKNOWN"}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--default">
+            {status?.toUpperCase() || "UNKNOWN"}
+          </span>
+        );
     }
   };
 
@@ -120,7 +157,9 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             type="text"
             size="small"
             danger
-            loading={mutationDelete.isPending && mutationDelete.variables === id}
+            loading={
+              mutationDelete.isPending && mutationDelete.variables === id
+            }
             icon={<FiTrash2 size={16} />}
           />
         </Tooltip>
@@ -231,11 +270,16 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       return (
         <div className="dashboard-mobile-card" key={id}>
           <div className="dashboard-mobile-card__header">
-            <div className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon" style={{ backgroundColor: '#fff7e6' }}>
+            <div
+              className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon"
+              style={{ backgroundColor: "#fff7e6" }}
+            >
               <FiZap size={24} color="#fa8c16" />
             </div>
             <div className="dashboard-mobile-card__info">
-              <h4 className="dashboard-mobile-card__title">Request #{id ?? "--"}</h4>
+              <h4 className="dashboard-mobile-card__title">
+                Request #{id ?? "--"}
+              </h4>
               <span className="dashboard-mobile-card__subtitle">
                 <FiUser size={12} /> {record?.seller?.name ?? "Unknown seller"}
               </span>
@@ -247,31 +291,41 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
               <span className="dashboard-mobile-card__label">
                 <FiZap size={14} /> Plan
               </span>
-              <span className="dashboard-mobile-card__value">{record?.plan?.name ?? "-"}</span>
+              <span className="dashboard-mobile-card__value">
+                {record?.plan?.name ?? "-"}
+              </span>
             </div>
             <div className="dashboard-mobile-card__row">
               <span className="dashboard-mobile-card__label">
                 <FiPackage size={14} /> Products
               </span>
-              <span className="dashboard-mobile-card__value">{productsCount}</span>
+              <span className="dashboard-mobile-card__value">
+                {productsCount}
+              </span>
             </div>
             <div className="dashboard-mobile-card__row">
               <span className="dashboard-mobile-card__label">
                 <FiClock size={14} /> Days
               </span>
-              <span className="dashboard-mobile-card__value">{record?.days ?? "-"}</span>
+              <span className="dashboard-mobile-card__value">
+                {record?.days ?? "-"}
+              </span>
             </div>
             <div className="dashboard-mobile-card__row">
               <span className="dashboard-mobile-card__label">
                 <FiDollarSign size={14} /> Amount
               </span>
-              <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">{totalAmount}</span>
+              <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">
+                {totalAmount}
+              </span>
             </div>
             <div className="dashboard-mobile-card__row">
               <span className="dashboard-mobile-card__label">
                 <FiCalendar size={14} /> Period
               </span>
-              <span className="dashboard-mobile-card__value">{startDate} - {endDate}</span>
+              <span className="dashboard-mobile-card__value">
+                {startDate} - {endDate}
+              </span>
             </div>
           </div>
           <div className="dashboard-mobile-card__actions">

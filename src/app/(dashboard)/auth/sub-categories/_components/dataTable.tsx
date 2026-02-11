@@ -15,7 +15,13 @@ import {
   notification,
   Tooltip,
 } from "antd";
-import { FiEdit2, FiTrash2, FiCalendar, FiLayers, FiFolder } from "react-icons/fi";
+import {
+  FiEdit2,
+  FiTrash2,
+  FiCalendar,
+  FiLayers,
+  FiFolder,
+} from "react-icons/fi";
 import { CgReorder } from "react-icons/cg";
 import moment from "moment";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -135,9 +141,9 @@ function DataTable({
       render: (item: any, record: any) => (
         <div className="table-action">
           <Tooltip title="Edit subcategory">
-            <Button 
-              type="text" 
-              size="small" 
+            <Button
+              type="text"
+              size="small"
               onClick={() => edit(record)}
               icon={<FiEdit2 size={16} color="#1890ff" />}
             />
@@ -152,8 +158,8 @@ function DataTable({
             onConfirm={() => mutationDelete.mutate(record?._id)}
           >
             <Tooltip title="Delete subcategory">
-              <Button 
-                type="text" 
+              <Button
+                type="text"
                 size="small"
                 icon={<FiTrash2 size={16} color="#ff4d4f" />}
               />
@@ -230,35 +236,50 @@ function DataTable({
               alt={record?.name}
               height={56}
               width={56}
-              style={{ borderRadius: '8px', objectFit: 'cover' }}
+              style={{ borderRadius: "8px", objectFit: "cover" }}
             />
           </div>
           <div className="dashboard-mobile-card__info">
             <h4 className="dashboard-mobile-card__title">{record?.name}</h4>
             <span className="dashboard-mobile-card__subtitle">
-              <FiCalendar size={12} /> {moment(record?.createdAt).format("MMM Do YYYY")}
+              <FiCalendar size={12} />{" "}
+              {moment(record?.createdAt).format("MMM Do YYYY")}
             </span>
           </div>
-          <span className="dashboard-badge dashboard-badge--info">#{record?.position ?? 0}</span>
+          <span className="dashboard-badge dashboard-badge--info">
+            #{record?.position ?? 0}
+          </span>
         </div>
         <div className="dashboard-mobile-card__body">
           <div className="dashboard-mobile-card__row">
             <span className="dashboard-mobile-card__label">
               <FiFolder size={14} /> Category
             </span>
-            <span className="dashboard-mobile-card__value">{record?.category?.name ?? '-'}</span>
+            <span className="dashboard-mobile-card__value">
+              {record?.category?.name ?? "-"}
+            </span>
           </div>
           {record?.description && (
             <div className="dashboard-mobile-card__row">
               <span className="dashboard-mobile-card__label">Description</span>
-              <span className="dashboard-mobile-card__value" style={{ fontSize: '12px', color: '#666' }}>
-                {record?.description?.substring(0, 50)}{record?.description?.length > 50 ? '...' : ''}
+              <span
+                className="dashboard-mobile-card__value"
+                style={{ fontSize: "12px", color: "#666" }}
+              >
+                {record?.description?.substring(0, 50)}
+                {record?.description?.length > 50 ? "..." : ""}
               </span>
             </div>
           )}
         </div>
         <div className="dashboard-mobile-card__actions">
-          <Button type="primary" ghost icon={<FiEdit2 size={14} />} size="small" onClick={() => edit(record)}>
+          <Button
+            type="primary"
+            ghost
+            icon={<FiEdit2 size={14} />}
+            size="small"
+            onClick={() => edit(record)}
+          >
             Edit
           </Button>
           <Popconfirm

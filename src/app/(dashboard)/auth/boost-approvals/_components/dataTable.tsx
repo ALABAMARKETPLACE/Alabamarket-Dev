@@ -17,7 +17,17 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { POST, PUT } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
-import { FiEye, FiCheck, FiX, FiZap, FiUser, FiCalendar, FiPackage, FiClock, FiDollarSign } from "react-icons/fi";
+import {
+  FiEye,
+  FiCheck,
+  FiX,
+  FiZap,
+  FiUser,
+  FiCalendar,
+  FiPackage,
+  FiClock,
+  FiDollarSign,
+} from "react-icons/fi";
 
 type BoostRequestRow = {
   id: number;
@@ -59,7 +69,7 @@ function DataTable({
   }>({ open: false });
   const [remarks, setRemarks] = useState<string>("");
   const [priorityDraft, setPriorityDraft] = useState<Record<number, number>>(
-    {}
+    {},
   );
 
   useEffect(() => {
@@ -113,13 +123,29 @@ function DataTable({
   const statusTag = (status: BoostRequestRow["status"]) => {
     switch (status) {
       case "pending":
-        return <span className="dashboard-badge dashboard-badge--warning">{status.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--warning">
+            {status.toUpperCase()}
+          </span>
+        );
       case "approved":
-        return <span className="dashboard-badge dashboard-badge--success">{status.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--success">
+            {status.toUpperCase()}
+          </span>
+        );
       case "rejected":
-        return <span className="dashboard-badge dashboard-badge--danger">{status.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--danger">
+            {status.toUpperCase()}
+          </span>
+        );
       default:
-        return <span className="dashboard-badge dashboard-badge--default">{status.toUpperCase()}</span>;
+        return (
+          <span className="dashboard-badge dashboard-badge--default">
+            {status.toUpperCase()}
+          </span>
+        );
     }
   };
 
@@ -196,7 +222,9 @@ function DataTable({
               <Button
                 size="small"
                 icon={<FiEye size={14} />}
-                onClick={() => router.push(`/auth/boost-approvals/${record.id}`)}
+                onClick={() =>
+                  router.push(`/auth/boost-approvals/${record.id}`)
+                }
               />
             </Tooltip>
             <Tooltip title="Approve">
@@ -225,7 +253,7 @@ function DataTable({
         ),
       },
     ],
-    [priorityDraft, mutationPriority.isPending, router]
+    [priorityDraft, mutationPriority.isPending, router],
   );
 
   const MobileCardView = useMemo(() => {
@@ -241,11 +269,16 @@ function DataTable({
     return data.map((record) => (
       <div className="dashboard-mobile-card" key={record.id}>
         <div className="dashboard-mobile-card__header">
-          <div className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon" style={{ backgroundColor: '#fff7e6' }}>
+          <div
+            className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon"
+            style={{ backgroundColor: "#fff7e6" }}
+          >
             <FiZap size={24} color="#fa8c16" />
           </div>
           <div className="dashboard-mobile-card__info">
-            <h4 className="dashboard-mobile-card__title">Request #{record.id}</h4>
+            <h4 className="dashboard-mobile-card__title">
+              Request #{record.id}
+            </h4>
             <span className="dashboard-mobile-card__subtitle">
               <FiUser size={12} /> {record?.seller?.name || "-"}
             </span>
@@ -254,20 +287,34 @@ function DataTable({
         </div>
         <div className="dashboard-mobile-card__body">
           <div className="dashboard-mobile-card__row">
-            <span className="dashboard-mobile-card__label"><FiZap size={14} /> Plan</span>
-            <span className="dashboard-mobile-card__value">{record?.plan?.name || "-"}</span>
+            <span className="dashboard-mobile-card__label">
+              <FiZap size={14} /> Plan
+            </span>
+            <span className="dashboard-mobile-card__value">
+              {record?.plan?.name || "-"}
+            </span>
           </div>
           <div className="dashboard-mobile-card__row">
-            <span className="dashboard-mobile-card__label"><FiPackage size={14} /> Products</span>
-            <span className="dashboard-mobile-card__value">{record?.product_ids?.length || 0}</span>
+            <span className="dashboard-mobile-card__label">
+              <FiPackage size={14} /> Products
+            </span>
+            <span className="dashboard-mobile-card__value">
+              {record?.product_ids?.length || 0}
+            </span>
           </div>
           <div className="dashboard-mobile-card__row">
-            <span className="dashboard-mobile-card__label"><FiClock size={14} /> Days</span>
+            <span className="dashboard-mobile-card__label">
+              <FiClock size={14} /> Days
+            </span>
             <span className="dashboard-mobile-card__value">{record.days}</span>
           </div>
           <div className="dashboard-mobile-card__row">
-            <span className="dashboard-mobile-card__label"><FiDollarSign size={14} /> Total</span>
-            <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">₦{Number(record.total_amount).toFixed(2)}</span>
+            <span className="dashboard-mobile-card__label">
+              <FiDollarSign size={14} /> Total
+            </span>
+            <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">
+              ₦{Number(record.total_amount).toFixed(2)}
+            </span>
           </div>
           {record.status === "approved" && (
             <div className="dashboard-mobile-card__row">
@@ -276,16 +323,27 @@ function DataTable({
                 <InputNumber
                   size="small"
                   min={0}
-                  value={priorityDraft[record.id] ?? record.boost_priority ?? 100}
-                  onChange={(v) => setPriorityDraft((prev) => ({ ...prev, [record.id]: Number(v ?? 0) }))}
+                  value={
+                    priorityDraft[record.id] ?? record.boost_priority ?? 100
+                  }
+                  onChange={(v) =>
+                    setPriorityDraft((prev) => ({
+                      ...prev,
+                      [record.id]: Number(v ?? 0),
+                    }))
+                  }
                   style={{ width: 70 }}
                 />
                 <Button
                   size="small"
                   loading={mutationPriority.isPending}
                   onClick={() => {
-                    const value = priorityDraft[record.id] ?? record.boost_priority ?? 100;
-                    mutationPriority.mutate({ id: record.id, priority: Number(value) });
+                    const value =
+                      priorityDraft[record.id] ?? record.boost_priority ?? 100;
+                    mutationPriority.mutate({
+                      id: record.id,
+                      priority: Number(value),
+                    });
                   }}
                 >
                   Save
@@ -309,7 +367,9 @@ function DataTable({
             icon={<FiCheck size={14} />}
             size="small"
             disabled={record.status !== "pending"}
-            onClick={() => setModal({ open: true, id: record.id, action: "approved" })}
+            onClick={() =>
+              setModal({ open: true, id: record.id, action: "approved" })
+            }
           >
             Approve
           </Button>
@@ -318,7 +378,9 @@ function DataTable({
             icon={<FiX size={14} />}
             size="small"
             disabled={record.status !== "pending"}
-            onClick={() => setModal({ open: true, id: record.id, action: "rejected" })}
+            onClick={() =>
+              setModal({ open: true, id: record.id, action: "rejected" })
+            }
           >
             Reject
           </Button>

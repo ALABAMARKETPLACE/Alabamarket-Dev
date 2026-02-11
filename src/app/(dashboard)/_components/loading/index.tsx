@@ -11,11 +11,20 @@ interface LoadingProps {
 
 function Loading({ size = "large", text, fullHeight = true }: LoadingProps) {
   return (
-    <div className={`dashboard-loading ${fullHeight ? 'dashboard-loading--full' : ''}`}>
+    <div
+      className={`dashboard-loading ${fullHeight ? "dashboard-loading--full" : ""}`}
+    >
       <div className="dashboard-loading__content">
         <div className="dashboard-loading__spinner">
           <Spin
-            indicator={<LoadingOutlined style={{ fontSize: size === "large" ? 40 : size === "small" ? 20 : 32 }} spin />}
+            indicator={
+              <LoadingOutlined
+                style={{
+                  fontSize: size === "large" ? 40 : size === "small" ? 20 : 32,
+                }}
+                spin
+              />
+            }
             size={size}
           />
         </div>

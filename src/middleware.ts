@@ -19,10 +19,10 @@ const admin_only_routes = [
 const guest_allowed_routes = ["/cart", "/checkout", "/checkoutsuccess"];
 
 export async function middleware(req: NextRequest) {
-  const token: any = await getToken({
+  const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-  });
+  }) as { user?: { role?: string; type?: string } } | null;
   const role = token?.user?.role;
   const url = req.nextUrl.clone();
 
@@ -50,7 +50,7 @@ export async function middleware(req: NextRequest) {
   const allowedRoles = ["seller", "admin", "delivery_company", "driver"];
   const allowedTypes = ["seller", "admin", "delivery_company", "driver"];
   const isAllowed =
-    allowedRoles.includes(userRole) || allowedTypes.includes(userType);
+    allowedRoles.includes(userRole ?? "") || allowedTypes.includes(userType ?? "");
 
   if (
     url.pathname.startsWith("/auth") &&

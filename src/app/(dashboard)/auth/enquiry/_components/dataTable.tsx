@@ -1,7 +1,14 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import API from "@/config/API_ADMIN";
-import { Button, Table, Popconfirm, Pagination, notification, Tooltip } from "antd";
+import {
+  Button,
+  Table,
+  Popconfirm,
+  Pagination,
+  notification,
+  Tooltip,
+} from "antd";
 import { FiTrash2, FiMail, FiMessageSquare, FiCalendar } from "react-icons/fi";
 import moment from "moment";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -49,7 +56,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "email",
       key: "email",
       render: (email: string) => (
-        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <FiMail size={14} color="#1890ff" />
           {email}
         </span>
@@ -60,7 +67,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "message",
       key: "message",
       render: (message: string) => (
-        <span className="table-desctext" style={{ maxWidth: '400px' }}>
+        <span className="table-desctext" style={{ maxWidth: "400px" }}>
           {message?.length > 80 ? `${message.substring(0, 80)}...` : message}
         </span>
       ),
@@ -88,8 +95,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             okButtonProps={{ loading: mutationDelete.isPending }}
           >
             <Tooltip title="Delete enquiry">
-              <Button 
-                type="text" 
+              <Button
+                type="text"
                 size="small"
                 icon={<FiTrash2 size={16} color="#ff4d4f" />}
               />
@@ -119,17 +126,30 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           <div className="dashboard-mobile-card__info">
             <h4 className="dashboard-mobile-card__title">{record?.email}</h4>
             <span className="dashboard-mobile-card__subtitle">
-              <FiCalendar size={12} /> {moment(record?.createdAt).format("MMM Do YYYY")}
+              <FiCalendar size={12} />{" "}
+              {moment(record?.createdAt).format("MMM Do YYYY")}
             </span>
           </div>
         </div>
         <div className="dashboard-mobile-card__body">
-          <div className="dashboard-mobile-card__row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
+          <div
+            className="dashboard-mobile-card__row"
+            style={{
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "4px",
+            }}
+          >
             <span className="dashboard-mobile-card__label">
               <FiMessageSquare size={14} /> Message
             </span>
-            <span className="dashboard-mobile-card__value" style={{ fontSize: '13px', color: '#555', lineHeight: '1.5' }}>
-              {record?.message?.length > 150 ? `${record?.message.substring(0, 150)}...` : record?.message}
+            <span
+              className="dashboard-mobile-card__value"
+              style={{ fontSize: "13px", color: "#555", lineHeight: "1.5" }}
+            >
+              {record?.message?.length > 150
+                ? `${record?.message.substring(0, 150)}...`
+                : record?.message}
             </span>
           </div>
         </div>

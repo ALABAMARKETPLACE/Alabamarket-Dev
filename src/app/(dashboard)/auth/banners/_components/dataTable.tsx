@@ -14,7 +14,15 @@ import {
   notification,
   Tooltip,
 } from "antd";
-import { FiEdit2, FiTrash2, FiImage, FiMonitor, FiSmartphone, FiCalendar, FiCheckCircle } from "react-icons/fi";
+import {
+  FiEdit2,
+  FiTrash2,
+  FiImage,
+  FiMonitor,
+  FiSmartphone,
+  FiCalendar,
+  FiCheckCircle,
+} from "react-icons/fi";
 import { CgReorder } from "react-icons/cg";
 import moment from "moment";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -96,9 +104,9 @@ function DataTable({
   const renderActions = (record: any) => (
     <div className="table-action">
       <Tooltip title="Edit banner">
-        <Button 
-          type="text" 
-          size="small" 
+        <Button
+          type="text"
+          size="small"
           onClick={() => edit(record)}
           icon={<FiEdit2 size={16} color="#1890ff" />}
         />
@@ -195,9 +203,13 @@ function DataTable({
       width: 100,
       render: (text: any, record: any) => {
         return record?.img_desk ? (
-          <span className="dashboard-badge dashboard-badge--success">Available</span>
+          <span className="dashboard-badge dashboard-badge--success">
+            Available
+          </span>
         ) : (
-          <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
+          <span className="dashboard-badge dashboard-badge--danger">
+            Not Available
+          </span>
         );
       },
     },
@@ -208,9 +220,13 @@ function DataTable({
       width: 100,
       render: (text: any, record: any) => {
         return record?.img_mob ? (
-          <span className="dashboard-badge dashboard-badge--success">Available</span>
+          <span className="dashboard-badge dashboard-badge--success">
+            Available
+          </span>
         ) : (
-          <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
+          <span className="dashboard-badge dashboard-badge--danger">
+            Not Available
+          </span>
         );
       },
     },
@@ -230,9 +246,13 @@ function DataTable({
       render: (item: boolean) => (
         <span>
           {item === true ? (
-            <span className="dashboard-badge dashboard-badge--success">Active</span>
+            <span className="dashboard-badge dashboard-badge--success">
+              Active
+            </span>
           ) : (
-            <span className="dashboard-badge dashboard-badge--default">Inactive</span>
+            <span className="dashboard-badge dashboard-badge--default">
+              Inactive
+            </span>
           )}
         </span>
       ),
@@ -259,7 +279,10 @@ function DataTable({
       return (
         <div className="dashboard-mobile-card" key={id}>
           <div className="dashboard-mobile-card__header">
-            <div className="dashboard-mobile-card__avatar" style={{ borderRadius: '8px', overflow: 'hidden' }}>
+            <div
+              className="dashboard-mobile-card__avatar"
+              style={{ borderRadius: "8px", overflow: "hidden" }}
+            >
               <Image
                 src={record?.img_desk || record?.img_mob}
                 alt={record?.title}
@@ -269,7 +292,9 @@ function DataTable({
               />
             </div>
             <div className="dashboard-mobile-card__info">
-              <h4 className="dashboard-mobile-card__title">{record?.title ?? "Untitled Banner"}</h4>
+              <h4 className="dashboard-mobile-card__title">
+                {record?.title ?? "Untitled Banner"}
+              </h4>
               <span className="dashboard-mobile-card__subtitle">
                 <FiCalendar size={12} />
                 {record?.createdAt
@@ -278,9 +303,13 @@ function DataTable({
               </span>
             </div>
             {record?.status ? (
-              <span className="dashboard-badge dashboard-badge--success">Active</span>
+              <span className="dashboard-badge dashboard-badge--success">
+                Active
+              </span>
             ) : (
-              <span className="dashboard-badge dashboard-badge--default">Inactive</span>
+              <span className="dashboard-badge dashboard-badge--default">
+                Inactive
+              </span>
             )}
           </div>
           <div className="dashboard-mobile-card__body">
@@ -290,9 +319,13 @@ function DataTable({
               </span>
               <span className="dashboard-mobile-card__value">
                 {record?.img_desk ? (
-                  <span className="dashboard-badge dashboard-badge--success">Available</span>
+                  <span className="dashboard-badge dashboard-badge--success">
+                    Available
+                  </span>
                 ) : (
-                  <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
+                  <span className="dashboard-badge dashboard-badge--danger">
+                    Not Available
+                  </span>
                 )}
               </span>
             </div>
@@ -302,19 +335,31 @@ function DataTable({
               </span>
               <span className="dashboard-mobile-card__value">
                 {record?.img_mob ? (
-                  <span className="dashboard-badge dashboard-badge--success">Available</span>
+                  <span className="dashboard-badge dashboard-badge--success">
+                    Available
+                  </span>
                 ) : (
-                  <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
+                  <span className="dashboard-badge dashboard-badge--danger">
+                    Not Available
+                  </span>
                 )}
               </span>
             </div>
             <div className="dashboard-mobile-card__row">
               <span className="dashboard-mobile-card__label">Position</span>
-              <span className="dashboard-mobile-card__value">#{record?.position ?? "-"}</span>
+              <span className="dashboard-mobile-card__value">
+                #{record?.position ?? "-"}
+              </span>
             </div>
           </div>
           <div className="dashboard-mobile-card__actions">
-            <Button type="primary" ghost icon={<FiEdit2 size={14} />} size="small" onClick={() => edit(record)}>
+            <Button
+              type="primary"
+              ghost
+              icon={<FiEdit2 size={14} />}
+              size="small"
+              onClick={() => edit(record)}
+            >
               Edit
             </Button>
             <Popconfirm

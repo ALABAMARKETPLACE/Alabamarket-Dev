@@ -37,9 +37,9 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
             size={40}
             src={record.image || undefined}
             icon={!record.image && <FiUser />}
-            style={{ 
-              backgroundColor: !record.image ? '#f0f0f0' : undefined,
-              color: !record.image ? '#999' : undefined
+            style={{
+              backgroundColor: !record.image ? "#f0f0f0" : undefined,
+              color: !record.image ? "#999" : undefined,
             }}
           />
           <div>
@@ -57,7 +57,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
       key: "phone",
       render: (phone: string, record: any) => (
         <div className="table__text--secondary">
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <FiPhone size={14} />
             {record.countrycode || ""} {phone || "N/A"}
             {record.phone_verify && (
@@ -75,9 +75,15 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
       dataIndex: "mail_verify",
       key: "mail_verify",
       render: (verified: boolean) => (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <FiMail size={14} color={verified ? '#10b981' : '#999'} />
-          <span className={verified ? "dashboard-badge dashboard-badge--success" : "dashboard-badge dashboard-badge--default"}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <FiMail size={14} color={verified ? "#10b981" : "#999"} />
+          <span
+            className={
+              verified
+                ? "dashboard-badge dashboard-badge--success"
+                : "dashboard-badge dashboard-badge--default"
+            }
+          >
             {verified ? "Verified" : "Unverified"}
           </span>
         </div>
@@ -89,7 +95,13 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
       dataIndex: "status",
       key: "status",
       render: (status: boolean) => (
-        <span className={status ? "dashboard-badge dashboard-badge--success" : "dashboard-badge dashboard-badge--danger"}>
+        <span
+          className={
+            status
+              ? "dashboard-badge dashboard-badge--success"
+              : "dashboard-badge dashboard-badge--danger"
+          }
+        >
           <span className="dashboard-badge__dot" />
           {status ? "Active" : "Inactive"}
         </span>
@@ -100,9 +112,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => (
-        <div className="table__date">
-          {moment(date).format("MMM DD, YYYY")}
-        </div>
+        <div className="table__date">{moment(date).format("MMM DD, YYYY")}</div>
       ),
       responsive: ["md"] as any,
     },
@@ -130,9 +140,9 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
     <div className="dashboard-mobile-cards">
       {data.length === 0 ? (
         <div className="dashboard-mobile-card">
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 40, textAlign: "center" }}>
             <MdHourglassEmpty size={40} color="#999" />
-            <p style={{ color: '#666', marginTop: 16 }}>No Users yet</p>
+            <p style={{ color: "#666", marginTop: 16 }}>No Users yet</p>
           </div>
         </div>
       ) : (
@@ -144,18 +154,28 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                   size={48}
                   src={user.image || undefined}
                   icon={!user.image && <FiUser />}
-                  style={{ 
-                    backgroundColor: !user.image ? '#f0f0f0' : undefined,
-                    width: '100%',
-                    height: '100%'
+                  style={{
+                    backgroundColor: !user.image ? "#f0f0f0" : undefined,
+                    width: "100%",
+                    height: "100%",
                   }}
                 />
               </div>
               <div className="dashboard-mobile-card__title-group">
-                <h4 className="dashboard-mobile-card__title">{user.name || "N/A"}</h4>
-                <p className="dashboard-mobile-card__subtitle">{user.email || "No email"}</p>
+                <h4 className="dashboard-mobile-card__title">
+                  {user.name || "N/A"}
+                </h4>
+                <p className="dashboard-mobile-card__subtitle">
+                  {user.email || "No email"}
+                </p>
               </div>
-              <span className={user.status ? "dashboard-badge dashboard-badge--success" : "dashboard-badge dashboard-badge--danger"}>
+              <span
+                className={
+                  user.status
+                    ? "dashboard-badge dashboard-badge--success"
+                    : "dashboard-badge dashboard-badge--danger"
+                }
+              >
                 {user.status ? "Active" : "Inactive"}
               </span>
             </div>
@@ -164,12 +184,26 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 <span className="dashboard-mobile-card__label">Phone</span>
                 <span className="dashboard-mobile-card__value">
                   {user.countrycode || ""} {user.phone || "N/A"}
-                  {user.phone_verify && <IoMdCheckmarkCircle color="#10b981" size={14} style={{ marginLeft: 4 }} />}
+                  {user.phone_verify && (
+                    <IoMdCheckmarkCircle
+                      color="#10b981"
+                      size={14}
+                      style={{ marginLeft: 4 }}
+                    />
+                  )}
                 </span>
               </div>
               <div className="dashboard-mobile-card__row">
-                <span className="dashboard-mobile-card__label">Email Status</span>
-                <span className={user.mail_verify ? "dashboard-badge dashboard-badge--success" : "dashboard-badge dashboard-badge--default"}>
+                <span className="dashboard-mobile-card__label">
+                  Email Status
+                </span>
+                <span
+                  className={
+                    user.mail_verify
+                      ? "dashboard-badge dashboard-badge--success"
+                      : "dashboard-badge dashboard-badge--default"
+                  }
+                >
                   {user.mail_verify ? "Verified" : "Unverified"}
                 </span>
               </div>

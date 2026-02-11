@@ -9,7 +9,14 @@ import {
   notification,
   Tooltip,
 } from "antd";
-import { FiEdit2, FiTrash2, FiPackage, FiCalendar, FiDollarSign, FiBox } from "react-icons/fi";
+import {
+  FiEdit2,
+  FiTrash2,
+  FiPackage,
+  FiCalendar,
+  FiDollarSign,
+  FiBox,
+} from "react-icons/fi";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
@@ -60,7 +67,9 @@ function DataTable({
     }
     if (item === false) {
       return (
-        <span className="dashboard-badge dashboard-badge--warning">Inactive</span>
+        <span className="dashboard-badge dashboard-badge--warning">
+          Inactive
+        </span>
       );
     }
     return (
@@ -191,7 +200,11 @@ function DataTable({
         <div className="table-action">
           <Tooltip title="Edit product">
             <Link href={`/auth/products/${id}`}>
-              <Button type="text" size="small" icon={<FiEdit2 size={16} color="#1890ff" />} />
+              <Button
+                type="text"
+                size="small"
+                icon={<FiEdit2 size={16} color="#1890ff" />}
+              />
             </Link>
           </Tooltip>
           <Popconfirm
@@ -202,9 +215,9 @@ function DataTable({
             onConfirm={() => handleDelete(id, record?.storeId)}
           >
             <Tooltip title="Delete product">
-              <Button 
-                type="text" 
-                size="small" 
+              <Button
+                type="text"
+                size="small"
                 loading={deleteLoadingId === id}
                 icon={<FiTrash2 size={16} color="#ff4d4f" />}
               />
@@ -247,11 +260,13 @@ function DataTable({
                 alt={record?.name}
                 height={56}
                 width={56}
-                style={{ borderRadius: '8px', objectFit: 'cover' }}
+                style={{ borderRadius: "8px", objectFit: "cover" }}
               />
             </div>
             <div className="dashboard-mobile-card__info">
-              <h4 className="dashboard-mobile-card__title">{record?.name ?? "Unnamed Product"}</h4>
+              <h4 className="dashboard-mobile-card__title">
+                {record?.name ?? "Unnamed Product"}
+              </h4>
               <span className="dashboard-mobile-card__subtitle">
                 <FiCalendar size={12} /> {createdAt}
               </span>
@@ -263,18 +278,27 @@ function DataTable({
               <span className="dashboard-mobile-card__label">
                 <FiBox size={14} /> Quantity
               </span>
-              <span className="dashboard-mobile-card__value">{renderQuantity(record?.unit)}</span>
+              <span className="dashboard-mobile-card__value">
+                {renderQuantity(record?.unit)}
+              </span>
             </div>
             <div className="dashboard-mobile-card__row">
               <span className="dashboard-mobile-card__label">
                 <FiDollarSign size={14} /> Price
               </span>
-              <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">{price}</span>
+              <span className="dashboard-mobile-card__value dashboard-mobile-card__value--highlight">
+                {price}
+              </span>
             </div>
           </div>
           <div className="dashboard-mobile-card__actions">
             <Link href={`/auth/products/${id}`}>
-              <Button type="primary" ghost icon={<FiEdit2 size={14} />} size="small">
+              <Button
+                type="primary"
+                ghost
+                icon={<FiEdit2 size={14} />}
+                size="small"
+              >
                 Edit
               </Button>
             </Link>

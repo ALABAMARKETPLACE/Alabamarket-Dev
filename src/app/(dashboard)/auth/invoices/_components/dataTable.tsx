@@ -1,13 +1,14 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
+import { Button, Table, Popconfirm, Pagination, Tooltip } from "antd";
 import {
-  Button,
-  Table,
-  Popconfirm,
-  Pagination,
-  Tooltip,
-} from "antd";
-import { FiTrash2, FiFileText, FiUser, FiCalendar, FiDollarSign, FiHash } from "react-icons/fi";
+  FiTrash2,
+  FiFileText,
+  FiUser,
+  FiCalendar,
+  FiDollarSign,
+  FiHash,
+} from "react-icons/fi";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
@@ -32,7 +33,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const getCurrencySymbol = () => settings.currency === "NGN" ? "₦" : settings.currency;
+  const getCurrencySymbol = () =>
+    settings.currency === "NGN" ? "₦" : settings.currency;
 
   const columns = [
     {
@@ -40,7 +42,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "invoice_id",
       key: "invoice_id",
       render: (id: string) => (
-        <span style={{ fontWeight: 500, color: '#1890ff' }}>
+        <span style={{ fontWeight: 500, color: "#1890ff" }}>
           <FiHash size={12} /> {id}
         </span>
       ),
@@ -50,7 +52,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "to_name",
       key: "to_name",
       render: (name: string) => (
-        <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <FiUser size={14} color="#666" />
           {name}
         </span>
@@ -61,7 +63,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "total_amount",
       key: "total_amount",
       render: (text: any) => (
-        <span style={{ fontWeight: 600, color: '#52c41a' }}>
+        <span style={{ fontWeight: 600, color: "#52c41a" }}>
           {getCurrencySymbol()} {formatCurrency(Number(text))}
         </span>
       ),
@@ -73,7 +75,9 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       render: (text: any, record: any) => {
         const isOverdue = moment(text).isBefore(moment());
         return (
-          <span className={`dashboard-badge dashboard-badge--${isOverdue ? 'danger' : 'default'}`}>
+          <span
+            className={`dashboard-badge dashboard-badge--${isOverdue ? "danger" : "default"}`}
+          >
             {moment(text).format("DD/MM/YYYY")}
           </span>
         );
@@ -92,8 +96,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             placement="bottomLeft"
           >
             <Tooltip title="Delete invoice">
-              <Button 
-                type="text" 
+              <Button
+                type="text"
                 size="small"
                 icon={<FiTrash2 size={16} color="#ff4d4f" />}
               />
@@ -117,21 +121,33 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     return data.map((record: any) => {
       const isOverdue = moment(record?.due_date).isBefore(moment());
       return (
-        <div className="dashboard-mobile-card" key={record?.invoice_id || record?.id}>
+        <div
+          className="dashboard-mobile-card"
+          key={record?.invoice_id || record?.id}
+        >
           <div className="dashboard-mobile-card__header">
-            <div className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon" style={{ backgroundColor: '#e6f7ff' }}>
+            <div
+              className="dashboard-mobile-card__avatar dashboard-mobile-card__avatar--icon"
+              style={{ backgroundColor: "#e6f7ff" }}
+            >
               <FiFileText size={24} color="#1890ff" />
             </div>
             <div className="dashboard-mobile-card__info">
-              <h4 className="dashboard-mobile-card__title" style={{ color: '#1890ff' }}>
+              <h4
+                className="dashboard-mobile-card__title"
+                style={{ color: "#1890ff" }}
+              >
                 #{record?.invoice_id}
               </h4>
               <span className="dashboard-mobile-card__subtitle">
                 <FiUser size={12} /> {record?.to_name}
               </span>
             </div>
-            <span style={{ fontWeight: 600, color: '#52c41a', fontSize: '16px' }}>
-              {getCurrencySymbol()} {formatCurrency(Number(record?.total_amount))}
+            <span
+              style={{ fontWeight: 600, color: "#52c41a", fontSize: "16px" }}
+            >
+              {getCurrencySymbol()}{" "}
+              {formatCurrency(Number(record?.total_amount))}
             </span>
           </div>
           <div className="dashboard-mobile-card__body">
@@ -140,7 +156,9 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
                 <FiCalendar size={14} /> Due Date
               </span>
               <span className="dashboard-mobile-card__value">
-                <span className={`dashboard-badge dashboard-badge--${isOverdue ? 'danger' : 'default'}`}>
+                <span
+                  className={`dashboard-badge dashboard-badge--${isOverdue ? "danger" : "default"}`}
+                >
                   {moment(record?.due_date).format("DD/MM/YYYY")}
                 </span>
               </span>

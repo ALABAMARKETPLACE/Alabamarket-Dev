@@ -88,7 +88,9 @@ function DataTable({
       dataIndex: "tag",
       key: "tag",
       render: (item: string) => (
-        <span className="dashboard-badge dashboard-badge--info">{item || '-'}</span>
+        <span className="dashboard-badge dashboard-badge--info">
+          {item || "-"}
+        </span>
       ),
     },
     {
@@ -113,7 +115,9 @@ function DataTable({
       key: "status",
       width: 100,
       render: (item: boolean) => (
-        <span className={`dashboard-badge dashboard-badge--${item ? 'success' : 'default'}`}>
+        <span
+          className={`dashboard-badge dashboard-badge--${item ? "success" : "default"}`}
+        >
           {item ? "Active" : "Inactive"}
         </span>
       ),
@@ -126,9 +130,9 @@ function DataTable({
             render: (item: any, record: any) => (
               <div className="table-action">
                 <Tooltip title="Edit offer">
-                  <Button 
-                    type="text" 
-                    size="small" 
+                  <Button
+                    type="text"
+                    size="small"
                     onClick={() => edit(record)}
                     icon={<FiEdit2 size={16} color="#1890ff" />}
                   />
@@ -143,8 +147,8 @@ function DataTable({
                   okButtonProps={{ loading: mutationDelete.isPending }}
                 >
                   <Tooltip title="Delete offer">
-                    <Button 
-                      type="text" 
+                    <Button
+                      type="text"
                       size="small"
                       icon={<FiTrash2 size={16} color="#ff4d4f" />}
                     />
@@ -176,18 +180,23 @@ function DataTable({
               alt={record?.title}
               height={56}
               width={56}
-              style={{ borderRadius: '8px', objectFit: 'contain' }}
+              style={{ borderRadius: "8px", objectFit: "contain" }}
             />
           </div>
           <div className="dashboard-mobile-card__info">
             <h4 className="dashboard-mobile-card__title">{record?.title}</h4>
             {record?.tag && (
-              <span className="dashboard-badge dashboard-badge--info" style={{ marginTop: '4px' }}>
+              <span
+                className="dashboard-badge dashboard-badge--info"
+                style={{ marginTop: "4px" }}
+              >
                 <FiTag size={10} /> {record?.tag}
               </span>
             )}
           </div>
-          <span className={`dashboard-badge dashboard-badge--${record?.status ? 'success' : 'default'}`}>
+          <span
+            className={`dashboard-badge dashboard-badge--${record?.status ? "success" : "default"}`}
+          >
             {record?.status ? "Active" : "Inactive"}
           </span>
         </div>
@@ -196,18 +205,28 @@ function DataTable({
             <span className="dashboard-mobile-card__label">
               <FiCalendar size={14} /> Start Date
             </span>
-            <span className="dashboard-mobile-card__value">{dayjs(record?.start_date).format("MMM Do YYYY")}</span>
+            <span className="dashboard-mobile-card__value">
+              {dayjs(record?.start_date).format("MMM Do YYYY")}
+            </span>
           </div>
           <div className="dashboard-mobile-card__row">
             <span className="dashboard-mobile-card__label">
               <FiCalendar size={14} /> End Date
             </span>
-            <span className="dashboard-mobile-card__value">{dayjs(record?.end_date).format("MMM Do YYYY")}</span>
+            <span className="dashboard-mobile-card__value">
+              {dayjs(record?.end_date).format("MMM Do YYYY")}
+            </span>
           </div>
         </div>
         {session?.role === "admin" && (
           <div className="dashboard-mobile-card__actions">
-            <Button type="primary" ghost icon={<FiEdit2 size={14} />} size="small" onClick={() => edit(record)}>
+            <Button
+              type="primary"
+              ghost
+              icon={<FiEdit2 size={14} />}
+              size="small"
+              onClick={() => edit(record)}
+            >
               Edit
             </Button>
             <Popconfirm

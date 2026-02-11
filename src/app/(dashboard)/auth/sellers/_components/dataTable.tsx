@@ -28,12 +28,15 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const currencySymbol = settings?.currency === "NGN" ? "₦" : settings?.currency;
+  const currencySymbol =
+    settings?.currency === "NGN" ? "₦" : settings?.currency;
 
   const getStatusBadge = (status: string) => {
     const statusLower = status?.toLowerCase();
-    if (statusLower === "approved") return "dashboard-badge dashboard-badge--success";
-    if (statusLower === "pending") return "dashboard-badge dashboard-badge--warning";
+    if (statusLower === "approved")
+      return "dashboard-badge dashboard-badge--success";
+    if (statusLower === "pending")
+      return "dashboard-badge dashboard-badge--warning";
     return "dashboard-badge dashboard-badge--danger";
   };
 
@@ -48,9 +51,9 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
             size={44}
             src={record.logo_upload || undefined}
             icon={!record.logo_upload && <FiStore />}
-            style={{ 
-              backgroundColor: !record.logo_upload ? '#f0f0f0' : undefined,
-              color: !record.logo_upload ? '#999' : undefined
+            style={{
+              backgroundColor: !record.logo_upload ? "#f0f0f0" : undefined,
+              color: !record.logo_upload ? "#999" : undefined,
             }}
           />
           <div>
@@ -69,7 +72,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
       key: "phone",
       render: (phone: string, record: any) => (
         <div className="table__text--secondary">
-          <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <FiPhone size={14} />
             {record?.code || ""} {phone || "N/A"}
           </span>
@@ -123,9 +126,9 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
     <div className="dashboard-mobile-cards">
       {data.length === 0 ? (
         <div className="dashboard-mobile-card">
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 40, textAlign: "center" }}>
             <MdHourglassEmpty size={40} color="#999" />
-            <p style={{ color: '#666', marginTop: 16 }}>No Sellers yet</p>
+            <p style={{ color: "#666", marginTop: 16 }}>No Sellers yet</p>
           </div>
         </div>
       ) : (
@@ -137,16 +140,22 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                   size={48}
                   src={seller.logo_upload || undefined}
                   icon={!seller.logo_upload && <FiStore />}
-                  style={{ 
-                    backgroundColor: !seller.logo_upload ? '#f0f0f0' : undefined,
-                    width: '100%',
-                    height: '100%'
+                  style={{
+                    backgroundColor: !seller.logo_upload
+                      ? "#f0f0f0"
+                      : undefined,
+                    width: "100%",
+                    height: "100%",
                   }}
                 />
               </div>
               <div className="dashboard-mobile-card__title-group">
-                <h4 className="dashboard-mobile-card__title">{seller.store_name || "N/A"}</h4>
-                <p className="dashboard-mobile-card__subtitle">{seller.name || "No owner"}</p>
+                <h4 className="dashboard-mobile-card__title">
+                  {seller.store_name || "N/A"}
+                </h4>
+                <p className="dashboard-mobile-card__subtitle">
+                  {seller.name || "No owner"}
+                </p>
               </div>
               <span className={getStatusBadge(seller.status)}>
                 {seller.status || "N/A"}
@@ -161,7 +170,10 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               </div>
               <div className="dashboard-mobile-card__row">
                 <span className="dashboard-mobile-card__label">Balance</span>
-                <span className="dashboard-mobile-card__value" style={{ fontWeight: 600, color: '#10b981' }}>
+                <span
+                  className="dashboard-mobile-card__value"
+                  style={{ fontWeight: 600, color: "#10b981" }}
+                >
                   {currencySymbol} {formatCurrency(seller.balance || 0)}
                 </span>
               </div>

@@ -2,7 +2,13 @@
 import React, { useMemo, useEffect, useState } from "react";
 import { Button, Table, Pagination, Avatar, Tooltip } from "antd";
 import { TbListDetails } from "react-icons/tb";
-import { FiEye, FiPackage, FiUser, FiCalendar, FiDollarSign } from "react-icons/fi";
+import {
+  FiEye,
+  FiPackage,
+  FiUser,
+  FiCalendar,
+  FiDollarSign,
+} from "react-icons/fi";
 import { MdHourglassEmpty } from "react-icons/md";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
@@ -69,10 +75,17 @@ const UserName = ({ userId }: { userId: number }) => {
 
 const getStatusBadge = (status: string) => {
   const statusLower = status?.toLowerCase();
-  if (statusLower === "delivered") return "dashboard-badge dashboard-badge--success";
-  if (statusLower === "cancelled") return "dashboard-badge dashboard-badge--danger";
-  if (statusLower === "pending") return "dashboard-badge dashboard-badge--warning";
-  if (["processing", "shipped", "out_for_delivery", "out for delivery"].includes(statusLower)) {
+  if (statusLower === "delivered")
+    return "dashboard-badge dashboard-badge--success";
+  if (statusLower === "cancelled")
+    return "dashboard-badge dashboard-badge--danger";
+  if (statusLower === "pending")
+    return "dashboard-badge dashboard-badge--warning";
+  if (
+    ["processing", "shipped", "out_for_delivery", "out for delivery"].includes(
+      statusLower,
+    )
+  ) {
     return "dashboard-badge dashboard-badge--info";
   }
   return "dashboard-badge dashboard-badge--default";
@@ -100,22 +113,26 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
         key: "order_id",
         render: (orderId: string, record: Order) => (
           <div className="table__user-cell">
-            <Avatar 
-              size={44} 
+            <Avatar
+              size={44}
               src={record.image || undefined}
               icon={!record.image && <FiPackage />}
               shape="square"
-              style={{ 
-                backgroundColor: !record.image ? '#f0f0f0' : undefined,
-                color: !record.image ? '#999' : undefined,
-                borderRadius: 8
+              style={{
+                backgroundColor: !record.image ? "#f0f0f0" : undefined,
+                color: !record.image ? "#999" : undefined,
+                borderRadius: 8,
               }}
             />
             <div>
               <div className="table__user-name">#{orderId || "N/A"}</div>
               <div className="table__text--secondary" style={{ fontSize: 12 }}>
                 <FiUser size={12} style={{ marginRight: 4 }} />
-                {record?.name ? record.name : <UserName userId={record.userId as number} />}
+                {record?.name ? (
+                  record.name
+                ) : (
+                  <UserName userId={record.userId as number} />
+                )}
               </div>
             </div>
           </div>
@@ -194,33 +211,35 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
     <div className="dashboard-mobile-cards">
       {data.length === 0 ? (
         <div className="dashboard-mobile-card">
-          <div style={{ padding: 40, textAlign: 'center' }}>
+          <div style={{ padding: 40, textAlign: "center" }}>
             <MdHourglassEmpty size={40} color="#999" />
-            <p style={{ color: '#666', marginTop: 16 }}>No Orders yet</p>
+            <p style={{ color: "#666", marginTop: 16 }}>No Orders yet</p>
           </div>
         </div>
       ) : (
         data.map((order: Order, index: number) => (
-          <div 
-            key={order.order_id || order._id || order.id || index} 
+          <div
+            key={order.order_id || order._id || order.id || index}
             className="dashboard-mobile-card"
           >
             <div className="dashboard-mobile-card__header">
               <div className="dashboard-mobile-card__avatar">
-                <Avatar 
-                  size={48} 
+                <Avatar
+                  size={48}
                   src={order.image || undefined}
                   icon={!order.image && <FiPackage />}
                   shape="square"
-                  style={{ 
-                    backgroundColor: !order.image ? '#f0f0f0' : undefined,
-                    width: '100%',
-                    height: '100%'
+                  style={{
+                    backgroundColor: !order.image ? "#f0f0f0" : undefined,
+                    width: "100%",
+                    height: "100%",
                   }}
                 />
               </div>
               <div className="dashboard-mobile-card__title-group">
-                <h4 className="dashboard-mobile-card__title">#{order.order_id || "N/A"}</h4>
+                <h4 className="dashboard-mobile-card__title">
+                  #{order.order_id || "N/A"}
+                </h4>
                 <p className="dashboard-mobile-card__subtitle">
                   {order?.name || <UserName userId={order.userId as number} />}
                 </p>
@@ -244,7 +263,10 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               </div>
               <div className="dashboard-mobile-card__row">
                 <span className="dashboard-mobile-card__label">Total</span>
-                <span className="dashboard-mobile-card__value" style={{ fontWeight: 600, color: '#10b981' }}>
+                <span
+                  className="dashboard-mobile-card__value"
+                  style={{ fontWeight: 600, color: "#10b981" }}
+                >
                   {currencySymbol} {formatCurrency(order.grandTotal || 0)}
                 </span>
               </div>
