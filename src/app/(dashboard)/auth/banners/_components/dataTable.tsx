@@ -1,10 +1,9 @@
 "use client";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useState } from "react";
 import {
   Button,
   Table,
   Image,
-  Tag,
   Popconfirm,
   Popover,
   Form,
@@ -13,17 +12,15 @@ import {
   Pagination,
   Badge,
   notification,
+  Tooltip,
 } from "antd";
-import { TbEdit } from "react-icons/tb";
-import { MdDeleteOutline } from "react-icons/md";
+import { FiEdit2, FiTrash2, FiImage, FiMonitor, FiSmartphone, FiCalendar, FiCheckCircle } from "react-icons/fi";
 import { CgReorder } from "react-icons/cg";
 import moment from "moment";
-import { TfiLayoutSliderAlt } from "react-icons/tfi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE, PUT } from "@/util/apicall";
 import { reducer } from "./reducer";
 import API from "@/config/API_ADMIN";
-import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import "../styles.scss";
 interface props {
   data: any[];
@@ -98,12 +95,17 @@ function DataTable({
 
   const renderActions = (record: any) => (
     <div className="table-action">
-      <Button type="text" size="small" onClick={() => edit(record)}>
-        <TbEdit size={22} color="orange" />
-      </Button>
+      <Tooltip title="Edit banner">
+        <Button 
+          type="text" 
+          size="small" 
+          onClick={() => edit(record)}
+          icon={<FiEdit2 size={16} color="#1890ff" />}
+        />
+      </Tooltip>
 
       <Popconfirm
-        title="Delete the task"
+        title="Delete banner"
         description="Are you sure to delete this Banner?"
         okText="Yes"
         cancelText="No"
@@ -113,13 +115,14 @@ function DataTable({
         onConfirm={() => mutationDelete.mutate(record?.id)}
         okButtonProps={{ loading: mutationDelete.isPending }}
       >
-        <Button
-          type="text"
-          size="small"
-          onClick={() => dispatch({ type: "open", id: record?.id })}
-        >
-          <MdDeleteOutline size={22} color="red" />
-        </Button>
+        <Tooltip title="Delete banner">
+          <Button
+            type="text"
+            size="small"
+            onClick={() => dispatch({ type: "open", id: record?.id })}
+            icon={<FiTrash2 size={16} color="#ff4d4f" />}
+          />
+        </Tooltip>
       </Popconfirm>
 
       <Popover
@@ -139,7 +142,7 @@ function DataTable({
             >
               <Space.Compact>
                 <Form.Item style={{ marginBottom: 5 }} name={"position"}>
-                  <Input style={{ width: 110 }} />
+                  <Input style={{ width: 110 }} type="number" />
                 </Form.Item>
                 <Button
                   type="primary"
@@ -153,11 +156,13 @@ function DataTable({
           </div>
         }
       >
-        <Button type="text" size="small">
-          <Badge size="small" count={record?.position}>
-            <CgReorder size={22} />
-          </Badge>
-        </Button>
+        <Tooltip title="Change position">
+          <Button type="text" size="small">
+            <Badge size="small" count={record?.position}>
+              <CgReorder size={20} />
+            </Badge>
+          </Button>
+        </Tooltip>
       </Popover>
     </div>
   );
@@ -190,9 +195,9 @@ function DataTable({
       width: 100,
       render: (text: any, record: any) => {
         return record?.img_desk ? (
-          <Tag color="green">Available</Tag>
+          <span className="dashboard-badge dashboard-badge--success">Available</span>
         ) : (
-          <Tag color="red">Not Available</Tag>
+          <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
         );
       },
     },
@@ -203,9 +208,9 @@ function DataTable({
       width: 100,
       render: (text: any, record: any) => {
         return record?.img_mob ? (
-          <Tag color="green">Available</Tag>
+          <span className="dashboard-badge dashboard-badge--success">Available</span>
         ) : (
-          <Tag color="red">Not Available</Tag>
+          <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
         );
       },
     },
@@ -221,12 +226,14 @@ function DataTable({
       title: "Status",
       dataIndex: "status",
       key: "status",
-      width: 50,
+      width: 80,
       render: (item: boolean) => (
         <span>
-          {item == true ? (
-            <IoCheckmarkCircleOutline color="#008000" size={20} />
-          ) : null}
+          {item === true ? (
+            <span className="dashboard-badge dashboard-badge--success">Active</span>
+          ) : (
+            <span className="dashboard-badge dashboard-badge--default">Inactive</span>
+          )}
         </span>
       ),
     },
@@ -237,12 +244,12 @@ function DataTable({
     },
   ];
 
-  const renderMobileContent = () => {
+  const renderMobileContent = useMemo(() => {
     if (!Array.isArray(data) || data.length === 0) {
       return (
-        <div className="banners-tableMobileEmpty">
-          <TfiLayoutSliderAlt size={40} />
-          <p>No Banners yet</p>
+        <div className="dashboard-mobile-card__empty">
+          <FiImage size={48} />
+          <p>No banners yet</p>
         </div>
       );
     }
@@ -250,9 +257,9 @@ function DataTable({
     return data.map((record: any) => {
       const id = record?.id ?? record?._id;
       return (
-        <div className="banners-tableMobileCard" key={id}>
-          <div className="banners-tableMobileHeader">
-            <div className="banners-tableMobileImage">
+        <div className="dashboard-mobile-card" key={id}>
+          <div className="dashboard-mobile-card__header">
+            <div className="dashboard-mobile-card__avatar" style={{ borderRadius: '8px', overflow: 'hidden' }}>
               <Image
                 src={record?.img_desk || record?.img_mob}
                 alt={record?.title}
@@ -261,54 +268,76 @@ function DataTable({
                 style={{ objectFit: "cover" }}
               />
             </div>
-            <div className="banners-tableMobileTitle">
-              <div className="title">{record?.title ?? "Untitled Banner"}</div>
-              <div className="sub">
+            <div className="dashboard-mobile-card__info">
+              <h4 className="dashboard-mobile-card__title">{record?.title ?? "Untitled Banner"}</h4>
+              <span className="dashboard-mobile-card__subtitle">
+                <FiCalendar size={12} />
                 {record?.createdAt
-                  ? moment(record?.createdAt).format("MMM Do YYYY, h:mm A")
+                  ? moment(record?.createdAt).format("MMM Do YYYY")
                   : "--"}
-              </div>
+              </span>
             </div>
-            {record?.status && (
-              <IoCheckmarkCircleOutline color="#008000" size={20} />
+            {record?.status ? (
+              <span className="dashboard-badge dashboard-badge--success">Active</span>
+            ) : (
+              <span className="dashboard-badge dashboard-badge--default">Inactive</span>
             )}
           </div>
-          <div className="banners-tableMobileBody">
-            <div className="banners-tableMobileRow">
-              <span className="label">Desktop</span>
-              <span className="value">
+          <div className="dashboard-mobile-card__body">
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiMonitor size={14} /> Desktop
+              </span>
+              <span className="dashboard-mobile-card__value">
                 {record?.img_desk ? (
-                  <Tag color="green">Available</Tag>
+                  <span className="dashboard-badge dashboard-badge--success">Available</span>
                 ) : (
-                  <Tag color="red">Not Available</Tag>
+                  <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
                 )}
               </span>
             </div>
-            <div className="banners-tableMobileRow">
-              <span className="label">Mobile</span>
-              <span className="value">
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">
+                <FiSmartphone size={14} /> Mobile
+              </span>
+              <span className="dashboard-mobile-card__value">
                 {record?.img_mob ? (
-                  <Tag color="green">Available</Tag>
+                  <span className="dashboard-badge dashboard-badge--success">Available</span>
                 ) : (
-                  <Tag color="red">Not Available</Tag>
+                  <span className="dashboard-badge dashboard-badge--danger">Not Available</span>
                 )}
               </span>
             </div>
-            <div className="banners-tableMobileRow">
-              <span className="label">Order</span>
-              <span className="value">{record?.position ?? "-"}</span>
+            <div className="dashboard-mobile-card__row">
+              <span className="dashboard-mobile-card__label">Position</span>
+              <span className="dashboard-mobile-card__value">#{record?.position ?? "-"}</span>
             </div>
           </div>
-          <div className="banners-tableMobileActions">
-            {renderActions(record)}
+          <div className="dashboard-mobile-card__actions">
+            <Button type="primary" ghost icon={<FiEdit2 size={14} />} size="small" onClick={() => edit(record)}>
+              Edit
+            </Button>
+            <Popconfirm
+              title="Delete banner"
+              description="Are you sure to delete this Banner?"
+              okText="Yes"
+              cancelText="No"
+              placement="topRight"
+              onConfirm={() => mutationDelete.mutate(record?.id)}
+              okButtonProps={{ loading: mutationDelete.isPending }}
+            >
+              <Button danger size="small" icon={<FiTrash2 size={14} />}>
+                Delete
+              </Button>
+            </Popconfirm>
           </div>
         </div>
       );
     });
-  };
+  }, [data, edit, mutationDelete]);
 
   return (
-    <>
+    <div className="dashboard-table-container">
       {contextHolder}
       {!isMobile ? (
         <Table
@@ -319,27 +348,17 @@ function DataTable({
           rowKey={(record: any) => record?.id ?? record?._id}
           locale={{
             emptyText: (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "40px 0",
-                  textAlign: "center",
-                  gap: 8,
-                }}
-              >
-                <TfiLayoutSliderAlt size={40} />
-                <p>No Banners yet</p>
+              <div className="dashboard-mobile-card__empty">
+                <FiImage size={48} />
+                <p>No banners yet</p>
               </div>
             ),
           }}
         />
       ) : (
-        <div className="banners-tableMobile">{renderMobileContent()}</div>
+        <div className="dashboard-mobile-cards">{renderMobileContent}</div>
       )}
-      <div className="table-pagination">
+      <div className="table__pagination-container">
         <Pagination
           showSizeChanger
           pageSize={pageSize}
@@ -352,7 +371,7 @@ function DataTable({
           current={page}
         />
       </div>
-    </>
+    </div>
   );
 }
 

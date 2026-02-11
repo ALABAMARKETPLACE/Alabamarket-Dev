@@ -17,6 +17,7 @@ $primary-light: rgba(vars.$primary, 0.08);
 $success-color: #10b981;
 $warning-color: #f59e0b;
 $danger-color: #ef4444;
+$info-color: #3b82f6;
 
 // Layout
 $sidebar-width: 243px;
@@ -47,6 +48,16 @@ $shadow-lg:
 $shadow-xl:
   0 20px 25px -5px rgba(0, 0, 0, 0.1),
   0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+// Animation
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin-animation {
+  animation: spin 1s linear infinite;
+}
 
 // Border Radius
 $radius-sm: 6px;
@@ -2004,3 +2015,830 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   overflow-y: auto;
   overflow-x: hidden;
 }
+
+// =============================================================================
+// ENHANCED DASHBOARD WELCOME SECTION
+// =============================================================================
+.dashboard-welcome {
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+  margin-bottom: $space-2xl;
+  padding: $space-xl $space-2xl;
+  background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);
+  border-radius: $radius-xl;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-sm;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 768px) {
+    padding: $space-lg;
+    margin-bottom: $space-xl;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__greeting {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    margin-bottom: $space-sm;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: $radius-lg;
+    background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($primary-color, 0.05) 100%);
+    color: $primary-color;
+    font-size: 22px;
+
+    @media (max-width: 768px) {
+      width: 36px;
+      height: 36px;
+      font-size: 18px;
+    }
+  }
+
+  &__title {
+    font-size: 28px;
+    font-family: vars.$Bold;
+    color: $text-color-primary;
+    margin: 0;
+    letter-spacing: -0.5px;
+
+    @media (max-width: 768px) {
+      font-size: 22px;
+    }
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: $text-color-secondary;
+    margin: 0;
+    padding-left: 56px;
+
+    @media (max-width: 768px) {
+      padding-left: 0;
+      font-size: 13px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  &__date-picker {
+    @media (max-width: 768px) {
+      flex: 1;
+    }
+  }
+}
+
+// =============================================================================
+// ENHANCED STAT CARDS
+// =============================================================================
+.dashboard-stats-section {
+  margin-bottom: $space-2xl;
+}
+
+.dashboard-stat-card {
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+  padding: $space-xl;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: $primary-color;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+  }
+
+  &:hover::before {
+    transform: scaleX(1);
+  }
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: $shadow-lg;
+      transform: translateY(-4px);
+    }
+  }
+
+  &--primary::before { background: $primary-color; }
+  &--success::before { background: $success-color; }
+  &--warning::before { background: $warning-color; }
+  &--danger::before { background: $danger-color; }
+  &--info::before { background: $info-color; }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: $space-lg;
+  }
+
+  &__icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.3s ease;
+  }
+
+  &--primary &__icon-wrapper {
+    background: rgba($primary-color, 0.1);
+    color: $primary-color;
+  }
+
+  &--success &__icon-wrapper {
+    background: rgba($success-color, 0.1);
+    color: $success-color;
+  }
+
+  &--warning &__icon-wrapper {
+    background: rgba($warning-color, 0.1);
+    color: $warning-color;
+  }
+
+  &--danger &__icon-wrapper {
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+  }
+
+  &--info &__icon-wrapper {
+    background: rgba($info-color, 0.1);
+    color: $info-color;
+  }
+
+  &:hover &__icon-wrapper {
+    transform: scale(1.1);
+  }
+
+  &__trend {
+    display: flex;
+    align-items: center;
+    gap: $space-xs;
+    font-size: 12px;
+    font-family: vars.$SemiBold;
+    padding: $space-xs $space-sm;
+    border-radius: $radius-sm;
+
+    &--up {
+      background: rgba($success-color, 0.1);
+      color: $success-color;
+    }
+
+    &--down {
+      background: rgba($danger-color, 0.1);
+      color: $danger-color;
+    }
+
+    &--neutral {
+      background: rgba($text-color-tertiary, 0.1);
+      color: $text-color-secondary;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label {
+    font-size: 12px;
+    font-family: vars.$SemiBold;
+    color: $text-color-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: $space-xs;
+  }
+
+  &__value {
+    font-size: 32px;
+    font-family: vars.$Bold;
+    color: $text-color-primary;
+    line-height: 1.2;
+    margin-bottom: $space-xs;
+
+    @media (max-width: 768px) {
+      font-size: 26px;
+    }
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: $text-color-secondary;
+    font-family: vars.$Regular;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    margin-top: $space-lg;
+    padding-top: $space-lg;
+    border-top: 1px solid $border-color;
+    font-size: 13px;
+    color: $primary-color;
+    font-family: vars.$Medium;
+    transition: all 0.2s ease;
+
+    svg {
+      transition: transform 0.2s ease;
+    }
+  }
+
+  &:hover &__footer svg {
+    transform: translateX(4px);
+  }
+}
+
+// =============================================================================
+// ENHANCED CHART CARDS
+// =============================================================================
+.dashboard-charts-section {
+  margin-top: $space-xl;
+}
+
+.dashboard-chart-card {
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-xs;
+  height: 100%;
+
+  .ant-card-head {
+    border-bottom: 1px solid $border-color;
+    padding: $space-xl $space-xl 0;
+    min-height: auto;
+
+    @media (max-width: 768px) {
+      padding: $space-lg $space-lg 0;
+    }
+  }
+
+  .ant-card-head-title {
+    padding: 0 0 $space-lg;
+  }
+
+  .ant-card-body {
+    padding: $space-xl;
+
+    @media (max-width: 768px) {
+      padding: $space-lg;
+    }
+  }
+}
+
+.dashboard-card-title {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+
+  > span:first-child {
+    font-size: 16px;
+    font-family: vars.$SemiBold;
+    color: $text-color-primary;
+  }
+}
+
+.dashboard-card-subtitle {
+  font-size: 13px;
+  font-family: vars.$Regular;
+  color: $text-color-secondary;
+  font-weight: 400;
+}
+
+.dashboard-pie-chart-wrapper {
+  margin-bottom: $space-xl;
+}
+
+.dashboard-empty-chart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-2xl;
+  text-align: center;
+
+  &__icon {
+    font-size: 48px;
+    color: $text-color-tertiary;
+    margin-bottom: $space-lg;
+  }
+
+  p {
+    color: $text-color-secondary;
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+.dashboard-stats-table {
+  border: 1px solid $border-color;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $space-md $space-lg;
+    border-bottom: 1px solid $border-color;
+    font-size: 14px;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &--header {
+      background: #f9fafb;
+      font-family: vars.$SemiBold;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: $text-color-secondary;
+    }
+
+    &--total {
+      background: rgba($primary-color, 0.05);
+    }
+  }
+
+  &__label {
+    color: $text-color-secondary;
+    text-transform: capitalize;
+  }
+
+  &__value {
+    font-family: vars.$SemiBold;
+    color: $text-color-primary;
+  }
+}
+
+// =============================================================================
+// ENHANCED LOADING STATE
+// =============================================================================
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-2xl;
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+
+  &--full {
+    min-height: 300px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-lg;
+  }
+
+  &__spinner {
+    color: $primary-color;
+  }
+
+  &__text {
+    font-size: 14px;
+    color: $text-color-secondary;
+    margin: 0;
+  }
+}
+
+// =============================================================================
+// ENHANCED ERROR STATE
+// =============================================================================
+.dashboard-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  padding: $space-2xl;
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+
+  &__container {
+    text-align: center;
+    max-width: 400px;
+  }
+
+  &__icon {
+    font-size: 64px;
+    color: $danger-color;
+    margin-bottom: $space-xl;
+    opacity: 0.8;
+  }
+
+  &__title {
+    font-size: 20px;
+    font-family: vars.$SemiBold;
+    color: $text-color-primary;
+    margin: 0 0 $space-md;
+  }
+
+  &__description {
+    font-size: 14px;
+    color: $text-color-secondary;
+    margin: 0 0 $space-xl;
+    line-height: 1.6;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-md;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-sm;
+  }
+}
+
+// =============================================================================
+// ENHANCED FILTER BAR
+// =============================================================================
+.dashboard-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-lg;
+  padding: $space-lg;
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+  margin-bottom: $space-xl;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: $space-md;
+    padding: $space-md;
+  }
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+
+  &__label {
+    font-size: 13px;
+    font-family: vars.$Medium;
+    color: $text-color-secondary;
+    white-space: nowrap;
+  }
+
+  &__actions {
+    margin-left: auto;
+    display: flex;
+    gap: $space-md;
+
+    @media (max-width: 768px) {
+      margin-left: 0;
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+}
+
+// =============================================================================
+// ENHANCED DATA TABLE WRAPPER
+// =============================================================================
+.dashboard-table-container {
+  background: #fff;
+  border-radius: $radius-lg;
+  border: 1px solid $border-color;
+  box-shadow: $shadow-xs;
+  overflow: hidden;
+}
+
+.dashboard-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-lg $space-xl;
+  border-bottom: 1px solid $border-color;
+  background: #f9fafb;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: $space-md;
+    align-items: flex-start;
+    padding: $space-md $space-lg;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-family: vars.$SemiBold;
+    color: $text-color-primary;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-md;
+
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
+}
+
+// =============================================================================
+// MOBILE CARDS FOR TABLES
+// =============================================================================
+.dashboard-mobile-card {
+  background: #fff;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  margin-bottom: $space-md;
+
+  &:hover {
+    box-shadow: $shadow-md;
+    border-color: rgba($primary-color, 0.2);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    padding: $space-lg;
+    border-bottom: 1px solid $border-color;
+    background: #f9fafb;
+  }
+
+  &__avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: $radius-md;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: $bg-color-main;
+    border: 1px solid $border-color;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    &--icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e6f7ff;
+      border: none;
+    }
+  }
+
+  &__title-group {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-family: vars.$SemiBold;
+    color: $text-color-primary;
+    margin: 0 0 $space-xs;
+    line-height: 1.3;
+  }
+
+  &__subtitle {
+    font-size: 12px;
+    color: $text-color-secondary;
+    margin: 0;
+  }
+
+  &__body {
+    padding: $space-lg;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: $space-sm 0;
+    font-size: 13px;
+
+    &:not(:last-child) {
+      border-bottom: 1px dashed $border-color-light;
+    }
+  }
+
+  &__label {
+    color: $text-color-secondary;
+  }
+
+  &__value {
+    font-family: vars.$Medium;
+    color: $text-color-primary;
+
+    &--highlight {
+      color: $primary-color;
+      font-family: vars.$SemiBold;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-sm;
+    padding: $space-md $space-lg;
+    border-top: 1px solid $border-color;
+    background: #f9fafb;
+    flex-wrap: wrap;
+  }
+
+  &__footer {
+    display: flex;
+    gap: $space-sm;
+    padding: $space-md $space-lg;
+    border-top: 1px solid $border-color;
+    background: #f9fafb;
+  }
+
+  &__btn {
+    flex: 1;
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: $space-xl * 2;
+    color: $text-color-secondary;
+    text-align: center;
+    gap: $space-md;
+
+    svg {
+      opacity: 0.5;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+.dashboard-mobile-cards {
+  padding: $space-md;
+}
+
+// =============================================================================
+// STATUS BADGES
+// =============================================================================
+.dashboard-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-xs;
+  padding: $space-xs $space-md;
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: vars.$Medium;
+  white-space: nowrap;
+
+  &--success {
+    background: rgba($success-color, 0.1);
+    color: $success-color;
+  }
+
+  &--warning {
+    background: rgba($warning-color, 0.1);
+    color: $warning-color;
+  }
+
+  &--danger {
+    background: rgba($danger-color, 0.1);
+    color: $danger-color;
+  }
+
+  &--info {
+    background: rgba($info-color, 0.1);
+    color: $info-color;
+  }
+
+  &--default {
+    background: rgba($text-color-tertiary, 0.1);
+    color: $text-color-secondary;
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+}
+
+// =============================================================================
+// RESPONSIVE IMPROVEMENTS
+// =============================================================================
+@media (max-width: 1024px) {
+  .dashboard-stats-section .ant-col {
+    margin-bottom: $space-md;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-content-wrapper {
+    padding: 0;
+  }
+
+  .dashboard-charts-section {
+    margin-top: $space-lg;
+  }
+
+  .dashboard-chart-card {
+    margin-bottom: $space-md;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-stat-card {
+    padding: $space-lg;
+
+    &__value {
+      font-size: 24px;
+    }
+
+    &__icon-wrapper {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+    }
+  }
+
+  .dashboard-welcome {
+    padding: $space-md;
+    border-radius: $radius-md;
+
+    &__title {
+      font-size: 18px;
+    }
+
+    &__icon {
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
+    }
+  }
+}
+

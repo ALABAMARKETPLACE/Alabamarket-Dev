@@ -1,13 +1,13 @@
 "use client";
 import React, { useMemo, useEffect, useState } from "react";
-import { Button, Table, Pagination, Avatar, Card } from "antd";
+import { Button, Table, Pagination, Avatar, Tooltip } from "antd";
 import { TbListDetails } from "react-icons/tb";
+import { FiEye, FiPackage, FiUser, FiCalendar, FiDollarSign } from "react-icons/fi";
+import { MdHourglassEmpty } from "react-icons/md";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useRouter } from "next/navigation";
-import { FaEye } from "react-icons/fa6";
-import CONFIG from "@/config/configuration";
 import { formatCurrency } from "@/utils/formatNumber";
 import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
@@ -26,7 +26,7 @@ export interface Order {
   [key: string]: unknown;
 }
 
-interface props {
+interface DataTableProps {
   data: Order[];
   count: number;
   setPage: (p: number, take: number) => void;
@@ -67,88 +67,220 @@ const UserName = ({ userId }: { userId: number }) => {
   return <span>{name}</span>;
 };
 
-function DataTable({ data, count, setPage, pageSize, page }: props) {
+const getStatusBadge = (status: string) => {
+  const statusLower = status?.toLowerCase();
+  if (statusLower === "delivered") return "dashboard-badge dashboard-badge--success";
+  if (statusLower === "cancelled") return "dashboard-badge dashboard-badge--danger";
+  if (statusLower === "pending") return "dashboard-badge dashboard-badge--warning";
+  if (["processing", "shipped", "out_for_delivery", "out for delivery"].includes(statusLower)) {
+    return "dashboard-badge dashboard-badge--info";
+  }
+  return "dashboard-badge dashboard-badge--default";
+};
+
+function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
   const route = useRouter();
   const Settings = useAppSelector(reduxSettings);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const currencySymbol = Settings.currency === "NGN" ? "₦" : Settings.currency;
 
   const columns = useMemo(
     () => [
       {
-        title: "",
-        dataIndex: "image",
-        key: "image",
-        width: 60,
-        render: (img: string) => <Avatar size={35} src={img} shape="square" />,
-      },
-      {
-        title: "Order ID",
+        title: "Order",
         dataIndex: "order_id",
         key: "order_id",
-      },
-      {
-        title: "User Name",
-        dataIndex: "userId",
-        key: "userId",
-        render: (userId: number, record: Order) =>
-          record?.name ? record.name : <UserName userId={userId} />,
-      },
-      {
-        title: "Order Date", //
-        dataIndex: "createdAt",
-        key: "createdAt",
-        render: (item: string) => (
-          <span>{moment(item).format("MMM Do YYYY")}</span>
+        render: (orderId: string, record: Order) => (
+          <div className="table__user-cell">
+            <Avatar 
+              size={44} 
+              src={record.image || undefined}
+              icon={!record.image && <FiPackage />}
+              shape="square"
+              style={{ 
+                backgroundColor: !record.image ? '#f0f0f0' : undefined,
+                color: !record.image ? '#999' : undefined,
+                borderRadius: 8
+              }}
+            />
+            <div>
+              <div className="table__user-name">#{orderId || "N/A"}</div>
+              <div className="table__text--secondary" style={{ fontSize: 12 }}>
+                <FiUser size={12} style={{ marginRight: 4 }} />
+                {record?.name ? record.name : <UserName userId={record.userId as number} />}
+              </div>
+            </div>
+          </div>
         ),
       },
       {
-        title: "Total", //
+        title: "Date",
+        dataIndex: "createdAt",
+        key: "createdAt",
+        render: (date: string) => (
+          <div className="table__date">
+            <FiCalendar size={14} style={{ marginRight: 6 }} />
+            {moment(date).format("MMM DD, YYYY")}
+          </div>
+        ),
+        responsive: ["md"] as any,
+      },
+      {
+        title: "Items",
+        dataIndex: "orderItems",
+        key: "orderItems",
+        render: (items: any[]) => (
+          <span className="dashboard-badge dashboard-badge--info">
+            {items?.length || 0} items
+          </span>
+        ),
+        responsive: ["lg"] as any,
+      },
+      {
+        title: "Total",
         dataIndex: "grandTotal",
         key: "grandTotal",
-        render: (item: number) => (
-          <span>
-            {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
-            {formatCurrency(item)}
+        render: (total: number) => (
+          <div className="table__amount">
+            {currencySymbol} {formatCurrency(total || 0)}
+          </div>
+        ),
+      },
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        render: (status: string) => (
+          <span className={getStatusBadge(status)}>
+            <span className="dashboard-badge__dot" />
+            {status || "N/A"}
           </span>
         ),
       },
       {
-        title: "Status", //
-        dataIndex: "status",
-        key: "status",
-        render: (item: string) => <span>{item}</span>,
-      },
-      {
         title: "Action",
-        width: 100,
-        render: (item: unknown, record: Order) => (
-          <div className="table-action">
+        width: 80,
+        render: (_: unknown, record: Order) => (
+          <Tooltip title="View Details">
             <Button
               type="text"
               size="small"
+              className="table__action-btn"
               onClick={() =>
                 route.push(
                   "/auth/orders/" +
                     (record?.order_id ?? record?._id ?? record?.id),
                 )
               }
-            >
-              <FaEye size={22} color={CONFIG.COLOR} />
-            </Button>
-          </div>
+              icon={<FiEye size={18} />}
+            />
+          </Tooltip>
         ),
       },
     ],
-    [route, Settings.currency],
+    [route, currencySymbol],
+  );
+
+  // Mobile Card View
+  const MobileCardView = () => (
+    <div className="dashboard-mobile-cards">
+      {data.length === 0 ? (
+        <div className="dashboard-mobile-card">
+          <div style={{ padding: 40, textAlign: 'center' }}>
+            <MdHourglassEmpty size={40} color="#999" />
+            <p style={{ color: '#666', marginTop: 16 }}>No Orders yet</p>
+          </div>
+        </div>
+      ) : (
+        data.map((order: Order, index: number) => (
+          <div 
+            key={order.order_id || order._id || order.id || index} 
+            className="dashboard-mobile-card"
+          >
+            <div className="dashboard-mobile-card__header">
+              <div className="dashboard-mobile-card__avatar">
+                <Avatar 
+                  size={48} 
+                  src={order.image || undefined}
+                  icon={!order.image && <FiPackage />}
+                  shape="square"
+                  style={{ 
+                    backgroundColor: !order.image ? '#f0f0f0' : undefined,
+                    width: '100%',
+                    height: '100%'
+                  }}
+                />
+              </div>
+              <div className="dashboard-mobile-card__title-group">
+                <h4 className="dashboard-mobile-card__title">#{order.order_id || "N/A"}</h4>
+                <p className="dashboard-mobile-card__subtitle">
+                  {order?.name || <UserName userId={order.userId as number} />}
+                </p>
+              </div>
+              <span className={getStatusBadge(order.status || "")}>
+                {order.status || "N/A"}
+              </span>
+            </div>
+            <div className="dashboard-mobile-card__body">
+              <div className="dashboard-mobile-card__row">
+                <span className="dashboard-mobile-card__label">Date</span>
+                <span className="dashboard-mobile-card__value">
+                  {moment(order.createdAt).format("MMM DD, YYYY")}
+                </span>
+              </div>
+              <div className="dashboard-mobile-card__row">
+                <span className="dashboard-mobile-card__label">Items</span>
+                <span className="dashboard-mobile-card__value">
+                  {order.orderItems?.length || 0} items
+                </span>
+              </div>
+              <div className="dashboard-mobile-card__row">
+                <span className="dashboard-mobile-card__label">Total</span>
+                <span className="dashboard-mobile-card__value" style={{ fontWeight: 600, color: '#10b981' }}>
+                  {currencySymbol} {formatCurrency(order.grandTotal || 0)}
+                </span>
+              </div>
+            </div>
+            <div className="dashboard-mobile-card__footer">
+              <Button
+                type="primary"
+                ghost
+                block
+                icon={<FiEye />}
+                onClick={() =>
+                  route.push(
+                    "/auth/orders/" +
+                      (order?.order_id ?? order?._id ?? order?.id),
+                  )
+                }
+              >
+                View Details
+              </Button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
   );
 
   return (
-    <>
-      <Card className="shadow-sm" bordered={false}>
+    <div className="dashboard-table-container">
+      {isMobile ? (
+        <MobileCardView />
+      ) : (
         <Table
           dataSource={data}
           columns={columns}
           pagination={false}
-          size="small"
+          size="middle"
           rowKey={(record) =>
             (record?._id ??
               record?.id ??
@@ -158,38 +290,28 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
           scroll={{ x: "max-content" }}
           locale={{
             emptyText: (
-              <div
-                className="orders-tableEmpty"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "40px 0",
-                  textAlign: "center",
-                  gap: 8,
-                }}
-              >
-                <TbListDetails size={40} />
-                <p>No Orders yet</p>
+              <div className="table__empty-state">
+                <MdHourglassEmpty size={48} className="table__empty-icon" />
+                <p className="table__empty-text">No Orders yet</p>
               </div>
             ),
           }}
         />
-        <div className="table-pagination mt-4 flex justify-end">
-          <Pagination
-            showSizeChanger
-            pageSize={pageSize}
-            current={page}
-            total={count ?? 0}
-            showTotal={() => `Total ${count ?? 0} Orders`}
-            onChange={(nextPage, nextPageSize) => {
-              setPage(nextPage, nextPageSize);
-            }}
-          />
-        </div>
-      </Card>
-    </>
+      )}
+      <div className="table__pagination-container">
+        <Pagination
+          showSizeChanger
+          pageSize={pageSize}
+          current={page}
+          total={count ?? 0}
+          showTotal={() => `Total ${count ?? 0} Orders`}
+          onChange={(nextPage, nextPageSize) => {
+            setPage(nextPage, nextPageSize);
+          }}
+          className="table__pagination"
+        />
+      </div>
+    </div>
   );
 }
 
