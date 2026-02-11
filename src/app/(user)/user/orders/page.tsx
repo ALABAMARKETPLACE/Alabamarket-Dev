@@ -1,60 +1,239 @@
 "use client";
-import { useSession } from "next-auth/react";
-import {
-  Avatar,
-  Button,
-  List,
-  notification,
-  Pagination,
-  Select,
-  Tag,
-} from "antd";
-import React, { useCallback, useState } from "react";
-import { FaBoxOpen } from "react-icons/fa6";
+import { Pagination, Select } from "antd";
+import React, { useCallback, useState, Suspense } from "react";
+import { 
+  FaBoxOpen, 
+  FaCalendarAlt, 
+  FaChevronRight, 
+  FaShoppingBag,
+  FaExclamationCircle 
+} from "react-icons/fa";
 import Search from "antd/es/input/Search";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import moment from "moment";
 import API from "@/config/API";
-import CONFIG from "@/config/configuration";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
-import { MdError } from "react-icons/md";
-import { Suspense } from "react";
 import { formatCurrency } from "@/utils/formatNumber";
+import Image from "next/image";
+import "./orders.scss";
 
-const actions = [
+const statusFilters = [
+  { title: "All Orders", value: "" },
   { title: "Delivered", value: "delivered" },
-  { title: "Cancelled", value: "cancelled" },
   { title: "Pending", value: "pending" },
+  { title: "Cancelled", value: "cancelled" },
 ];
-const options = [
-  { value: "30days", label: "last 30 days" },
-  { value: "3months", label: "past 3 months" },
-  { value: "6months", label: "past 6 months" },
+
+const dateOptions = [
+  { value: "", label: "All Time" },
+  { value: "30days", label: "Last 30 days" },
+  { value: "3months", label: "Past 3 months" },
+  { value: "6months", label: "Past 6 months" },
   { value: "2023", label: "2023" },
 ];
+
 const getVariantInfo = (data: any) => {
-  let variantss = "";
-  if (Array.isArray(data?.combination) == true) {
-    data?.combination.map((item: any) => {
-      variantss += `${item.value} `;
+  let variants = "";
+  if (Array.isArray(data?.combination)) {
+    data.combination.forEach((item: any) => {
+      variants += `${item.value} `;
     });
   }
-  return variantss;
+  return variants.trim();
 };
+
+const getStatusClass = (status: string) => {
+  const statusLower = status?.toLowerCase();
+  if (statusLower === "delivered") return "order-card__status--delivered";
+  if (statusLower === "cancelled") return "order-card__status--cancelled";
+  if (statusLower === "pending") return "order-card__status--pending";
+  if (["processing", "shipped", "out_for_delivery", "out for delivery"].includes(statusLower)) {
+    return "order-card__status--processing";
+  }
+  return "order-card__status--pending";
+};
+
 function OrdersPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<OrdersLoadingSkeleton count={3} />}>
       <UserOrders />
     </Suspense>
   );
 }
 
+// Loading Skeleton Component
+const OrdersLoadingSkeleton = ({ count = 3 }: { count?: number }) => (
+  <div className="orders-loading">
+    {Array.from({ length: count }).map((_, index) => (
+      <div key={index} className="orders-loading__card">
+        <div className="orders-loading__header" />
+        <div className="orders-loading__item">
+          <div className="orders-loading__item-image" />
+          <div className="orders-loading__item-content">
+            <div className="orders-loading__item-content-line" />
+            <div className="orders-loading__item-content-line" />
+            <div className="orders-loading__item-content-line" />
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+// Order Item Component
+const OrderItem = ({ 
+  item, 
+  currency 
+}: { 
+  item: any; 
+  currency: string;
+}) => {
+  const variantInfo = getVariantInfo(item?.variantDetails);
+  
+  return (
+    <div className="order-item">
+      <div className="order-item__image">
+        {item?.image ? (
+          <Image 
+            src={item.image} 
+            alt={item?.name || "Product"} 
+            width={80} 
+            height={80}
+            style={{ objectFit: "cover" }}
+          />
+        ) : (
+          <div style={{ 
+            width: "100%", 
+            height: "100%", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            background: "#f5f5f5"
+          }}>
+            <FaBoxOpen size={24} color="#ccc" />
+          </div>
+        )}
+      </div>
+      <div className="order-item__details">
+        <div className="order-item__name">
+          {item?.name}
+          {variantInfo && <span> - {variantInfo}</span>}
+        </div>
+        {variantInfo && (
+          <div className="order-item__variant">Variant: {variantInfo}</div>
+        )}
+        <div className="order-item__meta">
+          <span className="order-item__quantity">Qty: {item?.quantity || 1}</span>
+          <span className="order-item__price">
+            {currency === "NGN" ? "₦" : currency} {formatCurrency(item?.totalPrice)}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Order Card Component
+const OrderCard = ({ 
+  order, 
+  currency, 
+  onClick 
+}: { 
+  order: any; 
+  currency: string;
+  onClick: () => void;
+}) => {
+  const itemCount = order?.orderItems?.length || 0;
+  const displayItems = order?.orderItems?.slice(0, 3) || [];
+  const remainingItems = itemCount - 3;
+  
+  return (
+    <div className="order-card" onClick={onClick}>
+      <div className="order-card__header">
+        <div className="order-card__header-left">
+          <span className="order-card__order-id">
+            Order <span>#{order?.order_id}</span>
+          </span>
+          <span className="order-card__date">
+            <FaCalendarAlt size={12} />
+            {moment(order?.createdAt).format("MMM DD, YYYY")}
+          </span>
+          <span className="items-badge">
+            {itemCount} {itemCount === 1 ? "item" : "items"}
+          </span>
+        </div>
+        <div className="order-card__header-right">
+          <span className={`order-card__status ${getStatusClass(order?.status)}`}>
+            {order?.status}
+          </span>
+          <span className="order-card__total">
+            {currency === "NGN" ? "₦" : currency} {formatCurrency(order?.grandTotal)}
+          </span>
+        </div>
+      </div>
+      
+      <div className="order-card__body">
+        <div className="order-card__items">
+          {displayItems.map((item: any, index: number) => (
+            <OrderItem 
+              key={index} 
+              item={item} 
+              currency={currency}
+            />
+          ))}
+        </div>
+      </div>
+      
+      <div className="order-card__footer">
+        <span className="order-card__footer-info">
+          {remainingItems > 0 
+            ? `+${remainingItems} more item${remainingItems > 1 ? "s" : ""}`
+            : `Ordered ${moment(order?.createdAt).fromNow()}`
+          }
+        </span>
+        <span className="order-card__footer-action">
+          View Details <FaChevronRight size={12} />
+        </span>
+      </div>
+    </div>
+  );
+};
+
+// Empty State Component
+const EmptyState = ({ onShopNow }: { onShopNow: () => void }) => (
+  <div className="orders-empty">
+    <div className="orders-empty__icon">
+      <FaShoppingBag />
+    </div>
+    <h3 className="orders-empty__title">No Orders Yet</h3>
+    <p className="orders-empty__text">
+      You haven&apos;t placed any orders yet.<br />
+      Start shopping at Alaba Marketplace to see your orders here.
+    </p>
+    <button className="orders-empty__button" onClick={onShopNow}>
+      Start Shopping Now
+    </button>
+  </div>
+);
+
+// Error State Component
+const ErrorState = ({ message }: { message?: string }) => (
+  <div className="orders-error">
+    <div className="orders-error__icon">
+      <FaExclamationCircle />
+    </div>
+    <h3 className="orders-error__title">Failed to Load Orders</h3>
+    <p className="orders-error__text">
+      {message || "Something went wrong. Please try again later."}
+    </p>
+  </div>
+);
+
 function UserOrders() {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
   const currpage = searchParams.get("page") || 1;
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
@@ -63,14 +242,12 @@ function UserOrders() {
   );
   const pageSize = 5;
   const router = useRouter();
-  const [notificationApi, contextHolder] = notification.useNotification();
   const Settings = useAppSelector(reduxSettings);
-  const [oderStatus, setOrderStatus] = useState("");
+  const [orderStatus, setOrderStatus] = useState("");
 
   const {
     data: orders,
     isLoading,
-    isFetching,
     isError,
     error,
   } = useQuery({
@@ -80,178 +257,122 @@ function UserOrders() {
         page: page,
         take: pageSize,
         ...(search && { name: search }),
-        status: oderStatus,
+        status: orderStatus,
         sort: dateFilter,
       }),
-    queryKey: ["order_items", page, search, oderStatus, dateFilter],
+    queryKey: ["order_items", page, search, orderStatus, dateFilter],
     retry: 1,
   });
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set(name, value);
-
-      return params.toString();
-    },
-    [searchParams]
-  );
-
-  const changePage = async (page: number) => {
-    setPage(page);
+  const handleStatusChange = (value: string) => {
+    if (!isLoading) {
+      setOrderStatus(value);
+      setPage(1);
+    }
   };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const navigateToOrder = (orderId: string) => {
+    router.push(`/user/orders/${orderId}`);
+  };
+
+  const currency = Settings.currency || "NGN";
+  const totalOrders = orders?.meta?.itemCount ?? 0;
+  const hasOrders = Array.isArray(orders?.data) && orders.data.length > 0;
+
   return (
-    <>
-      {contextHolder}
-      <div className="profile-header">
-        <div className="fs-5 fw-medium">
-          My Orders ({orders?.meta?.itemCount ?? 0})
-        </div>
-        <div style={{ flex: 1 }} />
-      </div>
-      <hr />
-      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2">
-        <div>
-          {actions?.map((item: any, index: number) => (
-            <Tag
-              style={{ cursor: "pointer" }}
-              color={item?.value == oderStatus ? CONFIG.COLOR : ""}
-              onClick={() => {
-                if (!isLoading) {
-                  if (oderStatus == item?.value) {
-                    setOrderStatus("");
-                    return;
-                  }
-                  setOrderStatus(item?.value);
-                  setPage(1);
-                }
-              }}
-            >
-              {item?.title}
-            </Tag>
-          ))}
-        </div>
-        {/* <div style={{ flex: 1 }} /> */}
-
-        <div className="ms-auto d-flex gap-2">
-          <Select
-            defaultValue="Order Time"
-            style={{ width: 130 }}
-            options={options}
-            onChange={(v) => setDateFilter(v)}
-          />
-          <Search
-            placeholder="Search all Orders"
-            allowClear
-            enterButton="Search"
-            size="middle"
-            onSearch={(sear) => {
-              setSearch(sear);
-            }}
-            // loading={searching}
-          />
-        </div>
-        <div></div>
-      </div>
-      <div style={{ padding: 10 }} />
-      {isLoading ? (
-        <div></div>
-      ) : Array.isArray(orders?.data) && orders?.data.length > 0 ? (
-        <List
-          className="demo-loadmore-list"
-          loading={isLoading}
-          itemLayout="horizontal"
-          // loadMore={loadMore}
-          dataSource={orders?.data}
-          size="small"
-          renderItem={(item: any) => (
-            <List.Item
-              onClick={() => router.push(`/user/orders/${item?.order_id}`)}
-              className="order-list-item d-block d-md-flex"
-              style={{ cursor: "pointer" }}
-            >
-              <List.Item.Meta
-                key={4}
-                className="mt-2"
-                description={
-                  Array.isArray(item?.orderItems)
-                    ? item?.orderItems.map((orderItem: any, index: number) => (
-                        <List.Item.Meta
-                          key={index}
-                          className="mt-2"
-                          avatar={
-                            <Avatar
-                              shape="square"
-                              src={orderItem?.image}
-                              size={80}
-                            />
-                          }
-                          title={
-                            <>
-                              <div className="text-capitalize d-block">{`${
-                                orderItem?.name
-                              } ${getVariantInfo(orderItem?.variantDetails)} (${
-                                orderItem.quantity
-                              } item)`}</div>
-                              <div>
-                                <span>Ordered on:</span>
-                                <span className="text-success">{` ${moment(
-                                  orderItem.createdAt
-                                ).format("DD/MM/YYYY")}`}</span>
-                              </div>
-                              <div className="fw-bold">
-                                {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
-                                {formatCurrency(orderItem?.totalPrice)}
-                              </div>
-                            </>
-                          }
-                        />
-                      ))
-                    : null
-                }
-              />
-              <div className="d-flex justify-content-between d-md-block">
-                <span className="fw-bold pe-2">
-                  Total: {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
-                  {formatCurrency(item?.grandTotal)}
-                </span>
-                <Tag bordered={false}>{item?.status}</Tag>
-              </div>
-            </List.Item>
+    <div className="orders-page">
+      {/* Page Header */}
+      <div className="orders-header">
+        <div className="orders-header__title">
+          <div className="orders-header__icon">
+            <FaBoxOpen size={24} />
+          </div>
+          <h1>My Orders</h1>
+          {totalOrders > 0 && (
+            <span className="orders-count">{totalOrders}</span>
           )}
-        ></List>
-      ) : isError ? (
-        <div></div>
-      ) : (
-        <div className="text-center my-4">
-          <h3>No Orders Yet!!</h3>
-          You have no orders. Please start shopping <br /> at Alaba Marketplace
-          and place orders <br />
-          <Button
-            onClick={() => router.push("/")}
-            className="mt-4 mb-4 py-2 border-none"
-          >
-            START SHOPPING NOW
-          </Button>
         </div>
-      )}
-
-      <div className="d-flex justify-content-center mt-3">
-        <Pagination
-          current={page || 1}
-          pageSize={pageSize || 10}
-          total={orders?.meta?.itemCount || 0}
-          defaultCurrent={1}
-          responsive={true}
-          defaultPageSize={pageSize || 10}
-          disabled={false}
-          hideOnSinglePage={true}
-          onChange={(current: any, size: any) => {
-            changePage(current);
-          }}
-        />
       </div>
-    </>
+
+      {/* Filters Section */}
+      <div className="orders-filters">
+        <div className="orders-filters__row">
+          <div className="orders-filters__status-tags">
+            {statusFilters.map((filter) => (
+              <span
+                key={filter.value}
+                className={`status-tag ${
+                  orderStatus === filter.value ? "status-tag--active" : ""
+                } ${filter.value ? `status-tag--${filter.value}` : ""}`}
+                onClick={() => handleStatusChange(filter.value)}
+              >
+                {filter.title}
+              </span>
+            ))}
+          </div>
+          
+          <div className="orders-filters__controls">
+            <Select
+              value={dateFilter || undefined}
+              placeholder="Filter by date"
+              style={{ minWidth: 150 }}
+              options={dateOptions}
+              onChange={(v) => setDateFilter(v)}
+              allowClear
+            />
+            <Search
+              placeholder="Search orders..."
+              allowClear
+              enterButton="Search"
+              size="middle"
+              onSearch={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Orders List */}
+      {isLoading ? (
+        <OrdersLoadingSkeleton count={3} />
+      ) : isError ? (
+        <ErrorState message={(error as any)?.message} />
+      ) : hasOrders ? (
+        <>
+          <div className="orders-list">
+            {orders.data.map((order: any) => (
+              <OrderCard
+                key={order.order_id || order._id}
+                order={order}
+                currency={currency}
+                onClick={() => navigateToOrder(order.order_id)}
+              />
+            ))}
+          </div>
+          
+          <div className="orders-pagination">
+            <Pagination
+              current={page}
+              pageSize={pageSize}
+              total={totalOrders}
+              responsive
+              showSizeChanger={false}
+              hideOnSinglePage
+              onChange={handlePageChange}
+            />
+          </div>
+        </>
+      ) : (
+        <EmptyState onShopNow={() => router.push("/")} />
+      )}
+    </div>
   );
 }
 
