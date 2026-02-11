@@ -12,6 +12,7 @@ import { storeCheckout } from "../../../../redux/slice/checkoutSlice";
 import { GET, POST } from "../../../../util/apicall";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackAddToCart } from "@/utils/analytics";
+import GuestCheckoutModal from "@/components/guestCheckoutModal";
 
 // Helper functions for discount display (visual only - does not affect payment)
 const getDiscountPercentage = (
@@ -124,6 +125,10 @@ function Description(props: Props) {
   // const [favourited, setFavourited] = useState(props?.data ?? false);
   // const [isWobbling, setIsWobbling] = useState(false);
   const [favourited, setFavourited] = useState(false);
+  
+  // Guest checkout modal state
+  const [showGuestModal, setShowGuestModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(null);
 
   useEffect(() => {
     if (props?.data?.pid) {
@@ -183,6 +188,18 @@ function Description(props: Props) {
       notification.error({ message: `Selected Quantity is Not Available.` });
       return;
     }
+    
+    // Show modal for guest users
+    if (!user?.user) {
+      setPendingAction("buy");
+      setShowGuestModal(true);
+      return;
+    }
+    
+    executeBuyNow();
+  };
+  
+  const executeBuyNow = () => {
     const obj = {
       name: props?.data?.name,
       buyPrice: props?.currentVariant?.price ?? props?.data?.retail_rate,
@@ -213,6 +230,17 @@ function Description(props: Props) {
       return;
     }
 
+    // Show modal for guest users
+    if (!user?.user) {
+      setPendingAction("cart");
+      setShowGuestModal(true);
+      return;
+    }
+
+    executeAddToCart();
+  };
+  
+  const executeAddToCart = async () => {
     // Track Add to Cart for analytics
     const gaItem = formatGAItem(props.data, props.currentVariant, quantity);
     trackAddToCart(gaItem);
@@ -268,6 +296,16 @@ function Description(props: Props) {
       Notifications.error({ message: "Something went wrong!" });
     }
   };
+  
+  // Handle guest modal actions
+  const handleGuestContinue = () => {
+    if (pendingAction === "buy") {
+      executeBuyNow();
+    } else if (pendingAction === "cart") {
+      executeAddToCart();
+    }
+    setPendingAction(null);
+  };
 
   const AddWishlist = async () => {
     const obj = {
@@ -301,6 +339,18 @@ function Description(props: Props) {
   return (
     <div>
       {contextHolder}
+      
+      {/* Guest Checkout Modal */}
+      <GuestCheckoutModal
+        open={showGuestModal}
+        onClose={() => {
+          setShowGuestModal(false);
+          setPendingAction(null);
+        }}
+        onContinueAsGuest={handleGuestContinue}
+        action={pendingAction || "cart"}
+      />
+      
       <div>category: {props?.data?.categoryName?.name}</div>
       <div>subCategory: {props?.data?.subCategoryName?.name}</div>
       {availableQuantity === 0 ? (
@@ -344,12 +394,8 @@ function Description(props: Props) {
             className="buybtn btn-clr"
             // type="primary"
             onClick={() => {
-              if (user) {
-                props?.handleBuyNow(quantity);
-                buyNow();
-              } else {
-                router.push("/login");
-              }
+              props?.handleBuyNow(quantity);
+              buyNow();
             }}
           >
             Buy Now
@@ -361,11 +407,7 @@ function Description(props: Props) {
             if (isProductInCart) {
               router.push("/cart");
             } else {
-              if (user) {
-                addToCart();
-              } else {
-                router.push("/login");
-              }
+              addToCart();
             }
           }}
         >

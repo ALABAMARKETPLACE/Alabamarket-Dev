@@ -198,17 +198,7 @@ function CartPage() {
   };
 
   const goCheckout = async () => {
-    // Check if user is authenticated before proceeding to checkout
-    if (!isAuthenticated) {
-      notificationApi.info({
-        message: "Please sign in to continue",
-        description: "You need to be signed in to complete your purchase.",
-      });
-      // Redirect to login with return URL
-      navigate.push("/login?redirect=/cart");
-      return;
-    }
-
+    // Allow both authenticated and guest users to proceed to checkout
     try {
       setError(null);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

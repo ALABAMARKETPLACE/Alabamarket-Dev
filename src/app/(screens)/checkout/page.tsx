@@ -8,9 +8,10 @@ import { notification } from "antd";
 import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
+import { getGuestAddress } from "./_components/guestAddressForm";
 
 import { useRouter } from "next/navigation";
-import { POST } from "@/util/apicall";
+import { POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { storeFinal } from "@/redux/slice/checkoutSlice";
 import { useSession } from "next-auth/react";
@@ -22,8 +23,9 @@ import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
 function Checkout() {
   const dispatch = useDispatch();
   const navigation = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const user = session?.user;
+  const isAuthenticated = status === "authenticated" && !!user;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const customerId = (user as any)?.id || null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +37,9 @@ function Checkout() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
+  
+  // Guest email state
+  const [guestEmail, setGuestEmail] = useState<string>("");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [total, setTotal] = useState<any>(0);
@@ -43,13 +48,22 @@ function Checkout() {
   const [discount, setDiscount] = useState(0);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [grand_total, setGrand_total] = useState<any>(0);
+  
   useEffect(() => {
     window.scrollTo(0, 0);
 
     // Clear any previous order creation status to allow new orders
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
-  }, []);
+    
+    // Load guest email if available
+    if (!isAuthenticated) {
+      const savedData = getGuestAddress();
+      if (savedData?.email) {
+        setGuestEmail(savedData.email);
+      }
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (Checkout?.Checkout && Checkout.Checkout.length > 0) {
@@ -124,10 +138,30 @@ function Checkout() {
         };
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const response: any = await POST(
-          API.NEW_CALCULATE_DELIVERY_CHARGE,
-          obj,
-        );
+        let response: any;
+        
+        // Use authenticated or public endpoint based on user status
+        if (isAuthenticated) {
+          response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
+        } else {
+          // For guest users, try public endpoint first, fallback to default estimation
+          try {
+            response = await PUBLIC_POST(API.PUBLIC_CALCULATE_DELIVERY_CHARGE, obj);
+          } catch (publicErr: any) {
+            // If public endpoint fails (404 or not implemented), use default delivery charge
+            console.log("Public delivery calculation not available, using default estimation");
+            
+            // Default delivery charge estimation for guests
+            const defaultDeliveryCharge = 2000; // Default delivery fee in Naira
+            // Generate a guest token for order processing
+            const guestToken = `GUEST_DELIVERY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+            setDeliveryToken(guestToken);
+            setDelivery_charge(defaultDeliveryCharge);
+            setGrand_total(totals + defaultDeliveryCharge);
+            setDiscount(0);
+            return;
+          }
+        }
 
         if (response?.status) {
           setDeliveryToken(response?.token);
@@ -169,6 +203,7 @@ function Checkout() {
     Checkout?.Checkout,
     Checkout?.address,
     isDeliveryCalculating,
+    isAuthenticated,
     notificationApi,
   ]);
 
@@ -198,7 +233,7 @@ function Checkout() {
         .toUpperCase()}`;
 
       // Email validation - log warning but don't block payment
-      if (!user?.email) {
+      if (!user?.email && !guestEmail) {
         console.warn(
           "Warning: User email not found. Proceeding with payment using available user data.",
         );
@@ -209,15 +244,16 @@ function Checkout() {
       const anyUser = user as any;
       const customerName = anyUser
         ? `${anyUser.first_name || "Customer"} ${anyUser.last_name || ""}`
-        : "Customer";
+        : Checkout?.address?.full_name || "Guest Customer";
       const customerEmail =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.email ||
+        guestEmail ||
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.id ||
         "customer@alabamarketplace.ng";
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const customerId = (user as any)?.id || null;
+      const resolvedCustomerId = (user as any)?.id || null;
 
       // Extract store IDs and group items by store for split payment
       // This supports both single-store and multi-store orders
@@ -623,6 +659,15 @@ function Checkout() {
   };
 
   const PlaceOrder = async () => {
+    // Validate guest checkout has email
+    if (!isAuthenticated && !guestEmail) {
+      notificationApi.error({
+        message: "Email Required",
+        description: "Please enter your email address in the delivery details form.",
+      });
+      return;
+    }
+
     if (deliveryToken) {
       try {
         const obj = {
@@ -634,6 +679,9 @@ function Checkout() {
           },
           user_id: customerId,
           user: user,
+          // Guest checkout data
+          is_guest: !isAuthenticated,
+          guest_email: guestEmail || null,
         };
         dispatch(storeFinal(obj));
         if (payment_method === "Pay Online") {
@@ -662,6 +710,11 @@ function Checkout() {
     }
   };
 
+  // Handler for guest email updates - wrapped in useCallback to prevent infinite loops
+  const handleGuestEmailChange = useCallback((email: string) => {
+    setGuestEmail(email);
+  }, []);
+
   return (
     <div className="Screen-box" style={{ backgroundImage: "none" }}>
       {contextHolder}
@@ -669,11 +722,12 @@ function Checkout() {
       <Container fluid style={{ minHeight: "80vh" }}>
         <Row>
           <Col sm={7}>
-            <NewAddressBox />
+            <NewAddressBox onGuestEmailChange={handleGuestEmailChange} />
             <PaymentBox
               method={payment_method}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(value: any) => setPayment_method(value)}
+              isGuest={!isAuthenticated}
             />
             <br />
           </Col>

@@ -128,7 +128,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
               onClick={() =>
                 route.push(
                   "/auth/orders/" +
-                    (record?._id ?? record?.id ?? record?.order_id),
+                    (record?.order_id ?? record?._id ?? record?.id),
                 )
               }
             >

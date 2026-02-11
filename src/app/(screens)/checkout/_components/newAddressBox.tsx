@@ -1,24 +1,57 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { IoLocationOutline } from "react-icons/io5";
 import NewAddressForm from "./newAddressForm";
 import NewAddressItem from "./newAddressItem";
+import GuestAddressForm, { getGuestAddress } from "./guestAddressForm";
 import { storeAddress } from "@/redux/slice/checkoutSlice";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
+import { useSession } from "next-auth/react";
 
-function NewAddressBox() {
+interface NewAddressBoxProps {
+  onGuestEmailChange?: (email: string) => void;
+}
+
+function NewAddressBox({ onGuestEmailChange }: NewAddressBoxProps) {
   const dispatch = useDispatch();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated" && !!session?.user;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Checkout = useSelector((state: any) => state?.Checkout);
   const [isLoading, setIsLoading] = useState(true);
   const [addNew, setAddNew] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>([]);
+  
+  // Use ref to track if we've already loaded guest data
+  const guestDataLoadedRef = useRef(false);
+  // Store callback in ref to avoid dependency issues
+  const onGuestEmailChangeRef = useRef(onGuestEmailChange);
+  
+  // Update ref when callback changes
+  useEffect(() => {
+    onGuestEmailChangeRef.current = onGuestEmailChange;
+  }, [onGuestEmailChange]);
 
   useEffect(() => {
-    getAddress();
-  }, []);
+    if (isAuthenticated) {
+      getAddress();
+    } else if (!guestDataLoadedRef.current) {
+      // For guest users, check if we have saved address (only once)
+      guestDataLoadedRef.current = true;
+      const savedData = getGuestAddress();
+      if (savedData?.address) {
+        dispatch(storeAddress(savedData.address));
+        if (onGuestEmailChangeRef.current && savedData.email) {
+          onGuestEmailChangeRef.current(savedData.email);
+        }
+      }
+      setIsLoading(false);
+    }
+  }, [isAuthenticated, dispatch]);
 
   const getAddress = async () => {
     try {
@@ -43,6 +76,32 @@ function NewAddressBox() {
     }
   };
 
+  const handleGuestAddressSubmit = (address: any, email: string) => {
+    if (onGuestEmailChange) {
+      onGuestEmailChange(email);
+    }
+  };
+
+  // Guest checkout UI
+  if (!isAuthenticated) {
+    return (
+      <div>
+        <div className="Cart-row" style={{ padding: 0 }}>
+          <div className="Cart-txt1">
+            <span className="Cart-txt1Icon">
+              <IoLocationOutline />
+            </span>
+            DELIVERY DETAILS
+          </div>
+        </div>
+        <div className="Cart-line" />
+        <div style={{ margin: 20 }} />
+        <GuestAddressForm onAddressSubmit={handleGuestAddressSubmit} />
+      </div>
+    );
+  }
+
+  // Authenticated user UI
   return (
     <div>
       <div className="Cart-row" style={{ padding: 0 }}>

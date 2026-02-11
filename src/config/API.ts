@@ -222,6 +222,7 @@ const API = {
 
   CALCULATE_DELIVERY_CHARGE: "calculate_delivery", //POST to get delivery charge of total (OLD - lat/long based)
   NEW_CALCULATE_DELIVERY_CHARGE: "calculate_delivery/new", //POST to get delivery charge by weight and location
+  PUBLIC_CALCULATE_DELIVERY_CHARGE: "calculate_delivery/public", //POST for guest checkout delivery calculation
 
   SETTLEMENT_DETAILS: "settlements/details/", //get total orders, total charges..etc of a store  get
   SETTLEMENT_DETAILS_HISTORY: "settlements/history/", //to get settlement history of a store    get
