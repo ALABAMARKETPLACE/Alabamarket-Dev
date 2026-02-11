@@ -188,9 +188,7 @@ function Checkout() {
           const deliveryToken = response?.token || "";
           // API returns delivery charge in data.amount
           const delivery = Number(
-            response?.data?.amount ||
-              response?.details?.totalCharge ||
-              0,
+            response?.data?.amount || response?.details?.totalCharge || 0,
           );
           const discountVal = Number(response?.data?.discount || 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
