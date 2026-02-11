@@ -186,12 +186,21 @@ function Checkout() {
 
         if (response?.status) {
           const deliveryToken = response?.token || response?.data?.token || "";
-          const delivery = Number(response?.details?.totalCharge || response?.data?.details?.totalCharge || 0);
+          const delivery = Number(
+            response?.details?.totalCharge ||
+              response?.data?.details?.totalCharge ||
+              0,
+          );
           const discountVal = Number(response?.data?.discount || 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
-          
-          console.log("Setting delivery charge:", delivery, "Grand total:", gTotal);
-          
+
+          console.log(
+            "Setting delivery charge:",
+            delivery,
+            "Grand total:",
+            gTotal,
+          );
+
           setDeliveryToken(deliveryToken);
           setDelivery_charge(delivery);
           setGrand_total(gTotal);
