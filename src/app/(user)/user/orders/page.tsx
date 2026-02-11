@@ -1,12 +1,12 @@
 "use client";
 import { Pagination, Select } from "antd";
 import React, { useCallback, useState, Suspense } from "react";
-import { 
-  FaBoxOpen, 
-  FaCalendarAlt, 
-  FaChevronRight, 
+import {
+  FaBoxOpen,
+  FaCalendarAlt,
+  FaChevronRight,
   FaShoppingBag,
-  FaExclamationCircle 
+  FaExclamationCircle,
 } from "react-icons/fa";
 import Search from "antd/es/input/Search";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -50,7 +50,11 @@ const getStatusClass = (status: string) => {
   if (statusLower === "delivered") return "order-card__status--delivered";
   if (statusLower === "cancelled") return "order-card__status--cancelled";
   if (statusLower === "pending") return "order-card__status--pending";
-  if (["processing", "shipped", "out_for_delivery", "out for delivery"].includes(statusLower)) {
+  if (
+    ["processing", "shipped", "out_for_delivery", "out for delivery"].includes(
+      statusLower,
+    )
+  ) {
     return "order-card__status--processing";
   }
   return "order-card__status--pending";
@@ -84,35 +88,31 @@ const OrdersLoadingSkeleton = ({ count = 3 }: { count?: number }) => (
 );
 
 // Order Item Component
-const OrderItem = ({ 
-  item, 
-  currency 
-}: { 
-  item: any; 
-  currency: string;
-}) => {
+const OrderItem = ({ item, currency }: { item: any; currency: string }) => {
   const variantInfo = getVariantInfo(item?.variantDetails);
-  
+
   return (
     <div className="order-item">
       <div className="order-item__image">
         {item?.image ? (
-          <Image 
-            src={item.image} 
-            alt={item?.name || "Product"} 
-            width={80} 
+          <Image
+            src={item.image}
+            alt={item?.name || "Product"}
+            width={80}
             height={80}
             style={{ objectFit: "cover" }}
           />
         ) : (
-          <div style={{ 
-            width: "100%", 
-            height: "100%", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center",
-            background: "#f5f5f5"
-          }}>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "#f5f5f5",
+            }}
+          >
             <FaBoxOpen size={24} color="#ccc" />
           </div>
         )}
@@ -126,9 +126,12 @@ const OrderItem = ({
           <div className="order-item__variant">Variant: {variantInfo}</div>
         )}
         <div className="order-item__meta">
-          <span className="order-item__quantity">Qty: {item?.quantity || 1}</span>
+          <span className="order-item__quantity">
+            Qty: {item?.quantity || 1}
+          </span>
           <span className="order-item__price">
-            {currency === "NGN" ? "₦" : currency} {formatCurrency(item?.totalPrice)}
+            {currency === "NGN" ? "₦" : currency}{" "}
+            {formatCurrency(item?.totalPrice)}
           </span>
         </div>
       </div>
@@ -137,19 +140,19 @@ const OrderItem = ({
 };
 
 // Order Card Component
-const OrderCard = ({ 
-  order, 
-  currency, 
-  onClick 
-}: { 
-  order: any; 
+const OrderCard = ({
+  order,
+  currency,
+  onClick,
+}: {
+  order: any;
   currency: string;
   onClick: () => void;
 }) => {
   const itemCount = order?.orderItems?.length || 0;
   const displayItems = order?.orderItems?.slice(0, 3) || [];
   const remainingItems = itemCount - 3;
-  
+
   return (
     <div className="order-card" onClick={onClick}>
       <div className="order-card__header">
@@ -166,33 +169,31 @@ const OrderCard = ({
           </span>
         </div>
         <div className="order-card__header-right">
-          <span className={`order-card__status ${getStatusClass(order?.status)}`}>
+          <span
+            className={`order-card__status ${getStatusClass(order?.status)}`}
+          >
             {order?.status}
           </span>
           <span className="order-card__total">
-            {currency === "NGN" ? "₦" : currency} {formatCurrency(order?.grandTotal)}
+            {currency === "NGN" ? "₦" : currency}{" "}
+            {formatCurrency(order?.grandTotal)}
           </span>
         </div>
       </div>
-      
+
       <div className="order-card__body">
         <div className="order-card__items">
           {displayItems.map((item: any, index: number) => (
-            <OrderItem 
-              key={index} 
-              item={item} 
-              currency={currency}
-            />
+            <OrderItem key={index} item={item} currency={currency} />
           ))}
         </div>
       </div>
-      
+
       <div className="order-card__footer">
         <span className="order-card__footer-info">
-          {remainingItems > 0 
+          {remainingItems > 0
             ? `+${remainingItems} more item${remainingItems > 1 ? "s" : ""}`
-            : `Ordered ${moment(order?.createdAt).fromNow()}`
-          }
+            : `Ordered ${moment(order?.createdAt).fromNow()}`}
         </span>
         <span className="order-card__footer-action">
           View Details <FaChevronRight size={12} />
@@ -210,7 +211,8 @@ const EmptyState = ({ onShopNow }: { onShopNow: () => void }) => (
     </div>
     <h3 className="orders-empty__title">No Orders Yet</h3>
     <p className="orders-empty__text">
-      You haven&apos;t placed any orders yet.<br />
+      You haven&apos;t placed any orders yet.
+      <br />
       Start shopping at Alaba Marketplace to see your orders here.
     </p>
     <button className="orders-empty__button" onClick={onShopNow}>
@@ -238,7 +240,7 @@ function UserOrders() {
   const [search, setSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [page, setPage] = useState(
-    isNaN(Number(currpage)) ? 1 : Number(currpage)
+    isNaN(Number(currpage)) ? 1 : Number(currpage),
   );
   const pageSize = 5;
   const router = useRouter();
@@ -315,7 +317,7 @@ function UserOrders() {
               </span>
             ))}
           </div>
-          
+
           <div className="orders-filters__controls">
             <Select
               value={dateFilter || undefined}
@@ -356,7 +358,7 @@ function UserOrders() {
               />
             ))}
           </div>
-          
+
           <div className="orders-pagination">
             <Pagination
               current={page}
