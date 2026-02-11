@@ -57,9 +57,11 @@ export default function CustomerDetailsCard(props: Props) {
 
   // Handle guest order display
   if (isGuest) {
-    const guestName = props.data?.guest_name || props.data?.name || "Guest Customer";
+    const guestName =
+      props.data?.guest_name || props.data?.name || "Guest Customer";
     const guestEmail = props.data?.guest_email || "N/A";
-    const guestPhone = props.data?.guest_phone || props.data?.address?.phone_no || "N/A";
+    const guestPhone =
+      props.data?.guest_phone || props.data?.address?.phone_no || "N/A";
 
     return (
       <Card
@@ -67,7 +69,9 @@ export default function CustomerDetailsCard(props: Props) {
           <span>
             <UserOutlined style={{ marginRight: 8 }} />
             Customer Details
-            <Tag color="orange" style={{ marginLeft: 8 }}>Guest</Tag>
+            <Tag color="orange" style={{ marginLeft: 8 }}>
+              Guest
+            </Tag>
           </span>
         }
         className="h-100"

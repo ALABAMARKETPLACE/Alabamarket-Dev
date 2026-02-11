@@ -143,8 +143,8 @@ export default function OrderDetails() {
                     ...(specificStoreOrder?.address || {}),
                     user_id: order?.data?.userId ?? order?.data?.user_id,
                     order_contact_name:
-                      specificStoreOrder?.name || 
-                      order?.data?.name || 
+                      specificStoreOrder?.name ||
+                      order?.data?.name ||
                       order?.data?.guest_name,
                     // Fallback for phone if it exists at root of store order
                     phone_no:

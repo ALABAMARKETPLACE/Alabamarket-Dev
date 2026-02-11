@@ -81,7 +81,11 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
           <span className="table__text--secondary">
             {text || record.guest_name || "Guest"}
             {record.is_guest_order && (
-              <Tag color="orange" bordered={false} style={{ marginLeft: 6, fontSize: 10 }}>
+              <Tag
+                color="orange"
+                bordered={false}
+                style={{ marginLeft: 6, fontSize: 10 }}
+              >
                 Guest
               </Tag>
             )}
@@ -154,7 +158,12 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             type="text"
             size="small"
             icon={<FaEye size={16} />}
-            onClick={() => route.push("/auth/orders/" + (record?.id ?? record?._id ?? record?.order_id))}
+            onClick={() =>
+              route.push(
+                "/auth/orders/" +
+                  (record?.id ?? record?._id ?? record?.order_id),
+              )
+            }
             className="table__action-btn"
             title="View order"
           />

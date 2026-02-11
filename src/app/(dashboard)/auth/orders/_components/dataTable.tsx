@@ -60,9 +60,15 @@ interface UserResponse {
   };
 }
 
-const UserName = ({ userId, guestName }: { userId: number | null | undefined; guestName?: string }) => {
+const UserName = ({
+  userId,
+  guestName,
+}: {
+  userId: number | null | undefined;
+  guestName?: string;
+}) => {
   const [name, setName] = useState<string>(
-    guestName ? guestName : (userId ? "Loading..." : "Guest")
+    guestName ? guestName : userId ? "Loading..." : "Guest",
   );
 
   useEffect(() => {
@@ -153,12 +159,18 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               <div className="table__user-name">
                 #{orderId || "N/A"}
                 {record.is_guest_order && (
-                  <span className="dashboard-badge dashboard-badge--warning" style={{ marginLeft: 8, fontSize: 10 }}>
+                  <span
+                    className="dashboard-badge dashboard-badge--warning"
+                    style={{ marginLeft: 8, fontSize: 10 }}
+                  >
                     Guest
                   </span>
                 )}
                 {record.is_multi_seller && (
-                  <span className="dashboard-badge dashboard-badge--info" style={{ marginLeft: 4, fontSize: 10 }}>
+                  <span
+                    className="dashboard-badge dashboard-badge--info"
+                    style={{ marginLeft: 4, fontSize: 10 }}
+                  >
                     Multi-Seller
                   </span>
                 )}
@@ -168,8 +180,8 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 {record?.name ? (
                   record.name
                 ) : (
-                  <UserName 
-                    userId={record.userId ?? record.user_id ?? null} 
+                  <UserName
+                    userId={record.userId ?? record.user_id ?? null}
                     guestName={record.guest_name}
                   />
                 )}
@@ -280,15 +292,18 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 <h4 className="dashboard-mobile-card__title">
                   #{order.order_id || "N/A"}
                   {order.is_guest_order && (
-                    <span className="dashboard-badge dashboard-badge--warning" style={{ marginLeft: 6, fontSize: 10 }}>
+                    <span
+                      className="dashboard-badge dashboard-badge--warning"
+                      style={{ marginLeft: 6, fontSize: 10 }}
+                    >
                       Guest
                     </span>
                   )}
                 </h4>
                 <p className="dashboard-mobile-card__subtitle">
                   {order?.name || (
-                    <UserName 
-                      userId={order.userId ?? order.user_id ?? null} 
+                    <UserName
+                      userId={order.userId ?? order.user_id ?? null}
                       guestName={order.guest_name}
                     />
                   )}

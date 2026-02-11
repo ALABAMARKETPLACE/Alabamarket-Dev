@@ -245,10 +245,11 @@ function Checkout() {
         }
 
         // Add guest_email for guest orders (from stored Paystack data or verification response)
-        const isGuestOrder = finalOrderData.address?.is_guest || !finalOrderData.user_id;
+        const isGuestOrder =
+          finalOrderData.address?.is_guest || !finalOrderData.user_id;
         if (isGuestOrder) {
           // Get guest email from Paystack verification or stored order data
-          const guestEmail = 
+          const guestEmail =
             verificationResponse?.data?.customer?.email ||
             orderData?.email ||
             finalOrderData.address?.email;
