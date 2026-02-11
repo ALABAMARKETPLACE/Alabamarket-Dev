@@ -26,8 +26,8 @@ interface AddressData {
 }
 
 interface CustomerData {
-  userId?: string | number;
-  user_id?: string | number;
+  userId?: string | number | null;
+  user_id?: string | number | null;
   address?: AddressData;
   is_guest_order?: boolean;
   guest_name?: string;

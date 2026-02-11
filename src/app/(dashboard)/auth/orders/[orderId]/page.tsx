@@ -141,7 +141,7 @@ export default function OrderDetails() {
                   data={{
                     ...(order?.data?.address as AddressData),
                     ...(specificStoreOrder?.address || {}),
-                    user_id: order?.data?.userId ?? order?.data?.user_id,
+                    user_id: order?.data?.userId ?? order?.data?.user_id ?? undefined,
                     order_contact_name:
                       specificStoreOrder?.name ||
                       order?.data?.name ||
