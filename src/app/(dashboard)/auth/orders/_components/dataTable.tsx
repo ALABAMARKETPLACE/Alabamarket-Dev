@@ -63,43 +63,60 @@ interface UserResponse {
 const UserName = ({
   userId,
   guestName,
+  isGuestOrder,
 }: {
   userId: number | null | undefined;
   guestName?: string;
+  isGuestOrder?: boolean;
 }) => {
-  const [name, setName] = useState<string>(
-    guestName ? guestName : userId ? "Loading..." : "Guest",
-  );
+  // Determine initial state based on available data
+  const getInitialName = () => {
+    if (guestName) return guestName;
+    if (isGuestOrder) return "Guest";
+    if (userId !== null && userId !== undefined) return "Loading...";
+    return "N/A";
+  };
+  
+  const [name, setName] = useState<string>(getInitialName());
 
   useEffect(() => {
     let isMounted = true;
+    
     // If guest name is provided, use it directly
     if (guestName) {
       setName(guestName);
       return;
     }
-    // If no userId, it's a guest order
-    if (!userId) {
+    
+    // If it's explicitly a guest order, show "Guest"
+    if (isGuestOrder) {
       setName("Guest");
       return;
     }
-    // Fetch user name for authenticated orders
-    GET(API.USER_DETAILS + userId)
-      .then((res: unknown) => {
-        const userRes = res as UserResponse;
-        if (isMounted) {
-          setName(userRes?.data?.name || "N/A");
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setName("N/A");
-        }
-      });
+    
+    // If userId exists (not null/undefined), fetch user name
+    if (userId !== null && userId !== undefined) {
+      GET(API.USER_DETAILS + userId)
+        .then((res: unknown) => {
+          const userRes = res as UserResponse;
+          if (isMounted) {
+            setName(userRes?.data?.name || "N/A");
+          }
+        })
+        .catch(() => {
+          if (isMounted) {
+            setName("N/A");
+          }
+        });
+    } else {
+      // No userId and not a guest order - show N/A
+      setName("N/A");
+    }
+    
     return () => {
       isMounted = false;
     };
-  }, [userId, guestName]);
+  }, [userId, guestName, isGuestOrder]);
 
   return <span>{name}</span>;
 };
@@ -181,8 +198,9 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                   record.name
                 ) : (
                   <UserName
-                    userId={record.userId ?? record.user_id ?? null}
+                    userId={record.userId ?? record.user_id}
                     guestName={record.guest_name}
+                    isGuestOrder={record.is_guest_order}
                   />
                 )}
               </div>
@@ -245,17 +263,11 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               className="table__action-btn"
               onClick={() => {
                 // Debug: log order record to see available IDs
-                console.log("Order record:", record);
-                console.log(
-                  "Available IDs - id:",
-                  record?.id,
-                  "_id:",
-                  record?._id,
-                  "order_id:",
-                  record?.order_id,
-                );
+                console.log("=== ORDER DEBUG ===");
+                console.log("Full order record:", JSON.stringify(record, null, 2));
+                console.log("id:", record?.id, "| _id:", record?._id, "| order_id:", record?.order_id);
                 const orderId = record?.id ?? record?._id ?? record?.order_id;
-                console.log("Navigating to order:", orderId);
+                console.log("Using orderId for navigation:", orderId);
                 route.push("/auth/orders/" + orderId);
               }}
               icon={<FiEye size={18} />}
@@ -312,8 +324,9 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 <p className="dashboard-mobile-card__subtitle">
                   {order?.name || (
                     <UserName
-                      userId={order.userId ?? order.user_id ?? null}
+                      userId={order.userId ?? order.user_id}
                       guestName={order.guest_name}
+                      isGuestOrder={order.is_guest_order}
                     />
                   )}
                 </p>
