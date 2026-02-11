@@ -11,7 +11,13 @@ interface PageHeaderProps {
   icon?: React.ReactNode;
 }
 
-function PageHeader({ title, bredcume, children, onBack, icon }: PageHeaderProps) {
+function PageHeader({
+  title,
+  bredcume,
+  children,
+  onBack,
+  icon,
+}: PageHeaderProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -39,11 +45,7 @@ function PageHeader({ title, bredcume, children, onBack, icon }: PageHeaderProps
         >
           <IoChevronBackOutline size={20} />
         </button>
-        {icon && (
-          <div className="dashboard-pageHeader__icon">
-            {icon}
-          </div>
-        )}
+        {icon && <div className="dashboard-pageHeader__icon">{icon}</div>}
         <div className="dashboard-pageHeader__title-group">
           <h1 className="dashboard-pageHeader__title">{title}</h1>
           {bredcume && (

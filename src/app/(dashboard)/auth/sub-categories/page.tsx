@@ -2,7 +2,11 @@
 import React, { useReducer, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Input, Select, Tooltip } from "antd";
-import { IoSearchOutline, IoAddCircleOutline, IoRefresh } from "react-icons/io5";
+import {
+  IoSearchOutline,
+  IoAddCircleOutline,
+  IoRefresh,
+} from "react-icons/io5";
 import { FiLayers } from "react-icons/fi";
 import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
@@ -47,8 +51,8 @@ function Page() {
   });
   return (
     <>
-      <PageHeader 
-        title="Subcategories" 
+      <PageHeader
+        title="Subcategories"
         bredcume="Dashboard / Subcategories"
         icon={<FiLayers size={24} />}
       >
@@ -73,8 +77,8 @@ function Page() {
           }}
         />
         <Tooltip title="Add New Subcategory">
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             icon={<IoAddCircleOutline size={18} />}
             onClick={() => dispatch({ type: "add" })}
           >
@@ -85,7 +89,12 @@ function Page() {
           <Button
             type="primary"
             ghost
-            icon={<IoRefresh size={18} className={isFetching && !isLoading ? "spin-animation" : ""} />}
+            icon={
+              <IoRefresh
+                size={18}
+                className={isFetching && !isLoading ? "spin-animation" : ""}
+              />
+            }
             onClick={() => refetch()}
             loading={isFetching && !isLoading}
           >

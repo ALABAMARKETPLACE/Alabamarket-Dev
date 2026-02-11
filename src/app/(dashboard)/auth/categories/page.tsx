@@ -2,7 +2,11 @@
 import React, { useReducer, useState } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import { Button, Input, Tooltip } from "antd";
-import { IoSearchOutline, IoAddCircleOutline, IoRefresh } from "react-icons/io5";
+import {
+  IoSearchOutline,
+  IoAddCircleOutline,
+  IoRefresh,
+} from "react-icons/io5";
 import { FiGrid } from "react-icons/fi";
 import Loading from "@/app/(dashboard)/_components/loading";
 import DataTable from "./_components/dataTable";
@@ -34,8 +38,8 @@ function Page() {
   });
   return (
     <>
-      <PageHeader 
-        title="Categories" 
+      <PageHeader
+        title="Categories"
         bredcume="Dashboard / Categories"
         icon={<FiGrid size={24} />}
       >
@@ -50,8 +54,8 @@ function Page() {
           }}
         />
         <Tooltip title="Add New Category">
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             icon={<IoAddCircleOutline size={18} />}
             onClick={() => dispatch({ type: "add" })}
           >
@@ -62,7 +66,12 @@ function Page() {
           <Button
             type="primary"
             ghost
-            icon={<IoRefresh size={18} className={isFetching && !isLoading ? "spin-animation" : ""} />}
+            icon={
+              <IoRefresh
+                size={18}
+                className={isFetching && !isLoading ? "spin-animation" : ""}
+              />
+            }
             onClick={() => refetch()}
             loading={isFetching && !isLoading}
           >
