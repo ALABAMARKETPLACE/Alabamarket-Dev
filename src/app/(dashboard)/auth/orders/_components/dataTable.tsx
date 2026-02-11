@@ -76,24 +76,24 @@ const UserName = ({
     if (userId !== null && userId !== undefined) return "Loading...";
     return "N/A";
   };
-  
+
   const [name, setName] = useState<string>(getInitialName());
 
   useEffect(() => {
     let isMounted = true;
-    
+
     // If guest name is provided, use it directly
     if (guestName) {
       setName(guestName);
       return;
     }
-    
+
     // If it's explicitly a guest order, show "Guest"
     if (isGuestOrder) {
       setName("Guest");
       return;
     }
-    
+
     // If userId exists (not null/undefined), fetch user name
     if (userId !== null && userId !== undefined) {
       GET(API.USER_DETAILS + userId)
@@ -112,7 +112,7 @@ const UserName = ({
       // No userId and not a guest order - show N/A
       setName("N/A");
     }
-    
+
     return () => {
       isMounted = false;
     };
@@ -264,8 +264,18 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               onClick={() => {
                 // Debug: log order record to see available IDs
                 console.log("=== ORDER DEBUG ===");
-                console.log("Full order record:", JSON.stringify(record, null, 2));
-                console.log("id:", record?.id, "| _id:", record?._id, "| order_id:", record?.order_id);
+                console.log(
+                  "Full order record:",
+                  JSON.stringify(record, null, 2),
+                );
+                console.log(
+                  "id:",
+                  record?.id,
+                  "| _id:",
+                  record?._id,
+                  "| order_id:",
+                  record?.order_id,
+                );
                 const orderId = record?.id ?? record?._id ?? record?.order_id;
                 console.log("Using orderId for navigation:", orderId);
                 route.push("/auth/orders/" + orderId);
