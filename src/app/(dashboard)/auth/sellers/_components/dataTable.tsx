@@ -3,7 +3,13 @@ import React, { useEffect, useState } from "react";
 import { Button, Table, Pagination, Avatar, Tooltip } from "antd";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { FiEye, FiShoppingBag, FiPhone, FiDollarSign, FiUser } from "react-icons/fi";
+import {
+  FiEye,
+  FiShoppingBag,
+  FiPhone,
+  FiDollarSign,
+  FiUser,
+} from "react-icons/fi";
 import { MdHourglassEmpty } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/utils/formatNumber";
