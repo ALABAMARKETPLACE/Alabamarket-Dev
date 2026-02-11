@@ -14,7 +14,11 @@
 // HERO SECTION
 // =============================================================================
 .track-order-hero {
-  background: linear-gradient(135deg, vars.$primary 0%, darken(vars.$primary, 15%) 100%);
+  background: linear-gradient(
+    135deg,
+    vars.$primary 0%,
+    darken(vars.$primary, 15%) 100%
+  );
   padding: 60px 20px;
   text-align: center;
   color: #fff;

@@ -36,7 +36,14 @@ export default function NewsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const pageSize = 12;
 
-  const { data: newsData, isLoading, isError, error, refetch, isFetching } = useQuery({
+  const {
+    data: newsData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryFn: async () => {
       const response = await GET(
         `${API.NEWS_AND_BLOGS_GETPGN}?page=${currentPage}&limit=${pageSize}`,
@@ -106,12 +113,12 @@ export default function NewsPage() {
               status="warning"
               title="Unable to load news"
               subTitle={
-                (error as Error)?.message || 
+                (error as Error)?.message ||
                 "We're having trouble fetching the latest news. Please try again later."
               }
               extra={
-                <Button 
-                  type="primary" 
+                <Button
+                  type="primary"
                   icon={<FiRefreshCw />}
                   onClick={() => refetch()}
                   loading={isFetching}

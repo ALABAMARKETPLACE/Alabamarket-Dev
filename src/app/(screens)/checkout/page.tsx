@@ -110,18 +110,18 @@ function Checkout() {
           ...Checkout?.address,
           country_id: Number(
             Checkout?.address?.country_id ||
-            Checkout?.address?.countryDetails?.id ||
-            0
+              Checkout?.address?.countryDetails?.id ||
+              0,
           ),
           state_id: Number(
-            Checkout?.address?.state_id || 
-            Checkout?.address?.stateDetails?.id ||
-            0
+            Checkout?.address?.state_id ||
+              Checkout?.address?.stateDetails?.id ||
+              0,
           ),
           country: String(
             Checkout?.address?.country ||
-            Checkout?.address?.countryDetails?.country_name ||
-            ""
+              Checkout?.address?.countryDetails?.country_name ||
+              "",
           ),
           state:
             Checkout?.address?.state || Checkout?.address?.stateDetails?.name,

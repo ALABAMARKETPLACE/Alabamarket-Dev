@@ -92,11 +92,12 @@ function TrackOrderPage() {
   const [Notifications, contextHolder] = notification.useNotification();
   const settings = useSelector(reduxSettings);
 
-  const currencySymbol = settings?.currency === "NGN" ? "₦" : settings?.currency;
+  const currencySymbol =
+    settings?.currency === "NGN" ? "₦" : settings?.currency;
 
   const handleTrackOrder = async (ref?: string) => {
     const searchRef = ref || reference.trim();
-    
+
     if (!searchRef) {
       Notifications.warning({
         message: "Reference Required",
@@ -116,7 +117,7 @@ function TrackOrderPage() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const data = await response.json();
@@ -173,7 +174,7 @@ function TrackOrderPage() {
   return (
     <div className="track-order-page">
       {contextHolder}
-      
+
       {/* Hero Section */}
       <div className="track-order-hero">
         <div className="track-order-hero__content">
@@ -182,7 +183,8 @@ function TrackOrderPage() {
           </div>
           <h1 className="track-order-hero__title">Track Your Order</h1>
           <p className="track-order-hero__subtitle">
-            Enter your order reference number to see the current status and delivery updates
+            Enter your order reference number to see the current status and
+            delivery updates
           </p>
         </div>
       </div>
@@ -212,7 +214,8 @@ function TrackOrderPage() {
             </Button>
           </div>
           <p className="track-order-search__hint">
-            You can find your order reference in the confirmation email or SMS sent after your purchase
+            You can find your order reference in the confirmation email or SMS
+            sent after your purchase
           </p>
         </Card>
       </div>
@@ -254,7 +257,8 @@ function TrackOrderPage() {
                   <div>
                     <span className="track-order-summary__label">Items</span>
                     <span className="track-order-summary__value">
-                      {trackingData.items_count} item{trackingData.items_count !== 1 ? "s" : ""}
+                      {trackingData.items_count} item
+                      {trackingData.items_count !== 1 ? "s" : ""}
                     </span>
                   </div>
                 </div>
@@ -262,9 +266,12 @@ function TrackOrderPage() {
                 <div className="track-order-summary__item">
                   <FiClock className="track-order-summary__item-icon" />
                   <div>
-                    <span className="track-order-summary__label">Total Amount</span>
+                    <span className="track-order-summary__label">
+                      Total Amount
+                    </span>
                     <span className="track-order-summary__value">
-                      {currencySymbol} {formatCurrency(trackingData.total_amount)}
+                      {currencySymbol}{" "}
+                      {formatCurrency(trackingData.total_amount)}
                     </span>
                   </div>
                 </div>
@@ -272,7 +279,9 @@ function TrackOrderPage() {
                 <div className="track-order-summary__item">
                   <FiMapPin className="track-order-summary__item-icon" />
                   <div>
-                    <span className="track-order-summary__label">Delivery Address</span>
+                    <span className="track-order-summary__label">
+                      Delivery Address
+                    </span>
                     <span className="track-order-summary__value">
                       {trackingData.delivery_address}
                     </span>
@@ -288,7 +297,7 @@ function TrackOrderPage() {
                       </span>
                       <span className="track-order-summary__value">
                         {moment(trackingData.estimated_delivery).format(
-                          "MMMM Do, YYYY"
+                          "MMMM Do, YYYY",
                         )}
                       </span>
                     </div>
@@ -322,7 +331,7 @@ function TrackOrderPage() {
                         <div className="track-order-timeline__step-desc">
                           <span className="track-order-timeline__step-time">
                             {moment(update.timestamp).format(
-                              "MMM DD, YYYY • h:mm A"
+                              "MMM DD, YYYY • h:mm A",
                             )}
                           </span>
                           {update.remark && (
@@ -348,8 +357,8 @@ function TrackOrderPage() {
             <Card className="track-order-help">
               <h3>Need Help?</h3>
               <p>
-                If you have questions about your order, please contact our support team
-                with your order reference number.
+                If you have questions about your order, please contact our
+                support team with your order reference number.
               </p>
               <Button type="link" href="/contact_us">
                 Contact Support

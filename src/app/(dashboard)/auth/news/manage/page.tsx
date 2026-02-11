@@ -319,10 +319,12 @@ export default function ManageNewsPage() {
           <div className="news-list-header">
             <h2>News List</h2>
             {(newsListData?.data?.length ?? 0) > 0 && (
-              <span className="news-count">{newsListData?.data?.length} articles</span>
+              <span className="news-count">
+                {newsListData?.data?.length} articles
+              </span>
             )}
           </div>
-          
+
           {isFetching ? (
             <div className="news-loading">
               <Spin size="large" />
@@ -333,12 +335,12 @@ export default function ManageNewsPage() {
               <FiAlertCircle className="error-icon" />
               <h3>Unable to load news</h3>
               <p>
-                {(error as Error)?.message || 
+                {(error as Error)?.message ||
                   "There was a problem fetching the news list. Please check your connection and try again."}
               </p>
-              <Button 
-                type="primary" 
-                icon={<ReloadOutlined />} 
+              <Button
+                type="primary"
+                icon={<ReloadOutlined />}
                 onClick={() => refetch()}
               >
                 Retry
@@ -349,7 +351,11 @@ export default function ManageNewsPage() {
               <FileImageOutlined className="empty-icon" />
               <h3>No news articles yet</h3>
               <p>Get started by creating your first news article.</p>
-              <Button type="primary" icon={<PlusOutlined />} onClick={handleAddNew}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={handleAddNew}
+              >
                 Add News
               </Button>
             </div>
