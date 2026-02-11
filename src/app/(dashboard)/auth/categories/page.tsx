@@ -1,8 +1,9 @@
 "use client";
 import React, { useReducer, useState } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
-import { Button, Input } from "antd";
-import { IoSearchOutline } from "react-icons/io5";
+import { Button, Input, Tooltip } from "antd";
+import { IoSearchOutline, IoAddCircleOutline, IoRefresh } from "react-icons/io5";
+import { FiGrid } from "react-icons/fi";
 import Loading from "@/app/(dashboard)/_components/loading";
 import DataTable from "./_components/dataTable";
 import { useQuery } from "@tanstack/react-query";
@@ -33,26 +34,41 @@ function Page() {
   });
   return (
     <>
-      <PageHeader title={"Category"} bredcume={"Dashboard / Category"}>
+      <PageHeader 
+        title="Categories" 
+        bredcume="Dashboard / Categories"
+        icon={<FiGrid size={24} />}
+      >
         <Input
           suffix={<IoSearchOutline />}
-          placeholder="Search . . ."
+          placeholder="Search categories..."
+          className="header-search-input"
+          allowClear
           onChange={(e) => {
             handleChange(e?.target?.value);
             setPage(1);
           }}
         />
-        <Button type="primary" onClick={() => dispatch({ type: "add" })}>
-          New +
-        </Button>
-        <Button
-          type="primary"
-          ghost
-          onClick={() => refetch()}
-          loading={isFetching && !isLoading}
-        >
-          Refresh
-        </Button>
+        <Tooltip title="Add New Category">
+          <Button 
+            type="primary" 
+            icon={<IoAddCircleOutline size={18} />}
+            onClick={() => dispatch({ type: "add" })}
+          >
+            <span className="btn-text">Add Category</span>
+          </Button>
+        </Tooltip>
+        <Tooltip title="Refresh Data">
+          <Button
+            type="primary"
+            ghost
+            icon={<IoRefresh size={18} className={isFetching && !isLoading ? "spin-animation" : ""} />}
+            onClick={() => refetch()}
+            loading={isFetching && !isLoading}
+          >
+            <span className="btn-text">Refresh</span>
+          </Button>
+        </Tooltip>
       </PageHeader>
       {isLoading ? (
         <Loading />

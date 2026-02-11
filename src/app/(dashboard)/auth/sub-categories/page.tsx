@@ -1,8 +1,9 @@
 "use client";
 import React, { useReducer, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Button, Input, Select } from "antd";
-import { IoSearchOutline } from "react-icons/io5";
+import { Button, Input, Select, Tooltip } from "antd";
+import { IoSearchOutline, IoAddCircleOutline, IoRefresh } from "react-icons/io5";
+import { FiLayers } from "react-icons/fi";
 import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
@@ -46,36 +47,51 @@ function Page() {
   });
   return (
     <>
-      <PageHeader title={"Subcategory"} bredcume={"Dashboard / Subcategory"}>
+      <PageHeader 
+        title="Subcategories" 
+        bredcume="Dashboard / Subcategories"
+        icon={<FiLayers size={24} />}
+      >
         <Input
           suffix={<IoSearchOutline />}
-          placeholder="Search . . ."
-          className="w-100"
+          placeholder="Search subcategories..."
+          className="header-search-input"
+          allowClear
           onChange={(e) => {
             handleChange(e?.target?.value);
             setPage(1);
           }}
         />
         <Select
-          defaultValue="Select Category"
-          options={[...categories, { value: "", label: "All Category" }]}
-          className="w-100"
+          placeholder="Filter by Category"
+          options={[{ value: "", label: "All Categories" }, ...categories]}
+          className="header-filter-select"
+          allowClear
           onChange={(v) => {
-            setCategory(v);
+            setCategory(v || "");
             setPage(1);
           }}
         />
-        <Button type="primary" onClick={() => dispatch({ type: "add" })}>
-          New +
-        </Button>
-        <Button
-          type="primary"
-          ghost
-          onClick={() => refetch()}
-          loading={isFetching && !isLoading}
-        >
-          Refresh
-        </Button>
+        <Tooltip title="Add New Subcategory">
+          <Button 
+            type="primary" 
+            icon={<IoAddCircleOutline size={18} />}
+            onClick={() => dispatch({ type: "add" })}
+          >
+            <span className="btn-text">Add Subcategory</span>
+          </Button>
+        </Tooltip>
+        <Tooltip title="Refresh Data">
+          <Button
+            type="primary"
+            ghost
+            icon={<IoRefresh size={18} className={isFetching && !isLoading ? "spin-animation" : ""} />}
+            onClick={() => refetch()}
+            loading={isFetching && !isLoading}
+          >
+            <span className="btn-text">Refresh</span>
+          </Button>
+        </Tooltip>
       </PageHeader>
       {isLoading ? (
         <Loading />

@@ -8,9 +8,10 @@ interface PageHeaderProps {
   bredcume?: string;
   children?: React.ReactNode;
   onBack?: () => void;
+  icon?: React.ReactNode;
 }
 
-function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
+function PageHeader({ title, bredcume, children, onBack, icon }: PageHeaderProps) {
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -28,7 +29,7 @@ function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
 
   return (
     <div className="dashboard-pageHeader">
-      {/* Left Section: Back Button & Title */}
+      {/* Left Section: Back Button, Icon & Title */}
       <div className="dashboard-pageHeader__left">
         <button
           className="dashboard-pageHeader__back-btn"
@@ -38,6 +39,11 @@ function PageHeader({ title, bredcume, children, onBack }: PageHeaderProps) {
         >
           <IoChevronBackOutline size={20} />
         </button>
+        {icon && (
+          <div className="dashboard-pageHeader__icon">
+            {icon}
+          </div>
+        )}
         <div className="dashboard-pageHeader__title-group">
           <h1 className="dashboard-pageHeader__title">{title}</h1>
           {bredcume && (
