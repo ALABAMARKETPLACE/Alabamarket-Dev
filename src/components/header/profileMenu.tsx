@@ -22,16 +22,16 @@ const ProfileMenu = (props: any) => {
   const dispatch = useDispatch();
   const [Notifications, contextHolder] = notification.useNotification();
   const iconSize = 17;
-  
+
   // Track if we've already refreshed for this visibility state
   const hasRefreshedRef = useRef(false);
   const updateSessionRef = useRef(updateSession);
-  
+
   // Keep updateSession ref current
   useEffect(() => {
     updateSessionRef.current = updateSession;
   }, [updateSession]);
-  
+
   const OpenLink = (link: any) => {
     if (User?.user) {
       navigation.push(link);
@@ -52,16 +52,12 @@ const ProfileMenu = (props: any) => {
     let ignore = false;
     const refreshProfileStats = async () => {
       // Only refresh once per menu open, and only if user is logged in
-      if (
-        !props?.isVisible ||
-        !User?.user?.id ||
-        hasRefreshedRef.current
-      ) {
+      if (!props?.isVisible || !User?.user?.id || hasRefreshedRef.current) {
         return;
       }
-      
+
       hasRefreshedRef.current = true;
-      
+
       try {
         const response: any = await GET(API.USER_REFRESH);
         if (!response?.status || ignore) return;
