@@ -161,10 +161,12 @@ function Checkout() {
               API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
               obj,
             );
-          } catch (publicErr: any) {
+            console.log("Guest delivery calculation response:", response);
+          } catch (publicErr: unknown) {
             // If public endpoint fails (404 or not implemented), use default delivery charge
             console.log(
-              "Public delivery calculation not available, using default estimation",
+              "Public delivery calculation failed, using default estimation:",
+              publicErr,
             );
 
             // Default delivery charge estimation for guests
@@ -175,15 +177,22 @@ function Checkout() {
             setDelivery_charge(defaultDeliveryCharge);
             setGrand_total(totals + defaultDeliveryCharge);
             setDiscount(0);
+            setIsDeliveryCalculating(false);
             return;
           }
         }
 
+        console.log("Delivery response:", response);
+
         if (response?.status) {
-          setDeliveryToken(response?.token);
-          const delivery = Number(response?.details?.totalCharge || 0);
+          const deliveryToken = response?.token || response?.data?.token || "";
+          const delivery = Number(response?.details?.totalCharge || response?.data?.details?.totalCharge || 0);
           const discountVal = Number(response?.data?.discount || 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
+          
+          console.log("Setting delivery charge:", delivery, "Grand total:", gTotal);
+          
+          setDeliveryToken(deliveryToken);
           setDelivery_charge(delivery);
           setGrand_total(gTotal);
           setDiscount(discountVal);
