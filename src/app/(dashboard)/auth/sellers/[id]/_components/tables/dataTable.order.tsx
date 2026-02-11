@@ -13,12 +13,21 @@ import { useMemo } from "react";
 
 type OrderId = string | number;
 interface OrderRow {
+  id?: OrderId;
+  _id?: OrderId;
   image?: string;
   order_id: OrderId;
   name: string;
   createdAt: string | number | Date;
   grandTotal: number | string;
   status: string;
+  // Guest order fields
+  is_guest_order?: boolean;
+  guest_name?: string;
+  guest_email?: string;
+  guest_phone?: string;
+  userId?: number | null;
+  user_id?: number | null;
 }
 
 interface props {
@@ -68,8 +77,15 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         dataIndex: "name",
         key: "userId",
         ellipsis: true,
-        render: (text: string) => (
-          <span className="table__text--secondary">{text}</span>
+        render: (text: string, record: OrderRow) => (
+          <span className="table__text--secondary">
+            {text || record.guest_name || "Guest"}
+            {record.is_guest_order && (
+              <Tag color="orange" bordered={false} style={{ marginLeft: 6, fontSize: 10 }}>
+                Guest
+              </Tag>
+            )}
+          </span>
         ),
       },
       {
@@ -138,7 +154,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             type="text"
             size="small"
             icon={<FaEye size={16} />}
-            onClick={() => route.push("/auth/orders/" + record?.order_id)}
+            onClick={() => route.push("/auth/orders/" + (record?.id ?? record?._id ?? record?.order_id))}
             className="table__action-btn"
             title="View order"
           />

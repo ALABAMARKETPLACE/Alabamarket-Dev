@@ -244,6 +244,19 @@ function Checkout() {
           finalOrderData.user = User;
         }
 
+        // Add guest_email for guest orders (from stored Paystack data or verification response)
+        const isGuestOrder = finalOrderData.address?.is_guest || !finalOrderData.user_id;
+        if (isGuestOrder) {
+          // Get guest email from Paystack verification or stored order data
+          const guestEmail = 
+            verificationResponse?.data?.customer?.email ||
+            orderData?.email ||
+            finalOrderData.address?.email;
+          if (guestEmail) {
+            finalOrderData.guest_email = guestEmail;
+          }
+        }
+
         console.log("Final Order Payload:", finalOrderData);
       } else {
         // Unknown route
@@ -532,7 +545,8 @@ function Checkout() {
       setPaymentStatus(true);
       setOrderStatus(false);
       setIsLoading(false);
-      setOrderCreated(false); // Allow retry on error
+      // Don't reset orderCreated to false - it causes infinite re-render loop
+      // User can manually retry by clicking a button or refreshing
 
       console.error("Order creation error:", err);
       Notifications["error"]({

@@ -623,6 +623,8 @@ function Checkout() {
             stores: stores.map((s) => s.storeId),
             is_multi_seller: hasMultipleStores,
             store_allocations: storeAllocations,
+            // Include guest email for guest orders
+            guest_email: !isAuthenticated ? guestEmail : undefined,
             order_data: {
               payment: {
                 ref: reference,
@@ -637,6 +639,8 @@ function Checkout() {
               },
               user_id: customerId,
               user: user,
+              // Add guest_email to order_data for backend
+              guest_email: !isAuthenticated ? guestEmail : undefined,
             },
           }),
         );

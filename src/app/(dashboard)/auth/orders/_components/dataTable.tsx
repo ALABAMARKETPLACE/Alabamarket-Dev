@@ -23,12 +23,26 @@ export interface Order {
   _id?: string | number;
   order_id?: string | number;
   image?: string;
-  userId?: number;
+  userId?: number | null;
+  user_id?: number | null;
   name?: string;
   createdAt?: string;
   grandTotal?: number;
   status?: string;
   orderItems?: Record<string, unknown>[];
+  storeId?: string | number;
+  store_id?: string | number;
+  // Guest order fields
+  is_guest_order?: boolean;
+  guest_email?: string;
+  guest_name?: string;
+  guest_phone?: string;
+  // Multi-seller order fields
+  is_multi_seller?: boolean;
+  stores?: (string | number)[];
+  // Payment reference
+  payment_ref?: string;
+  paymentRef?: string;
   [key: string]: unknown;
 }
 
@@ -46,29 +60,40 @@ interface UserResponse {
   };
 }
 
-const UserName = ({ userId }: { userId: number }) => {
-  const [name, setName] = useState<string>(userId ? "Loading..." : "N/A");
+const UserName = ({ userId, guestName }: { userId: number | null | undefined; guestName?: string }) => {
+  const [name, setName] = useState<string>(
+    guestName ? guestName : (userId ? "Loading..." : "Guest")
+  );
 
   useEffect(() => {
     let isMounted = true;
-    if (userId) {
-      GET(API.USER_DETAILS + userId)
-        .then((res: unknown) => {
-          const userRes = res as UserResponse;
-          if (isMounted) {
-            setName(userRes?.data?.name || "N/A");
-          }
-        })
-        .catch(() => {
-          if (isMounted) {
-            setName("N/A");
-          }
-        });
+    // If guest name is provided, use it directly
+    if (guestName) {
+      setName(guestName);
+      return;
     }
+    // If no userId, it's a guest order
+    if (!userId) {
+      setName("Guest");
+      return;
+    }
+    // Fetch user name for authenticated orders
+    GET(API.USER_DETAILS + userId)
+      .then((res: unknown) => {
+        const userRes = res as UserResponse;
+        if (isMounted) {
+          setName(userRes?.data?.name || "N/A");
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setName("N/A");
+        }
+      });
     return () => {
       isMounted = false;
     };
-  }, [userId]);
+  }, [userId, guestName]);
 
   return <span>{name}</span>;
 };
@@ -125,13 +150,28 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               }}
             />
             <div>
-              <div className="table__user-name">#{orderId || "N/A"}</div>
+              <div className="table__user-name">
+                #{orderId || "N/A"}
+                {record.is_guest_order && (
+                  <span className="dashboard-badge dashboard-badge--warning" style={{ marginLeft: 8, fontSize: 10 }}>
+                    Guest
+                  </span>
+                )}
+                {record.is_multi_seller && (
+                  <span className="dashboard-badge dashboard-badge--info" style={{ marginLeft: 4, fontSize: 10 }}>
+                    Multi-Seller
+                  </span>
+                )}
+              </div>
               <div className="table__text--secondary" style={{ fontSize: 12 }}>
                 <FiUser size={12} style={{ marginRight: 4 }} />
                 {record?.name ? (
                   record.name
                 ) : (
-                  <UserName userId={record.userId as number} />
+                  <UserName 
+                    userId={record.userId ?? record.user_id ?? null} 
+                    guestName={record.guest_name}
+                  />
                 )}
               </div>
             </div>
@@ -194,7 +234,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               onClick={() =>
                 route.push(
                   "/auth/orders/" +
-                    (record?.order_id ?? record?._id ?? record?.id),
+                    (record?.id ?? record?._id ?? record?.order_id),
                 )
               }
               icon={<FiEye size={18} />}
@@ -239,9 +279,19 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               <div className="dashboard-mobile-card__title-group">
                 <h4 className="dashboard-mobile-card__title">
                   #{order.order_id || "N/A"}
+                  {order.is_guest_order && (
+                    <span className="dashboard-badge dashboard-badge--warning" style={{ marginLeft: 6, fontSize: 10 }}>
+                      Guest
+                    </span>
+                  )}
                 </h4>
                 <p className="dashboard-mobile-card__subtitle">
-                  {order?.name || <UserName userId={order.userId as number} />}
+                  {order?.name || (
+                    <UserName 
+                      userId={order.userId ?? order.user_id ?? null} 
+                      guestName={order.guest_name}
+                    />
+                  )}
                 </p>
               </div>
               <span className={getStatusBadge(order.status || "")}>
@@ -280,7 +330,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 onClick={() =>
                   route.push(
                     "/auth/orders/" +
-                      (order?.order_id ?? order?._id ?? order?.id),
+                      (order?.id ?? order?._id ?? order?.order_id),
                   )
                 }
               >
