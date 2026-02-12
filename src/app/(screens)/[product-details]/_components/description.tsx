@@ -69,8 +69,17 @@ type Props = {
 function Description(props: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cartItems = useSelector((state: any) => state.Cart.items);
+  
+  // Track if component has mounted to avoid hydration mismatch
+  const [hasMounted, setHasMounted] = useState(false);
+  
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+  
+  // Only check cart state after hydration to avoid mismatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const isProductInCart = cartItems?.some(
+  const isProductInCart = hasMounted && cartItems?.some(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (item: any) => item.productId === props?.data?._id,
   );

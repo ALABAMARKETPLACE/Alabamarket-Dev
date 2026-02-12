@@ -368,9 +368,66 @@ function Checkout() {
         finalOrderData?.payment?.amount,
       );
 
-      // Create order (payment already verified above for Paystack)
+      // Determine if this is a guest order
+      const isGuestOrder =
+        finalOrderData?.address?.is_guest ||
+        !finalOrderData?.user_id ||
+        finalOrderData?.guest_email;
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response: any = await POST(API.ORDER, finalOrderData);
+      let response: any;
+
+      if (isGuestOrder) {
+        // Format payload for guest order endpoint
+        const guestOrderPayload = {
+          guest_info: {
+            email:
+              finalOrderData?.guest_email ||
+              finalOrderData?.address?.email ||
+              "",
+            first_name: finalOrderData?.address?.first_name || "",
+            last_name: finalOrderData?.address?.last_name || "",
+            phone: finalOrderData?.address?.phone_no || "",
+          },
+          cart_items: Array.isArray(finalOrderData?.cart)
+            ? finalOrderData.cart.map((item: any) => ({
+                product_id: item?.product_id || item?.productId || item?.id,
+                product_name:
+                  item?.name || item?.product?.name || item?.productName,
+                quantity: item?.quantity || 1,
+              }))
+            : [],
+          delivery_address: {
+            full_name:
+              finalOrderData?.address?.full_name ||
+              `${finalOrderData?.address?.first_name || ""} ${finalOrderData?.address?.last_name || ""}`.trim(),
+            phone_no: finalOrderData?.address?.phone_no || "",
+            full_address: finalOrderData?.address?.full_address || "",
+            city: finalOrderData?.address?.city || "",
+            state: finalOrderData?.address?.state || "",
+            state_id: finalOrderData?.address?.state_id || null,
+            country: finalOrderData?.address?.country || "",
+            country_id: finalOrderData?.address?.country_id || null,
+          },
+          delivery: {
+            delivery_token: finalOrderData?.charges?.token || "",
+          },
+          payment: {
+            payment_reference: finalOrderData?.payment?.ref || "",
+            transaction_reference:
+              finalOrderData?.payment?.transaction_reference ||
+              finalOrderData?.payment?.ref ||
+              "",
+            payment_status: finalOrderData?.payment?.status || "success",
+          },
+        };
+
+        console.log("Guest order payload:", guestOrderPayload);
+        response = await POST(API.ORDER_GUEST, guestOrderPayload);
+      } else {
+        // Create order for authenticated users (payment already verified above for Paystack)
+        response = await POST(API.ORDER, finalOrderData);
+      }
       console.log(
         "Order creation response:",
         JSON.stringify(response, null, 2),

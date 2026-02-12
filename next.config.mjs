@@ -18,6 +18,17 @@ const nextConfig = {
       "@": "./src",
     },
   },
+  // Proxy API requests to bypass CORS in local development only
+  async rewrites() {
+    return process.env.NODE_ENV === "development"
+      ? [
+          {
+            source: "/api-proxy/:path*",
+            destination: "https://development.alabamarketplace.ng/backend/:path*",
+          },
+        ]
+      : [];
+  },
 };
 
 export default nextConfig;
