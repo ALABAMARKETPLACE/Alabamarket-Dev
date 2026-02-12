@@ -140,7 +140,7 @@ export const useTokenExpiration = () => {
             const cartData = {
               productId: item.productId || item._id,
               storeId: item.storeId || item.store_id,
-              qty: item.qty || item.quantity || 1,
+              qty: Math.floor(Number(item.qty || item.quantity) || 1), // Ensure integer
             };
             await POST(API.CART, cartData);
             console.log("✅ Synced item:", item.name || item.productName);

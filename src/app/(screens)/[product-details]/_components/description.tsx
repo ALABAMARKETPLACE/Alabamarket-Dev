@@ -265,9 +265,10 @@ function Description(props: Props) {
 
       const guestCartItem = {
         productId: props?.data?.pid,
+        pid: props?.data?.pid, // Store numeric pid explicitly for guest order
         name: props?.data?.name,
         price: props?.currentVariant?.price ?? props?.data?.retail_rate,
-        quantity: quantity,
+        quantity: Math.floor(quantity), // Ensure integer quantity
         image: props?.currentVariant?.id
           ? props?.currentVariant?.image
           : props?.data?.image,

@@ -424,18 +424,28 @@ function Checkout() {
             phone: finalOrderData?.address?.phone_no || "",
           },
           cart_items: Array.isArray(finalOrderData?.cart)
-            ? finalOrderData.cart.map((item: any) => ({
-                product_id: Number(
+            ? finalOrderData.cart.map((item: any) => {
+                // Get numeric product ID - prioritize pid field, then productId
+                // pid is the numeric database ID, productId might be MongoDB _id (string)
+                const rawProductId =
+                  item?.pid ||
+                  item?.product?.pid ||
                   item?.product_id ||
-                    item?.productId ||
-                    item?.id ||
-                    item?.pid ||
-                    0,
-                ),
-                product_name:
-                  item?.name || item?.product?.name || item?.productName || "",
-                quantity: Number(item?.quantity || 1),
-              }))
+                  item?.productId ||
+                  item?.id ||
+                  "0";
+                const productId = parseInt(String(rawProductId), 10);
+
+                return {
+                  product_id: isNaN(productId) ? 0 : productId,
+                  product_name:
+                    item?.name ||
+                    item?.product?.name ||
+                    item?.productName ||
+                    "",
+                  quantity: Math.floor(Number(item?.quantity) || 1),
+                };
+              })
             : [],
           delivery_address: {
             full_name: fullName || `${firstName} ${lastName}`,

@@ -55,7 +55,7 @@ export function useSyncGuestCartOnLogin() {
         const syncPromises = guestCartItems.map(async (item: any) => {
           const cartItem = {
             productId: item.productId,
-            quantity: item.quantity,
+            quantity: Math.floor(Number(item.quantity) || 1), // Ensure integer
             variantId: item.variantId || null,
           };
 
