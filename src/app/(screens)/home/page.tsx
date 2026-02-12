@@ -77,16 +77,47 @@ function getCategoryKey(item: Product) {
   return key.length > 0 ? key : null;
 }
 
+// Prioritize electronics categories (TVs, refrigerators, ACs, etc.)
 const PREFERRED_CATEGORY_TOKENS = [
-  "handset",
   "television",
+  "tv",
   "refrigerator",
-  "kitchen",
+  "fridge",
+  "freezer",
+  "air conditioner",
+  "ac",
+  "microwave",
+  "oven",
+  "washing machine",
+  "washer",
+  "dryer",
+  "dishwasher",
+  "fan",
+  "cooler",
+  "heater",
+  "home theater",
+  "sound system",
+  "speaker",
+  "laptop",
+  "computer",
+  "desktop",
+  "monitor",
+  "printer",
+  "phone",
+  "handset",
+  "smartphone",
+  "tablet",
+  "camera",
   "generator",
-  "electronics",
-  "electrical",
-  "furniture",
-  "funiture",
+  "inverter",
+  "stabilizer",
+  "iron",
+  "blender",
+  "juicer",
+  "toaster",
+  "kettle",
+  "rice cooker",
+  "dispenser",
 ] as const;
 
 function normalizeCategoryText(value: unknown) {
@@ -164,7 +195,8 @@ function splitNewOldPools(items: Product[]) {
   const byCreatedAt = [...unique].sort(
     (a, b) => getCreatedAtMs(b) - getCreatedAtMs(a),
   );
-  const newSize = Math.ceil(byCreatedAt.length * 0.3);
+  // 10% new products, 90% old products for display
+  const newSize = Math.ceil(byCreatedAt.length * 0.1);
   return {
     newPool: byCreatedAt.slice(0, newSize),
     oldPool: byCreatedAt.slice(newSize),
@@ -516,7 +548,8 @@ function Home() {
 
     const buildMixedSection = (position: 1 | 2 | 3 | 4) => {
       const desired = desiredCounts[position];
-      const desiredNew = Math.round(desired * 0.3);
+      // 10% new products, 90% old products per section
+      const desiredNew = Math.round(desired * 0.1);
       const desiredOld = desired - desiredNew;
       const maxPerCategory = desired >= 30 ? 3 : 2;
       const categoryCounts = new Map<string, number>();

@@ -29,11 +29,11 @@ export interface PromoConfig {
 export const promoConfig: PromoConfig = {
   deliveryPromos: [
     {
-      id: "feb-march-2026-free-delivery",
+      id: "feb-april-2026-free-delivery",
       name: "Free Delivery Promo",
-      description: "Enjoy FREE delivery on all orders until March 2nd!",
+      description: "Enjoy FREE delivery on all orders until April 30th!",
       startDate: new Date("2026-02-12T00:00:00"),
-      endDate: new Date("2026-03-02T23:59:59"),
+      endDate: new Date("2026-04-30T23:59:59"),
       discountType: "percentage",
       discountValue: 100, // 100% off = FREE delivery
       minOrderValue: 0, // No minimum

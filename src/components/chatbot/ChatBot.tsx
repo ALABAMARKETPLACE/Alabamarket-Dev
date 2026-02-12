@@ -15,6 +15,17 @@ import {
 } from "@ant-design/icons";
 import "./chatbot.scss";
 
+// Storage keys for chat persistence
+const CHAT_STORAGE_KEY = "amaka_chat_messages";
+const CHAT_TIMESTAMP_KEY = "amaka_chat_timestamp";
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+// Support contact information
+const SUPPORT_CONTACT = {
+  phone: "+234 911 735 6897",
+  email: "info@alabamarketplace.ng",
+};
+
 interface Message {
   id: string;
   type: "user" | "bot";
@@ -28,23 +39,40 @@ const quickActions = [
     icon: <ShoppingOutlined />,
     label: "Track Order",
     query: "How can I track my order?",
+    isSupport: false,
   },
   {
     icon: <GiftOutlined />,
     label: "Deals",
     query: "What are today's best deals?",
+    isSupport: false,
   },
   {
     icon: <CustomerServiceOutlined />,
     label: "Support",
-    query: "I need help with a purchase",
+    query: "I need to contact support",
+    isSupport: true,
   },
   {
     icon: <QuestionCircleOutlined />,
     label: "FAQ",
     query: "What are your shipping options?",
+    isSupport: false,
   },
 ];
+
+// Support response message
+const getSupportResponse = () => {
+  return `I understand you need assistance! 🤝 Here's how you can reach our support team:
+
+📞 **Call or Chat Support:**
+${SUPPORT_CONTACT.phone}
+
+📧 **Email Support:**
+${SUPPORT_CONTACT.email}
+
+Our team is available to help you with any questions or concerns. Feel free to reach out through either option!`;
+};
 
 // Greeting based on time of day
 const getGreeting = () => {
@@ -54,22 +82,96 @@ const getGreeting = () => {
   return "Good evening";
 };
 
+// Helper functions for localStorage persistence
+const getInitialGreeting = (): Message => ({
+  id: "1",
+  type: "bot",
+  content: `${getGreeting()}! 👋 I'm Amaka, your personal shopping assistant at Alaba Marketplace. I'm here to help you discover amazing products, track your orders, find the best deals, and answer any questions you have. What would you like to explore today?`,
+  timestamp: new Date(),
+});
+
+const loadMessagesFromStorage = (): Message[] => {
+  if (typeof window === "undefined") return [getInitialGreeting()];
+  
+  try {
+    const storedTimestamp = localStorage.getItem(CHAT_TIMESTAMP_KEY);
+    const storedMessages = localStorage.getItem(CHAT_STORAGE_KEY);
+    
+    // Check if messages are older than 24 hours
+    if (storedTimestamp) {
+      const timestamp = parseInt(storedTimestamp, 10);
+      const now = Date.now();
+      if (now - timestamp > TWENTY_FOUR_HOURS_MS) {
+        // Clear old messages
+        localStorage.removeItem(CHAT_STORAGE_KEY);
+        localStorage.removeItem(CHAT_TIMESTAMP_KEY);
+        return [getInitialGreeting()];
+      }
+    }
+    
+    if (storedMessages) {
+      const parsed = JSON.parse(storedMessages);
+      // Convert timestamp strings back to Date objects
+      return parsed.map((msg: Message & { timestamp: string }) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp),
+      }));
+    }
+  } catch (error) {
+    console.error("Error loading chat messages from storage:", error);
+  }
+  
+  return [getInitialGreeting()];
+};
+
+const saveMessagesToStorage = (messages: Message[]) => {
+  if (typeof window === "undefined") return;
+  
+  try {
+    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
+    // Only set timestamp if it doesn't exist (first message)
+    if (!localStorage.getItem(CHAT_TIMESTAMP_KEY)) {
+      localStorage.setItem(CHAT_TIMESTAMP_KEY, Date.now().toString());
+    }
+  } catch (error) {
+    console.error("Error saving chat messages to storage:", error);
+  }
+};
+
+const clearMessagesFromStorage = () => {
+  if (typeof window === "undefined") return;
+  
+  try {
+    localStorage.removeItem(CHAT_STORAGE_KEY);
+    localStorage.removeItem(CHAT_TIMESTAMP_KEY);
+  } catch (error) {
+    console.error("Error clearing chat messages from storage:", error);
+  }
+};
+
 const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      type: "bot",
-      content: `${getGreeting()}! 👋 I'm Amaka, your personal shopping assistant at Alaba Marketplace. I'm here to help you discover amazing products, track your orders, find the best deals, and answer any questions you have. What would you like to explore today?`,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([getInitialGreeting()]);
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Load messages from localStorage on mount
+  useEffect(() => {
+    const loadedMessages = loadMessagesFromStorage();
+    setMessages(loadedMessages);
+    setShowQuickActions(loadedMessages.length === 1);
+  }, []);
+
+  // Save messages to localStorage whenever they change
+  useEffect(() => {
+    if (messages.length > 0) {
+      saveMessagesToStorage(messages);
+    }
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -142,6 +244,7 @@ const ChatBot: React.FC = () => {
   };
 
   const clearChat = () => {
+    clearMessagesFromStorage();
     setMessages([
       {
         id: "1",
@@ -153,7 +256,7 @@ const ChatBot: React.FC = () => {
     setShowQuickActions(true);
   };
 
-  const handleQuickAction = (query: string) => {
+  const handleQuickAction = (query: string, isSupport: boolean = false) => {
     setInputValue(query);
     setShowQuickActions(false);
     // Auto-send after a brief delay
@@ -166,7 +269,19 @@ const ChatBot: React.FC = () => {
       };
       setMessages((prev) => [...prev, userMessage]);
       setInputValue("");
-      handleBotResponse(query);
+      
+      // Handle support action locally without API call
+      if (isSupport) {
+        const botMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: "bot",
+          content: getSupportResponse(),
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, botMessage]);
+      } else {
+        handleBotResponse(query);
+      }
     }, 100);
   };
 
@@ -307,7 +422,7 @@ const ChatBot: React.FC = () => {
                         <button
                           key={index}
                           className="quick-action-btn"
-                          onClick={() => handleQuickAction(action.query)}
+                          onClick={() => handleQuickAction(action.query, action.isSupport)}
                         >
                           {action.icon}
                           <span>{action.label}</span>
@@ -361,7 +476,7 @@ const ChatBot: React.FC = () => {
           </div>
 
           <div className="chatbot-footer">
-            <span className="footer-branding">Powered by Amaka AI ✨</span>
+            <span className="footer-branding">Powered by Taskgoglobal Limited ✨</span>
             <Tooltip title="Start new conversation">
               <Button
                 type="text"

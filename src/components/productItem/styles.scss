@@ -305,6 +305,69 @@
   }
 }
 
+// Mobile and Tablet: Clean, minimal product card styling
+@media (max-width: 991px) {
+  .ProductItem {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    box-shadow: none;
+    border-radius: 8px;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+
+    &:hover {
+      transform: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-color: #e0e0e0;
+
+      .ProductItem-img {
+        transform: none;
+      }
+
+      .action-overlay {
+        display: none;
+      }
+    }
+  }
+
+  .ProductItem-Box1 {
+    border-bottom: 1px solid #f5f5f5;
+  }
+
+  .ProductItem-Box2 {
+    background: transparent;
+    padding: 8px;
+  }
+
+  .action-overlay {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .ProductItem {
+    min-width: 100px;
+    border-radius: 6px;
+  }
+
+  .ProductItem-Box2 {
+    padding: 6px;
+    gap: 4px;
+  }
+
+  .ProductItem-txt1 {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+  }
+
+  .ProductItem-txt3 {
+    font-size: 14px;
+  }
+}
+
 .ProductItem-txt5 {
   font-size: 12px;
   font-weight: 600;
