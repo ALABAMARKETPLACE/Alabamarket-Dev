@@ -427,8 +427,8 @@ function Checkout() {
             phone: finalOrderData?.address?.phone_no || "",
           },
           cart_items: Array.isArray(finalOrderData?.cart)
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            ? finalOrderData.cart.map((item: any) => {
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              finalOrderData.cart.map((item: any) => {
                 // Get numeric product ID - prioritize pid field, then productId
                 // pid is the numeric database ID, productId might be MongoDB _id (string)
                 const rawProductId =
