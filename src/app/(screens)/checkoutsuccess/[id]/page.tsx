@@ -378,6 +378,40 @@ function Checkout() {
       let response: any;
 
       if (isGuestOrder) {
+        // Parse full_name into first_name and last_name
+        const fullName = finalOrderData?.address?.full_name || "";
+        const nameParts = fullName.trim().split(/\s+/);
+        const firstName =
+          finalOrderData?.address?.first_name || nameParts[0] || "Guest";
+        const lastName =
+          finalOrderData?.address?.last_name ||
+          nameParts.slice(1).join(" ") ||
+          "User";
+
+        // Extract state and country info
+        const stateDetails = finalOrderData?.address?.stateDetails;
+        const countryDetails = finalOrderData?.address?.countryDetails;
+        const stateName =
+          finalOrderData?.address?.state ||
+          stateDetails?.name ||
+          finalOrderData?.address?.lagos_city ||
+          "Lagos";
+        const stateId = Number(
+          finalOrderData?.address?.state_id || stateDetails?.id || 0,
+        );
+        const countryName =
+          finalOrderData?.address?.country || countryDetails?.name || "Nigeria";
+        const countryId = Number(
+          finalOrderData?.address?.country_id || countryDetails?.id || 0,
+        );
+
+        // Extract city - for Lagos, use lagos_city if available
+        const city =
+          finalOrderData?.address?.city ||
+          finalOrderData?.address?.lagos_city ||
+          stateName ||
+          "Lagos";
+
         // Format payload for guest order endpoint
         const guestOrderPayload = {
           guest_info: {
@@ -385,29 +419,33 @@ function Checkout() {
               finalOrderData?.guest_email ||
               finalOrderData?.address?.email ||
               "",
-            first_name: finalOrderData?.address?.first_name || "",
-            last_name: finalOrderData?.address?.last_name || "",
+            first_name: firstName,
+            last_name: lastName,
             phone: finalOrderData?.address?.phone_no || "",
           },
           cart_items: Array.isArray(finalOrderData?.cart)
             ? finalOrderData.cart.map((item: any) => ({
-                product_id: item?.product_id || item?.productId || item?.id,
+                product_id: Number(
+                  item?.product_id ||
+                    item?.productId ||
+                    item?.id ||
+                    item?.pid ||
+                    0,
+                ),
                 product_name:
-                  item?.name || item?.product?.name || item?.productName,
-                quantity: item?.quantity || 1,
+                  item?.name || item?.product?.name || item?.productName || "",
+                quantity: Number(item?.quantity || 1),
               }))
             : [],
           delivery_address: {
-            full_name:
-              finalOrderData?.address?.full_name ||
-              `${finalOrderData?.address?.first_name || ""} ${finalOrderData?.address?.last_name || ""}`.trim(),
+            full_name: fullName || `${firstName} ${lastName}`,
             phone_no: finalOrderData?.address?.phone_no || "",
             full_address: finalOrderData?.address?.full_address || "",
-            city: finalOrderData?.address?.city || "",
-            state: finalOrderData?.address?.state || "",
-            state_id: finalOrderData?.address?.state_id || null,
-            country: finalOrderData?.address?.country || "",
-            country_id: finalOrderData?.address?.country_id || null,
+            city: city,
+            state: stateName,
+            state_id: stateId,
+            country: countryName,
+            country_id: countryId,
           },
           delivery: {
             delivery_token: finalOrderData?.charges?.token || "",
