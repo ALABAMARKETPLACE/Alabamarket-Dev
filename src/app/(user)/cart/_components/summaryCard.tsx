@@ -113,7 +113,9 @@ const SummaryCard = (props: SummaryCardProps) => {
               marginBottom: "4px",
             }}
           >
-            <span style={{ fontSize: "14px", color: "#e65100", fontWeight: 600 }}>
+            <span
+              style={{ fontSize: "14px", color: "#e65100", fontWeight: 600 }}
+            >
               🎉 {activePromo.name}
             </span>
             <Tag color="orange" style={{ margin: 0 }}>

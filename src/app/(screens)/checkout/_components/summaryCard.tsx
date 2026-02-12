@@ -89,7 +89,9 @@ const SummaryCard = (props: any) => {
                 justifyContent: "space-between",
               }}
             >
-              <span style={{ fontSize: "12px", color: "#e65100", fontWeight: 600 }}>
+              <span
+                style={{ fontSize: "12px", color: "#e65100", fontWeight: 600 }}
+              >
                 🎉 {deliveryDiscount.promo.name}
               </span>
               <Tag color="orange" style={{ margin: 0 }}>
@@ -112,10 +114,12 @@ const SummaryCard = (props: any) => {
                   fontSize: "13px",
                 }}
               >
-                {getCurrencySymbol()} {formatCurrency(deliveryDiscount.originalCharge)}
+                {getCurrencySymbol()}{" "}
+                {formatCurrency(deliveryDiscount.originalCharge)}
               </span>
               <span style={{ color: "#4caf50", fontWeight: 600 }}>
-                {getCurrencySymbol()} {formatCurrency(deliveryDiscount.discountedCharge)}
+                {getCurrencySymbol()}{" "}
+                {formatCurrency(deliveryDiscount.discountedCharge)}
               </span>
             </div>
           </div>
@@ -127,7 +131,8 @@ const SummaryCard = (props: any) => {
               marginTop: "4px",
             }}
           >
-            You save {getCurrencySymbol()} {formatCurrency(deliveryDiscount.discountAmount)}!
+            You save {getCurrencySymbol()}{" "}
+            {formatCurrency(deliveryDiscount.discountAmount)}!
           </div>
         </>
       ) : (
