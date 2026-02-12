@@ -92,11 +92,11 @@ const getInitialGreeting = (): Message => ({
 
 const loadMessagesFromStorage = (): Message[] => {
   if (typeof window === "undefined") return [getInitialGreeting()];
-  
+
   try {
     const storedTimestamp = localStorage.getItem(CHAT_TIMESTAMP_KEY);
     const storedMessages = localStorage.getItem(CHAT_STORAGE_KEY);
-    
+
     // Check if messages are older than 24 hours
     if (storedTimestamp) {
       const timestamp = parseInt(storedTimestamp, 10);
@@ -108,7 +108,7 @@ const loadMessagesFromStorage = (): Message[] => {
         return [getInitialGreeting()];
       }
     }
-    
+
     if (storedMessages) {
       const parsed = JSON.parse(storedMessages);
       // Convert timestamp strings back to Date objects
@@ -120,13 +120,13 @@ const loadMessagesFromStorage = (): Message[] => {
   } catch (error) {
     console.error("Error loading chat messages from storage:", error);
   }
-  
+
   return [getInitialGreeting()];
 };
 
 const saveMessagesToStorage = (messages: Message[]) => {
   if (typeof window === "undefined") return;
-  
+
   try {
     localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages));
     // Only set timestamp if it doesn't exist (first message)
@@ -140,7 +140,7 @@ const saveMessagesToStorage = (messages: Message[]) => {
 
 const clearMessagesFromStorage = () => {
   if (typeof window === "undefined") return;
-  
+
   try {
     localStorage.removeItem(CHAT_STORAGE_KEY);
     localStorage.removeItem(CHAT_TIMESTAMP_KEY);
@@ -269,7 +269,7 @@ const ChatBot: React.FC = () => {
       };
       setMessages((prev) => [...prev, userMessage]);
       setInputValue("");
-      
+
       // Handle support action locally without API call
       if (isSupport) {
         const botMessage: Message = {
@@ -422,7 +422,9 @@ const ChatBot: React.FC = () => {
                         <button
                           key={index}
                           className="quick-action-btn"
-                          onClick={() => handleQuickAction(action.query, action.isSupport)}
+                          onClick={() =>
+                            handleQuickAction(action.query, action.isSupport)
+                          }
                         >
                           {action.icon}
                           <span>{action.label}</span>
@@ -476,7 +478,9 @@ const ChatBot: React.FC = () => {
           </div>
 
           <div className="chatbot-footer">
-            <span className="footer-branding">Powered by Taskgoglobal Limited ✨</span>
+            <span className="footer-branding">
+              Powered by Taskgoglobal Limited ✨
+            </span>
             <Tooltip title="Start new conversation">
               <Button
                 type="text"
