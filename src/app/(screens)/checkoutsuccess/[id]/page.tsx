@@ -268,6 +268,7 @@ function Checkout() {
 
       // Normalize cart items to ensure storeId is present for multi-seller order creation
       if (Array.isArray(finalOrderData?.cart)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         finalOrderData.cart = finalOrderData.cart.map((item: any) => {
           // Extract storeId from various possible field names
           const storeId =
@@ -293,7 +294,9 @@ function Checkout() {
         "═══════════════════════════════════════════════════════════",
       );
       if (Array.isArray(finalOrderData?.cart)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const storeGroups = new Map<number | string, any[]>();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         finalOrderData.cart.forEach((item: any, index: number) => {
           const storeId =
             item?.storeId ||
@@ -424,6 +427,7 @@ function Checkout() {
             phone: finalOrderData?.address?.phone_no || "",
           },
           cart_items: Array.isArray(finalOrderData?.cart)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ? finalOrderData.cart.map((item: any) => {
                 // Get numeric product ID - prioritize pid field, then productId
                 // pid is the numeric database ID, productId might be MongoDB _id (string)
