@@ -77,16 +77,87 @@ function getCategoryKey(item: Product) {
   return key.length > 0 ? key : null;
 }
 
+// Prioritize electronics categories (TVs, refrigerators, washing machines, pressing irons, home theatres, etc.)
 const PREFERRED_CATEGORY_TOKENS = [
-  "handset",
+  // Televisions
   "television",
+  "tv",
+  "led tv",
+  "smart tv",
+  "plasma",
+  // Refrigerators
   "refrigerator",
-  "kitchen",
+  "fridge",
+  "freezer",
+  // Air conditioners
+  "air conditioner",
+  "ac",
+  "air cooler",
+  // Kitchen appliances
+  "microwave",
+  "oven",
+  "gas cooker",
+  "electric cooker",
+  "blender",
+  "juicer",
+  "toaster",
+  "kettle",
+  "rice cooker",
+  "dispenser",
+  "water dispenser",
+  // Laundry
+  "washing machine",
+  "washer",
+  "dryer",
+  "dishwasher",
+  // Irons
+  "iron",
+  "pressing iron",
+  "steam iron",
+  "dry iron",
+  // Home theatre & Audio
+  "home theater",
+  "home theatre",
+  "sound system",
+  "sound bar",
+  "soundbar",
+  "speaker",
+  "subwoofer",
+  "amplifier",
+  // Fans & Cooling
+  "fan",
+  "standing fan",
+  "ceiling fan",
+  "table fan",
+  "cooler",
+  "heater",
+  // Power
   "generator",
-  "electronics",
-  "electrical",
-  "furniture",
-  "funiture",
+  "inverter",
+  "stabilizer",
+  "ups",
+  // Computers & Laptops
+  "laptop",
+  "computer",
+  "desktop",
+  "monitor",
+  "printer",
+  "pc",
+  // Phones & Tablets
+  "phone",
+  "smartphone",
+  "mobile",
+  "handset",
+  "tablet",
+  "ipad",
+  // Cameras
+  "camera",
+  "dslr",
+  "webcam",
+  "camcorder",
+  // Other electronics
+  "vacuum cleaner",
+  "air purifier",
 ] as const;
 
 function normalizeCategoryText(value: unknown) {
@@ -110,6 +181,29 @@ function productMatchesCategoryToken(item: Product, token: string) {
     (subCategoryName.length > 0 && subCategoryName.includes(tokenNorm)) ||
     (categoryKey.length > 0 && categoryKey.includes(tokenNorm))
   );
+}
+
+// Check if a product is in electronics category
+function isElectronicsProduct(item: Product): boolean {
+  return PREFERRED_CATEGORY_TOKENS.some((token) =>
+    productMatchesCategoryToken(item, token),
+  );
+}
+
+// Split products into electronics and other categories
+function splitElectronicsAndOthers(items: Product[]) {
+  const electronics: Product[] = [];
+  const others: Product[] = [];
+
+  for (const item of items) {
+    if (isElectronicsProduct(item)) {
+      electronics.push(item);
+    } else {
+      others.push(item);
+    }
+  }
+
+  return { electronics, others };
 }
 
 function mulberry32(seed: number) {
@@ -164,7 +258,8 @@ function splitNewOldPools(items: Product[]) {
   const byCreatedAt = [...unique].sort(
     (a, b) => getCreatedAtMs(b) - getCreatedAtMs(a),
   );
-  const newSize = Math.ceil(byCreatedAt.length * 0.3);
+  // 10% new products, 90% old products for display
+  const newSize = Math.ceil(byCreatedAt.length * 0.1);
   return {
     newPool: byCreatedAt.slice(0, newSize),
     oldPool: byCreatedAt.slice(newSize),
@@ -498,11 +593,26 @@ function Home() {
       ...featuredByPosition[4],
     ]);
 
-    const { newPool, oldPool } = splitNewOldPools(globalPool);
+    // Split into electronics and other categories
+    const { electronics, others } = splitElectronicsAndOthers(globalPool);
 
-    const shuffledNew = shuffleCandidates(newPool, rotationSeed + 10);
-    const shuffledOld = shuffleCandidates(oldPool, rotationSeed + 20);
-    const shuffledAll = shuffleCandidates(globalPool, rotationSeed + 30);
+    // Split each category into old (90%) and new (10%) pools
+    const { newPool: electronicsNew, oldPool: electronicsOld } =
+      splitNewOldPools(electronics);
+    const { newPool: othersNew, oldPool: othersOld } = splitNewOldPools(others);
+
+    // Shuffle all pools
+    const shuffledElectronicsOld = shuffleCandidates(
+      electronicsOld,
+      rotationSeed + 10,
+    );
+    const shuffledElectronicsNew = shuffleCandidates(
+      electronicsNew,
+      rotationSeed + 20,
+    );
+    const shuffledOthersOld = shuffleCandidates(othersOld, rotationSeed + 30);
+    const shuffledOthersNew = shuffleCandidates(othersNew, rotationSeed + 40);
+    const shuffledAll = shuffleCandidates(globalPool, rotationSeed + 50);
 
     const used = new Set<string>();
     const allocationOrder: Array<1 | 2 | 3 | 4> = [4, 1, 2, 3];
@@ -516,42 +626,95 @@ function Home() {
 
     const buildMixedSection = (position: 1 | 2 | 3 | 4) => {
       const desired = desiredCounts[position];
-      const desiredNew = Math.round(desired * 0.3);
-      const desiredOld = desired - desiredNew;
+      // 50% electronics, 50% other categories
+      const desiredElectronics = Math.round(desired * 0.5);
+      const desiredOthers = desired - desiredElectronics;
+
+      // Within each category: 90% old, 10% new
+      const desiredElectronicsOld = Math.round(desiredElectronics * 0.9);
+      const desiredElectronicsNew = desiredElectronics - desiredElectronicsOld;
+      const desiredOthersOld = Math.round(desiredOthers * 0.9);
+      const desiredOthersNew = desiredOthers - desiredOthersOld;
+
       const maxPerCategory = desired >= 30 ? 3 : 2;
       const categoryCounts = new Map<string, number>();
 
-      const pickedNew = takeUniqueProductsByCategory(
-        shuffledNew,
+      // Pick from electronics old pool (45% of total)
+      const pickedElectronicsOld = takeUniqueProductsByCategory(
+        shuffledElectronicsOld,
         used,
-        desiredNew,
-        [],
-        categoryCounts,
-        maxPerCategory,
-      );
-      const pickedOld = takeUniqueProductsByCategory(
-        shuffledOld,
-        used,
-        desiredOld,
+        desiredElectronicsOld,
         [],
         categoryCounts,
         maxPerCategory,
       );
 
-      const combined = [...pickedOld, ...pickedNew];
+      // Pick from electronics new pool (5% of total)
+      const pickedElectronicsNew = takeUniqueProductsByCategory(
+        shuffledElectronicsNew,
+        used,
+        desiredElectronicsNew,
+        [],
+        categoryCounts,
+        maxPerCategory,
+      );
 
+      // Pick from others old pool (45% of total)
+      const pickedOthersOld = takeUniqueProductsByCategory(
+        shuffledOthersOld,
+        used,
+        desiredOthersOld,
+        [],
+        categoryCounts,
+        maxPerCategory,
+      );
+
+      // Pick from others new pool (5% of total)
+      const pickedOthersNew = takeUniqueProductsByCategory(
+        shuffledOthersNew,
+        used,
+        desiredOthersNew,
+        [],
+        categoryCounts,
+        maxPerCategory,
+      );
+
+      const combined = [
+        ...pickedElectronicsOld,
+        ...pickedElectronicsNew,
+        ...pickedOthersOld,
+        ...pickedOthersNew,
+      ];
+
+      // Fill remaining slots from any available pool
       if (combined.length < desired) {
-        const fillers = takeUniqueProductsByCategory(
-          shuffledAll,
+        const remaining = desired - combined.length;
+        // Try electronics first
+        const fillElectronics = takeUniqueProductsByCategory(
+          [...shuffledElectronicsOld, ...shuffledElectronicsNew],
           used,
-          desired - combined.length,
+          Math.ceil(remaining / 2),
           [],
           categoryCounts,
           maxPerCategory,
         );
-        combined.push(...fillers);
+        combined.push(...fillElectronics);
+
+        // Then others
+        if (combined.length < desired) {
+          const fillOthers = takeUniqueProductsByCategory(
+            [...shuffledOthersOld, ...shuffledOthersNew],
+            used,
+            desired - combined.length,
+            [],
+            categoryCounts,
+            maxPerCategory,
+          );
+          combined.push(...fillOthers);
+        }
       }
 
+      // Final fallback: use any remaining products
       if (combined.length < desired) {
         const fillers = takeUniqueProducts(
           shuffledAll,
@@ -560,84 +723,6 @@ function Home() {
           [],
         );
         combined.push(...fillers);
-      }
-
-      const normalizedPreferredTokens = Array.from(
-        new Set(
-          PREFERRED_CATEGORY_TOKENS.map((token) =>
-            normalizeCategoryText(token),
-          ),
-        ),
-      ).filter(Boolean);
-
-      const recomputeCategoryCounts = () => {
-        const map = new Map<string, number>();
-        for (const item of combined) {
-          const key = getCategoryKey(item);
-          if (!key) continue;
-          map.set(key, (map.get(key) ?? 0) + 1);
-        }
-        return map;
-      };
-
-      const sectionCounts = recomputeCategoryCounts();
-
-      for (const token of normalizedPreferredTokens) {
-        const alreadyHas = combined.some((item) =>
-          productMatchesCategoryToken(item, token),
-        );
-        if (alreadyHas) continue;
-
-        const candidate = shuffledAll.find((item) => {
-          const id = getProductIdentifier(item);
-          if (!id) return false;
-          if (used.has(id)) return false;
-          return productMatchesCategoryToken(item, token);
-        });
-
-        if (!candidate) continue;
-
-        if (combined.length < desired) {
-          const id = getProductIdentifier(candidate);
-          if (id) used.add(id);
-          combined.push(candidate);
-          const key = getCategoryKey(candidate);
-          if (key) sectionCounts.set(key, (sectionCounts.get(key) ?? 0) + 1);
-          continue;
-        }
-
-        const removableIndex = combined.findIndex((item) => {
-          const isPreferred = normalizedPreferredTokens.some((preferred) =>
-            productMatchesCategoryToken(item, preferred),
-          );
-          if (isPreferred) return false;
-          const key = getCategoryKey(item);
-          if (!key) return true;
-          return (sectionCounts.get(key) ?? 0) > 1;
-        });
-
-        if (removableIndex < 0) continue;
-
-        const removed = combined.splice(removableIndex, 1)[0];
-        const removedId = removed ? getProductIdentifier(removed) : null;
-        if (removedId) used.delete(removedId);
-        const removedKey = removed ? getCategoryKey(removed) : null;
-        if (removedKey) {
-          const next = (sectionCounts.get(removedKey) ?? 1) - 1;
-          if (next <= 0) sectionCounts.delete(removedKey);
-          else sectionCounts.set(removedKey, next);
-        }
-
-        const candidateId = getProductIdentifier(candidate);
-        if (candidateId) used.add(candidateId);
-        combined.push(candidate);
-        const candidateKey = getCategoryKey(candidate);
-        if (candidateKey) {
-          sectionCounts.set(
-            candidateKey,
-            (sectionCounts.get(candidateKey) ?? 0) + 1,
-          );
-        }
       }
 
       return shuffleCandidates(combined, rotationSeed + position * 1000);

@@ -244,6 +244,20 @@ function Checkout() {
           finalOrderData.user = User;
         }
 
+        // Add guest_email for guest orders (from stored Paystack data or verification response)
+        const isGuestOrder =
+          finalOrderData.address?.is_guest || !finalOrderData.user_id;
+        if (isGuestOrder) {
+          // Get guest email from Paystack verification or stored order data
+          const guestEmail =
+            verificationResponse?.data?.customer?.email ||
+            orderData?.email ||
+            finalOrderData.address?.email;
+          if (guestEmail) {
+            finalOrderData.guest_email = guestEmail;
+          }
+        }
+
         console.log("Final Order Payload:", finalOrderData);
       } else {
         // Unknown route
@@ -254,6 +268,7 @@ function Checkout() {
 
       // Normalize cart items to ensure storeId is present for multi-seller order creation
       if (Array.isArray(finalOrderData?.cart)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         finalOrderData.cart = finalOrderData.cart.map((item: any) => {
           // Extract storeId from various possible field names
           const storeId =
@@ -279,7 +294,9 @@ function Checkout() {
         "═══════════════════════════════════════════════════════════",
       );
       if (Array.isArray(finalOrderData?.cart)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const storeGroups = new Map<number | string, any[]>();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         finalOrderData.cart.forEach((item: any, index: number) => {
           const storeId =
             item?.storeId ||
@@ -354,9 +371,115 @@ function Checkout() {
         finalOrderData?.payment?.amount,
       );
 
-      // Create order (payment already verified above for Paystack)
+      // Determine if this is a guest order
+      const isGuestOrder =
+        finalOrderData?.address?.is_guest ||
+        !finalOrderData?.user_id ||
+        finalOrderData?.guest_email;
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response: any = await POST(API.ORDER, finalOrderData);
+      let response: any;
+
+      if (isGuestOrder) {
+        // Parse full_name into first_name and last_name
+        const fullName = finalOrderData?.address?.full_name || "";
+        const nameParts = fullName.trim().split(/\s+/);
+        const firstName =
+          finalOrderData?.address?.first_name || nameParts[0] || "Guest";
+        const lastName =
+          finalOrderData?.address?.last_name ||
+          nameParts.slice(1).join(" ") ||
+          "User";
+
+        // Extract state and country info
+        const stateDetails = finalOrderData?.address?.stateDetails;
+        const countryDetails = finalOrderData?.address?.countryDetails;
+        const stateName =
+          finalOrderData?.address?.state ||
+          stateDetails?.name ||
+          finalOrderData?.address?.lagos_city ||
+          "Lagos";
+        const stateId = Number(
+          finalOrderData?.address?.state_id || stateDetails?.id || 0,
+        );
+        const countryName =
+          finalOrderData?.address?.country || countryDetails?.name || "Nigeria";
+        const countryId = Number(
+          finalOrderData?.address?.country_id || countryDetails?.id || 0,
+        );
+
+        // Extract city - for Lagos, use lagos_city if available
+        const city =
+          finalOrderData?.address?.city ||
+          finalOrderData?.address?.lagos_city ||
+          stateName ||
+          "Lagos";
+
+        // Format payload for guest order endpoint
+        const guestOrderPayload = {
+          guest_info: {
+            email:
+              finalOrderData?.guest_email ||
+              finalOrderData?.address?.email ||
+              "",
+            first_name: firstName,
+            last_name: lastName,
+            phone: finalOrderData?.address?.phone_no || "",
+          },
+          cart_items: Array.isArray(finalOrderData?.cart)
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              finalOrderData.cart.map((item: any) => {
+                // Get numeric product ID - prioritize pid field, then productId
+                // pid is the numeric database ID, productId might be MongoDB _id (string)
+                const rawProductId =
+                  item?.pid ||
+                  item?.product?.pid ||
+                  item?.product_id ||
+                  item?.productId ||
+                  item?.id ||
+                  "0";
+                const productId = parseInt(String(rawProductId), 10);
+
+                return {
+                  product_id: isNaN(productId) ? 0 : productId,
+                  product_name:
+                    item?.name ||
+                    item?.product?.name ||
+                    item?.productName ||
+                    "",
+                  quantity: Math.floor(Number(item?.quantity) || 1),
+                };
+              })
+            : [],
+          delivery_address: {
+            full_name: fullName || `${firstName} ${lastName}`,
+            phone_no: finalOrderData?.address?.phone_no || "",
+            full_address: finalOrderData?.address?.full_address || "",
+            city: city,
+            state: stateName,
+            state_id: stateId,
+            country: countryName,
+            country_id: countryId,
+          },
+          delivery: {
+            delivery_token: finalOrderData?.charges?.token || "",
+          },
+          payment: {
+            payment_reference: finalOrderData?.payment?.ref || "",
+            transaction_reference:
+              finalOrderData?.payment?.transaction_reference ||
+              finalOrderData?.payment?.ref ||
+              "",
+            payment_status: finalOrderData?.payment?.status || "success",
+          },
+        };
+
+        console.log("Guest order payload:", guestOrderPayload);
+        response = await POST(API.ORDER_GUEST, guestOrderPayload);
+      } else {
+        // Create order for authenticated users (payment already verified above for Paystack)
+        response = await POST(API.ORDER, finalOrderData);
+      }
       console.log(
         "Order creation response:",
         JSON.stringify(response, null, 2),
@@ -532,7 +655,8 @@ function Checkout() {
       setPaymentStatus(true);
       setOrderStatus(false);
       setIsLoading(false);
-      setOrderCreated(false); // Allow retry on error
+      // Don't reset orderCreated to false - it causes infinite re-render loop
+      // User can manually retry by clicking a button or refreshing
 
       console.error("Order creation error:", err);
       Notifications["error"]({

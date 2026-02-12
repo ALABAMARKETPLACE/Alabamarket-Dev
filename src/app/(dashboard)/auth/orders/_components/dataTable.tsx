@@ -23,12 +23,26 @@ export interface Order {
   _id?: string | number;
   order_id?: string | number;
   image?: string;
-  userId?: number;
+  userId?: number | null;
+  user_id?: number | null;
   name?: string;
   createdAt?: string;
   grandTotal?: number;
   status?: string;
   orderItems?: Record<string, unknown>[];
+  storeId?: string | number;
+  store_id?: string | number;
+  // Guest order fields
+  is_guest_order?: boolean;
+  guest_email?: string;
+  guest_name?: string;
+  guest_phone?: string;
+  // Multi-seller order fields
+  is_multi_seller?: boolean;
+  stores?: (string | number)[];
+  // Payment reference
+  payment_ref?: string;
+  paymentRef?: string;
   [key: string]: unknown;
 }
 
@@ -46,12 +60,42 @@ interface UserResponse {
   };
 }
 
-const UserName = ({ userId }: { userId: number }) => {
-  const [name, setName] = useState<string>(userId ? "Loading..." : "N/A");
+const UserName = ({
+  userId,
+  guestName,
+  isGuestOrder,
+}: {
+  userId: number | null | undefined;
+  guestName?: string;
+  isGuestOrder?: boolean;
+}) => {
+  // Determine initial state based on available data
+  const getInitialName = () => {
+    if (guestName) return guestName;
+    if (isGuestOrder) return "Guest";
+    if (userId !== null && userId !== undefined) return "Loading...";
+    return "N/A";
+  };
+
+  const [name, setName] = useState<string>(getInitialName());
 
   useEffect(() => {
     let isMounted = true;
-    if (userId) {
+
+    // If guest name is provided, use it directly
+    if (guestName) {
+      setName(guestName);
+      return;
+    }
+
+    // If it's explicitly a guest order, show "Guest"
+    if (isGuestOrder) {
+      setName("Guest");
+      return;
+    }
+
+    // If userId exists (not null/undefined), fetch user name
+    if (userId !== null && userId !== undefined) {
       GET(API.USER_DETAILS + userId)
         .then((res: unknown) => {
           const userRes = res as UserResponse;
@@ -64,11 +108,15 @@ const UserName = ({ userId }: { userId: number }) => {
             setName("N/A");
           }
         });
+    } else {
+      // No userId and not a guest order - show N/A
+      setName("N/A");
     }
+
     return () => {
       isMounted = false;
     };
-  }, [userId]);
+  }, [userId, guestName, isGuestOrder]);
 
   return <span>{name}</span>;
 };
@@ -125,13 +173,35 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               }}
             />
             <div>
-              <div className="table__user-name">#{orderId || "N/A"}</div>
+              <div className="table__user-name">
+                #{orderId || "N/A"}
+                {record.is_guest_order && (
+                  <span
+                    className="dashboard-badge dashboard-badge--warning"
+                    style={{ marginLeft: 8, fontSize: 10 }}
+                  >
+                    Guest
+                  </span>
+                )}
+                {record.is_multi_seller && (
+                  <span
+                    className="dashboard-badge dashboard-badge--info"
+                    style={{ marginLeft: 4, fontSize: 10 }}
+                  >
+                    Multi-Seller
+                  </span>
+                )}
+              </div>
               <div className="table__text--secondary" style={{ fontSize: 12 }}>
                 <FiUser size={12} style={{ marginRight: 4 }} />
                 {record?.name ? (
                   record.name
                 ) : (
-                  <UserName userId={record.userId as number} />
+                  <UserName
+                    userId={record.userId ?? record.user_id}
+                    guestName={record.guest_name}
+                    isGuestOrder={record.is_guest_order}
+                  />
                 )}
               </div>
             </div>
@@ -191,12 +261,11 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               type="text"
               size="small"
               className="table__action-btn"
-              onClick={() =>
-                route.push(
-                  "/auth/orders/" +
-                    (record?.order_id ?? record?._id ?? record?.id),
-                )
-              }
+              onClick={() => {
+                // Use order_id (the reference number) for navigation - backend expects this
+                const orderId = record?.order_id ?? record?.id ?? record?._id;
+                route.push("/auth/orders/" + orderId);
+              }}
               icon={<FiEye size={18} />}
             />
           </Tooltip>
@@ -239,9 +308,23 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               <div className="dashboard-mobile-card__title-group">
                 <h4 className="dashboard-mobile-card__title">
                   #{order.order_id || "N/A"}
+                  {order.is_guest_order && (
+                    <span
+                      className="dashboard-badge dashboard-badge--warning"
+                      style={{ marginLeft: 6, fontSize: 10 }}
+                    >
+                      Guest
+                    </span>
+                  )}
                 </h4>
                 <p className="dashboard-mobile-card__subtitle">
-                  {order?.name || <UserName userId={order.userId as number} />}
+                  {order?.name || (
+                    <UserName
+                      userId={order.userId ?? order.user_id}
+                      guestName={order.guest_name}
+                      isGuestOrder={order.is_guest_order}
+                    />
+                  )}
                 </p>
               </div>
               <span className={getStatusBadge(order.status || "")}>
@@ -280,7 +363,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                 onClick={() =>
                   route.push(
                     "/auth/orders/" +
-                      (order?.order_id ?? order?._id ?? order?.id),
+                      (order?.order_id ?? order?.id ?? order?._id),
                   )
                 }
               >

@@ -1,8 +1,14 @@
+// Use proxy only on localhost to avoid CORS issues
+const isLocalhost =
+  typeof window !== "undefined" && window.location.hostname === "localhost";
+
 const API = {
   // BASE_URL: "https://alaba-server.semikolen.org/",
 
   BASE_URL: (process.env.NEXT_PUBLIC_BASE_URL ||
-    "https://development.alabamarketplace.ng/backend/") as string,
+    (isLocalhost
+      ? "/api-proxy/"
+      : "https://development.alabamarketplace.ng/backend/")) as string,
 
   // BASE_URL: "http://localhost:8017/",
   //GOOGLE API
@@ -150,6 +156,7 @@ const API = {
 
   //orders
   ORDER: "order/", //post
+  ORDER_GUEST: "order/guest", //POST - guest order (no auth required)
   ORDER_GET: "order/getall", //get all orders for a user and admin
   // ORDER_GETONE: "order/get_one/", //get one
   ORDER_GET_BYSTORE: "order/store/",
@@ -162,6 +169,7 @@ const API = {
   ORDER_GETONE_USER: "order/get_one/user/", //get details of an order for user.
   ORDER_GETONE_ADMIN: "order/get_one/admin/", //get details of an order for admin.
   ORDER_GETCOUNT: "order/getall/", //get all orders count for a store only for seller
+  ORDER_TRACK_GUEST: "order/track/", //GET track order by reference (no auth required)
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
 
   // STORE STATISTICS

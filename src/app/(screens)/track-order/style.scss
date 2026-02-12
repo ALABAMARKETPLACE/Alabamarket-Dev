@@ -1,0 +1,489 @@
+@use "@/config/styleVariable.scss" as vars;
+
+// =============================================================================
+// TRACK ORDER PAGE STYLES
+// =============================================================================
+
+.track-order-page {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  padding-bottom: 60px;
+}
+
+// =============================================================================
+// HERO SECTION
+// =============================================================================
+.track-order-hero {
+  background: linear-gradient(
+    135deg,
+    vars.$primary 0%,
+    darken(vars.$primary, 15%) 100%
+  );
+  padding: 60px 20px;
+  text-align: center;
+  color: #fff;
+
+  @media (max-width: 768px) {
+    padding: 40px 16px;
+  }
+
+  &__content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  &__icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    backdrop-filter: blur(10px);
+
+    svg {
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      width: 64px;
+      height: 64px;
+
+      svg {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  &__title {
+    font-family: vars.$Bold;
+    font-size: 36px;
+    margin: 0 0 12px;
+    letter-spacing: -0.5px;
+
+    @media (max-width: 768px) {
+      font-size: 28px;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 24px;
+    }
+  }
+
+  &__subtitle {
+    font-family: vars.$Regular;
+    font-size: 16px;
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.5;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}
+
+// =============================================================================
+// SEARCH SECTION
+// =============================================================================
+.track-order-search {
+  max-width: 800px;
+  margin: -40px auto 40px;
+  padding: 0 20px;
+  position: relative;
+  z-index: 10;
+
+  @media (max-width: 768px) {
+    margin: -30px auto 30px;
+    padding: 0 16px;
+  }
+
+  &__card {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border: none;
+
+    .ant-card-body {
+      padding: 32px;
+
+      @media (max-width: 768px) {
+        padding: 20px;
+      }
+    }
+  }
+
+  &__input-group {
+    display: flex;
+    gap: 12px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+    }
+  }
+
+  &__input {
+    flex: 1;
+
+    .ant-input {
+      font-size: 16px;
+      padding: 12px 16px;
+    }
+
+    .ant-input-prefix {
+      margin-right: 12px;
+    }
+  }
+
+  &__icon {
+    color: #9ca3af;
+    font-size: 18px;
+  }
+
+  &__button {
+    min-width: 140px;
+    height: 50px;
+    font-family: vars.$SemiBold;
+    font-size: 15px;
+    border-radius: 8px;
+
+    @media (max-width: 600px) {
+      width: 100%;
+    }
+  }
+
+  &__hint {
+    margin: 16px 0 0;
+    font-size: 13px;
+    color: #6b7280;
+    text-align: center;
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+  }
+}
+
+// =============================================================================
+// RESULTS SECTION
+// =============================================================================
+.track-order-results {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+}
+
+.track-order-loading {
+  text-align: center;
+  padding: 60px 20px;
+
+  p {
+    margin-top: 16px;
+    color: #6b7280;
+    font-size: 14px;
+  }
+}
+
+.track-order-empty {
+  background: #fff;
+  border-radius: 16px;
+  padding: 60px 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  h3 {
+    font-family: vars.$SemiBold;
+    font-size: 18px;
+    color: #374151;
+    margin: 16px 0 8px;
+  }
+
+  p {
+    color: #6b7280;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// =============================================================================
+// ORDER DETAILS
+// =============================================================================
+.track-order-details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (max-width: 768px) {
+    gap: 16px;
+  }
+}
+
+// =============================================================================
+// ORDER SUMMARY CARD
+// =============================================================================
+.track-order-summary {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  .ant-card-body {
+    padding: 24px;
+
+    @media (max-width: 768px) {
+      padding: 20px;
+    }
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    svg {
+      color: vars.$primary;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    h2 {
+      font-family: vars.$Bold;
+      font-size: 20px;
+      color: #1f2937;
+      margin: 0 0 4px;
+
+      @media (max-width: 768px) {
+        font-size: 18px;
+      }
+    }
+  }
+
+  &__reference {
+    font-family: vars.$Regular;
+    font-size: 13px;
+    color: #6b7280;
+    margin: 0;
+    word-break: break-all;
+  }
+
+  &__status {
+    font-family: vars.$SemiBold;
+    font-size: 13px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    text-transform: capitalize;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  }
+
+  &__item-icon {
+    color: vars.$primary;
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  &__label {
+    font-family: vars.$Regular;
+    font-size: 12px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__value {
+    font-family: vars.$SemiBold;
+    font-size: 15px;
+    color: #1f2937;
+    line-height: 1.4;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
+  }
+}
+
+// =============================================================================
+// TRACKING TIMELINE CARD
+// =============================================================================
+.track-order-timeline {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  .ant-card-body {
+    padding: 24px;
+
+    @media (max-width: 768px) {
+      padding: 20px;
+    }
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: vars.$Bold;
+    font-size: 18px;
+    color: #1f2937;
+    margin: 0 0 24px;
+
+    svg {
+      color: vars.$primary;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+  }
+
+  &__steps {
+    .ant-steps-item-icon {
+      background: vars.$primary;
+      border-color: vars.$primary;
+
+      .ant-steps-icon {
+        color: #fff;
+      }
+    }
+
+    .ant-steps-item-finish {
+      .ant-steps-item-icon {
+        background: #10b981;
+        border-color: #10b981;
+      }
+
+      .ant-steps-item-tail::after {
+        background-color: #10b981;
+      }
+    }
+
+    .ant-steps-item-process {
+      .ant-steps-item-icon {
+        background: vars.$primary;
+        border-color: vars.$primary;
+      }
+    }
+  }
+
+  &__step-title {
+    font-family: vars.$SemiBold;
+    font-size: 15px;
+    color: #1f2937;
+
+    @media (max-width: 768px) {
+      font-size: 14px;
+    }
+  }
+
+  &__step-desc {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__step-time {
+    font-family: vars.$Regular;
+    font-size: 13px;
+    color: #6b7280;
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+  }
+
+  &__step-remark {
+    font-family: vars.$Regular;
+    font-size: 13px;
+    color: #374151;
+    margin-top: 4px;
+
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+  }
+}
+
+// =============================================================================
+// HELP CARD
+// =============================================================================
+.track-order-help {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border-left: 4px solid #10b981;
+
+  .ant-card-body {
+    padding: 20px 24px;
+
+    @media (max-width: 768px) {
+      padding: 16px 20px;
+    }
+  }
+
+  h3 {
+    font-family: vars.$SemiBold;
+    font-size: 16px;
+    color: #065f46;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-family: vars.$Regular;
+    font-size: 14px;
+    color: #047857;
+    margin: 0 0 12px;
+    line-height: 1.5;
+
+    @media (max-width: 768px) {
+      font-size: 13px;
+    }
+  }
+
+  .ant-btn-link {
+    padding: 0;
+    height: auto;
+    font-family: vars.$SemiBold;
+    color: #059669;
+
+    &:hover {
+      color: #047857;
+    }
+  }
+}

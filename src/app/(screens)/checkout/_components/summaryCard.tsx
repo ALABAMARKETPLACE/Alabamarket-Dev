@@ -3,10 +3,14 @@ import React from "react";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { GoArrowRight } from "react-icons/go";
 import { useSelector } from "react-redux";
-import { Alert, Spin } from "antd";
+import { Alert, Spin, Tag } from "antd";
 import CheckoutItem from "./checkoutItem";
 import { LoadingOutlined } from "@ant-design/icons";
 import { formatCurrency } from "@/utils/formatNumber";
+import {
+  calculateDiscountedDelivery,
+  getPromoRemainingTime,
+} from "@/config/promoConfig";
 
 const antIcon = (
   <LoadingOutlined style={{ fontSize: 20, color: "#fff" }} spin />
@@ -20,6 +24,17 @@ const SummaryCard = (props: any) => {
     }
     return Settings?.currency || "₦";
   };
+
+  // Calculate delivery discount
+  const deliveryDiscount = calculateDiscountedDelivery(
+    props?.delivery_charge || 0,
+    props?.total || 0,
+  );
+
+  // Calculate adjusted grand total with promo
+  const adjustedGrandTotal = deliveryDiscount.hasDiscount
+    ? (props?.grand_total || 0) - deliveryDiscount.discountAmount
+    : props?.grand_total || 0;
 
   return (
     <div className="Cart-SummaryCard">
@@ -55,20 +70,88 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt4">{getCurrencySymbol()} 0.00</div>
       </div>
       <div style={{ margin: 15 }} />
-      <div className="Cart-row">
-        <div className="Cart-txt3">Delivery Charges</div>
-        <div style={{ flex: 1 }} />
-        <div className="Cart-txt4">
-          {getCurrencySymbol()} {formatCurrency(props?.delivery_charge)}
+
+      {/* Delivery Charges with Promo Support */}
+      {deliveryDiscount.hasDiscount && deliveryDiscount.promo ? (
+        <>
+          <div
+            style={{
+              backgroundColor: "#fff3e0",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              marginBottom: "10px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <span
+                style={{ fontSize: "12px", color: "#e65100", fontWeight: 600 }}
+              >
+                🎉 {deliveryDiscount.promo.name}
+              </span>
+              <Tag color="orange" style={{ margin: 0 }}>
+                {getPromoRemainingTime(deliveryDiscount.promo)}
+              </Tag>
+            </div>
+            <div style={{ fontSize: "11px", color: "#666", marginTop: "4px" }}>
+              {deliveryDiscount.promo.description}
+            </div>
+          </div>
+          <div className="Cart-row">
+            <div className="Cart-txt3">Delivery Charges</div>
+            <div style={{ flex: 1 }} />
+            <div className="Cart-txt4">
+              <span
+                style={{
+                  textDecoration: "line-through",
+                  color: "#999",
+                  marginRight: "8px",
+                  fontSize: "13px",
+                }}
+              >
+                {getCurrencySymbol()}{" "}
+                {formatCurrency(deliveryDiscount.originalCharge)}
+              </span>
+              <span style={{ color: "#4caf50", fontWeight: 600 }}>
+                {getCurrencySymbol()}{" "}
+                {formatCurrency(deliveryDiscount.discountedCharge)}
+              </span>
+            </div>
+          </div>
+          <div
+            style={{
+              textAlign: "right",
+              fontSize: "11px",
+              color: "#4caf50",
+              marginTop: "4px",
+            }}
+          >
+            You save {getCurrencySymbol()}{" "}
+            {formatCurrency(deliveryDiscount.discountAmount)}!
+          </div>
+        </>
+      ) : (
+        <div className="Cart-row">
+          <div className="Cart-txt3">Delivery Charges</div>
+          <div style={{ flex: 1 }} />
+          <div className="Cart-txt4">
+            {getCurrencySymbol()} {formatCurrency(props?.delivery_charge)}
+          </div>
         </div>
-      </div>
+      )}
+
       <div className="Cart-line2" />
       <div style={{ margin: 15 }} />
       <div className="Cart-row">
         <div className="Cart-txt3">Total :</div>
         <div style={{ flex: 1 }} />
         <div className="Cart-txt7">
-          {getCurrencySymbol()} {formatCurrency(props?.grand_total)}
+          {getCurrencySymbol()} {formatCurrency(adjustedGrandTotal)}
         </div>
       </div>
       <div className="Cart-line2" />

@@ -19,6 +19,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { formatCurrency } from "@/utils/formatNumber";
 import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
+import { calculateDiscountedDelivery } from "@/config/promoConfig";
 
 function Checkout() {
   const dispatch = useDispatch();
@@ -105,17 +106,24 @@ function Checkout() {
       setGrand_total(totals);
 
       if (Checkout?.address?.id) {
-        // Map address to ensure country_id and state_id are present
+        // Map address to ensure country_id and state_id are present and are numbers
         const addressData = {
           ...Checkout?.address,
-          country_id:
+          country_id: Number(
             Checkout?.address?.country_id ||
-            Checkout?.address?.countryDetails?.id,
-          state_id:
-            Checkout?.address?.state_id || Checkout?.address?.stateDetails?.id,
-          country:
+              Checkout?.address?.countryDetails?.id ||
+              0,
+          ),
+          state_id: Number(
+            Checkout?.address?.state_id ||
+              Checkout?.address?.stateDetails?.id ||
+              0,
+          ),
+          country: String(
             Checkout?.address?.country ||
-            Checkout?.address?.countryDetails?.country_name,
+              Checkout?.address?.countryDetails?.country_name ||
+              "",
+          ),
           state:
             Checkout?.address?.state || Checkout?.address?.stateDetails?.name,
         };
@@ -126,8 +134,12 @@ function Checkout() {
           ? [
               {
                 ...firstItem,
+                id: Number(firstItem?.id || 0),
+                productId: Number(firstItem?.productId || firstItem?.id || 0),
                 quantity: 1,
-                weight: firstItem?.weight || 1, // Ensure weight exists
+                weight: Number(firstItem?.weight || 1), // Ensure weight exists
+                totalPrice: Number(firstItem?.totalPrice || 0),
+                storeId: Number(firstItem?.storeId || 0),
               },
             ]
           : Checkout?.Checkout;
@@ -150,10 +162,12 @@ function Checkout() {
               API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
               obj,
             );
-          } catch (publicErr: any) {
+            console.log("Guest delivery calculation response:", response);
+          } catch (publicErr: unknown) {
             // If public endpoint fails (404 or not implemented), use default delivery charge
             console.log(
-              "Public delivery calculation not available, using default estimation",
+              "Public delivery calculation failed, using default estimation:",
+              publicErr,
             );
 
             // Default delivery charge estimation for guests
@@ -164,15 +178,30 @@ function Checkout() {
             setDelivery_charge(defaultDeliveryCharge);
             setGrand_total(totals + defaultDeliveryCharge);
             setDiscount(0);
+            setIsDeliveryCalculating(false);
             return;
           }
         }
 
+        console.log("Delivery response:", response);
+
         if (response?.status) {
-          setDeliveryToken(response?.token);
-          const delivery = Number(response?.details?.totalCharge || 0);
+          const deliveryToken = response?.token || "";
+          // API returns delivery charge in data.amount
+          const delivery = Number(
+            response?.data?.amount || response?.details?.totalCharge || 0,
+          );
           const discountVal = Number(response?.data?.discount || 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
+
+          console.log(
+            "Setting delivery charge:",
+            delivery,
+            "Grand total:",
+            gTotal,
+          );
+
+          setDeliveryToken(deliveryToken);
           setDelivery_charge(delivery);
           setGrand_total(gTotal);
           setDiscount(discountVal);
@@ -224,12 +253,31 @@ function Checkout() {
     try {
       setIsLoading(true);
 
+      // Apply delivery promo discount if active
+      const deliveryPromo = calculateDiscountedDelivery(
+        Number(delivery_charge),
+        Number(total),
+      );
+      const actualDeliveryCharge = deliveryPromo.discountedCharge;
+      const actualGrandTotal =
+        Number(total) + actualDeliveryCharge - Number(discount);
+
       // Convert amount to kobo (multiply by 100)
-      const amountInKobo = Math.round(Number(grand_total) * 100);
-      const deliveryChargeInKobo = Math.round(Number(delivery_charge) * 100);
+      const amountInKobo = Math.round(actualGrandTotal * 100);
+      const deliveryChargeInKobo = Math.round(actualDeliveryCharge * 100);
 
       // Calculate product total (grand_total minus delivery_charge)
       const productTotalInKobo = amountInKobo - deliveryChargeInKobo;
+
+      // Log promo application
+      if (deliveryPromo.hasDiscount) {
+        console.log("🎉 Delivery promo applied:", {
+          originalDelivery: delivery_charge,
+          discountedDelivery: actualDeliveryCharge,
+          savings: deliveryPromo.discountAmount,
+          promoName: deliveryPromo.promo?.name,
+        });
+      }
 
       // Generate unique reference
       const reference = `ORDER_${Date.now()}_${Math.random()
@@ -595,6 +643,8 @@ function Checkout() {
             stores: stores.map((s) => s.storeId),
             is_multi_seller: hasMultipleStores,
             store_allocations: storeAllocations,
+            // Include guest email for guest orders
+            guest_email: !isAuthenticated ? guestEmail : undefined,
             order_data: {
               payment: {
                 ref: reference,
@@ -609,6 +659,8 @@ function Checkout() {
               },
               user_id: customerId,
               user: user,
+              // Add guest_email to order_data for backend
+              guest_email: !isAuthenticated ? guestEmail : undefined,
             },
           }),
         );
@@ -676,12 +728,26 @@ function Checkout() {
 
     if (deliveryToken) {
       try {
+        // Apply delivery promo discount if active
+        const deliveryPromo = calculateDiscountedDelivery(
+          Number(delivery_charge),
+          Number(total),
+        );
+        const actualDeliveryCharge = deliveryPromo.discountedCharge;
+
         const obj = {
           payment: payment_method,
           cart: Checkout?.Checkout,
           address: Checkout?.address,
           charges: {
             token: deliveryToken,
+            // Include promo info for backend
+            originalDeliveryCharge: delivery_charge,
+            discountedDeliveryCharge: actualDeliveryCharge,
+            deliveryDiscount: deliveryPromo.discountAmount,
+            promoApplied: deliveryPromo.hasDiscount,
+            promoId: deliveryPromo.promo?.id || null,
+            promoName: deliveryPromo.promo?.name || null,
           },
           user_id: customerId,
           user: user,

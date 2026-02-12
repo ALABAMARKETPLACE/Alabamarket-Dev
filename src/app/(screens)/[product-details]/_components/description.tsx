@@ -69,11 +69,22 @@ type Props = {
 function Description(props: Props) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cartItems = useSelector((state: any) => state.Cart.items);
+
+  // Track if component has mounted to avoid hydration mismatch
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Only check cart state after hydration to avoid mismatch
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const isProductInCart = cartItems?.some(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (item: any) => item.productId === props?.data?._id,
-  );
+  const isProductInCart =
+    hasMounted &&
+    cartItems?.some(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (item: any) => item.productId === props?.data?._id,
+    );
   const router = useRouter();
   const dispatch = useDispatch();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -254,9 +265,10 @@ function Description(props: Props) {
 
       const guestCartItem = {
         productId: props?.data?.pid,
+        pid: props?.data?.pid, // Store numeric pid explicitly for guest order
         name: props?.data?.name,
         price: props?.currentVariant?.price ?? props?.data?.retail_rate,
-        quantity: quantity,
+        quantity: Math.floor(quantity), // Ensure integer quantity
         image: props?.currentVariant?.id
           ? props?.currentVariant?.image
           : props?.data?.image,

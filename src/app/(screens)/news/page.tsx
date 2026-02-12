@@ -1,11 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { Input, Pagination, Empty, Spin } from "antd";
+import { Input, Pagination, Empty, Spin, Button, Result } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
 import NewsCard from "./_components/newsCard";
+import { FiRefreshCw } from "react-icons/fi";
 import "./styles.scss";
 
 interface NewsItem {
@@ -35,7 +36,14 @@ export default function NewsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const pageSize = 12;
 
-  const { data: newsData, isLoading } = useQuery({
+  const {
+    data: newsData,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryFn: async () => {
       const response = await GET(
         `${API.NEWS_AND_BLOGS_GETPGN}?page=${currentPage}&limit=${pageSize}`,
@@ -44,6 +52,7 @@ export default function NewsPage() {
     },
     queryKey: ["news_list", currentPage],
     staleTime: 1000 * 60 * 5, // 5 minutes
+    retry: 2,
   });
 
   // Filter news based on search term
@@ -97,6 +106,27 @@ export default function NewsPage() {
         {isLoading ? (
           <div className="text-center py-5">
             <Spin size="large" />
+          </div>
+        ) : isError ? (
+          <div className="news-error-state">
+            <Result
+              status="warning"
+              title="Unable to load news"
+              subTitle={
+                (error as Error)?.message ||
+                "We're having trouble fetching the latest news. Please try again later."
+              }
+              extra={
+                <Button
+                  type="primary"
+                  icon={<FiRefreshCw />}
+                  onClick={() => refetch()}
+                  loading={isFetching}
+                >
+                  Try Again
+                </Button>
+              }
+            />
           </div>
         ) : filteredNews.length > 0 ? (
           <>
