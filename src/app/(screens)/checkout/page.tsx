@@ -19,6 +19,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { formatCurrency } from "@/utils/formatNumber";
 import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
+import { calculateDiscountedDelivery } from "@/config/promoConfig";
 
 function Checkout() {
   const dispatch = useDispatch();
@@ -252,12 +253,31 @@ function Checkout() {
     try {
       setIsLoading(true);
 
+      // Apply delivery promo discount if active
+      const deliveryPromo = calculateDiscountedDelivery(
+        Number(delivery_charge),
+        Number(total),
+      );
+      const actualDeliveryCharge = deliveryPromo.discountedCharge;
+      const actualGrandTotal =
+        Number(total) + actualDeliveryCharge - Number(discount);
+
       // Convert amount to kobo (multiply by 100)
-      const amountInKobo = Math.round(Number(grand_total) * 100);
-      const deliveryChargeInKobo = Math.round(Number(delivery_charge) * 100);
+      const amountInKobo = Math.round(actualGrandTotal * 100);
+      const deliveryChargeInKobo = Math.round(actualDeliveryCharge * 100);
 
       // Calculate product total (grand_total minus delivery_charge)
       const productTotalInKobo = amountInKobo - deliveryChargeInKobo;
+
+      // Log promo application
+      if (deliveryPromo.hasDiscount) {
+        console.log("🎉 Delivery promo applied:", {
+          originalDelivery: delivery_charge,
+          discountedDelivery: actualDeliveryCharge,
+          savings: deliveryPromo.discountAmount,
+          promoName: deliveryPromo.promo?.name,
+        });
+      }
 
       // Generate unique reference
       const reference = `ORDER_${Date.now()}_${Math.random()
@@ -708,12 +728,26 @@ function Checkout() {
 
     if (deliveryToken) {
       try {
+        // Apply delivery promo discount if active
+        const deliveryPromo = calculateDiscountedDelivery(
+          Number(delivery_charge),
+          Number(total),
+        );
+        const actualDeliveryCharge = deliveryPromo.discountedCharge;
+
         const obj = {
           payment: payment_method,
           cart: Checkout?.Checkout,
           address: Checkout?.address,
           charges: {
             token: deliveryToken,
+            // Include promo info for backend
+            originalDeliveryCharge: delivery_charge,
+            discountedDeliveryCharge: actualDeliveryCharge,
+            deliveryDiscount: deliveryPromo.discountAmount,
+            promoApplied: deliveryPromo.hasDiscount,
+            promoId: deliveryPromo.promo?.id || null,
+            promoName: deliveryPromo.promo?.name || null,
           },
           user_id: customerId,
           user: user,

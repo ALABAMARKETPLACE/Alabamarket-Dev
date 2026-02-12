@@ -1,9 +1,13 @@
 import { IoInformationCircleOutline } from "react-icons/io5";
 import { GoArrowRight } from "react-icons/go";
 import { useSelector } from "react-redux";
-import { Alert } from "antd";
+import { Alert, Tag } from "antd";
 import { reduxSettings } from "../../../../redux/slice/settingsSlice";
 import { formatCurrency } from "@/utils/formatNumber";
+import {
+  getActiveDeliveryPromo,
+  getPromoRemainingTime,
+} from "@/config/promoConfig";
 
 interface CartItem {
   totalPrice: number | string;
@@ -25,6 +29,7 @@ interface SummaryCardProps {
 
 const SummaryCard = (props: SummaryCardProps) => {
   const Settings = useSelector(reduxSettings);
+  const activePromo = getActiveDeliveryPromo();
 
   const getCurrencySymbol = () => {
     if (Settings?.currency === "NGN") {
@@ -87,6 +92,40 @@ const SummaryCard = (props: SummaryCardProps) => {
         </div>
       </div>
       <div className="Cart-line2" />
+
+      {/* Promo Banner */}
+      {activePromo && (
+        <div
+          style={{
+            backgroundColor: "#fff3e0",
+            padding: "12px",
+            borderRadius: "8px",
+            marginTop: "15px",
+            marginBottom: "10px",
+            border: "1px dashed #ff9800",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "4px",
+            }}
+          >
+            <span style={{ fontSize: "14px", color: "#e65100", fontWeight: 600 }}>
+              🎉 {activePromo.name}
+            </span>
+            <Tag color="orange" style={{ margin: 0 }}>
+              {getPromoRemainingTime(activePromo)}
+            </Tag>
+          </div>
+          <div style={{ fontSize: "12px", color: "#666" }}>
+            {activePromo.description}
+          </div>
+        </div>
+      )}
+
       <p className="text-small-summarycard my-0 text-center">
         <span className="fw-medium">NB:</span> Delivery charge will be
         calculated in the next step
