@@ -565,11 +565,12 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        if (
-          !isAuthenticated &&
-          endpointPrimary === API.PAYSTACK_INITIALIZE_SPLIT
-        ) {
+        // Always use PUBLIC_POST for guest users (not authenticated) for split payments
+        if (!isAuthenticated && endpointPrimary === API.PAYSTACK_INITIALIZE_SPLIT) {
           response = await PUBLIC_POST(endpointPrimary, paymentData);
+        } else if (!isAuthenticated && wantsSplit) {
+          // Defensive: if any other split payment for guest, use PUBLIC_POST
+          response = await PUBLIC_POST(API.PAYSTACK_INITIALIZE_SPLIT, paymentData);
         } else {
           response = await POST(endpointPrimary, paymentData);
         }

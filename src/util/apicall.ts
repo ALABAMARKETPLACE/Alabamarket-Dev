@@ -34,7 +34,11 @@ const GET = async (
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = opts?.token ?? state?.Auth?.token ?? " ";
+    const token: string = opts?.token ?? state?.Auth?.token ?? "";
+    const authHeader =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     // Convert params to string-compatible format for URLSearchParams
     const cleanParams = Object.entries(params).reduce(
       (acc, [key, value]) => {
@@ -53,7 +57,7 @@ const GET = async (
       method: "GET",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
+        ...authHeader,
         ...(opts?.headers ?? {}),
       },
     });
@@ -87,14 +91,18 @@ const POST = async (
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = state?.Auth?.token ?? " ";
+    const token: string = state?.Auth?.token ?? "";
+    const authHeader =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...authHeader,
       },
       body: JSON.stringify(body),
     });
@@ -145,14 +153,18 @@ const PUT = async (
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = state?.Auth?.token ?? " ";
+    const token: string = state?.Auth?.token ?? "";
+    const authHeader =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PUT",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...authHeader,
       },
       body: JSON.stringify(body),
     });
@@ -175,14 +187,18 @@ const PATCH = async (
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = state?.Auth?.token ?? " ";
+    const token: string = state?.Auth?.token ?? "";
+    const authHeader =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PATCH",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...authHeader,
       },
       body: JSON.stringify(body),
     });
@@ -245,14 +261,18 @@ const DELETE = async (
 ) => {
   try {
     const state = store.getState();
-    const token: string = (state as AuthState)?.Auth?.token ?? " ";
+    const token: string = (state as AuthState)?.Auth?.token ?? "";
+    const authHeader =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "DELETE",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...authHeader,
       },
       ...(body && { body: JSON.stringify(body) }),
     });

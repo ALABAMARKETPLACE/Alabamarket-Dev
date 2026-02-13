@@ -62,6 +62,10 @@ export const usePaystack = (): UsePaystackReturn => {
     return (
       msg.includes("invalid store subaccount") ||
       msg.includes("no subaccount") ||
+      msg.includes("unauthorized") ||
+      msg.includes("no token") ||
+      msg.includes("token") ||
+      msg.includes("forbidden") ||
       (msg.includes("subaccount") &&
         (msg.includes("invalid") ||
           msg.includes("missing") ||
