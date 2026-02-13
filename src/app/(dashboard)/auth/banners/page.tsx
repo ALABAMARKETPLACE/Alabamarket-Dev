@@ -53,7 +53,8 @@ function Banners() {
         token: (session as any)?.token,
       }),
     queryKey: ["seller_store_details_banners"],
-    enabled: status === "authenticated" && isSeller && !!(session as any)?.token,
+    enabled:
+      status === "authenticated" && isSeller && !!(session as any)?.token,
     retry: false,
   });
 
@@ -80,10 +81,12 @@ function Banners() {
     isError,
     error,
   } = useQuery({
-    queryFn: async () => await GET(API_ADMIN.BANNERS_LIST, finalBannerQueryParams),
+    queryFn: async () =>
+      await GET(API_ADMIN.BANNERS_LIST, finalBannerQueryParams),
     queryKey: ["admin_banners", finalBannerQueryParams],
     retry: false, // Don't retry on error
-    enabled: status === "authenticated" && (isSeller ? !!resolvedStoreId : true),
+    enabled:
+      status === "authenticated" && (isSeller ? !!resolvedStoreId : true),
   });
 
   useEffect(() => {
