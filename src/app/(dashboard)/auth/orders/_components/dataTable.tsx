@@ -239,10 +239,11 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
         key: "grandTotal",
         render: (total: number, record: Order) => (
           <div className="table__amount">
-            {currencySymbol} {formatCurrency(
+            {currencySymbol}{" "}
+            {formatCurrency(
               getActiveDeliveryPromo()
                 ? (total || 0) - (record.deliveryCharge || 0)
-                : total || 0
+                : total || 0,
             )}
           </div>
         ),
@@ -356,10 +357,11 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                   className="dashboard-mobile-card__value"
                   style={{ fontWeight: 600, color: "#10b981" }}
                 >
-                  {currencySymbol} {formatCurrency(
+                  {currencySymbol}{" "}
+                  {formatCurrency(
                     getActiveDeliveryPromo()
                       ? (order.grandTotal || 0) - (order.deliveryCharge || 0)
-                      : order.grandTotal || 0
+                      : order.grandTotal || 0,
                   )}
                 </span>
               </div>

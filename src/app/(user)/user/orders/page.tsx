@@ -180,7 +180,7 @@ const OrderCard = ({
             {formatCurrency(
               getActiveDeliveryPromo()
                 ? (order?.grandTotal || 0) - (order?.deliveryCharge || 0)
-                : order?.grandTotal
+                : order?.grandTotal,
             )}
           </span>
         </div>

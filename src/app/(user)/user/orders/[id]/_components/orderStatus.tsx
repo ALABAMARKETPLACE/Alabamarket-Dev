@@ -80,10 +80,18 @@ function OrderStatusCard(props: any) {
                     {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
                     {getActiveDeliveryPromo() ? (
                       <>
-                        <span style={{ textDecoration: "line-through", color: "#999", marginRight: 4 }}>
+                        <span
+                          style={{
+                            textDecoration: "line-through",
+                            color: "#999",
+                            marginRight: 4,
+                          }}
+                        >
                           {formatCurrency(props?.data?.deliveryCharge)}
                         </span>
-                        <span style={{ color: "#15ad4c", fontWeight: 600 }}>FREE</span>
+                        <span style={{ color: "#15ad4c", fontWeight: 600 }}>
+                          FREE
+                        </span>
                       </>
                     ) : (
                       formatCurrency(props?.data?.deliveryCharge)
@@ -94,8 +102,9 @@ function OrderStatusCard(props: any) {
                     {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
                     {formatCurrency(
                       getActiveDeliveryPromo()
-                        ? (props?.data?.grandTotal || 0) - (props?.data?.deliveryCharge || 0)
-                        : props?.data?.grandTotal
+                        ? (props?.data?.grandTotal || 0) -
+                            (props?.data?.deliveryCharge || 0)
+                        : props?.data?.grandTotal,
                     )}
                   </div>
                 </div>
@@ -108,10 +117,10 @@ function OrderStatusCard(props: any) {
                         props?.data?.orderPayment?.status == "pending"
                           ? "text-secondary"
                           : props?.data?.orderPayment?.status == "failed"
-                          ? "text-danger"
-                          : props?.data?.orderPayment?.status == "success"
-                          ? "text-success"
-                          : "text-warning"
+                            ? "text-danger"
+                            : props?.data?.orderPayment?.status == "success"
+                              ? "text-success"
+                              : "text-warning"
                       }
                     >
                       {props?.data?.orderPayment?.status}
@@ -124,8 +133,9 @@ function OrderStatusCard(props: any) {
                     : {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
                     {formatCurrency(
                       getActiveDeliveryPromo()
-                        ? (props?.data?.orderPayment?.amount || 0) - (props?.data?.deliveryCharge || 0)
-                        : props?.data?.orderPayment?.amount
+                        ? (props?.data?.orderPayment?.amount || 0) -
+                            (props?.data?.deliveryCharge || 0)
+                        : props?.data?.orderPayment?.amount,
                     )}
                   </div>
                   {props?.data?.orderPayment?.ref ? (
@@ -137,7 +147,7 @@ function OrderStatusCard(props: any) {
                   <div>
                     orderDate:{" "}
                     {moment(props?.data?.orderPayment?.createdAt).format(
-                      "DD/MM/YYYY"
+                      "DD/MM/YYYY",
                     )}
                   </div>
                   <div>Order ID: {props?.data?.order_id}</div>
@@ -168,7 +178,7 @@ function OrderStatusCard(props: any) {
               <span className="text-success">
                 {props?.data?.delivery_date
                   ? moment(props?.data?.delivery_date).format(
-                      "MMMM Do YYYY, h:mm:ss a"
+                      "MMMM Do YYYY, h:mm:ss a",
                     )
                   : ""}
               </span>
@@ -188,14 +198,14 @@ function OrderStatusCard(props: any) {
                         <>
                           <div>
                             {moment(statusUpdate.createdAt).format(
-                              "DD/MM/YYYY"
+                              "DD/MM/YYYY",
                             )}
                           </div>
                           <div>{statusUpdate.remark}</div>
                         </>
                       }
                     />
-                  )
+                  ),
                 )}
               </Steps>
             ) : null}
