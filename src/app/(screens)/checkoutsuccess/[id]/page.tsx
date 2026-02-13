@@ -47,6 +47,7 @@ interface GuestOrderPayload {
     delivery_token: string;
     delivery_charge: number;
     total_weight: number;
+    estimated_delivery_days?: number | null;
   };
   payment: {
     payment_reference: string;
@@ -67,6 +68,7 @@ interface GuestOrderPayload {
     order_notes?: string;
     source?: string;
     device_id?: string;
+    preferred_delivery_time?: string | null;
   };
   is_multi_seller: boolean;
 }
@@ -595,6 +597,26 @@ function Checkout() {
                         ?.store_id,
                     ) ??
                     0;
+                  const unit_price =
+                    typeof (asRecord as { price?: unknown })?.price === "number"
+                      ? (asRecord as { price?: number }).price
+                      : Number(
+                          (item as { unit_price?: number })?.unit_price || 0,
+                        );
+                  const total_price =
+                    typeof (asRecord as { totalPrice?: unknown })
+                      ?.totalPrice === "number"
+                      ? (asRecord as { totalPrice?: number }).totalPrice
+                      : Number(
+                          (item as { total_price?: number })?.total_price || 0,
+                        );
+                  const image =
+                    ((asRecord.product as Record<string, unknown> | undefined)
+                      ?.image as string | undefined) ||
+                    ((asRecord as { image?: string })?.image as
+                      | string
+                      | undefined) ||
+                    null;
 
                   return {
                     product_id,
@@ -604,6 +626,9 @@ function Checkout() {
                     quantity: Number((item as CheckoutCartItem)?.quantity || 0),
                     store_id,
                     weight: Number((item as CheckoutCartItem)?.weight || 0),
+                    unit_price,
+                    total_price,
+                    image,
                   };
                 },
               )
@@ -631,6 +656,10 @@ function Checkout() {
                   0,
                 )
               : 0,
+            estimated_delivery_days:
+              ((finalOrderData?.charges as Record<string, unknown>)?.[
+                "estimated_days"
+              ] as number | undefined) ?? null,
           },
           payment: {
             payment_reference: finalOrderData?.payment?.ref || "",
@@ -666,6 +695,10 @@ function Checkout() {
           },
           metadata: {
             order_notes: finalOrderData?.notes || "",
+            preferred_delivery_time:
+              ((finalOrderData as Record<string, unknown>)?.[
+                "preferred_delivery_time"
+              ] as string | undefined) || null,
             source: finalOrderData?.source || "web_app",
             device_id: finalOrderData?.device_id || "",
           },
@@ -690,9 +723,19 @@ function Checkout() {
         }
 
         console.log("Guest order payload:", guestOrderPayload);
-        response = await POST(
+        response = await PUBLIC_POST(
           API.ORDER_GUEST,
           guestOrderPayload as unknown as Record<string, unknown>,
+          null,
+          {
+            headers: finalOrderData?.charges?.token
+              ? {
+                  Authorization: `Bearer ${String(
+                    finalOrderData?.charges?.token,
+                  )}`,
+                }
+              : undefined,
+          },
         );
       } else {
         // Create order for authenticated users (payment already verified above for Paystack)

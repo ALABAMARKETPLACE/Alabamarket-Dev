@@ -450,6 +450,52 @@ function Checkout() {
         };
       });
 
+      // Build product items map for metadata (product_id, quantity, store_id)
+      const productItems =
+        Array.isArray(Checkout?.Checkout) && Checkout.Checkout.length > 0
+          ? Checkout.Checkout.map((it: Record<string, unknown>) => {
+              const toNumber = (x: unknown): number | null => {
+                const n =
+                  typeof x === "string" ? parseInt(x, 10) : (x as number | null);
+                return Number.isFinite(n as number) && (n as number) > 0
+                  ? (n as number)
+                  : null;
+              };
+              const product_id =
+                toNumber((it as { productId?: number }).productId) ??
+                toNumber((it as { id?: number }).id) ??
+                toNumber((it as { pid?: number }).pid) ??
+                toNumber(
+                  ((it as { product?: Record<string, unknown> }).product || {})[
+                    "id"
+                  ] as number | undefined,
+                ) ??
+                toNumber(
+                  ((it as { product?: Record<string, unknown> }).product || {})[
+                    "pid"
+                  ] as number | undefined,
+                ) ??
+                0;
+              const store_id =
+                toNumber((it as { store_id?: number }).store_id) ??
+                toNumber((it as { storeId?: number }).storeId) ??
+                toNumber(
+                  ((it as { product?: Record<string, unknown> }).product || {})[
+                    "store_id"
+                  ] as number | undefined,
+                ) ??
+                0;
+              const quantity =
+                typeof (it as { quantity?: number }).quantity === "number"
+                  ? (it as { quantity?: number }).quantity || 0
+                  : 0;
+              return { product_id, quantity, store_id };
+            })
+          : [];
+      const productIds = productItems
+        .map((pi) => pi.product_id)
+        .filter((n) => typeof n === "number" && n > 0);
+
       const paymentData = {
         email: customerEmail,
         amount: amountInKobo,
@@ -483,6 +529,9 @@ function Checkout() {
           stores: stores.map((s) => s.storeId),
           store_allocations: storeAllocations,
           is_multi_seller: hasMultipleStores,
+          product_ids: productIds,
+          product_items: productItems,
+          delivery_token: deliveryToken || null,
           // Split breakdown for transparency
           split_breakdown: {
             product_total: totalProductPriceInKobo,
@@ -567,6 +616,11 @@ function Checkout() {
       try {
         // Guests always use PUBLIC_POST for initialize (split or non-split)
         if (!isAuthenticated) {
+          if (!deliveryToken || String(deliveryToken).trim().length === 0) {
+            throw new Error(
+              "Delivery token missing. Please select or reselect your delivery address to continue.",
+            );
+          }
           response = await PUBLIC_POST(endpointPrimary, paymentData, null, {
             headers:
               deliveryToken && String(deliveryToken).trim().length > 0
