@@ -519,13 +519,14 @@ function Checkout() {
           },
           cart_items: Array.isArray(finalOrderData?.cart)
             ? finalOrderData.cart.map((item: CheckoutCartItem) => ({
-                product_id: item.productId ?? item.id,
+                product_id: Number(item.productId ?? item.id),
                 product_name: item.name,
-                variant_id: item.variantId,
+                variant_id:
+                  item.variantId != null ? Number(item.variantId) : null,
                 variant_name: item.combination,
-                quantity: item.quantity,
-                store_id: item.store_id,
-                weight: item.weight,
+                quantity: Number(item.quantity || 0),
+                store_id: Number(item.store_id),
+                weight: Number(item.weight || 0),
               }))
             : [],
           delivery_address: {
@@ -535,9 +536,9 @@ function Checkout() {
             full_address: finalOrderData?.address?.full_address || "",
             city: finalOrderData?.address?.city || "Lagos",
             state: finalOrderData?.address?.state || "Lagos",
-            state_id: finalOrderData?.address?.state_id || 25,
+            state_id: Number(finalOrderData?.address?.state_id || 25),
             country: finalOrderData?.address?.country || "Nigeria",
-            country_id: finalOrderData?.address?.country_id || 160,
+            country_id: Number(finalOrderData?.address?.country_id || 160),
             landmark: finalOrderData?.address?.landmark,
             address_type: finalOrderData?.address?.address_type,
           },
@@ -556,7 +557,9 @@ function Checkout() {
             payment_reference: finalOrderData?.payment?.ref || "",
             payment_method: finalOrderData?.payment?.type || "paystack",
             transaction_reference:
-              finalOrderData?.payment?.transaction_reference || "",
+              finalOrderData?.payment?.transaction_reference ||
+              finalOrderData?.payment?.ref ||
+              "",
             amount_paid: finalOrderData?.payment?.amount || 0,
             payment_status: finalOrderData?.payment?.status || "success",
             paid_at:
