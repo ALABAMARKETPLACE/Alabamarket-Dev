@@ -65,7 +65,7 @@ export default function ManageNewsPage() {
     refetch,
   } = useQuery({
     queryFn: async () => {
-      const response = await GET(API.NEWS_AND_BLOGS_GETPGN, { limit: 100 });
+      const response = await GET(API.NEWS_AND_BLOGS_GETPGN, { page: 1, limit: 100 });
       return response as { data: NewsItem[] };
     },
     queryKey: ["manage_news"],
