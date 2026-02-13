@@ -7,7 +7,6 @@ interface CheckoutCartItem {
   variantId?: number;
   combination?: string;
   quantity: number;
-  storeId?: number;
   store_id?: number;
   weight?: number;
   totalPrice?: number;
@@ -342,22 +341,23 @@ function Checkout() {
 
       console.log("Final order data:", finalOrderData);
 
-      // Normalize cart items to ensure storeId is present for multi-seller order creation
+      // Normalize cart items to ensure store_id is present for multi-seller order creation
       if (Array.isArray(finalOrderData?.cart)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        finalOrderData.cart = finalOrderData.cart.map((item: any) => {
-          // Extract storeId from various possible field names
-          const storeId =
-            item?.storeId ||
-            item?.store_id ||
-            item?.product?.storeId ||
-            item?.product?.store_id ||
+        finalOrderData.cart = finalOrderData.cart.map((item: CheckoutCartItem) => {
+          // Extract store_id from various possible field names
+          const store_id =
+            (item as CheckoutCartItem)?.store_id ||
+            (item as { storeId?: number })?.storeId ||
+            (item as { product?: { store_id?: number; storeId?: number } })?.product?.store_id ||
+            (item as { product?: { store_id?: number; storeId?: number } })?.product?.storeId ||
             null;
+          // Remove storeId from the item if present
+          const rest = { ...item };
+          delete (rest as { storeId?: unknown }).storeId;
           return {
-            ...item,
-            storeId: storeId,
-            store_id: storeId, // Include both for backend compatibility
-          };
+            ...rest,
+            store_id,
+          } as CheckoutCartItem;
         });
       }
 
@@ -370,26 +370,24 @@ function Checkout() {
         "═══════════════════════════════════════════════════════════",
       );
       if (Array.isArray(finalOrderData?.cart)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const storeGroups = new Map<number | string, any[]>();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        finalOrderData.cart.forEach((item: any, index: number) => {
-          const storeId =
-            item?.storeId ||
-            item?.store_id ||
-            item?.product?.storeId ||
+        const storeGroups = new Map<number | string, CheckoutCartItem[]>();
+        finalOrderData.cart.forEach((item: CheckoutCartItem, index: number) => {
+          const store_id =
+            (item as CheckoutCartItem)?.store_id ||
+            (item as { storeId?: number })?.storeId ||
+            (item as { product?: { store_id?: number } })?.product?.store_id ||
             "unknown";
           console.log(`Item ${index + 1}:`, {
-            name: item?.name || item?.product?.name,
-            storeId: storeId,
-            quantity: item?.quantity,
-            totalPrice: item?.totalPrice,
+            name: (item as CheckoutCartItem)?.name || (item as { product?: { name?: string } })?.product?.name,
+            store_id: store_id,
+            quantity: (item as CheckoutCartItem)?.quantity,
+            totalPrice: (item as CheckoutCartItem)?.totalPrice,
           });
 
-          if (!storeGroups.has(storeId)) {
-            storeGroups.set(storeId, []);
+          if (!storeGroups.has(store_id)) {
+            storeGroups.set(store_id, []);
           }
-          storeGroups.get(storeId)?.push(item);
+          storeGroups.get(store_id)?.push(item as CheckoutCartItem);
         });
 
         console.log(
@@ -450,11 +448,12 @@ function Checkout() {
       // Determine if this is a multi-seller order (applies to both guest and authenticated)
       const storeIds = new Set<string | number>();
       if (Array.isArray(finalOrderData?.cart)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        finalOrderData.cart.forEach((item: any) => {
-          const storeId =
-            item?.storeId || item?.store_id || item?.product?.store_id;
-          if (storeId) storeIds.add(storeId);
+        finalOrderData.cart.forEach((item: CheckoutCartItem) => {
+          const store_id =
+            (item as CheckoutCartItem)?.store_id ||
+            (item as { storeId?: number })?.storeId ||
+            (item as { product?: { store_id?: number } })?.product?.store_id;
+          if (store_id) storeIds.add(store_id);
         });
       }
       const isMultiSeller =
@@ -497,7 +496,7 @@ function Checkout() {
                 variant_id: item.variantId,
                 variant_name: item.combination,
                 quantity: item.quantity,
-                store_id: item.storeId ?? item.store_id,
+                store_id: item.store_id,
                 weight: item.weight,
               }))
             : [],

@@ -565,7 +565,11 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        response = await POST(endpointPrimary, paymentData);
+        if (!isAuthenticated && endpointPrimary === API.PAYSTACK_INITIALIZE_SPLIT) {
+          response = await PUBLIC_POST(endpointPrimary, paymentData);
+        } else {
+          response = await POST(endpointPrimary, paymentData);
+        }
       } catch (primaryError: unknown) {
         const err =
           typeof primaryError === "object" && primaryError !== null
