@@ -451,7 +451,7 @@ function Checkout() {
       });
 
       // Build product items map for metadata (product_id, quantity, store_id)
-      const productItems =
+      const productItems: Array<{ product_id: number; quantity: number; store_id: number }> =
         Array.isArray(Checkout?.Checkout) && Checkout.Checkout.length > 0
           ? Checkout.Checkout.map((it: Record<string, unknown>) => {
               const toNumber = (x: unknown): number | null => {
