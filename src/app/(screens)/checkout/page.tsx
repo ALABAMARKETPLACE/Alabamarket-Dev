@@ -80,6 +80,71 @@ function Checkout() {
 
   const [isDeliveryCalculating, setIsDeliveryCalculating] = useState(false);
 
+  const loadPaystackScript = useCallback(async () => {
+    if (typeof window !== "undefined" && (window as unknown as { PaystackPop?: unknown }).PaystackPop) {
+      return;
+    }
+    await new Promise<void>((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://js.paystack.co/v1/inline.js";
+      s.async = true;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error("Failed to load Paystack script"));
+      document.body.appendChild(s);
+    });
+  }, []);
+
+  const FallbackInlinePayment = useCallback(
+    async (email: string, amountInKobo: number, reference: string) => {
+      try {
+        await loadPaystackScript();
+        const pk: any = await GET(API.PAYSTACK_PUBLIC_KEY);
+        const key: string =
+          (pk && (pk.publicKey || pk.data?.publicKey || pk.key)) || "";
+        if (!key) throw new Error("Public key not available");
+        const anyWindow = window as unknown as {
+          PaystackPop?: {
+            setup: (opts: Record<string, unknown>) => {
+              openIframe: () => void;
+            };
+          };
+        };
+        if (!anyWindow.PaystackPop?.setup) {
+          throw new Error("Paystack not available");
+        }
+        const origin =
+          typeof window !== "undefined" ? window.location.origin : "";
+        const handler = anyWindow.PaystackPop.setup({
+          key,
+          email,
+          amount: amountInKobo,
+          ref: reference,
+          callback: () => {
+            window.location.href = `${origin}/checkoutsuccess/2?reference=${encodeURIComponent(
+              reference,
+            )}`;
+          },
+          onClose: () => {
+            notificationApi.error({
+              message: "Payment not completed",
+              description: "You closed the payment window.",
+            });
+          },
+        });
+        handler.openIframe();
+        return true;
+      } catch (e: unknown) {
+        notificationApi.error({
+          message: "Payment Initialization Failed",
+          description:
+            (e as Error)?.message || "Unable to initialize Paystack payment.",
+        });
+        return false;
+      }
+    },
+    [GET, loadPaystackScript, notificationApi],
+  );
+
   const CalculateDeliveryCharge = useCallback(async () => {
     // Prevent multiple simultaneous calculations
     if (isDeliveryCalculating) return;
@@ -679,6 +744,17 @@ function Checkout() {
               })
             : POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData));
         } else {
+          if (!isAuthenticated && (statusCode === 401 || primaryMessage.includes("unauthorized") || primaryMessage.includes("no token"))) {
+            const ok = await FallbackInlinePayment(
+              paymentData.email as string,
+              paymentData.amount as number,
+              reference,
+            );
+            if (ok) {
+              setIsLoading(false);
+              return;
+            }
+          }
           throw primaryError;
         }
       }
