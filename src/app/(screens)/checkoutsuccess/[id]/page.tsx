@@ -81,7 +81,7 @@ import { Avatar, Button, List, Spin, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
-import { GET, POST, DELETE } from "@/util/apicall";
+import { GET, POST, DELETE, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { storeCart } from "@/redux/slice/cartSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -222,12 +222,36 @@ function Checkout() {
           throw new Error("Payment reference not found. Please try again.");
         }
 
+        // Load stored order data to retrieve guest token (if any)
+        const storedOrderData = localStorage.getItem("paystack_order_data");
+        const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
+
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
+        // Determine if guest and extract guest delivery token
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const verificationResponse: any = await POST(API.PAYSTACK_VERIFY, {
-          reference: paymentRef,
-        });
+        const isGuest = !(User && (User as any)?.id);
+        const guestToken: string | undefined =
+          orderData?.order_data?.charges?.token ||
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (Checkout?.charges as any)?.token ||
+          undefined;
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const verificationResponse: any = isGuest
+          ? await PUBLIC_POST(
+              API.PAYSTACK_VERIFY,
+              { reference: paymentRef },
+              null,
+              {
+                headers: guestToken
+                  ? { Authorization: `Bearer ${guestToken}` }
+                  : undefined,
+              },
+            )
+          : await POST(API.PAYSTACK_VERIFY, {
+              reference: paymentRef,
+            });
 
         console.log("Payment verification response:", verificationResponse);
 
@@ -239,8 +263,6 @@ function Checkout() {
         }
 
         // Payment verified successfully, proceed with order
-        const storedOrderData = localStorage.getItem("paystack_order_data");
-        const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
         // Check if this is a multi-seller order
         const isMultiSeller = orderData?.is_multi_seller || false;

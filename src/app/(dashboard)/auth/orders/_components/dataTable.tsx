@@ -64,15 +64,14 @@ const UserName = ({
   guestName?: string;
   isGuestOrder?: boolean;
 }) => {
-  // Prefer rendering derived name without state when possible
-  const derivedName =
-    guestName ?? (isGuestOrder ? "Guest" : userId == null ? "N/A" : null);
-  const [name, setName] = useState<string>(derivedName ?? "Loading...");
+  const initialName =
+    guestName ??
+    (isGuestOrder ? "Guest" : userId == null ? "N/A" : "Loading...");
+  const [name, setName] = useState<string>(initialName);
 
   useEffect(() => {
     let isMounted = true;
-
-    if (derivedName === null && userId != null) {
+    if (!guestName && !isGuestOrder && userId != null) {
       GET(API.USER_DETAILS + userId)
         .then((res: unknown) => {
           const userRes = res as UserResponse;
@@ -86,13 +85,12 @@ const UserName = ({
           }
         });
     }
-
     return () => {
       isMounted = false;
     };
-  }, [derivedName, userId]);
+  }, [userId, guestName, isGuestOrder]);
 
-  return <span>{derivedName ?? name}</span>;
+  return <span>{name}</span>;
 };
 
 const getStatusBadge = (status: string) => {
