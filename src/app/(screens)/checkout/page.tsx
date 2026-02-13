@@ -334,7 +334,7 @@ function Checkout() {
       const stores = Array.from(storeMap.values());
       const hasMultipleStores = stores.length > 1;
       const hasSingleStore = stores.length === 1;
-      const shouldUseSplitPayment = stores.length > 0; // Use split for any store(s)
+      const shouldUseSplitPayment = isAuthenticated && stores.length > 0;
 
       // Calculate split amounts:
       // - Seller gets 95% of their product price
@@ -592,9 +592,16 @@ function Checkout() {
           typeof messageCandidate === "string"
             ? messageCandidate.toLowerCase().trim()
             : "";
+        const statusCode =
+          typeof (err as { status?: unknown })?.status === "number"
+            ? ((err as { status?: number }).status as number)
+            : undefined;
         const shouldFallbackToNonSplit =
           wantsSplit &&
-          (primaryMessage.includes("invalid store subaccount") ||
+          (statusCode === 401 ||
+            primaryMessage.includes("unauthorized") ||
+            primaryMessage.includes("no token") ||
+            primaryMessage.includes("invalid store subaccount") ||
             primaryMessage.includes("no subaccount") ||
             (primaryMessage.includes("subaccount") &&
               (primaryMessage.includes("invalid") ||
@@ -607,7 +614,9 @@ function Checkout() {
           };
           delete nonSplitPaymentData.store_id;
           delete nonSplitPaymentData.split_payment;
-          response = await POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData);
+          response = await (!isAuthenticated
+            ? PUBLIC_POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData)
+            : POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData));
         } else {
           throw primaryError;
         }
