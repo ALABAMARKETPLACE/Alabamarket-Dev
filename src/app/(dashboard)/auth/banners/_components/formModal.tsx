@@ -95,24 +95,14 @@ function FormModal(props: Props) {
       const mobileUpload =
         (await resolveImageUpload(mobileImage, props?.data?.img_mob)) ??
         desktopUpload;
-
-      // Get storeId from session for sellers, use 0 for admin (global banners)
-      const storeId =
-        session?.user?.store_id ??
-        session?.user?.storeId ??
-        session?.store_id ??
-        0; // Default to 0 for admin users (global banner)
-
-      const obj: any = {
+      const obj = {
         description: body?.description,
         img_desk: desktopUpload.url,
         img_mob: mobileUpload.url,
         status:
           session?.role === "admin" && props?.data?.id ? body?.status : true,
         title: body?.title,
-        storeId: storeId, // Always include storeId (backend requires it)
       };
-
       if (props?.data?.id) {
         return PUT(API.BANNER_EDIT + props?.data?.id, obj);
       }
