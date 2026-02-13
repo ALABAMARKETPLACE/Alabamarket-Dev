@@ -1,4 +1,3 @@
-
 "use client";
 
 interface CheckoutCartItem {
@@ -482,7 +481,10 @@ function Checkout() {
         const countryCode = finalOrderData?.address?.country_code || "+234";
         const guestOrderPayload: GuestOrderPayload = {
           guest_info: {
-            email: finalOrderData?.guest_email || finalOrderData?.address?.email || "",
+            email:
+              finalOrderData?.guest_email ||
+              finalOrderData?.address?.email ||
+              "",
             first_name: firstName,
             last_name: lastName,
             phone: finalOrderData?.address?.phone_no || "",
@@ -516,27 +518,41 @@ function Checkout() {
             delivery_token: finalOrderData?.charges?.token || "",
             delivery_charge: finalOrderData?.charges?.totalCharge || 0,
             total_weight: Array.isArray(finalOrderData?.cart)
-              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.weight || 0), 0)
+              ? finalOrderData.cart.reduce(
+                  (sum: number, item: CheckoutCartItem) =>
+                    sum + (item.weight || 0),
+                  0,
+                )
               : 0,
           },
           payment: {
             payment_reference: finalOrderData?.payment?.ref || "",
             payment_method: finalOrderData?.payment?.type || "paystack",
-            transaction_reference: finalOrderData?.payment?.transaction_reference || "",
+            transaction_reference:
+              finalOrderData?.payment?.transaction_reference || "",
             amount_paid: finalOrderData?.payment?.amount || 0,
             payment_status: finalOrderData?.payment?.status || "success",
-            paid_at: finalOrderData?.payment?.verified_at || new Date().toISOString(),
+            paid_at:
+              finalOrderData?.payment?.verified_at || new Date().toISOString(),
           },
           order_summary: {
             subtotal: Array.isArray(finalOrderData?.cart)
-              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
+              ? finalOrderData.cart.reduce(
+                  (sum: number, item: CheckoutCartItem) =>
+                    sum + (item.totalPrice || 0),
+                  0,
+                )
               : 0,
             delivery_fee: finalOrderData?.charges?.totalCharge || 0,
             tax: 0,
             discount: 0,
             total:
               (Array.isArray(finalOrderData?.cart)
-                ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
+                ? finalOrderData.cart.reduce(
+                    (sum: number, item: CheckoutCartItem) =>
+                      sum + (item.totalPrice || 0),
+                    0,
+                  )
                 : 0) + (finalOrderData?.charges?.totalCharge || 0),
           },
           metadata: {
@@ -548,7 +564,10 @@ function Checkout() {
         };
 
         console.log("Guest order payload:", guestOrderPayload);
-        response = await POST(API.ORDER_GUEST, guestOrderPayload as unknown as Record<string, unknown>);
+        response = await POST(
+          API.ORDER_GUEST,
+          guestOrderPayload as unknown as Record<string, unknown>,
+        );
       } else {
         // Create order for authenticated users (payment already verified above for Paystack)
         response = await POST(API.ORDER, finalOrderData);
