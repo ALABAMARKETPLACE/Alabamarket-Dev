@@ -123,6 +123,7 @@ const PUBLIC_POST = async (
   url: string,
   body: Record<string, unknown> = {},
   signal: AbortSignal | null = null,
+  opts?: { headers?: Record<string, string> },
 ) => {
   try {
     const response = await fetch(getFullUrl(url), {
@@ -131,6 +132,7 @@ const PUBLIC_POST = async (
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        ...(opts?.headers ?? {}),
       },
       body: JSON.stringify(body),
     });

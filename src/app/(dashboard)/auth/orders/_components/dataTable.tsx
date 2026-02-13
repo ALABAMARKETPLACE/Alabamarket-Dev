@@ -1,14 +1,7 @@
 "use client";
 import React, { useMemo, useEffect, useState } from "react";
 import { Button, Table, Pagination, Avatar, Tooltip } from "antd";
-import { TbListDetails } from "react-icons/tb";
-import {
-  FiEye,
-  FiPackage,
-  FiUser,
-  FiCalendar,
-  FiDollarSign,
-} from "react-icons/fi";
+import { FiEye, FiPackage, FiUser, FiCalendar } from "react-icons/fi";
 import { MdHourglassEmpty } from "react-icons/md";
 import moment from "moment";
 import { useAppSelector } from "@/redux/hooks";
@@ -71,33 +64,15 @@ const UserName = ({
   guestName?: string;
   isGuestOrder?: boolean;
 }) => {
-  // Determine initial state based on available data
-  const getInitialName = () => {
-    if (guestName) return guestName;
-    if (isGuestOrder) return "Guest";
-    if (userId !== null && userId !== undefined) return "Loading...";
-    return "N/A";
-  };
-
-  const [name, setName] = useState<string>(getInitialName());
+  // Prefer rendering derived name without state when possible
+  const derivedName =
+    guestName ?? (isGuestOrder ? "Guest" : userId == null ? "N/A" : null);
+  const [name, setName] = useState<string>(derivedName ?? "Loading...");
 
   useEffect(() => {
     let isMounted = true;
 
-    // If guest name is provided, use it directly
-    if (guestName) {
-      setName(guestName);
-      return;
-    }
-
-    // If it's explicitly a guest order, show "Guest"
-    if (isGuestOrder) {
-      setName("Guest");
-      return;
-    }
-
-    // If userId exists (not null/undefined), fetch user name
-    if (userId !== null && userId !== undefined) {
+    if (derivedName === null && userId != null) {
       GET(API.USER_DETAILS + userId)
         .then((res: unknown) => {
           const userRes = res as UserResponse;
@@ -110,17 +85,14 @@ const UserName = ({
             setName("N/A");
           }
         });
-    } else {
-      // No userId and not a guest order - show N/A
-      setName("N/A");
     }
 
     return () => {
       isMounted = false;
     };
-  }, [userId, guestName, isGuestOrder]);
+  }, [derivedName, userId]);
 
-  return <span>{name}</span>;
+  return <span>{derivedName ?? name}</span>;
 };
 
 const getStatusBadge = (status: string) => {
@@ -220,18 +192,18 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
             {moment(date).format("MMM DD, YYYY")}
           </div>
         ),
-        responsive: ["md"] as any,
+        responsive: ["md"] as ("xs" | "sm" | "md" | "lg" | "xl" | "xxl")[],
       },
       {
         title: "Items",
         dataIndex: "orderItems",
         key: "orderItems",
-        render: (items: any[]) => (
+        render: (items: Order["orderItems"]) => (
           <span className="dashboard-badge dashboard-badge--info">
             {items?.length || 0} items
           </span>
         ),
-        responsive: ["lg"] as any,
+        responsive: ["lg"] as ("xs" | "sm" | "md" | "lg" | "xl" | "xxl")[],
       },
       {
         title: "Total",
@@ -282,8 +254,8 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
     [route, currencySymbol],
   );
 
-  // Mobile Card View
-  const MobileCardView = () => (
+  // Mobile Card View renderer
+  const renderMobileCardView = () => (
     <div className="dashboard-mobile-cards">
       {data.length === 0 ? (
         <div className="dashboard-mobile-card">
@@ -391,7 +363,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
   return (
     <div className="dashboard-table-container">
       {isMobile ? (
-        <MobileCardView />
+        renderMobileCardView()
       ) : (
         <Table
           dataSource={data}

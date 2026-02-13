@@ -565,12 +565,14 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        // Always use PUBLIC_POST for guest users (not authenticated) for split payments
-        if (!isAuthenticated && endpointPrimary === API.PAYSTACK_INITIALIZE_SPLIT) {
-          response = await PUBLIC_POST(endpointPrimary, paymentData);
-        } else if (!isAuthenticated && wantsSplit) {
-          // Defensive: if any other split payment for guest, use PUBLIC_POST
-          response = await PUBLIC_POST(API.PAYSTACK_INITIALIZE_SPLIT, paymentData);
+        // Guests always use PUBLIC_POST for initialize (split or non-split)
+        if (!isAuthenticated) {
+          response = await PUBLIC_POST(endpointPrimary, paymentData, null, {
+            headers:
+              deliveryToken && String(deliveryToken).trim().length > 0
+                ? { Authorization: `Bearer ${deliveryToken}` }
+                : undefined,
+          });
         } else {
           response = await POST(endpointPrimary, paymentData);
         }
@@ -636,7 +638,14 @@ function Checkout() {
         const nonSplitPaymentData: Record<string, unknown> = { ...paymentData };
         delete nonSplitPaymentData.store_id;
         delete nonSplitPaymentData.split_payment;
-        response = await POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData);
+        response = await (!isAuthenticated
+          ? PUBLIC_POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData, null, {
+              headers:
+                deliveryToken && String(deliveryToken).trim().length > 0
+                  ? { Authorization: `Bearer ${deliveryToken}` }
+                  : undefined,
+            })
+          : POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData));
         rawUrl =
           response?.data?.data?.authorization_url ||
           response?.data?.authorization_url ||

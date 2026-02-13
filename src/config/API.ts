@@ -1,14 +1,8 @@
-// Use proxy only on localhost to avoid CORS issues
-const isLocalhost =
-  typeof window !== "undefined" && window.location.hostname === "localhost";
-
 const API = {
   // BASE_URL: "https://alaba-server.semikolen.org/",
 
   BASE_URL: (process.env.NEXT_PUBLIC_BASE_URL ||
-    (isLocalhost
-      ? "/api-proxy/"
-      : "https://development.alabamarketplace.ng/backend/")) as string,
+    "https://development.alabamarketplace.ng/backend/") as string,
 
   // BASE_URL: "http://localhost:8017/",
   //GOOGLE API
