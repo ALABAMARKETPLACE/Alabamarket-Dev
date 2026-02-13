@@ -120,17 +120,26 @@ function Checkout() {
           amount: amountInKobo,
           ref: reference,
           callback: () => {
+            try {
+              localStorage.setItem("paystack_inline_mode", "1");
+            } catch {}
             window.location.href = `${origin}/checkoutsuccess/2?reference=${encodeURIComponent(
               reference,
             )}`;
           },
           onClose: () => {
+            try {
+              localStorage.removeItem("paystack_inline_mode");
+            } catch {}
             notificationApi.error({
               message: "Payment not completed",
               description: "You closed the payment window.",
             });
           },
         });
+        try {
+          localStorage.setItem("paystack_inline_mode", "1");
+        } catch {}
         handler.openIframe();
         return true;
       } catch (e: unknown) {

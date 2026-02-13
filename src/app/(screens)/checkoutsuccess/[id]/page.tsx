@@ -260,18 +260,47 @@ function Checkout() {
             : await POST(API.PAYSTACK_VERIFY, { reference: paymentRef });
         } catch (e) {
           if (isGuest) {
-            try {
-              verificationResponse = await PUBLIC_POST(
-                API.PAYSTACK_VERIFY,
-                { reference: paymentRef, token: guestToken },
-                null,
-                {
-                  headers: guestToken
-                    ? { Authorization: `Bearer ${guestToken}` }
+            // Try variations: ref, delivery_token, with/without header
+            let verified = false;
+            const attempts: Array<{
+              body: Record<string, unknown>;
+              withHeader: boolean;
+            }> = [
+              { body: { ref: paymentRef }, withHeader: true },
+              {
+                body: { reference: paymentRef, token: guestToken },
+                withHeader: true,
+              },
+              {
+                body: { ref: paymentRef, delivery_token: guestToken },
+                withHeader: true,
+              },
+              {
+                body: { reference: paymentRef, delivery_token: guestToken },
+                withHeader: false,
+              },
+            ];
+            for (const attempt of attempts) {
+              try {
+                verificationResponse = await PUBLIC_POST(
+                  API.PAYSTACK_VERIFY,
+                  attempt.body,
+                  null,
+                  attempt.withHeader
+                    ? {
+                        headers: guestToken
+                          ? { Authorization: `Bearer ${guestToken}` }
+                          : undefined,
+                      }
                     : undefined,
-                },
-              );
-            } catch {
+                );
+                verified = true;
+                break;
+              } catch {
+                // continue
+              }
+            }
+            if (!verified) {
               const inlineMode = localStorage.getItem("paystack_inline_mode");
               if (inlineMode === "1") {
                 skipVerify = true;
