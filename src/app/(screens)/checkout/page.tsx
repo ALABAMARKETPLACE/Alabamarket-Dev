@@ -565,7 +565,10 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        if (!isAuthenticated && endpointPrimary === API.PAYSTACK_INITIALIZE_SPLIT) {
+        if (
+          !isAuthenticated &&
+          endpointPrimary === API.PAYSTACK_INITIALIZE_SPLIT
+        ) {
           response = await PUBLIC_POST(endpointPrimary, paymentData);
         } else {
           response = await POST(endpointPrimary, paymentData);

@@ -343,22 +343,26 @@ function Checkout() {
 
       // Normalize cart items to ensure store_id is present for multi-seller order creation
       if (Array.isArray(finalOrderData?.cart)) {
-        finalOrderData.cart = finalOrderData.cart.map((item: CheckoutCartItem) => {
-          // Extract store_id from various possible field names
-          const store_id =
-            (item as CheckoutCartItem)?.store_id ||
-            (item as { storeId?: number })?.storeId ||
-            (item as { product?: { store_id?: number; storeId?: number } })?.product?.store_id ||
-            (item as { product?: { store_id?: number; storeId?: number } })?.product?.storeId ||
-            null;
-          // Remove storeId from the item if present
-          const rest = { ...item };
-          delete (rest as { storeId?: unknown }).storeId;
-          return {
-            ...rest,
-            store_id,
-          } as CheckoutCartItem;
-        });
+        finalOrderData.cart = finalOrderData.cart.map(
+          (item: CheckoutCartItem) => {
+            // Extract store_id from various possible field names
+            const store_id =
+              (item as CheckoutCartItem)?.store_id ||
+              (item as { storeId?: number })?.storeId ||
+              (item as { product?: { store_id?: number; storeId?: number } })
+                ?.product?.store_id ||
+              (item as { product?: { store_id?: number; storeId?: number } })
+                ?.product?.storeId ||
+              null;
+            // Remove storeId from the item if present
+            const rest = { ...item };
+            delete (rest as { storeId?: unknown }).storeId;
+            return {
+              ...rest,
+              store_id,
+            } as CheckoutCartItem;
+          },
+        );
       }
 
       // Debug: Log cart items to verify storeId is present
@@ -378,7 +382,9 @@ function Checkout() {
             (item as { product?: { store_id?: number } })?.product?.store_id ||
             "unknown";
           console.log(`Item ${index + 1}:`, {
-            name: (item as CheckoutCartItem)?.name || (item as { product?: { name?: string } })?.product?.name,
+            name:
+              (item as CheckoutCartItem)?.name ||
+              (item as { product?: { name?: string } })?.product?.name,
             store_id: store_id,
             quantity: (item as CheckoutCartItem)?.quantity,
             totalPrice: (item as CheckoutCartItem)?.totalPrice,
