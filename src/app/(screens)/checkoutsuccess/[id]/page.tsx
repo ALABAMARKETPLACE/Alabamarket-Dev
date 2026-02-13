@@ -231,11 +231,9 @@ function Checkout() {
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
         // Determine if guest and extract guest delivery token
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const isGuest = !(User && (User as any)?.id);
         const guestToken: string | undefined =
           orderData?.order_data?.charges?.token ||
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (Checkout?.charges as any)?.token ||
           undefined;
 
@@ -258,8 +256,40 @@ function Checkout() {
                 },
               )
             : await POST(API.PAYSTACK_VERIFY, { reference: paymentRef });
-        } catch (e) {
-          if (isGuest) {
+        } catch (e: any) {
+          if (isGuest && e?.statusCode === 401) {
+            // Fallback: Try direct Paystack API verification
+            try {
+              const paystackSecret = process.env.NEXT_PUBLIC_PAYSTACK_SECRET_KEY;
+              if (!paystackSecret) {
+                throw new Error("Paystack secret key not available for frontend fallback.");
+              }
+              const directResp = await fetch(
+                `https://api.paystack.co/transaction/verify/${paymentRef}`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Bearer ${paystackSecret}`,
+                    "Content-Type": "application/json",
+                  },
+                },
+              );
+              const directData = await directResp.json();
+              if (directData.status && directData.data.status === "success") {
+                verificationResponse = directData;
+                skipVerify = false;
+              } else {
+                skipVerify = true;
+              }
+            } catch (directErr) {
+              skipVerify = true;
+              Notifications["error"]({
+                message: "Guest Payment Verification Failed",
+                description:
+                  "Unable to verify payment as guest. Please contact support or try again.",
+              });
+            }
+          } else if (isGuest) {
             // Try variations: ref, delivery_token, with/without header
             let verified = false;
             const attempts: Array<{
