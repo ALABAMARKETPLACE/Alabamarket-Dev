@@ -1,4 +1,78 @@
+
 "use client";
+
+interface CheckoutCartItem {
+  productId?: number;
+  id?: number;
+  name: string;
+  variantId?: number;
+  combination?: string;
+  quantity: number;
+  storeId?: number;
+  store_id?: number;
+  weight?: number;
+  totalPrice?: number;
+}
+interface GuestCartItem {
+  product_id: number;
+  product_name: string;
+  variant_id?: number;
+  variant_name?: string;
+  quantity: number;
+  store_id: number;
+  weight?: number;
+}
+
+interface GuestOrderPayload {
+  guest_info: {
+    email: string;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    country_code: string;
+  };
+  cart_items: GuestCartItem[];
+  delivery_address: {
+    full_name: string;
+    phone_no: string;
+    country_code: string;
+    full_address: string;
+    city: string;
+    state: string;
+    state_id: number;
+    country: string;
+    country_id: number;
+    landmark?: string;
+    address_type?: string;
+  };
+  delivery: {
+    delivery_token: string;
+    delivery_charge: number;
+    total_weight: number;
+  };
+  payment: {
+    payment_reference: string;
+    payment_method: string;
+    transaction_reference: string;
+    amount_paid: number;
+    payment_status: string;
+    paid_at: string;
+  };
+  order_summary: {
+    subtotal: number;
+    delivery_fee: number;
+    tax: number;
+    discount: number;
+    total: number;
+  };
+  metadata: {
+    order_notes?: string;
+    source?: string;
+    device_id?: string;
+  };
+  is_multi_seller: boolean;
+}
+
 import { useCallback, useEffect, useState } from "react";
 import "./styles.scss";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,6 +81,7 @@ import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { Col, Container, Row } from "react-bootstrap";
 import { Avatar, Button, List, Spin, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
 import { GET, POST, DELETE } from "@/util/apicall";
 import API from "@/config/API";
@@ -402,104 +477,78 @@ function Checkout() {
         // Parse full_name into first_name and last_name
         const fullName = finalOrderData?.address?.full_name || "";
         const nameParts = fullName.trim().split(/\s+/);
-        const firstName =
-          finalOrderData?.address?.first_name || nameParts[0] || "Guest";
-        const lastName =
-          finalOrderData?.address?.last_name ||
-          nameParts.slice(1).join(" ") ||
-          "User";
-
-        // Extract state and country info
-        const stateDetails = finalOrderData?.address?.stateDetails;
-        const countryDetails = finalOrderData?.address?.countryDetails;
-        const stateName =
-          finalOrderData?.address?.state ||
-          stateDetails?.name ||
-          finalOrderData?.address?.lagos_city ||
-          "Lagos";
-        const stateId = Number(
-          finalOrderData?.address?.state_id || stateDetails?.id || 0,
-        );
-        const countryName =
-          finalOrderData?.address?.country || countryDetails?.name || "Nigeria";
-        const countryId = Number(
-          finalOrderData?.address?.country_id || countryDetails?.id || 0,
-        );
-
-        // Extract city - for Lagos, use lagos_city if available
-        const city =
-          finalOrderData?.address?.city ||
-          finalOrderData?.address?.lagos_city ||
-          stateName ||
-          "Lagos";
-
-        // Format payload for guest order endpoint
-        const guestOrderPayload = {
+        const firstName = nameParts[0] || "Guest";
+        const lastName = nameParts.slice(1).join(" ") || "User";
+        const countryCode = finalOrderData?.address?.country_code || "+234";
+        const guestOrderPayload: GuestOrderPayload = {
           guest_info: {
-            email:
-              finalOrderData?.guest_email ||
-              finalOrderData?.address?.email ||
-              "",
+            email: finalOrderData?.guest_email || finalOrderData?.address?.email || "",
             first_name: firstName,
             last_name: lastName,
             phone: finalOrderData?.address?.phone_no || "",
+            country_code: countryCode,
           },
           cart_items: Array.isArray(finalOrderData?.cart)
-            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              finalOrderData.cart.map((item: any) => {
-                // Get numeric product ID - prioritize pid field, then productId
-                // pid is the numeric database ID, productId might be MongoDB _id (string)
-                const rawProductId =
-                  item?.pid ||
-                  item?.product?.pid ||
-                  item?.product_id ||
-                  item?.productId ||
-                  item?.id ||
-                  "0";
-                const productId = parseInt(String(rawProductId), 10);
-
-                // Get store ID
-                const storeId =
-                  item?.storeId || item?.store_id || item?.product?.store_id;
-
-                return {
-                  product_id: isNaN(productId) ? 0 : productId,
-                  product_name:
-                    item?.name ||
-                    item?.product?.name ||
-                    item?.productName ||
-                    "",
-                  quantity: Math.floor(Number(item?.quantity) || 1),
-                  store_id: storeId || null,
-                };
-              })
+            ? finalOrderData.cart.map((item: CheckoutCartItem) => ({
+                product_id: item.productId ?? item.id,
+                product_name: item.name,
+                variant_id: item.variantId,
+                variant_name: item.combination,
+                quantity: item.quantity,
+                store_id: item.storeId ?? item.store_id,
+                weight: item.weight,
+              }))
             : [],
           delivery_address: {
-            full_name: fullName || `${firstName} ${lastName}`,
+            full_name: fullName,
             phone_no: finalOrderData?.address?.phone_no || "",
+            country_code: countryCode,
             full_address: finalOrderData?.address?.full_address || "",
-            city: city,
-            state: stateName,
-            state_id: stateId,
-            country: countryName,
-            country_id: countryId,
+            city: finalOrderData?.address?.city || "Lagos",
+            state: finalOrderData?.address?.state || "Lagos",
+            state_id: finalOrderData?.address?.state_id || 25,
+            country: finalOrderData?.address?.country || "Nigeria",
+            country_id: finalOrderData?.address?.country_id || 160,
+            landmark: finalOrderData?.address?.landmark,
+            address_type: finalOrderData?.address?.address_type,
           },
           delivery: {
             delivery_token: finalOrderData?.charges?.token || "",
+            delivery_charge: finalOrderData?.charges?.totalCharge || 0,
+            total_weight: Array.isArray(finalOrderData?.cart)
+              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.weight || 0), 0)
+              : 0,
           },
           payment: {
             payment_reference: finalOrderData?.payment?.ref || "",
-            transaction_reference:
-              finalOrderData?.payment?.transaction_reference ||
-              finalOrderData?.payment?.ref ||
-              "",
+            payment_method: finalOrderData?.payment?.type || "paystack",
+            transaction_reference: finalOrderData?.payment?.transaction_reference || "",
+            amount_paid: finalOrderData?.payment?.amount || 0,
             payment_status: finalOrderData?.payment?.status || "success",
+            paid_at: finalOrderData?.payment?.verified_at || new Date().toISOString(),
+          },
+          order_summary: {
+            subtotal: Array.isArray(finalOrderData?.cart)
+              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
+              : 0,
+            delivery_fee: finalOrderData?.charges?.totalCharge || 0,
+            tax: 0,
+            discount: 0,
+            total:
+              (Array.isArray(finalOrderData?.cart)
+                ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
+                : 0) + (finalOrderData?.charges?.totalCharge || 0),
+          },
+          metadata: {
+            order_notes: finalOrderData?.notes || "",
+            source: finalOrderData?.source || "web_app",
+            device_id: finalOrderData?.device_id || "",
           },
           is_multi_seller: isMultiSeller,
         };
 
         console.log("Guest order payload:", guestOrderPayload);
-        response = await POST(API.ORDER_GUEST, guestOrderPayload);
+        response = await POST(API.ORDER_GUEST, guestOrderPayload as unknown as Record<string, unknown>);
       } else {
         // Create order for authenticated users (payment already verified above for Paystack)
         response = await POST(API.ORDER, finalOrderData);
