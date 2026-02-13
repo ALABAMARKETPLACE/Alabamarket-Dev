@@ -38,6 +38,7 @@ interface Order {
   orderItems?: any[];
   orderId?: string;
   _id?: string;
+  deliveryCharge?: number | string;
 }
 
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
@@ -838,10 +839,12 @@ function Checkout() {
                                   (acc: number, order: Order) =>
                                     acc +
                                     (Number(order?.newOrder?.deliveryCharge) ||
+                                      Number(order?.deliveryCharge) ||
                                       0),
                                   0,
                                 )
                               : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                  responseData?.[0]?.deliveryCharge ||
                                   0,
                           );
                           return (paymentAmount - deliveryCharges).toFixed(2);
@@ -951,11 +954,15 @@ function Checkout() {
                                         acc +
                                         (Number(
                                           order?.newOrder?.deliveryCharge,
-                                        ) || 0),
+                                        ) ||
+                                          Number(order?.deliveryCharge) ||
+                                          0),
                                       0,
                                     )
                                   : responseData?.[0]?.newOrder
-                                      ?.deliveryCharge || 0,
+                                      ?.deliveryCharge ||
+                                      responseData?.[0]?.deliveryCharge ||
+                                      0,
                               ).toFixed(2)}
                             </span>
                             <span style={{ color: "#15ad4c", fontWeight: 600 }}>
@@ -972,10 +979,13 @@ function Checkout() {
                                       acc +
                                       (Number(
                                         order?.newOrder?.deliveryCharge,
-                                      ) || 0),
+                                      ) ||
+                                        Number(order?.deliveryCharge) ||
+                                        0),
                                     0,
                                   )
                                 : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                    responseData?.[0]?.deliveryCharge ||
                                     0,
                             ).toFixed(2)}
                           </>
@@ -1007,10 +1017,13 @@ function Checkout() {
                                       acc +
                                       (Number(
                                         order?.newOrder?.deliveryCharge,
-                                      ) || 0),
+                                      ) ||
+                                        Number(order?.deliveryCharge) ||
+                                        0),
                                     0,
                                   )
                                 : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                    responseData?.[0]?.deliveryCharge ||
                                     0,
                             );
                             return (grandTotal - deliveryCharges).toFixed(2);
