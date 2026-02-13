@@ -2,17 +2,28 @@
 import Error from "@/app/(dashboard)/_components/error";
 import Loading from "@/app/(dashboard)/_components/loading";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
-import API from "@/config/API_ADMIN";
+import API_ADMIN from "@/config/API_ADMIN";
+import API from "@/config/API";
 import { GET } from "@/util/apicall";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useSession } from "next-auth/react";
 import DataTable from "./_components/dataTable";
 import FormModal from "./_components/formModal";
 import BannersFilterBar from "./_components/BannersFilterBar";
 import useBannersFilters from "./_hooks/useBannersFilters";
 import "./styles.scss";
+
+interface StoreResponse {
+  data?: {
+    _id?: string | number;
+    id?: string | number;
+  };
+}
+
 function Banners() {
+  const { data: session, status } = useSession();
   const [selectedItem, setSelectedItem] = useState<any>({});
   const [openForm, setOpenForm] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -25,6 +36,41 @@ function Banners() {
   } = useBannersFilters();
   const { value: searchValue, onChange: handleSearchChange } = search;
 
+  // Get storeId from session (for sellers)
+  const storeId =
+    (session as any)?.user?.store_id ??
+    (session as any)?.user?.storeId ??
+    (session as any)?.store_id ??
+    null;
+  const userRole = (session as any)?.role;
+  const userType = (session as any)?.user?.type || (session as any)?.type;
+  const isSeller = userRole === "seller" || userType === "seller";
+
+  // Fetch store info for sellers to get the resolved storeId
+  const { data: storeInfo, isLoading: isStoreLoading } = useQuery({
+    queryFn: () =>
+      GET(API.CORPORATE_STORE_GETSELLERINFO, {}, null, {
+        token: (session as any)?.token,
+      }),
+    queryKey: ["seller_store_details_banners"],
+    enabled: status === "authenticated" && isSeller && !!(session as any)?.token,
+    retry: false,
+  });
+
+  const resolvedStoreId =
+    (storeInfo as StoreResponse)?.data?._id ??
+    (storeInfo as StoreResponse)?.data?.id ??
+    storeId;
+
+  // Build query params with storeId for sellers
+  const finalBannerQueryParams = useMemo(() => {
+    const params = { ...bannerQueryParams };
+    if (isSeller && resolvedStoreId) {
+      params.storeId = resolvedStoreId;
+    }
+    return params;
+  }, [bannerQueryParams, isSeller, resolvedStoreId]);
+
   // Check if user has permission (seller or admin with backend fix)
   const {
     data: banners,
@@ -34,9 +80,10 @@ function Banners() {
     isError,
     error,
   } = useQuery({
-    queryFn: async () => await GET(API.BANNERS_LIST, bannerQueryParams),
-    queryKey: ["admin_banners", bannerQueryParams],
+    queryFn: async () => await GET(API_ADMIN.BANNERS_LIST, finalBannerQueryParams),
+    queryKey: ["admin_banners", finalBannerQueryParams],
     retry: false, // Don't retry on error
+    enabled: status === "authenticated" && (isSeller ? !!resolvedStoreId : true),
   });
 
   useEffect(() => {
@@ -72,7 +119,7 @@ function Banners() {
   };
 
   const renderContent = () => {
-    if (isLoading) {
+    if (isLoading || (isSeller && isStoreLoading)) {
       return <Loading />;
     }
 
