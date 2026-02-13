@@ -39,11 +39,11 @@ function FormModal(props: Props) {
 
   const desktopAspectRatio = useMemo(
     () => DESKTOP_BANNER.width / DESKTOP_BANNER.height,
-    []
+    [],
   );
   const mobileAspectRatio = useMemo(
     () => MOBILE_BANNER.width / MOBILE_BANNER.height,
-    []
+    [],
   );
 
   //functions
@@ -56,10 +56,10 @@ function FormModal(props: Props) {
         status: props?.data?.status,
       });
       setDesktopImage(
-        props?.data?.img_desk ? { url: props?.data?.img_desk } : undefined
+        props?.data?.img_desk ? { url: props?.data?.img_desk } : undefined,
       );
       setMobileImage(
-        props?.data?.img_mob ? { url: props?.data?.img_mob } : undefined
+        props?.data?.img_mob ? { url: props?.data?.img_mob } : undefined,
       );
     } else {
       form.resetFields();
@@ -70,7 +70,7 @@ function FormModal(props: Props) {
 
   const resolveImageUpload = async (
     source: any,
-    fallback?: string
+    fallback?: string,
   ): Promise<{ url: string } | undefined> => {
     if (source?.file) {
       return await COMPRESS_IMAGE(source.file);
@@ -87,7 +87,7 @@ function FormModal(props: Props) {
     mutationFn: async (body: any) => {
       const desktopUpload = await resolveImageUpload(
         desktopImage,
-        props?.data?.img_desk
+        props?.data?.img_desk,
       );
       if (!desktopUpload?.url) {
         throw new Error("Desktop banner image is required");
@@ -133,7 +133,7 @@ function FormModal(props: Props) {
       Notifications["error"]({
         message: `Please add the desktop banner image (${formatDimensions(
           DESKTOP_BANNER.width,
-          DESKTOP_BANNER.height
+          DESKTOP_BANNER.height,
         )})`,
       });
       return;
@@ -169,10 +169,8 @@ function FormModal(props: Props) {
             <div className="pb-2 d-flex flex-column gap-1">
               <span>Desktop Banner</span>
               <small className="text-muted">
-                Recommended size: {formatDimensions(
-                  DESKTOP_BANNER.width,
-                  DESKTOP_BANNER.height
-                )}
+                Recommended size:{" "}
+                {formatDimensions(DESKTOP_BANNER.width, DESKTOP_BANNER.height)}
               </small>
             </div>
             <ImagePicker
@@ -187,10 +185,8 @@ function FormModal(props: Props) {
             <div className="pb-2 mt-4 d-flex flex-column gap-1">
               <span>Mobile Banner</span>
               <small className="text-muted">
-                Recommended size: {formatDimensions(
-                  MOBILE_BANNER.width,
-                  MOBILE_BANNER.height
-                )}
+                Recommended size:{" "}
+                {formatDimensions(MOBILE_BANNER.width, MOBILE_BANNER.height)}
               </small>
             </div>
             <ImagePicker
