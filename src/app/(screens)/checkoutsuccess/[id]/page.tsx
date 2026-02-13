@@ -232,13 +232,24 @@ function Checkout() {
         console.log("Verifying payment with reference:", paymentRef);
         // Determine if guest and extract guest delivery token
         const isGuest = !(User && typeof User.id === "number");
-        const guestToken: string | undefined =
+        let guestToken: string | undefined =
           orderData?.order_data?.charges?.token ||
           (typeof Checkout?.charges === "object" &&
           Checkout?.charges &&
           "token" in Checkout.charges
             ? (Checkout.charges as { token?: string }).token
             : undefined);
+
+        // Use guest delivery calculation response token if available
+        const deliveryCalcRespRaw = localStorage.getItem("guest_delivery_calc_response");
+        if (deliveryCalcRespRaw) {
+          try {
+            const deliveryCalcResp = JSON.parse(deliveryCalcRespRaw);
+            if (deliveryCalcResp?.token) {
+              guestToken = deliveryCalcResp.token;
+            }
+          } catch {}
+        }
 
         // Robust verification with fallbacks for guest
         let verificationResponse: Record<string, unknown> | null = null;
