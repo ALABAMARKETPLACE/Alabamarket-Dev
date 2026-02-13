@@ -35,7 +35,7 @@ const GET = async (
   try {
     const state = store.getState() as AuthState;
     const token: string = opts?.token ?? state?.Auth?.token ?? "";
-    const authHeader =
+    const authHeader: Record<string, string> =
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
@@ -92,7 +92,7 @@ const POST = async (
   try {
     const state = store.getState() as AuthState;
     const token: string = state?.Auth?.token ?? "";
-    const authHeader =
+    const authHeader: Record<string, string> =
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
@@ -154,7 +154,7 @@ const PUT = async (
   try {
     const state = store.getState() as AuthState;
     const token: string = state?.Auth?.token ?? "";
-    const authHeader =
+    const authHeader: Record<string, string> =
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
@@ -188,7 +188,7 @@ const PATCH = async (
   try {
     const state = store.getState() as AuthState;
     const token: string = state?.Auth?.token ?? "";
-    const authHeader =
+    const authHeader: Record<string, string> =
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
@@ -262,7 +262,7 @@ const DELETE = async (
   try {
     const state = store.getState();
     const token: string = (state as AuthState)?.Auth?.token ?? "";
-    const authHeader =
+    const authHeader: Record<string, string> =
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
