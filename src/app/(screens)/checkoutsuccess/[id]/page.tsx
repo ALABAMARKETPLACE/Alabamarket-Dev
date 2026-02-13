@@ -238,7 +238,7 @@ function Checkout() {
           undefined;
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const verificationResponse: any = isGuest
+        const verificationResponse: Record<string, unknown> = isGuest
           ? await PUBLIC_POST(
               API.PAYSTACK_VERIFY,
               { reference: paymentRef },
@@ -255,9 +255,24 @@ function Checkout() {
 
         console.log("Payment verification response:", verificationResponse);
 
-        if (!verificationResponse?.status) {
+        // Support both shapes: { status, amount, ... } and { status, data: {...} }
+        const v = (verificationResponse as { data?: Record<string, unknown> })
+          ?.data
+          ? ((verificationResponse as { data: Record<string, unknown> })
+              .data as Record<string, unknown>)
+          : (verificationResponse as Record<string, unknown>);
+        const vStatus = String(v?.status ?? "");
+        const vAmount = Number(
+          typeof v?.amount === "number"
+            ? v?.amount
+            : ((v?.amount as number | undefined) ?? 0),
+        );
+        const vGatewayResponse =
+          (v?.gateway_response as string | undefined) || null;
+
+        if (!vStatus) {
           throw new Error(
-            verificationResponse?.message ||
+            (verificationResponse as { message?: string })?.message ||
               "Payment verification failed. Please try again.",
           );
         }
@@ -272,10 +287,9 @@ function Checkout() {
           payment: {
             ref: paymentRef,
             type: "Pay Online",
-            status: verificationResponse?.data?.status || "success",
-            amount: verificationResponse?.data?.amount || null,
-            gateway_response:
-              verificationResponse?.data?.gateway_response || null,
+            status: vStatus || "success",
+            amount: vAmount || null,
+            gateway_response: vGatewayResponse,
             split_payment: isMultiSeller || storeAllocations.length > 0,
             is_multi_seller: isMultiSeller,
           },
@@ -291,10 +305,9 @@ function Checkout() {
         finalOrderData.payment = {
           ...finalOrderData.payment,
           ref: paymentRef,
-          status: verificationResponse?.data?.status || "success",
-          amount: verificationResponse?.data?.amount || null,
-          gateway_response:
-            verificationResponse?.data?.gateway_response || null,
+          status: vStatus || "success",
+          amount: vAmount || null,
+          gateway_response: vGatewayResponse,
           verified: true,
           verified_at: new Date().toISOString(),
         };
@@ -347,7 +360,13 @@ function Checkout() {
         if (isGuestOrder) {
           // Get guest email from Paystack verification or stored order data
           const guestEmail =
-            verificationResponse?.data?.customer?.email ||
+            ((
+              verificationResponse as {
+                data?: { customer?: { email?: string } };
+              }
+            )?.data?.customer?.email as string | undefined) ||
+            ((verificationResponse as { customer?: { email?: string } })
+              ?.customer?.email as string | undefined) ||
             orderData?.email ||
             finalOrderData.address?.email;
           if (guestEmail) {
@@ -520,38 +539,70 @@ function Checkout() {
           cart_items: Array.isArray(finalOrderData?.cart)
             ? finalOrderData.cart.map(
                 (item: CheckoutCartItem | Record<string, unknown>) => {
-                  const product_id_raw =
-                    (item as CheckoutCartItem)?.productId ??
-                    (item as { id?: number })?.id ??
-                    (item as { pid?: number })?.pid ??
-                    (item as { product?: { id?: number; pid?: number } })
-                      ?.product?.id ??
-                    (item as { product?: { id?: number; pid?: number } })
-                      ?.product?.pid ??
-                    null;
-                  const product_name_raw =
+                  const asRecord = item as Record<string, unknown>;
+                  const candidates = [
+                    (item as CheckoutCartItem)?.productId,
+                    (item as { id?: number })?.id,
+                    (item as { pid?: number })?.pid,
+                    (asRecord.product as Record<string, unknown> | undefined)
+                      ?.id,
+                    (asRecord.product as Record<string, unknown> | undefined)
+                      ?.pid,
+                    asRecord.product_id as number | undefined,
+                  ];
+                  const toNumber = (x: unknown): number | null => {
+                    const n =
+                      typeof x === "string"
+                        ? parseInt(x, 10)
+                        : (x as number | null);
+                    return Number.isFinite(n as number) && (n as number) > 0
+                      ? (n as number)
+                      : null;
+                  };
+                  const product_id =
+                    toNumber(candidates[0]) ??
+                    toNumber(candidates[1]) ??
+                    toNumber(candidates[2]) ??
+                    toNumber(candidates[3]) ??
+                    toNumber(candidates[4]) ??
+                    toNumber(candidates[5]) ??
+                    0;
+
+                  const product_name =
                     (item as CheckoutCartItem)?.name ||
-                    (item as { product?: { name?: string } })?.product?.name ||
+                    ((asRecord.product as Record<string, unknown> | undefined)
+                      ?.name as string | undefined) ||
                     "";
-                  const variant_id_raw =
+
+                  const variant_id_candidate =
                     (item as CheckoutCartItem)?.variantId ??
-                    (item as { productVariant?: { id?: number } })
-                      ?.productVariant?.id ??
+                    ((
+                      asRecord.productVariant as
+                        | Record<string, unknown>
+                        | undefined
+                    )?.id as number | undefined) ??
                     null;
-                  const store_id_raw =
-                    (item as CheckoutCartItem)?.store_id ??
-                    (item as { storeId?: number })?.storeId ??
-                    (item as { product?: { store_id?: number } })?.product
-                      ?.store_id ??
-                    null;
+                  const variant_id =
+                    variant_id_candidate != null
+                      ? (toNumber(variant_id_candidate) ?? null)
+                      : null;
+
+                  const store_id =
+                    toNumber((item as CheckoutCartItem)?.store_id) ??
+                    toNumber((item as { storeId?: number })?.storeId) ??
+                    toNumber(
+                      (asRecord.product as Record<string, unknown> | undefined)
+                        ?.store_id,
+                    ) ??
+                    0;
+
                   return {
-                    product_id: Number(product_id_raw ?? 0),
-                    product_name: product_name_raw,
-                    variant_id:
-                      variant_id_raw != null ? Number(variant_id_raw) : null,
+                    product_id,
+                    product_name,
+                    variant_id,
                     variant_name: (item as CheckoutCartItem)?.combination,
                     quantity: Number((item as CheckoutCartItem)?.quantity || 0),
-                    store_id: Number(store_id_raw ?? 0),
+                    store_id,
                     weight: Number((item as CheckoutCartItem)?.weight || 0),
                   };
                 },
