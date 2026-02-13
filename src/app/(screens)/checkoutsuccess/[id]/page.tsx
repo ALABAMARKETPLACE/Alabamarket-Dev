@@ -241,7 +241,9 @@ function Checkout() {
             : undefined);
 
         // Use guest delivery calculation response token if available
-        const deliveryCalcRespRaw = localStorage.getItem("guest_delivery_calc_response");
+        const deliveryCalcRespRaw = localStorage.getItem(
+          "guest_delivery_calc_response",
+        );
         if (deliveryCalcRespRaw) {
           try {
             const deliveryCalcResp = JSON.parse(deliveryCalcRespRaw);
