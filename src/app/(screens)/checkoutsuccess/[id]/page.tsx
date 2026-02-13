@@ -955,7 +955,7 @@ function Checkout() {
                                     0,
                                   )
                                 : responseData?.[0]?.newOrder?.deliveryCharge ||
-                                  0,
+                                    0,
                             ).toFixed(2)}
                           </>
                         )}
@@ -990,7 +990,7 @@ function Checkout() {
                                     0,
                                   )
                                 : responseData?.[0]?.newOrder?.deliveryCharge ||
-                                  0,
+                                    0,
                             );
                             return (grandTotal - deliveryCharges).toFixed(2);
                           }
