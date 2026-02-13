@@ -86,7 +86,7 @@ const GET = async (
 
 const POST = async (
   url: string,
-  body: Record<string, unknown> = {},
+  body: Record<string, unknown> | FormData = {},
   signal: AbortSignal | null = null,
 ) => {
   try {
@@ -96,15 +96,15 @@ const POST = async (
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
+    const isForm = typeof FormData !== "undefined" && body instanceof FormData;
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "POST",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        ...(isForm ? {} : { Accept: "application/json", "Content-Type": "application/json" }),
         ...authHeader,
       },
-      body: JSON.stringify(body),
+      body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
       let messageText = "Something went wrong";
@@ -161,7 +161,7 @@ const PUBLIC_POST = async (
 
 const PUT = async (
   url: string,
-  body: Record<string, unknown>,
+  body: Record<string, unknown> | FormData,
   signal: AbortSignal | null = null,
 ) => {
   try {
@@ -171,15 +171,15 @@ const PUT = async (
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
+    const isForm = typeof FormData !== "undefined" && body instanceof FormData;
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PUT",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        ...(isForm ? {} : { Accept: "application/json", "Content-Type": "application/json" }),
         ...authHeader,
       },
-      body: JSON.stringify(body),
+      body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
       let messageText = "Something went wrong";
@@ -206,7 +206,7 @@ const PUT = async (
 
 const PATCH = async (
   url: string,
-  body: Record<string, unknown>,
+  body: Record<string, unknown> | FormData,
   signal: AbortSignal | null = null,
 ) => {
   try {
@@ -216,15 +216,15 @@ const PATCH = async (
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
+    const isForm = typeof FormData !== "undefined" && body instanceof FormData;
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PATCH",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        ...(isForm ? {} : { Accept: "application/json", "Content-Type": "application/json" }),
         ...authHeader,
       },
-      body: JSON.stringify(body),
+      body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
       let messageText = "Something went wrong";
