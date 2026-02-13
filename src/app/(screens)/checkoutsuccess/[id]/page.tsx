@@ -826,7 +826,28 @@ function Checkout() {
                       Payment Type:{" "}
                       {responseData?.[0]?.orderPayment?.paymentType ?? ""}{" "}
                       Amount: {getCurrencySymbol(Settings?.currency)}{" "}
-                      {responseData?.[0]?.orderPayment?.amount ?? ""}
+                      {(() => {
+                        const paymentAmount = Number(
+                          responseData?.[0]?.orderPayment?.amount || 0,
+                        );
+                        // If promo is active, subtract delivery charges
+                        if (getActiveDeliveryPromo()) {
+                          const deliveryCharges = Number(
+                            Array.isArray(responseData)
+                              ? responseData.reduce(
+                                  (acc: number, order: Order) =>
+                                    acc +
+                                    (Number(order?.newOrder?.deliveryCharge) ||
+                                      0),
+                                  0,
+                                )
+                              : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                0,
+                          );
+                          return (paymentAmount - deliveryCharges).toFixed(2);
+                        }
+                        return paymentAmount.toFixed(2);
+                      })()}
                     </div>
                   </div>
                   <div className="checkout-txt3">ORDER SUMMARY</div>
