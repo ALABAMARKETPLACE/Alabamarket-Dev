@@ -16,6 +16,7 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackPurchase } from "@/utils/analytics";
+import { getActiveDeliveryPromo } from "@/config/promoConfig";
 
 interface Order {
   newOrder?: {
@@ -37,6 +38,7 @@ interface Order {
   orderItems?: any[];
   orderId?: string;
   _id?: string;
+  deliveryCharge?: number | string;
 }
 
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
@@ -371,6 +373,22 @@ function Checkout() {
         finalOrderData?.payment?.amount,
       );
 
+      // Determine if this is a multi-seller order (applies to both guest and authenticated)
+      const storeIds = new Set<string | number>();
+      if (Array.isArray(finalOrderData?.cart)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        finalOrderData.cart.forEach((item: any) => {
+          const storeId =
+            item?.storeId || item?.store_id || item?.product?.store_id;
+          if (storeId) storeIds.add(storeId);
+        });
+      }
+      const isMultiSeller =
+        storeIds.size > 1 || finalOrderData?.payment?.is_multi_seller || false;
+
+      // Add is_multi_seller flag to finalOrderData for backend
+      finalOrderData.is_multi_seller = isMultiSeller;
+
       // Determine if this is a guest order
       const isGuestOrder =
         finalOrderData?.address?.is_guest ||
@@ -440,6 +458,10 @@ function Checkout() {
                   "0";
                 const productId = parseInt(String(rawProductId), 10);
 
+                // Get store ID
+                const storeId =
+                  item?.storeId || item?.store_id || item?.product?.store_id;
+
                 return {
                   product_id: isNaN(productId) ? 0 : productId,
                   product_name:
@@ -448,6 +470,7 @@ function Checkout() {
                     item?.productName ||
                     "",
                   quantity: Math.floor(Number(item?.quantity) || 1),
+                  store_id: storeId || null,
                 };
               })
             : [],
@@ -472,6 +495,7 @@ function Checkout() {
               "",
             payment_status: finalOrderData?.payment?.status || "success",
           },
+          is_multi_seller: isMultiSeller,
         };
 
         console.log("Guest order payload:", guestOrderPayload);
@@ -803,7 +827,30 @@ function Checkout() {
                       Payment Type:{" "}
                       {responseData?.[0]?.orderPayment?.paymentType ?? ""}{" "}
                       Amount: {getCurrencySymbol(Settings?.currency)}{" "}
-                      {responseData?.[0]?.orderPayment?.amount ?? ""}
+                      {(() => {
+                        const paymentAmount = Number(
+                          responseData?.[0]?.orderPayment?.amount || 0,
+                        );
+                        // If promo is active, subtract delivery charges
+                        if (getActiveDeliveryPromo()) {
+                          const deliveryCharges = Number(
+                            Array.isArray(responseData)
+                              ? responseData.reduce(
+                                  (acc: number, order: Order) =>
+                                    acc +
+                                    (Number(order?.newOrder?.deliveryCharge) ||
+                                      Number(order?.deliveryCharge) ||
+                                      0),
+                                  0,
+                                )
+                              : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                  responseData?.[0]?.deliveryCharge ||
+                                  0,
+                          );
+                          return (paymentAmount - deliveryCharges).toFixed(2);
+                        }
+                        return paymentAmount.toFixed(2);
+                      })()}
                     </div>
                   </div>
                   <div className="checkout-txt3">ORDER SUMMARY</div>
@@ -875,20 +922,74 @@ function Checkout() {
                       </div>
                     </div>
                     <div className="checkout-row">
-                      <div>Delivery Charges</div>
                       <div>
-                        {getCurrencySymbol(Settings?.currency)}{" "}
-                        {Number(
-                          Array.isArray(responseData)
-                            ? responseData.reduce(
-                                (acc: number, order: Order) =>
-                                  acc +
-                                  (Number(order?.newOrder?.deliveryCharge) ||
-                                    0),
-                                0,
-                              )
-                            : responseData?.[0]?.newOrder?.deliveryCharge || 0,
-                        ).toFixed(2)}
+                        Delivery Charges
+                        {getActiveDeliveryPromo() && (
+                          <span
+                            style={{
+                              color: "#15ad4c",
+                              fontSize: "12px",
+                              marginLeft: "8px",
+                            }}
+                          >
+                            (FREE - Promo Applied)
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        {getActiveDeliveryPromo() ? (
+                          <>
+                            <span
+                              style={{
+                                textDecoration: "line-through",
+                                color: "#999",
+                                marginRight: "8px",
+                              }}
+                            >
+                              {getCurrencySymbol(Settings?.currency)}{" "}
+                              {Number(
+                                Array.isArray(responseData)
+                                  ? responseData.reduce(
+                                      (acc: number, order: Order) =>
+                                        acc +
+                                        (Number(
+                                          order?.newOrder?.deliveryCharge,
+                                        ) ||
+                                          Number(order?.deliveryCharge) ||
+                                          0),
+                                      0,
+                                    )
+                                  : responseData?.[0]?.newOrder
+                                      ?.deliveryCharge ||
+                                      responseData?.[0]?.deliveryCharge ||
+                                      0,
+                              ).toFixed(2)}
+                            </span>
+                            <span style={{ color: "#15ad4c", fontWeight: 600 }}>
+                              FREE
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            {getCurrencySymbol(Settings?.currency)}{" "}
+                            {Number(
+                              Array.isArray(responseData)
+                                ? responseData.reduce(
+                                    (acc: number, order: Order) =>
+                                      acc +
+                                      (Number(
+                                        order?.newOrder?.deliveryCharge,
+                                      ) ||
+                                        Number(order?.deliveryCharge) ||
+                                        0),
+                                    0,
+                                  )
+                                : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                    responseData?.[0]?.deliveryCharge ||
+                                    0,
+                            ).toFixed(2)}
+                          </>
+                        )}
                       </div>
                     </div>
                     <hr />
@@ -896,16 +997,39 @@ function Checkout() {
                       <div>Total</div>
                       <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
-                        {Number(
-                          Array.isArray(responseData)
-                            ? responseData.reduce(
-                                (acc: number, order: Order) =>
-                                  acc +
-                                  (Number(order?.newOrder?.grandTotal) || 0),
-                                0,
-                              )
-                            : responseData?.[0]?.newOrder?.grandTotal || 0,
-                        ).toFixed(2)}
+                        {(() => {
+                          const grandTotal = Number(
+                            Array.isArray(responseData)
+                              ? responseData.reduce(
+                                  (acc: number, order: Order) =>
+                                    acc +
+                                    (Number(order?.newOrder?.grandTotal) || 0),
+                                  0,
+                                )
+                              : responseData?.[0]?.newOrder?.grandTotal || 0,
+                          );
+                          // If promo is active, subtract delivery charges from total
+                          if (getActiveDeliveryPromo()) {
+                            const deliveryCharges = Number(
+                              Array.isArray(responseData)
+                                ? responseData.reduce(
+                                    (acc: number, order: Order) =>
+                                      acc +
+                                      (Number(
+                                        order?.newOrder?.deliveryCharge,
+                                      ) ||
+                                        Number(order?.deliveryCharge) ||
+                                        0),
+                                    0,
+                                  )
+                                : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                    responseData?.[0]?.deliveryCharge ||
+                                    0,
+                            );
+                            return (grandTotal - deliveryCharges).toFixed(2);
+                          }
+                          return grandTotal.toFixed(2);
+                        })()}
                       </div>
                     </div>
                   </div>

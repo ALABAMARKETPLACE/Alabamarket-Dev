@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/utils/formatNumber";
 import { GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
+import { getActiveDeliveryPromo } from "@/config/promoConfig";
 
 export interface Order {
   id?: string | number;
@@ -28,6 +29,7 @@ export interface Order {
   name?: string;
   createdAt?: string;
   grandTotal?: number;
+  deliveryCharge?: number;
   status?: string;
   orderItems?: Record<string, unknown>[];
   storeId?: string | number;
@@ -235,9 +237,14 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
         title: "Total",
         dataIndex: "grandTotal",
         key: "grandTotal",
-        render: (total: number) => (
+        render: (total: number, record: Order) => (
           <div className="table__amount">
-            {currencySymbol} {formatCurrency(total || 0)}
+            {currencySymbol}{" "}
+            {formatCurrency(
+              getActiveDeliveryPromo()
+                ? (total || 0) - (record.deliveryCharge || 0)
+                : total || 0,
+            )}
           </div>
         ),
       },
@@ -350,7 +357,12 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
                   className="dashboard-mobile-card__value"
                   style={{ fontWeight: 600, color: "#10b981" }}
                 >
-                  {currencySymbol} {formatCurrency(order.grandTotal || 0)}
+                  {currencySymbol}{" "}
+                  {formatCurrency(
+                    getActiveDeliveryPromo()
+                      ? (order.grandTotal || 0) - (order.deliveryCharge || 0)
+                      : order.grandTotal || 0,
+                  )}
                 </span>
               </div>
             </div>
