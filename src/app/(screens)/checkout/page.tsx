@@ -81,7 +81,10 @@ function Checkout() {
   const [isDeliveryCalculating, setIsDeliveryCalculating] = useState(false);
 
   const loadPaystackScript = useCallback(async () => {
-    if (typeof window !== "undefined" && (window as unknown as { PaystackPop?: unknown }).PaystackPop) {
+    if (
+      typeof window !== "undefined" &&
+      (window as unknown as { PaystackPop?: unknown }).PaystackPop
+    ) {
       return;
     }
     await new Promise<void>((resolve, reject) => {
@@ -229,7 +232,7 @@ function Checkout() {
         // Use authenticated endpoint only (guest logic commented out)
         if (isAuthenticated) {
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
-        } 
+        }
         // else {
         //   // For guest users, try public endpoint first, fallback to default estimation
         //   try {
@@ -390,7 +393,9 @@ function Checkout() {
       >();
 
       Checkout?.Checkout?.forEach((item: Record<string, unknown>) => {
-        const rawStoreId = (item as { storeId?: number; store_id?: number }).storeId || (item as { store_id?: number }).store_id;
+        const rawStoreId =
+          (item as { storeId?: number; store_id?: number }).storeId ||
+          (item as { store_id?: number }).store_id;
         // Ensure storeId is a valid number
         const storeId = rawStoreId ? Number(rawStoreId) : null;
         if (storeId && !isNaN(storeId) && storeId > 0) {
@@ -438,7 +443,9 @@ function Checkout() {
         hasSingleStore,
         shouldUseSplitPayment,
         cartStoreIds: Checkout?.Checkout?.map(
-          (item: Record<string, unknown>) => (item as { storeId?: number; store_id?: number }).storeId || (item as { store_id?: number }).store_id,
+          (item: Record<string, unknown>) =>
+            (item as { storeId?: number; store_id?: number }).storeId ||
+            (item as { store_id?: number }).store_id,
         ),
         splitBreakdown: {
           totalAmount: amountInKobo / 100,
@@ -525,12 +532,18 @@ function Checkout() {
       });
 
       // Build product items map for metadata (product_id, quantity, store_id)
-      const productItems: Array<{ product_id: number; quantity: number; store_id: number }> =
+      const productItems: Array<{
+        product_id: number;
+        quantity: number;
+        store_id: number;
+      }> =
         Array.isArray(Checkout?.Checkout) && Checkout.Checkout.length > 0
           ? Checkout.Checkout.map((it: Record<string, unknown>) => {
               const toNumber = (x: unknown): number | null => {
                 const n =
-                  typeof x === "string" ? parseInt(x, 10) : (x as number | null);
+                  typeof x === "string"
+                    ? parseInt(x, 10)
+                    : (x as number | null);
                 return Number.isFinite(n as number) && (n as number) > 0
                   ? (n as number)
                   : null;
@@ -743,7 +756,12 @@ function Checkout() {
               })
             : POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData));
         } else {
-          if (!isAuthenticated && (statusCode === 401 || primaryMessage.includes("unauthorized") || primaryMessage.includes("no token"))) {
+          if (
+            !isAuthenticated &&
+            (statusCode === 401 ||
+              primaryMessage.includes("unauthorized") ||
+              primaryMessage.includes("no token"))
+          ) {
             const ok = await FallbackInlinePayment(
               paymentData.email as string,
               paymentData.amount as number,

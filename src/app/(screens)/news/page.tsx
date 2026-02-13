@@ -50,10 +50,11 @@ export default function NewsPage() {
         limit: pageSize,
       });
       // Support both { data: [] } and [] shapes
-      const data =
-        Array.isArray((response as { data?: unknown })?.data)
-          ? ((response as { data: NewsItem[] }).data)
-          : (Array.isArray(response) ? (response as NewsItem[]) : []);
+      const data = Array.isArray((response as { data?: unknown })?.data)
+        ? (response as { data: NewsItem[] }).data
+        : Array.isArray(response)
+          ? (response as NewsItem[])
+          : [];
       // Try to get total from response, fallback to data.length
       const total = (response as { total?: number })?.total ?? data.length;
       return { data, total } as NewsResponse;
