@@ -45,10 +45,18 @@ export default function NewsPage() {
     isFetching,
   } = useQuery({
     queryFn: async () => {
-      const response = await GET(
-        `${API.NEWS_AND_BLOGS_GETPGN}?page=${currentPage}&limit=${pageSize}`,
-      );
-      return response as NewsResponse;
+      const response = await GET(API.NEWS_AND_BLOGS, {
+        page: currentPage,
+        limit: pageSize,
+      });
+      // Support both { data: [] } and [] shapes
+      const data =
+        Array.isArray((response as { data?: unknown })?.data)
+          ? ((response as { data: NewsItem[] }).data)
+          : (Array.isArray(response) ? (response as NewsItem[]) : []);
+      // Try to get total from response, fallback to data.length
+      const total = (response as { total?: number })?.total ?? data.length;
+      return { data, total } as NewsResponse;
     },
     queryKey: ["news_list", currentPage],
     staleTime: 1000 * 60 * 5, // 5 minutes
