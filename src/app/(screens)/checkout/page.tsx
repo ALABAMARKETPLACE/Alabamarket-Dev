@@ -671,7 +671,12 @@ function Checkout() {
           delete nonSplitPaymentData.store_id;
           delete nonSplitPaymentData.split_payment;
           response = await (!isAuthenticated
-            ? PUBLIC_POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData)
+            ? PUBLIC_POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData, null, {
+                headers:
+                  deliveryToken && String(deliveryToken).trim().length > 0
+                    ? { Authorization: `Bearer ${deliveryToken}` }
+                    : undefined,
+              })
             : POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData));
         } else {
           throw primaryError;
