@@ -224,34 +224,14 @@ function Checkout() {
           throw new Error("Payment reference not found. Please try again.");
         }
 
-        // Load stored order data to retrieve guest token (if any)
+        // Load stored order data (for other order info, not for token)
         const storedOrderData = localStorage.getItem("paystack_order_data");
         const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
-        // Determine if guest and extract guest delivery token
+        // Determine if guest
         const isGuest = !(User && typeof User.id === "number");
-        let guestToken: string | undefined =
-          orderData?.order_data?.charges?.token ||
-          (typeof Checkout?.charges === "object" &&
-          Checkout?.charges &&
-          "token" in Checkout.charges
-            ? (Checkout.charges as { token?: string }).token
-            : undefined);
-
-        // Use guest delivery calculation response token if available
-        const deliveryCalcRespRaw = localStorage.getItem(
-          "guest_delivery_calc_response",
-        );
-        if (deliveryCalcRespRaw) {
-          try {
-            const deliveryCalcResp = JSON.parse(deliveryCalcRespRaw);
-            if (deliveryCalcResp?.token) {
-              guestToken = deliveryCalcResp.token;
-            }
-          } catch {}
-        }
 
         // Robust verification with fallbacks for guest
         let verificationResponse: Record<string, unknown> | null = null;
@@ -265,11 +245,7 @@ function Checkout() {
                 API.PAYSTACK_VERIFY,
                 { reference: paymentRef },
                 null,
-                {
-                  headers: guestToken
-                    ? { Authorization: `Bearer ${guestToken}` }
-                    : undefined,
-                },
+                undefined,
               )
             : await POST(API.PAYSTACK_VERIFY, { reference: paymentRef });
         } catch (e: unknown) {
@@ -280,60 +256,11 @@ function Checkout() {
             "statusCode" in e &&
             (e as { statusCode?: number }).statusCode === 401
           ) {
-            // Fallback: Try direct Paystack API verification
-            try {
-              const paystackSecret =
-                process.env.NEXT_PUBLIC_PAYSTACK_SECRET_KEY;
-              if (!paystackSecret) {
-                throw new Error(
-                  "Paystack secret key not available for frontend fallback.",
-                );
-              }
-              const directResp = await fetch(
-                `https://api.paystack.co/transaction/verify/${paymentRef}`,
-                {
-                  method: "GET",
-                  headers: {
-                    Authorization: `Bearer ${paystackSecret}`,
-                    "Content-Type": "application/json",
-                  },
-                },
-              );
-              const directData = await directResp.json();
-              if (directData.status && directData.data.status === "success") {
-                verificationResponse = directData;
-                skipVerify = false;
-              } else {
-                skipVerify = true;
-              }
-            } catch {
-              skipVerify = true;
-              Notifications["error"]({
-                message: "Guest Payment Verification Failed",
-                description:
-                  "Unable to verify payment as guest. Please contact support or try again.",
-              });
-            }
-          } else if (isGuest) {
-            // Try variations: ref, delivery_token, with/without header
+            // Fallback: Try variations without any Authorization or token
             let verified = false;
-            const attempts: Array<{
-              body: Record<string, unknown>;
-              withHeader: boolean;
-            }> = [
-              { body: { ref: paymentRef }, withHeader: true },
-              {
-                body: { reference: paymentRef, token: guestToken },
-                withHeader: true,
-              },
-              {
-                body: { ref: paymentRef, delivery_token: guestToken },
-                withHeader: true,
-              },
-              {
-                body: { reference: paymentRef, delivery_token: guestToken },
-                withHeader: false,
-              },
+            const attempts: Array<{ body: Record<string, unknown> }> = [
+              { body: { reference: paymentRef } },
+              { body: { ref: paymentRef } },
             ];
             for (const attempt of attempts) {
               try {
@@ -341,13 +268,7 @@ function Checkout() {
                   API.PAYSTACK_VERIFY,
                   attempt.body,
                   null,
-                  attempt.withHeader
-                    ? {
-                        headers: guestToken
-                          ? { Authorization: `Bearer ${guestToken}` }
-                          : undefined,
-                      }
-                    : undefined,
+                  undefined,
                 );
                 verified = true;
                 break;
