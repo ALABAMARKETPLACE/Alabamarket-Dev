@@ -842,7 +842,7 @@ function Checkout() {
                                   0,
                                 )
                               : responseData?.[0]?.newOrder?.deliveryCharge ||
-                                0,
+                                  0,
                           );
                           return (paymentAmount - deliveryCharges).toFixed(2);
                         }
