@@ -234,7 +234,9 @@ function Checkout() {
         const isGuest = !(User && typeof User.id === "number");
         const guestToken: string | undefined =
           orderData?.order_data?.charges?.token ||
-          (typeof Checkout?.charges === "object" && Checkout?.charges && "token" in Checkout.charges
+          (typeof Checkout?.charges === "object" &&
+          Checkout?.charges &&
+          "token" in Checkout.charges
             ? (Checkout.charges as { token?: string }).token
             : undefined);
 
@@ -302,11 +304,23 @@ function Checkout() {
           } else if (isGuest) {
             // Try variations: ref, delivery_token, with/without header
             let verified = false;
-            const attempts: Array<{ body: Record<string, unknown>; withHeader: boolean }> = [
+            const attempts: Array<{
+              body: Record<string, unknown>;
+              withHeader: boolean;
+            }> = [
               { body: { ref: paymentRef }, withHeader: true },
-              { body: { reference: paymentRef, token: guestToken }, withHeader: true },
-              { body: { ref: paymentRef, delivery_token: guestToken }, withHeader: true },
-              { body: { reference: paymentRef, delivery_token: guestToken }, withHeader: false },
+              {
+                body: { reference: paymentRef, token: guestToken },
+                withHeader: true,
+              },
+              {
+                body: { ref: paymentRef, delivery_token: guestToken },
+                withHeader: true,
+              },
+              {
+                body: { reference: paymentRef, delivery_token: guestToken },
+                withHeader: false,
+              },
             ];
             for (const attempt of attempts) {
               try {
@@ -316,7 +330,9 @@ function Checkout() {
                   null,
                   attempt.withHeader
                     ? {
-                        headers: guestToken ? { Authorization: `Bearer ${guestToken}` } : undefined,
+                        headers: guestToken
+                          ? { Authorization: `Bearer ${guestToken}` }
+                          : undefined,
                       }
                     : undefined,
                 );
