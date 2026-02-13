@@ -9,6 +9,7 @@ import Meta from "antd/es/card/Meta";
 import { reduxSettings } from "../../../../../../redux/slice/settingsSlice";
 import SubstitutionModal from "./substitutionModal";
 import { formatCurrency } from "@/utils/formatNumber";
+import { getActiveDeliveryPromo } from "@/config/promoConfig";
 
 const { Step } = Steps;
 
@@ -77,12 +78,25 @@ function OrderStatusCard(props: any) {
                   <div>
                     Delivery Charge:{" "}
                     {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
-                    {formatCurrency(props?.data?.deliveryCharge)}
+                    {getActiveDeliveryPromo() ? (
+                      <>
+                        <span style={{ textDecoration: "line-through", color: "#999", marginRight: 4 }}>
+                          {formatCurrency(props?.data?.deliveryCharge)}
+                        </span>
+                        <span style={{ color: "#15ad4c", fontWeight: 600 }}>FREE</span>
+                      </>
+                    ) : (
+                      formatCurrency(props?.data?.deliveryCharge)
+                    )}
                   </div>
                   <div>
                     Grand Total:{" "}
                     {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
-                    {formatCurrency(props?.data?.grandTotal)}
+                    {formatCurrency(
+                      getActiveDeliveryPromo()
+                        ? (props?.data?.grandTotal || 0) - (props?.data?.deliveryCharge || 0)
+                        : props?.data?.grandTotal
+                    )}
                   </div>
                 </div>
 
@@ -108,7 +122,11 @@ function OrderStatusCard(props: any) {
                       ? "Amount Paid"
                       : "Total Price"}
                     : {Settings.currency === "NGN" ? "₦" : Settings.currency}{" "}
-                    {formatCurrency(props?.data?.orderPayment?.amount)}
+                    {formatCurrency(
+                      getActiveDeliveryPromo()
+                        ? (props?.data?.orderPayment?.amount || 0) - (props?.data?.deliveryCharge || 0)
+                        : props?.data?.orderPayment?.amount
+                    )}
                   </div>
                   {props?.data?.orderPayment?.ref ? (
                     <div className=" fw-bold">

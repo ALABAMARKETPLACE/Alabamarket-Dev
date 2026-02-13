@@ -7,6 +7,7 @@ import moment from "moment";
 import { useState } from "react";
 import API from "@/config/API_ADMIN";
 import { formatCurrency } from "@/utils/formatNumber";
+import { getActiveDeliveryPromo } from "@/config/promoConfig";
 
 type Props = {
   data: any;
@@ -72,12 +73,29 @@ export default function PaymentStatusTab(props: Props) {
         
         <div className="d-flex justify-content-between">
           <span className="text-muted">Delivery Charge:</span>
-          <span>{settings.currency === "NGN" ? "₦" : settings.currency} {formatCurrency(props?.data?.deliveryCharge)}</span>
+          <span>
+            {getActiveDeliveryPromo() ? (
+              <>
+                <span className="text-success fw-bold me-2">FREE</span>
+                <span className="text-decoration-line-through text-muted">
+                  {settings.currency === "NGN" ? "₦" : settings.currency} {formatCurrency(props?.data?.deliveryCharge)}
+                </span>
+              </>
+            ) : (
+              <>{settings.currency === "NGN" ? "₦" : settings.currency} {formatCurrency(props?.data?.deliveryCharge)}</>
+            )}
+          </span>
         </div>
         
         <div className="d-flex justify-content-between border-top pt-2 mt-1">
           <span className="fw-bold">Grand Total:</span>
-          <span className="fw-bold fs-6">{settings.currency === "NGN" ? "₦" : settings.currency} {formatCurrency(props?.data?.grandTotal)}</span>
+          <span className="fw-bold fs-6">
+            {settings.currency === "NGN" ? "₦" : settings.currency} {formatCurrency(
+              getActiveDeliveryPromo()
+                ? (props?.data?.grandTotal || 0) - (props?.data?.deliveryCharge || 0)
+                : props?.data?.grandTotal
+            )}
+          </span>
         </div>
 
         <div className="bg-light p-3 rounded mt-3">
@@ -92,7 +110,13 @@ export default function PaymentStatusTab(props: Props) {
             
             <div className="d-flex justify-content-between">
               <span className="text-muted">{props?.data?.orderPayment?.ref ? "Amount Paid" : "Total Price"}:</span>
-              <span className="fw-bold">{settings.currency === "NGN" ? "₦" : settings.currency} {formatCurrency(props?.data?.orderPayment?.amount)}</span>
+              <span className="fw-bold">
+                {settings.currency === "NGN" ? "₦" : settings.currency} {formatCurrency(
+                  getActiveDeliveryPromo()
+                    ? (props?.data?.orderPayment?.amount || 0) - (props?.data?.deliveryCharge || 0)
+                    : props?.data?.orderPayment?.amount
+                )}
+              </span>
             </div>
 
             {props?.data?.orderPayment?.ref && (

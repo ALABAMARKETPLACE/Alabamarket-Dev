@@ -18,6 +18,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import { formatCurrency } from "@/utils/formatNumber";
 import Image from "next/image";
+import { getActiveDeliveryPromo } from "@/config/promoConfig";
 import "./orders.scss";
 
 const statusFilters = [
@@ -176,7 +177,11 @@ const OrderCard = ({
           </span>
           <span className="order-card__total">
             {currency === "NGN" ? "₦" : currency}{" "}
-            {formatCurrency(order?.grandTotal)}
+            {formatCurrency(
+              getActiveDeliveryPromo()
+                ? (order?.grandTotal || 0) - (order?.deliveryCharge || 0)
+                : order?.grandTotal
+            )}
           </span>
         </div>
       </div>
