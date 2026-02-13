@@ -11,7 +11,7 @@ import SummaryCard from "./_components/summaryCard";
 import { getGuestAddress } from "./_components/guestAddressForm";
 
 import { useRouter } from "next/navigation";
-import { POST, PUBLIC_POST } from "@/util/apicall";
+import { GET, POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { storeFinal } from "@/redux/slice/checkoutSlice";
 import { useSession } from "next-auth/react";
