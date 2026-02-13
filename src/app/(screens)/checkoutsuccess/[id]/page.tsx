@@ -672,6 +672,23 @@ function Checkout() {
           is_multi_seller: isMultiSeller,
         };
 
+        // Validate payload before submitting
+        const invalidItems =
+          Array.isArray(guestOrderPayload.cart_items) &&
+          guestOrderPayload.cart_items.filter(
+            (ci) => !ci.product_id || Number(ci.product_id) <= 0,
+          );
+        if (Array.isArray(invalidItems) && invalidItems.length > 0) {
+          console.error("Invalid guest cart items:", invalidItems);
+          Notifications["error"]({
+            message: "Order Validation Failed",
+            description:
+              "Some cart items are missing product IDs. Please remove and re-add those items, then try again.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
         console.log("Guest order payload:", guestOrderPayload);
         response = await POST(
           API.ORDER_GUEST,

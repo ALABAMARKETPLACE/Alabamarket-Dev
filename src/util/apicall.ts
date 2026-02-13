@@ -107,8 +107,19 @@ const POST = async (
       body: JSON.stringify(body),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
@@ -171,8 +182,19 @@ const PUT = async (
       body: JSON.stringify(body),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
@@ -205,8 +227,19 @@ const PATCH = async (
       body: JSON.stringify(body),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
@@ -279,8 +312,19 @@ const DELETE = async (
       ...(body && { body: JSON.stringify(body) }),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
