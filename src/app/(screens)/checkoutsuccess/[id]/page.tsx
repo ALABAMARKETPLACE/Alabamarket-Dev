@@ -518,16 +518,44 @@ function Checkout() {
             country_code: countryCode,
           },
           cart_items: Array.isArray(finalOrderData?.cart)
-            ? finalOrderData.cart.map((item: CheckoutCartItem) => ({
-                product_id: Number(item.productId ?? item.id),
-                product_name: item.name,
-                variant_id:
-                  item.variantId != null ? Number(item.variantId) : null,
-                variant_name: item.combination,
-                quantity: Number(item.quantity || 0),
-                store_id: Number(item.store_id),
-                weight: Number(item.weight || 0),
-              }))
+            ? finalOrderData.cart.map(
+                (item: CheckoutCartItem | Record<string, unknown>) => {
+                  const product_id_raw =
+                    (item as CheckoutCartItem)?.productId ??
+                    (item as { id?: number })?.id ??
+                    (item as { pid?: number })?.pid ??
+                    (item as { product?: { id?: number; pid?: number } })
+                      ?.product?.id ??
+                    (item as { product?: { id?: number; pid?: number } })
+                      ?.product?.pid ??
+                    null;
+                  const product_name_raw =
+                    (item as CheckoutCartItem)?.name ||
+                    (item as { product?: { name?: string } })?.product?.name ||
+                    "";
+                  const variant_id_raw =
+                    (item as CheckoutCartItem)?.variantId ??
+                    (item as { productVariant?: { id?: number } })
+                      ?.productVariant?.id ??
+                    null;
+                  const store_id_raw =
+                    (item as CheckoutCartItem)?.store_id ??
+                    (item as { storeId?: number })?.storeId ??
+                    (item as { product?: { store_id?: number } })?.product
+                      ?.store_id ??
+                    null;
+                  return {
+                    product_id: Number(product_id_raw ?? 0),
+                    product_name: product_name_raw,
+                    variant_id:
+                      variant_id_raw != null ? Number(variant_id_raw) : null,
+                    variant_name: (item as CheckoutCartItem)?.combination,
+                    quantity: Number((item as CheckoutCartItem)?.quantity || 0),
+                    store_id: Number(store_id_raw ?? 0),
+                    weight: Number((item as CheckoutCartItem)?.weight || 0),
+                  };
+                },
+              )
             : [],
           delivery_address: {
             full_name: fullName,
