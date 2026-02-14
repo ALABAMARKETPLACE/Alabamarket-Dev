@@ -113,6 +113,42 @@ export default function OrderDetails() {
           String(o.order_id) === String(orderId),
       )
     : null;
+  const userIdValue =
+    (normalizedData?.userId as string | number | undefined) ??
+    (normalizedData?.user_id as string | number | undefined);
+  const { data: userDetailsRaw } = useQuery({
+    queryFn: async () =>
+      userIdValue ? await GET(API.USER_DETAILS + userIdValue) : null,
+    queryKey: ["order_user_details", userIdValue],
+    enabled: !!userIdValue,
+    staleTime: 0,
+  });
+  const userDetails = (() => {
+    if (!userDetailsRaw) return null as null | Record<string, unknown>;
+    if ((userDetailsRaw as { data?: unknown })?.data)
+      return (userDetailsRaw as { data: Record<string, unknown> }).data;
+    return userDetailsRaw as Record<string, unknown>;
+  })();
+  const deriveCustomerName = (): string | undefined => {
+    if (!userDetails) return undefined;
+    const n =
+      (userDetails["name"] as string | undefined) ||
+      (userDetails["user_name"] as string | undefined) ||
+      (userDetails["full_name"] as string | undefined) ||
+      (userDetails["first_name"] as string | undefined);
+    if (n) return String(n).trim();
+    const fn = userDetails["first_name"] as string | undefined;
+    const ln = userDetails["last_name"] as string | undefined;
+    if (fn || ln) return [fn, ln].filter(Boolean).join(" ").trim();
+    return undefined;
+  };
+  const deriveCustomerPhone = (): string | undefined => {
+    if (!userDetails) return undefined;
+    return (
+      (userDetails["phone"] as string | undefined) ||
+      (userDetails["phone_no"] as string | undefined)
+    );
+  };
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
     const diffInHours = moment().diff(givenDate, "hours");
@@ -156,6 +192,7 @@ export default function OrderDetails() {
     ...(addrRoot as AddressData),
     ...(addrStore as AddressData),
     name:
+      deriveCustomerName() ||
       str(rootObj["customer_name"]) ||
       str(rootObj["name"]) ||
       str(addrRoot["full_name"]),
@@ -175,10 +212,12 @@ export default function OrderDetails() {
       (normalizedData?.userId as number | string | undefined) ??
       (normalizedData?.user_id as number | string | undefined),
     order_contact_name:
+      deriveCustomerName() ||
       str(specificStoreOrder?.name) ||
       str(rootObj["name"]) ||
       str(rootObj["guest_name"]),
     phone_no:
+      deriveCustomerPhone() ||
       str(addrRoot["phone_no"] as unknown) ||
       str(specificStoreOrder?.phone) ||
       str(specificStoreOrder?.phone_no) ||
