@@ -340,11 +340,10 @@ const ChatBot: React.FC = () => {
               alt={CHATBOT_NAME}
               width={28}
               height={28}
-              onError={(e) => {
+              onError={() => {
                 setAvatarSrc(FALLBACK_AVATAR);
               }}
             />
-            <span aria-hidden>👩🏽‍💼</span>
           </span>
           <span className="chat-text">Ask {CHATBOT_NAME}</span>
           <span className="chat-pulse"></span>
@@ -363,11 +362,10 @@ const ChatBot: React.FC = () => {
               alt={CHATBOT_NAME}
               width={28}
               height={28}
-              onError={(e) => {
+              onError={() => {
                 setAvatarSrc(FALLBACK_AVATAR);
               }}
             />
-            <span aria-hidden>👩🏽‍💼</span>
             <span className="online-indicator"></span>
           </div>
           <div>
@@ -416,11 +414,10 @@ const ChatBot: React.FC = () => {
                           alt={CHATBOT_NAME}
                           width={24}
                           height={24}
-                          onError={(e) => {
+                          onError={() => {
                             setAvatarSrc(FALLBACK_AVATAR);
                           }}
                         />
-                        <span aria-hidden>👩🏽‍💼</span>
                       </div>
                     )}
                     <div className="message-bubble">
@@ -478,11 +475,10 @@ const ChatBot: React.FC = () => {
                     alt={CHATBOT_NAME}
                     width={24}
                     height={24}
-                    onError={(e) => {
+                    onError={() => {
                       setAvatarSrc(FALLBACK_AVATAR);
                     }}
                   />
-                  <span aria-hidden>👩🏽‍💼</span>
                 </div>
                 <div className="message-bubble loading-bubble">
                   <div className="typing-indicator">
@@ -505,7 +501,7 @@ const ChatBot: React.FC = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask Amaka anything..."
+              placeholder={`Ask ${CHATBOT_NAME} anything...`}
               disabled={loading}
               autoSize={{ minRows: 1, maxRows: 3 }}
               className="chatbot-input"
