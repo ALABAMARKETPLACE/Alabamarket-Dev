@@ -34,7 +34,11 @@ const GET = async (
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = opts?.token ?? state?.Auth?.token ?? " ";
+    const token: string = opts?.token ?? state?.Auth?.token ?? "";
+    const authHeader: Record<string, string> =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     // Convert params to string-compatible format for URLSearchParams
     const cleanParams = Object.entries(params).reduce(
       (acc, [key, value]) => {
@@ -53,7 +57,7 @@ const GET = async (
       method: "GET",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
+        ...authHeader,
         ...(opts?.headers ?? {}),
       },
     });
@@ -82,25 +86,40 @@ const GET = async (
 
 const POST = async (
   url: string,
-  body: Record<string, unknown> = {},
+  body: Record<string, unknown> | FormData = {},
   signal: AbortSignal | null = null,
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = state?.Auth?.token ?? " ";
+    const token: string = state?.Auth?.token ?? "";
+    const authHeader: Record<string, string> =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
+    const isForm = typeof FormData !== "undefined" && body instanceof FormData;
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "POST",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...(isForm ? {} : { Accept: "application/json", "Content-Type": "application/json" }),
+        ...authHeader,
       },
-      body: JSON.stringify(body),
+      body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
@@ -115,6 +134,7 @@ const PUBLIC_POST = async (
   url: string,
   body: Record<string, unknown> = {},
   signal: AbortSignal | null = null,
+  opts?: { headers?: Record<string, string> },
 ) => {
   try {
     const response = await fetch(getFullUrl(url), {
@@ -123,6 +143,7 @@ const PUBLIC_POST = async (
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        ...(opts?.headers ?? {}),
       },
       body: JSON.stringify(body),
     });
@@ -140,25 +161,40 @@ const PUBLIC_POST = async (
 
 const PUT = async (
   url: string,
-  body: Record<string, unknown>,
+  body: Record<string, unknown> | FormData,
   signal: AbortSignal | null = null,
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = state?.Auth?.token ?? " ";
+    const token: string = state?.Auth?.token ?? "";
+    const authHeader: Record<string, string> =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
+    const isForm = typeof FormData !== "undefined" && body instanceof FormData;
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PUT",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...(isForm ? {} : { Accept: "application/json", "Content-Type": "application/json" }),
+        ...authHeader,
       },
-      body: JSON.stringify(body),
+      body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
@@ -170,25 +206,40 @@ const PUT = async (
 
 const PATCH = async (
   url: string,
-  body: Record<string, unknown>,
+  body: Record<string, unknown> | FormData,
   signal: AbortSignal | null = null,
 ) => {
   try {
     const state = store.getState() as AuthState;
-    const token: string = state?.Auth?.token ?? " ";
+    const token: string = state?.Auth?.token ?? "";
+    const authHeader: Record<string, string> =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
+    const isForm = typeof FormData !== "undefined" && body instanceof FormData;
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PATCH",
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token ?? ""}`,
+        ...(isForm ? {} : { Accept: "application/json", "Content-Type": "application/json" }),
+        ...authHeader,
       },
-      body: JSON.stringify(body),
+      body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
@@ -245,20 +296,35 @@ const DELETE = async (
 ) => {
   try {
     const state = store.getState();
-    const token: string = (state as AuthState)?.Auth?.token ?? " ";
+    const token: string = (state as AuthState)?.Auth?.token ?? "";
+    const authHeader: Record<string, string> =
+      typeof token === "string" && token.trim().length > 0
+        ? { Authorization: `Bearer ${token}` }
+        : {};
     const response = await fetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "DELETE",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...authHeader,
       },
       ...(body && { body: JSON.stringify(body) }),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = (parsed as { message?: string })?.message || raw;
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }

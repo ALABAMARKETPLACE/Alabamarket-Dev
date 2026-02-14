@@ -8,10 +8,10 @@ import { notification } from "antd";
 import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
-import { getGuestAddress } from "./_components/guestAddressForm";
+// import { getGuestAddress } from "./_components/guestAddressForm";
 
 import { useRouter } from "next/navigation";
-import { POST, PUBLIC_POST } from "@/util/apicall";
+import { GET, POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { storeFinal } from "@/redux/slice/checkoutSlice";
 import { useSession } from "next-auth/react";
@@ -39,8 +39,8 @@ function Checkout() {
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
 
-  // Guest email state
-  const [guestEmail, setGuestEmail] = useState<string>("");
+  // Guest email state (commented out for now)
+  // const [guestEmail, setGuestEmail] = useState<string>("");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [total, setTotal] = useState<any>(0);
@@ -57,13 +57,13 @@ function Checkout() {
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
 
-    // Load guest email if available
-    if (!isAuthenticated) {
-      const savedData = getGuestAddress();
-      if (savedData?.email) {
-        setGuestEmail(savedData.email);
-      }
-    }
+    // Load guest email if available (commented out for now)
+    // if (!isAuthenticated) {
+    //   const savedData = getGuestAddress();
+    //   if (savedData?.email) {
+    //     setGuestEmail(savedData.email);
+    //   }
+    // }
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -79,6 +79,8 @@ function Checkout() {
   console.log("user ", user);
 
   const [isDeliveryCalculating, setIsDeliveryCalculating] = useState(false);
+
+  /* Guest inline Paystack setup temporarily disabled */
 
   const CalculateDeliveryCharge = useCallback(async () => {
     // Prevent multiple simultaneous calculations
@@ -152,36 +154,37 @@ function Checkout() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let response: any;
 
-        // Use authenticated or public endpoint based on user status
+        // Use authenticated endpoint only (guest logic commented out)
         if (isAuthenticated) {
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
-        } else {
-          // For guest users, try public endpoint first, fallback to default estimation
-          try {
-            response = await PUBLIC_POST(
-              API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
-              obj,
-            );
-            console.log("Guest delivery calculation response:", response);
-          } catch (publicErr: unknown) {
-            // If public endpoint fails (404 or not implemented), use default delivery charge
-            console.log(
-              "Public delivery calculation failed, using default estimation:",
-              publicErr,
-            );
-
-            // Default delivery charge estimation for guests
-            const defaultDeliveryCharge = 2000; // Default delivery fee in Naira
-            // Generate a guest token for order processing
-            const guestToken = `GUEST_DELIVERY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-            setDeliveryToken(guestToken);
-            setDelivery_charge(defaultDeliveryCharge);
-            setGrand_total(totals + defaultDeliveryCharge);
-            setDiscount(0);
-            setIsDeliveryCalculating(false);
-            return;
-          }
         }
+        // else {
+        //   // For guest users, try public endpoint first, fallback to default estimation
+        //   try {
+        //     response = await PUBLIC_POST(
+        //       API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
+        //       obj,
+        //     );
+        //     console.log("Guest delivery calculation response:", response);
+        //   } catch (publicErr: unknown) {
+        //     // If public endpoint fails (404 or not implemented), use default delivery charge
+        //     console.log(
+        //       "Public delivery calculation failed, using default estimation:",
+        //       publicErr,
+        //     );
+        //
+        //     // Default delivery charge estimation for guests
+        //     const defaultDeliveryCharge = 2000; // Default delivery fee in Naira
+        //     // Generate a guest token for order processing
+        //     const guestToken = `GUEST_DELIVERY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+        //     setDeliveryToken(guestToken);
+        //     setDelivery_charge(defaultDeliveryCharge);
+        //     setGrand_total(totals + defaultDeliveryCharge);
+        //     setDiscount(0);
+        //     setIsDeliveryCalculating(false);
+        //     return;
+        //   }
+        // }
 
         console.log("Delivery response:", response);
 
@@ -267,7 +270,7 @@ function Checkout() {
       const deliveryChargeInKobo = Math.round(actualDeliveryCharge * 100);
 
       // Calculate product total (grand_total minus delivery_charge)
-      const productTotalInKobo = amountInKobo - deliveryChargeInKobo;
+      // const productTotalInKobo = amountInKobo - deliveryChargeInKobo;
 
       // Log promo application
       if (deliveryPromo.hasDiscount) {
@@ -286,7 +289,7 @@ function Checkout() {
         .toUpperCase()}`;
 
       // Email validation - log warning but don't block payment
-      if (!user?.email && !guestEmail) {
+      if (!user?.email) {
         console.warn(
           "Warning: User email not found. Proceeding with payment using available user data.",
         );
@@ -301,22 +304,23 @@ function Checkout() {
       const customerEmail =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.email ||
-        guestEmail ||
+        // guestEmail ||
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (user as any)?.id ||
         "customer@alabamarketplace.ng";
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const resolvedCustomerId = (user as any)?.id || null;
+      // const resolvedCustomerId = (user as { id?: number })?.id || null;
 
       // Extract store IDs and group items by store for split payment
       // This supports both single-store and multi-store orders
       const storeMap = new Map<
         number,
-        { storeId: number; total: number; items: any[] }
+        { storeId: number; total: number; items: unknown[] }
       >();
 
-      Checkout?.Checkout?.forEach((item: any) => {
-        const rawStoreId = item?.storeId || item?.store_id;
+      Checkout?.Checkout?.forEach((item: Record<string, unknown>) => {
+        const rawStoreId =
+          (item as { storeId?: number; store_id?: number }).storeId ||
+          (item as { store_id?: number }).store_id;
         // Ensure storeId is a valid number
         const storeId = rawStoreId ? Number(rawStoreId) : null;
         if (storeId && !isNaN(storeId) && storeId > 0) {
@@ -334,7 +338,7 @@ function Checkout() {
       const stores = Array.from(storeMap.values());
       const hasMultipleStores = stores.length > 1;
       const hasSingleStore = stores.length === 1;
-      const shouldUseSplitPayment = stores.length > 0; // Use split for any store(s)
+      const shouldUseSplitPayment = isAuthenticated && stores.length > 0;
 
       // Calculate split amounts:
       // - Seller gets 95% of their product price
@@ -364,7 +368,9 @@ function Checkout() {
         hasSingleStore,
         shouldUseSplitPayment,
         cartStoreIds: Checkout?.Checkout?.map(
-          (item: any) => item?.storeId || item?.store_id,
+          (item: Record<string, unknown>) =>
+            (item as { storeId?: number; store_id?: number }).storeId ||
+            (item as { store_id?: number }).store_id,
         ),
         splitBreakdown: {
           totalAmount: amountInKobo / 100,
@@ -450,6 +456,58 @@ function Checkout() {
         };
       });
 
+      // Build product items map for metadata (product_id, quantity, store_id)
+      const productItems: Array<{
+        product_id: number;
+        quantity: number;
+        store_id: number;
+      }> =
+        Array.isArray(Checkout?.Checkout) && Checkout.Checkout.length > 0
+          ? Checkout.Checkout.map((it: Record<string, unknown>) => {
+              const toNumber = (x: unknown): number | null => {
+                const n =
+                  typeof x === "string"
+                    ? parseInt(x, 10)
+                    : (x as number | null);
+                return Number.isFinite(n as number) && (n as number) > 0
+                  ? (n as number)
+                  : null;
+              };
+              const product_id =
+                toNumber((it as { productId?: number }).productId) ??
+                toNumber((it as { id?: number }).id) ??
+                toNumber((it as { pid?: number }).pid) ??
+                toNumber(
+                  ((it as { product?: Record<string, unknown> }).product || {})[
+                    "id"
+                  ] as number | undefined,
+                ) ??
+                toNumber(
+                  ((it as { product?: Record<string, unknown> }).product || {})[
+                    "pid"
+                  ] as number | undefined,
+                ) ??
+                0;
+              const store_id =
+                toNumber((it as { store_id?: number }).store_id) ??
+                toNumber((it as { storeId?: number }).storeId) ??
+                toNumber(
+                  ((it as { product?: Record<string, unknown> }).product || {})[
+                    "store_id"
+                  ] as number | undefined,
+                ) ??
+                0;
+              const quantity =
+                typeof (it as { quantity?: number }).quantity === "number"
+                  ? (it as { quantity?: number }).quantity || 0
+                  : 0;
+              return { product_id, quantity, store_id };
+            })
+          : [];
+      const productIds = productItems
+        .map((pi) => pi.product_id)
+        .filter((n) => typeof n === "number" && n > 0);
+
       const paymentData = {
         email: customerEmail,
         amount: amountInKobo,
@@ -483,6 +541,9 @@ function Checkout() {
           stores: stores.map((s) => s.storeId),
           store_allocations: storeAllocations,
           is_multi_seller: hasMultipleStores,
+          product_ids: productIds,
+          product_items: productItems,
+          delivery_token: deliveryToken || null,
           // Split breakdown for transparency
           split_breakdown: {
             product_total: totalProductPriceInKobo,
@@ -545,8 +606,8 @@ function Checkout() {
       if ((paymentData as any).split_payment) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const storeInfo = (paymentData as any).store_id
-          ? `Single Store (${(paymentData as any).store_id})`
-          : `Multiple Stores (${(paymentData as any).stores?.join(", ")})`;
+          ? `Single Store (${(paymentData as { store_id?: string }).store_id})`
+          : `Multiple Stores (${Array.isArray((paymentData as { stores?: number[] }).stores) ? ((paymentData as { stores: number[] }).stores || []).join(", ") : ""})`;
         console.log("Initializing Split Payment:", {
           endpoint: endpointPrimary,
           paymentData,
@@ -565,7 +626,12 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        response = await POST(endpointPrimary, paymentData);
+        // Guests always use PUBLIC_POST for initialize (split or non-split) (commented out for now)
+        if (!isAuthenticated) {
+          throw new Error("Guest checkout is temporarily disabled.");
+        } else {
+          response = await POST(endpointPrimary, paymentData);
+        }
       } catch (primaryError: unknown) {
         const err =
           typeof primaryError === "object" && primaryError !== null
@@ -584,9 +650,16 @@ function Checkout() {
           typeof messageCandidate === "string"
             ? messageCandidate.toLowerCase().trim()
             : "";
+        const statusCode =
+          typeof (err as { status?: unknown })?.status === "number"
+            ? ((err as { status?: number }).status as number)
+            : undefined;
         const shouldFallbackToNonSplit =
           wantsSplit &&
-          (primaryMessage.includes("invalid store subaccount") ||
+          (statusCode === 401 ||
+            primaryMessage.includes("unauthorized") ||
+            primaryMessage.includes("no token") ||
+            primaryMessage.includes("invalid store subaccount") ||
             primaryMessage.includes("no subaccount") ||
             (primaryMessage.includes("subaccount") &&
               (primaryMessage.includes("invalid") ||
@@ -599,7 +672,14 @@ function Checkout() {
           };
           delete nonSplitPaymentData.store_id;
           delete nonSplitPaymentData.split_payment;
-          response = await POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData);
+          response = await (!isAuthenticated
+            ? PUBLIC_POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData, null, {
+                headers:
+                  deliveryToken && String(deliveryToken).trim().length > 0
+                    ? { Authorization: `Bearer ${deliveryToken}` }
+                    : undefined,
+              })
+            : POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData));
         } else {
           throw primaryError;
         }
@@ -643,8 +723,8 @@ function Checkout() {
             stores: stores.map((s) => s.storeId),
             is_multi_seller: hasMultipleStores,
             store_allocations: storeAllocations,
-            // Include guest email for guest orders
-            guest_email: !isAuthenticated ? guestEmail : undefined,
+            // Include guest email for guest orders (commented out)
+            // guest_email: !isAuthenticated ? guestEmail : undefined,
             order_data: {
               payment: {
                 ref: reference,
@@ -659,8 +739,8 @@ function Checkout() {
               },
               user_id: customerId,
               user: user,
-              // Add guest_email to order_data for backend
-              guest_email: !isAuthenticated ? guestEmail : undefined,
+              // Add guest_email to order_data for backend (commented out)
+              // guest_email: !isAuthenticated ? guestEmail : undefined,
             },
           }),
         );
@@ -717,14 +797,14 @@ function Checkout() {
 
   const PlaceOrder = async () => {
     // Validate guest checkout has email
-    if (!isAuthenticated && !guestEmail) {
-      notificationApi.error({
-        message: "Email Required",
-        description:
-          "Please enter your email address in the delivery details form.",
-      });
-      return;
-    }
+    // if (!isAuthenticated && !guestEmail) {
+    //   notificationApi.error({
+    //     message: "Email Required",
+    //     description:
+    //       "Please enter your email address in the delivery details form.",
+    //   });
+    //   return;
+    // }
 
     if (deliveryToken) {
       try {
@@ -751,9 +831,9 @@ function Checkout() {
           },
           user_id: customerId,
           user: user,
-          // Guest checkout data
+          // Guest checkout data (commented out)
           is_guest: !isAuthenticated,
-          guest_email: guestEmail || null,
+          // guest_email: guestEmail || null,
         };
         dispatch(storeFinal(obj));
         if (payment_method === "Pay Online") {
@@ -783,9 +863,9 @@ function Checkout() {
   };
 
   // Handler for guest email updates - wrapped in useCallback to prevent infinite loops
-  const handleGuestEmailChange = useCallback((email: string) => {
-    setGuestEmail(email);
-  }, []);
+  // const handleGuestEmailChange = useCallback((email: string) => {
+  //   setGuestEmail(email);
+  // }, []);
 
   return (
     <div className="Screen-box" style={{ backgroundImage: "none" }}>
@@ -794,7 +874,7 @@ function Checkout() {
       <Container fluid style={{ minHeight: "80vh" }}>
         <Row>
           <Col sm={7}>
-            <NewAddressBox onGuestEmailChange={handleGuestEmailChange} />
+            <NewAddressBox />
             <PaymentBox
               method={payment_method}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -20,6 +20,7 @@ import { formatCurrency } from "@/utils/formatNumber";
 import Image from "next/image";
 import { getActiveDeliveryPromo } from "@/config/promoConfig";
 import "./orders.scss";
+import { useSession } from "next-auth/react";
 
 const statusFilters = [
   { title: "All Orders", value: "" },
@@ -251,23 +252,24 @@ function UserOrders() {
   const router = useRouter();
   const Settings = useAppSelector(reduxSettings);
   const [orderStatus, setOrderStatus] = useState("");
+  const { data: session, status } = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userId = (session?.user as any)?.id || null;
 
-  const {
-    data: orders,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryFn: async () =>
-      await GET(API.ORDER_GET, {
+  const { data: orders, isLoading, isError, error } = useQuery({
+    queryFn: async () => {
+      const base = `${API.ORDER_GET_USER}${userId ?? ""}`;
+      return await GET(base, {
         order: "DESC",
         page: page,
         take: pageSize,
         ...(search && { name: search }),
         status: orderStatus,
         sort: dateFilter,
-      }),
-    queryKey: ["order_items", page, search, orderStatus, dateFilter],
+      });
+    },
+    queryKey: ["order_items", userId, page, search, orderStatus, dateFilter],
+    enabled: Boolean(userId) && status === "authenticated",
     retry: 1,
   });
 
@@ -288,8 +290,47 @@ function UserOrders() {
   };
 
   const currency = Settings.currency || "NGN";
-  const totalOrders = orders?.meta?.itemCount ?? 0;
-  const hasOrders = Array.isArray(orders?.data) && orders.data.length > 0;
+  const rawList: any[] = Array.isArray(orders?.data)
+    ? (orders?.data as any[])
+    : Array.isArray(orders)
+      ? ((orders as unknown) as any[])
+      : [];
+  const normalized = rawList.map((o) => {
+    const order_id = o?.order_id ?? o?.orderId ?? o?.id ?? o?._id ?? o?.reference;
+    const createdAt =
+      o?.createdAt ?? o?.created_at ?? o?.createdOn ?? o?.created_on ?? o?.date;
+    const status =
+      o?.status ??
+      o?.order_status ??
+      o?.state ??
+      (typeof o?.is_delivered === "boolean"
+        ? o.is_delivered
+          ? "delivered"
+          : "pending"
+        : undefined) ??
+      "pending";
+    const orderItems = Array.isArray(o?.orderItems)
+      ? o.orderItems
+      : Array.isArray(o?.items)
+        ? o.items
+        : Array.isArray(o?.products)
+          ? o.products
+          : [];
+    const grandTotal =
+      o?.grandTotal ?? o?.total ?? o?.amount ?? o?.amount_paid ?? 0;
+    const deliveryCharge = o?.deliveryCharge ?? o?.delivery_fee ?? o?.delivery ?? 0;
+    return {
+      ...o,
+      order_id,
+      createdAt,
+      status,
+      orderItems,
+      grandTotal,
+      deliveryCharge,
+    };
+  });
+  const totalOrders = orders?.meta?.itemCount ?? normalized.length ?? 0;
+  const hasOrders = normalized.length > 0;
 
   return (
     <div className="orders-page">
@@ -354,7 +395,7 @@ function UserOrders() {
       ) : hasOrders ? (
         <>
           <div className="orders-list">
-            {orders.data.map((order: any) => (
+            {normalized.map((order: any) => (
               <OrderCard
                 key={order.order_id || order._id}
                 order={order}

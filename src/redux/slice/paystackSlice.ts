@@ -6,7 +6,7 @@ import {
   PaystackVerificationData,
   PaystackError,
 } from "@/types/paystack.types";
-import { GET, POST } from "@/util/apicall";
+import { GET, POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 
 // Initial state
@@ -53,12 +53,24 @@ export const paystackSlice = createAppSlice({
   reducers: (create) => ({
     // Initialize payment
     initializePayment: create.asyncThunk(
-      async (paymentData: PaystackInitializeRequest, { rejectWithValue }) => {
+      async (
+        paymentData: PaystackInitializeRequest,
+        { rejectWithValue, getState },
+      ) => {
         try {
-          const response = await POST(
-            API.PAYSTACK_INITIALIZE,
-            paymentData as unknown as Record<string, unknown>,
-          );
+          const state = getState() as { Auth?: { token?: string } };
+          const token = state?.Auth?.token;
+          const isAuthenticated =
+            typeof token === "string" && token.trim().length > 0;
+          const response = await (isAuthenticated
+            ? POST(
+                API.PAYSTACK_INITIALIZE,
+                paymentData as unknown as Record<string, unknown>,
+              )
+            : PUBLIC_POST(
+                API.PAYSTACK_INITIALIZE,
+                paymentData as unknown as Record<string, unknown>,
+              ));
           return response;
         } catch (err: unknown) {
           const error = err as ApiError;
@@ -94,12 +106,24 @@ export const paystackSlice = createAppSlice({
     ),
 
     initializeSplitPayment: create.asyncThunk(
-      async (paymentData: PaystackInitializeRequest, { rejectWithValue }) => {
+      async (
+        paymentData: PaystackInitializeRequest,
+        { rejectWithValue, getState },
+      ) => {
         try {
-          const response = await POST(
-            API.PAYSTACK_INITIALIZE_SPLIT,
-            paymentData as unknown as Record<string, unknown>,
-          );
+          const state = getState() as { Auth?: { token?: string } };
+          const token = state?.Auth?.token;
+          const isAuthenticated =
+            typeof token === "string" && token.trim().length > 0;
+          const response = await (isAuthenticated
+            ? POST(
+                API.PAYSTACK_INITIALIZE_SPLIT,
+                paymentData as unknown as Record<string, unknown>,
+              )
+            : PUBLIC_POST(
+                API.PAYSTACK_INITIALIZE_SPLIT,
+                paymentData as unknown as Record<string, unknown>,
+              ));
           return response;
         } catch (err: unknown) {
           const error = err as ApiError;

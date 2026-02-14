@@ -55,6 +55,8 @@ export default function ManageNewsPage() {
   const [imageFile, setImageFile] = useState<UploadFile | null>(null);
   const [videoFile, setVideoFile] = useState<UploadFile | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<UploadFile | null>(null);
+  const [page] = useState(1);
+  const [limit] = useState(12);
 
   // Fetch all news
   const {
@@ -65,10 +67,18 @@ export default function ManageNewsPage() {
     refetch,
   } = useQuery({
     queryFn: async () => {
-      const response = await GET(API.NEWS_AND_BLOGS_GETPGN + "?limit=100");
-      return response as { data: NewsItem[] };
+      const response = await GET(API.NEWS_AND_BLOGS, {
+        page,
+        limit,
+      });
+      // Support both { data: [] } and [] shapes
+      const data =
+        Array.isArray((response as { data?: unknown })?.data)
+          ? ((response as { data: NewsItem[] }).data)
+          : (Array.isArray(response) ? (response as NewsItem[]) : []);
+      return { data } as { data: NewsItem[] };
     },
-    queryKey: ["manage_news"],
+    queryKey: ["manage_news", page, limit],
     retry: 2,
   });
 

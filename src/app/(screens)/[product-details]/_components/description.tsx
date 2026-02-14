@@ -137,11 +137,11 @@ function Description(props: Props) {
   // const [isWobbling, setIsWobbling] = useState(false);
   const [favourited, setFavourited] = useState(false);
 
-  // Guest checkout modal state
-  const [showGuestModal, setShowGuestModal] = useState(false);
-  const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
-    null,
-  );
+  // Guest checkout modal state (commented out for now)
+  // const [showGuestModal, setShowGuestModal] = useState(false);
+  // const [pendingAction, setPendingAction] = useState<"cart" | "buy" | null>(
+  //   null,
+  // );
 
   useEffect(() => {
     if (props?.data?.pid) {
@@ -202,12 +202,12 @@ function Description(props: Props) {
       return;
     }
 
-    // Show modal for guest users
-    if (!user?.user) {
-      setPendingAction("buy");
-      setShowGuestModal(true);
-      return;
-    }
+    // Show modal for guest users (commented out for now)
+    // if (!user?.user) {
+    //   setPendingAction("buy");
+    //   setShowGuestModal(true);
+    //   return;
+    // }
 
     executeBuyNow();
   };
@@ -243,12 +243,12 @@ function Description(props: Props) {
       return;
     }
 
-    // Show modal for guest users
-    if (!user?.user) {
-      setPendingAction("cart");
-      setShowGuestModal(true);
-      return;
-    }
+    // Show modal for guest users (commented out for now)
+    // if (!user?.user) {
+    //   setPendingAction("cart");
+    //   setShowGuestModal(true);
+    //   return;
+    // }
 
     executeAddToCart();
   };
@@ -311,15 +311,15 @@ function Description(props: Props) {
     }
   };
 
-  // Handle guest modal actions
-  const handleGuestContinue = () => {
-    if (pendingAction === "buy") {
-      executeBuyNow();
-    } else if (pendingAction === "cart") {
-      executeAddToCart();
-    }
-    setPendingAction(null);
-  };
+  // Handle guest modal actions (commented out for now)
+  // const handleGuestContinue = () => {
+  //   if (pendingAction === "buy") {
+  //     executeBuyNow();
+  //   } else if (pendingAction === "cart") {
+  //     executeAddToCart();
+  //   }
+  //   setPendingAction(null);
+  // };
 
   const AddWishlist = async () => {
     const obj = {
@@ -354,7 +354,8 @@ function Description(props: Props) {
     <div>
       {contextHolder}
 
-      {/* Guest Checkout Modal */}
+      {/* Guest Checkout Modal (commented out for now) */}
+      {/**
       <GuestCheckoutModal
         open={showGuestModal}
         onClose={() => {
@@ -364,6 +365,7 @@ function Description(props: Props) {
         onContinueAsGuest={handleGuestContinue}
         action={pendingAction || "cart"}
       />
+      */}
 
       <div>category: {props?.data?.categoryName?.name}</div>
       <div>subCategory: {props?.data?.subCategoryName?.name}</div>
