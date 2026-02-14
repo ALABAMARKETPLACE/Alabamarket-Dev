@@ -8,7 +8,7 @@ import { notification } from "antd";
 import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
-// import { getGuestAddress } from "./_components/guestAddressForm";
+import { getGuestAddress } from "./_components/guestAddressForm";
 
 import { useRouter } from "next/navigation";
 import { GET, POST, PUBLIC_POST } from "@/util/apicall";
@@ -39,8 +39,7 @@ function Checkout() {
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
 
-  // Guest email state (commented out for now)
-  // const [guestEmail, setGuestEmail] = useState<string>("");
+  const [guestEmail, setGuestEmail] = useState<string>("");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [total, setTotal] = useState<any>(0);
@@ -57,13 +56,13 @@ function Checkout() {
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
 
-    // Load guest email if available (commented out for now)
-    // if (!isAuthenticated) {
-    //   const savedData = getGuestAddress();
-    //   if (savedData?.email) {
-    //     setGuestEmail(savedData.email);
-    //   }
-    // }
+    // Load guest email if available
+    if (!isAuthenticated) {
+      const savedData = getGuestAddress();
+      if (savedData?.email) {
+        setGuestEmail(savedData.email);
+      }
+    }
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -146,53 +145,62 @@ function Checkout() {
             ]
           : Checkout?.Checkout;
 
-        const obj = {
-          cart: calculationCart,
-          address: addressData,
-        };
-
+        // Build payloads per auth state
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let response: any;
-
-        // Use authenticated endpoint only (guest logic commented out)
         if (isAuthenticated) {
+          const obj = {
+            cart: calculationCart,
+            address: addressData,
+          };
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
+        } else {
+          const guestPayload = {
+            cart_items: (Array.isArray(Checkout?.Checkout)
+              ? Checkout.Checkout
+              : calculationCart
+            ).map((item: Record<string, unknown>) => ({
+              product_id:
+                Number(
+                  (item as { productId?: number }).productId ??
+                    (item as { id?: number }).id ??
+                    ((item as { product?: Record<string, unknown> }).product ||
+                      {})["id"] ??
+                    0,
+                ) || 0,
+              store_id:
+                Number(
+                  (item as { storeId?: number }).storeId ??
+                    (item as { store_id?: number }).store_id ??
+                    ((item as { product?: Record<string, unknown> }).product ||
+                      {})["store_id"] ??
+                    0,
+                ) || 0,
+              quantity: Number((item as { quantity?: number }).quantity || 1),
+              weight: Number((item as { weight?: number }).weight || 1),
+            })),
+            delivery_address: {
+              state_id: Number(addressData.state_id || 0),
+              city: String(addressData.city || addressData.state || ""),
+              country_id: Number(addressData.country_id || 0),
+            },
+          };
+          response = await PUBLIC_POST(
+            API.GUEST_CALCULATE_DELIVERY_CHARGE,
+            guestPayload,
+          );
         }
-        // else {
-        //   // For guest users, try public endpoint first, fallback to default estimation
-        //   try {
-        //     response = await PUBLIC_POST(
-        //       API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
-        //       obj,
-        //     );
-        //     console.log("Guest delivery calculation response:", response);
-        //   } catch (publicErr: unknown) {
-        //     // If public endpoint fails (404 or not implemented), use default delivery charge
-        //     console.log(
-        //       "Public delivery calculation failed, using default estimation:",
-        //       publicErr,
-        //     );
-        //
-        //     // Default delivery charge estimation for guests
-        //     const defaultDeliveryCharge = 2000; // Default delivery fee in Naira
-        //     // Generate a guest token for order processing
-        //     const guestToken = `GUEST_DELIVERY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-        //     setDeliveryToken(guestToken);
-        //     setDelivery_charge(defaultDeliveryCharge);
-        //     setGrand_total(totals + defaultDeliveryCharge);
-        //     setDiscount(0);
-        //     setIsDeliveryCalculating(false);
-        //     return;
-        //   }
-        // }
 
         console.log("Delivery response:", response);
 
         if (response?.status) {
-          const deliveryToken = response?.token || "";
-          // API returns delivery charge in data.amount
+          const deliveryToken =
+            response?.data?.delivery_token || response?.token || "";
           const delivery = Number(
-            response?.data?.amount || response?.details?.totalCharge || 0,
+            response?.data?.amount ||
+              response?.details?.totalCharge ||
+              response?.amount ||
+              0,
           );
           const discountVal = Number(response?.data?.discount || 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
@@ -626,9 +634,58 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        // Guests always use PUBLIC_POST for initialize (split or non-split) (commented out for now)
         if (!isAuthenticated) {
-          throw new Error("Guest checkout is temporarily disabled.");
+          if (!deliveryToken || String(deliveryToken).trim().length === 0) {
+            throw new Error(
+              "Delivery token missing. Please select or reselect your delivery address to continue.",
+            );
+          }
+          const guestInitData = {
+            guest_info: {
+              email: guestEmail || "guest@alabamarketplace.ng",
+              first_name: (Checkout?.address?.full_name || "Guest").split(
+                " ",
+              )[0],
+              last_name:
+                (Checkout?.address?.full_name || "User")
+                  .split(" ")
+                  .slice(1)
+                  .join(" ") || "User",
+              phone:
+                Checkout?.address?.phone_no || Checkout?.address?.phone || "",
+            },
+            cart_items: Array.isArray(Checkout?.Checkout)
+              ? Checkout.Checkout.map((it: Record<string, unknown>) => ({
+                  product_id:
+                    Number(
+                      (it as { productId?: number }).productId ??
+                        (it as { id?: number }).id ??
+                        ((it as { product?: Record<string, unknown> })
+                          .product || {})["id"] ??
+                        0,
+                    ) || 0,
+                  store_id:
+                    Number(
+                      (it as { storeId?: number }).storeId ??
+                        (it as { store_id?: number }).store_id ??
+                        ((it as { product?: Record<string, unknown> })
+                          .product || {})["store_id"] ??
+                        0,
+                    ) || 0,
+                  quantity: Number((it as { quantity?: number }).quantity || 1),
+                  unit_price: Math.round(
+                    Number((it as { price?: number }).price || 0) * 100,
+                  ),
+                }))
+              : [],
+            amount: amountInKobo,
+            delivery_charge: deliveryChargeInKobo,
+            callback_url: `${window.location.origin}/checkoutsuccess/2`,
+          };
+          response = await PUBLIC_POST(
+            API.PAYSTACK_INITIALIZE_GUEST,
+            guestInitData,
+          );
         } else {
           response = await POST(endpointPrimary, paymentData);
         }
@@ -723,8 +780,7 @@ function Checkout() {
             stores: stores.map((s) => s.storeId),
             is_multi_seller: hasMultipleStores,
             store_allocations: storeAllocations,
-            // Include guest email for guest orders (commented out)
-            // guest_email: !isAuthenticated ? guestEmail : undefined,
+            guest_email: !isAuthenticated ? guestEmail : undefined,
             order_data: {
               payment: {
                 ref: reference,

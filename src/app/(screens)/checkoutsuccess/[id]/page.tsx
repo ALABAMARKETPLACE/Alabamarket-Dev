@@ -230,9 +230,16 @@ function Checkout() {
 
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
-        // Determine if guest and derive any available delivery token for fallback authorization
-        const isGuest = false;
-        void 0;
+        // Determine if guest and derive available delivery token for authorization
+        const isGuest =
+          !(User && typeof (User as { id?: unknown })?.id === "number") ||
+          Boolean(orderData?.guest_email) ||
+          Boolean(Checkout?.address?.is_guest);
+        const guestToken: string | undefined =
+          (orderData?.order_data?.charges?.token as string | undefined) ||
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ((Checkout?.charges as any)?.token as string | undefined) ||
+          undefined;
 
         // Robust verification with fallbacks for guest
         let verificationResponse: Record<string, unknown> | null = null;
@@ -241,14 +248,23 @@ function Checkout() {
         let vGatewayResponse: string | null = null;
         const skipVerify = false;
         try {
-          verificationResponse = isGuest
-            ? await PUBLIC_POST(
-                API.PAYSTACK_VERIFY,
-                { reference: paymentRef },
-                null,
-                undefined,
-              )
-            : await POST(API.PAYSTACK_VERIFY, { reference: paymentRef });
+          if (isGuest) {
+            verificationResponse = await PUBLIC_POST(
+              API.PAYSTACK_VERIFY_GUEST,
+              {
+                reference: paymentRef,
+                guest_email:
+                  orderData?.guest_email ||
+                  Checkout?.address?.email ||
+                  Checkout?.address?.guest_email ||
+                  "",
+              },
+            );
+          } else {
+            verificationResponse = await POST(API.PAYSTACK_VERIFY, {
+              reference: paymentRef,
+            });
+          }
         } catch (e: unknown) {
           throw e;
         }
