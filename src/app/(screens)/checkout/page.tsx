@@ -181,14 +181,41 @@ function Checkout() {
             })),
             delivery_address: {
               state_id: Number(addressData.state_id || 0),
-              city: String(addressData.city || addressData.state || ""),
+              city: String(
+                (addressData as { city?: string }).city ||
+                  (addressData as { state?: string }).state ||
+                  "",
+              ),
               country_id: Number(addressData.country_id || 0),
             },
           };
-          response = await PUBLIC_POST(
-            API.GUEST_CALCULATE_DELIVERY_CHARGE,
-            guestPayload,
-          );
+          try {
+            response = await PUBLIC_POST(
+              API.GUEST_CALCULATE_DELIVERY_CHARGE,
+              guestPayload,
+            );
+          } catch (e: unknown) {
+            const er = e as Error & { status?: number; message?: string };
+            const msg =
+              typeof er?.message === "string" ? er.message.toLowerCase() : "";
+            const notFound =
+              er?.status === 404 ||
+              msg.includes("not found") ||
+              msg.includes("cannot post") ||
+              msg.includes("calculate-delivery-charge");
+            if (notFound) {
+              const fallbackPayload = {
+                cart: calculationCart,
+                address: addressData,
+              };
+              response = await PUBLIC_POST(
+                API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
+                fallbackPayload,
+              );
+            } else {
+              throw e;
+            }
+          }
         }
 
         console.log("Delivery response:", response);
