@@ -130,7 +130,9 @@ export default function OrderDetails() {
         {!isLoading && (
           <>
             <Tag>{formatDateRelative(order.createdAt || "")}</Tag>
-            <Tag color={getOrderStatusColor(order.status || "")}>{order.status}</Tag>
+            <Tag color={getOrderStatusColor(order.status || "")}>
+              {order.status}
+            </Tag>
             <Button
               type="primary"
               onClick={() => route.push("/auth/orders/substitute/" + orderId)}
