@@ -1140,116 +1140,45 @@ function Checkout() {
                   <div>
                     <div className="checkout-txt3">PAYMENT DETAILS</div>
                     <div className="checkout-txt4">
-                      Payment Type:{" "}
-                      {responseData?.[0]?.orderPayment?.paymentType ?? ""}{" "}
-                      Amount: {getCurrencySymbol(Settings?.currency)}{" "}
-                      {(() => {
-                        const paymentAmount = Number(
-                          responseData?.[0]?.orderPayment?.amount || 0,
-                        );
-                        // If promo is active, subtract delivery charges
-                        if (getActiveDeliveryPromo()) {
-                          const deliveryCharges = Number(
-                            Array.isArray(responseData)
-                              ? responseData.reduce(
-                                  (acc: number, order: Order) =>
-                                    acc +
-                                    (Number(order?.newOrder?.deliveryCharge) ||
-                                      Number(order?.deliveryCharge) ||
-                                      0),
-                                  0,
-                                )
-                              : responseData?.[0]?.newOrder?.deliveryCharge ||
-                                  responseData?.[0]?.deliveryCharge ||
-                                  0,
-                          );
-                          return (paymentAmount - deliveryCharges).toFixed(2);
-                        }
-                        return paymentAmount.toFixed(2);
-                      })()}
+                      Payment Type: {responseData?.[0]?.orderPayment?.paymentType ?? ""} Amount: {getCurrencySymbol(Settings?.currency)} {Number(responseData?.[0]?.orderPayment?.amount || 0).toFixed(2)}
                     </div>
                   </div>
                   <div className="checkout-txt3">ORDER SUMMARY</div>
                   <div style={{ margin: 10 }}>
-                    {/* Group orderItems by storeId/store_id */}
-                    {(() => {
-                      // Group orderItems by storeId/store_id
-                      const grouped: { [storeId: string]: any[] } = {};
-                      orderItems.forEach((item) => {
-                        const storeId =
-                          item.storeId || item.store_id || "unknown";
-                        if (!grouped[storeId]) grouped[storeId] = [];
-                        grouped[storeId].push(item);
-                      });
-                      return Object.entries(grouped).map(
-                        ([storeId, items], idx) => {
-                          // Find store name if available
-                          const storeName =
-                            items[0]?.storeName ||
-                            items[0]?.store_name ||
-                            `Store #${storeId}`;
-                          const storeSubtotal = items.reduce(
-                            (sum, it) => sum + Number(it.totalPrice || 0),
-                            0,
-                          );
-                          return (
-                            <div
-                              key={storeId}
-                              style={{
-                                marginBottom: 18,
-                                borderBottom: "1px solid #eee",
-                                paddingBottom: 10,
-                              }}
-                            >
-                              <div
-                                style={{
-                                  fontWeight: 600,
-                                  fontSize: 15,
-                                  marginBottom: 6,
-                                  color: "#1a237e",
-                                }}
-                              >
-                                🏪 {storeName}
-                              </div>
-                              <List
-                                itemLayout="horizontal"
-                                dataSource={items}
-                                renderItem={(item, index) => (
-                                  <List.Item key={index}>
-                                    <List.Item.Meta
-                                      avatar={
-                                        <Avatar
-                                          src={item?.image}
-                                          size={40}
-                                          shape="square"
-                                        />
-                                      }
-                                      title={item?.name ?? ""}
-                                      description={
-                                        <div>Total: {item?.totalPrice}</div>
-                                      }
-                                    />
-                                  </List.Item>
-                                )}
-                              />
-                              <div
-                                className="checkout-row"
-                                style={{ marginTop: 6 }}
-                              >
-                                <div>Subtotal for this seller</div>
-                                <div style={{ flex: 1 }} />
-                                <div>
-                                  {getCurrencySymbol(Settings?.currency)}{" "}
-                                  {storeSubtotal.toFixed(2)}
-                                </div>
-                              </div>
+                    {/* Group by each order in responseData (each is a seller/store) */}
+                    {Array.isArray(responseData) && responseData.length > 0 ? (
+                      responseData.map((order, idx) => {
+                        const storeName = order?.storeName || order?.store_name || `Store #${order?.newOrder?.storeId || order?.newOrder?.store_id || idx + 1}`;
+                        const items = order?.orderItems as Array<{ image?: string; name?: string; totalPrice?: number }> || [];
+                        const storeSubtotal = items.reduce((sum: number, it: { totalPrice?: number }) => sum + Number(it.totalPrice || 0), 0);
+                        return (
+                          <div key={idx} style={{ marginBottom: 18, borderBottom: "1px solid #eee", paddingBottom: 10 }}>
+                            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, color: "#1a237e" }}>
+                              🏪 {storeName}
                             </div>
-                          );
-                        },
-                      );
-                    })()}
+                            <List
+                              itemLayout="horizontal"
+                              dataSource={items}
+                              renderItem={(item: { image?: string; name?: string; totalPrice?: number }, index: number) => (
+                                <List.Item key={index}>
+                                  <List.Item.Meta
+                                    avatar={<Avatar src={item?.image} size={40} shape="square" />}
+                                    title={item?.name ?? ""}
+                                    description={<div>Total: {item?.totalPrice}</div>}
+                                  />
+                                </List.Item>
+                              )}
+                            />
+                            <div className="checkout-row" style={{ marginTop: 6 }}>
+                              <div>Subtotal for this seller</div>
+                              <div style={{ flex: 1 }} />
+                              <div>{getCurrencySymbol(Settings?.currency)} {storeSubtotal.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : null}
                     <br />
-                    {/* The rest of the summary remains unchanged */}
                     <div className="checkout-row">
                       <div>Total Product Price</div>
                       <div>
