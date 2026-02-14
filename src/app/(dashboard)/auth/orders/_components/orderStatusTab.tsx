@@ -23,7 +23,7 @@ interface OrderHistoryItem {
 }
 
 type Props = {
-  data: OrderData;
+  data: { id?: string | number };
 };
 
 export default function OrderStatusTab(props: Props) {
@@ -70,19 +70,22 @@ export default function OrderStatusTab(props: Props) {
   };
 
   const { data: statusHistory, isLoading } = useQuery({
-    queryFn: async () => await GET(API_MAIN.ORDER_STATUS_GET + props?.data?.id),
+    queryFn: async () => {
+      if (!props?.data?.id) return [];
+      const res = await GET(API_MAIN.ORDER_STATUS_GET + props.data.id);
+      // Accept both { data: [...] } and [...]
+      return Array.isArray(res)
+        ? res
+        : Array.isArray(res?.data)
+        ? res.data
+        : [];
+    },
     queryKey: ["order_status_history", props?.data?.id],
     enabled: !!props?.data?.id,
   });
 
-  // Filter history to ensure it matches the current order ID
-  // Checking multiple common field names for order ID
-  const history = Array.isArray(statusHistory?.data)
-    ? statusHistory?.data.filter((item: OrderHistoryItem) => {
-        const itemOrderId = item.order_id || item.orderId || item.order?.id;
-        return String(itemOrderId) === String(props?.data?.id);
-      })
-    : [];
+  // No need to filter, backend should return only this order's history
+  const history = Array.isArray(statusHistory) ? statusHistory : [];
 
   return (
     <Card
