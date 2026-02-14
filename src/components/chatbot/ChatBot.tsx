@@ -229,7 +229,9 @@ const ChatBot: React.FC = () => {
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error:", error);
-      message.error(`Oops! ${CHATBOT_NAME} couldn't respond. Please try again.`);
+      message.error(
+        `Oops! ${CHATBOT_NAME} couldn't respond. Please try again.`,
+      );
     } finally {
       setLoading(false);
     }
@@ -405,7 +407,7 @@ const ChatBot: React.FC = () => {
               />
             ) : (
               <>
-                    {messages.map((msg) => (
+                {messages.map((msg) => (
                   <div key={msg.id} className={`message message-${msg.type}`}>
                     {msg.type === "bot" && (
                       <div className="message-avatar">
@@ -486,7 +488,9 @@ const ChatBot: React.FC = () => {
                     <span></span>
                     <span></span>
                   </div>
-                  <span className="typing-text">{CHATBOT_NAME} is typing...</span>
+                  <span className="typing-text">
+                    {CHATBOT_NAME} is typing...
+                  </span>
                 </div>
               </div>
             )}
