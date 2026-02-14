@@ -56,10 +56,42 @@ export default function OrderDetails() {
       : { data: orderData }
   ) as OrderDetailsResponse;
 
+  // Normalize response shape to what tabs expect (handles /order/details/{id} shape)
+  const normalizedData: Order = (() => {
+    const raw = order?.data || ({} as Order);
+    // Normalize orderItems to expose nested product details on "product"
+    const orderItems = Array.isArray(
+      (raw as Record<string, unknown>)?.orderItems,
+    )
+      ? (
+          (raw as Record<string, unknown>).orderItems as Array<
+            Record<string, unknown>
+          >
+        ).map((item) => {
+          const product =
+            (item as { product?: Record<string, unknown> }).product ||
+            (item as { Product?: Record<string, unknown> }).Product ||
+            (item as { productDetails?: Record<string, unknown> })
+              .productDetails ||
+            undefined;
+          return {
+            ...item,
+            product,
+          };
+        })
+      : [];
+
+    // Carry through all root fields; override orderItems with normalized
+    return {
+      ...(raw as Order),
+      orderItems,
+    };
+  })();
+
   const { data: storeOrderDataRaw } = useQuery({
     queryFn: async () => {
       // Use the storeId from the fetched order details
-      const storeId = order?.data?.storeId;
+      const storeId = normalizedData?.storeId;
       if (!storeId) return null;
 
       // Fetch orders for this store.
@@ -68,8 +100,8 @@ export default function OrderDetails() {
       // Assuming 'orderId' param works as a filter:
       return await GET(API.ORDER_GET_BYSTORE + storeId, { orderId });
     },
-    queryKey: ["store_order_lookup", orderId, order?.data?.storeId],
-    enabled: !!order?.data?.storeId && !!orderId,
+    queryKey: ["store_order_lookup", orderId, normalizedData?.storeId],
+    enabled: !!normalizedData?.storeId && !!orderId,
   });
 
   const storeOrderData = storeOrderDataRaw as StoreOrdersResponse;
@@ -117,9 +149,9 @@ export default function OrderDetails() {
       >
         {!isLoading && (
           <>
-            <Tag>{formatDateRelative(order?.data?.createdAt || "")}</Tag>
-            <Tag color={getOrderStatusColor(order?.data?.status || "")}>
-              {getOrderStatus(order?.data?.status || "")}
+            <Tag>{formatDateRelative(normalizedData?.createdAt || "")}</Tag>
+            <Tag color={getOrderStatusColor(normalizedData?.status || "")}>
+              {getOrderStatus(normalizedData?.status || "")}
             </Tag>
             <Button
               type="primary"
@@ -139,31 +171,33 @@ export default function OrderDetails() {
               <div className="d-flex flex-column gap-4">
                 <AddressTab
                   data={{
-                    ...(order?.data?.address as AddressData),
+                    ...(normalizedData?.address as AddressData),
                     ...(specificStoreOrder?.address || {}),
                     user_id:
-                      order?.data?.userId ?? order?.data?.user_id ?? undefined,
+                      normalizedData?.userId ??
+                      normalizedData?.user_id ??
+                      undefined,
                     order_contact_name:
                       specificStoreOrder?.name ||
-                      order?.data?.name ||
-                      order?.data?.guest_name,
+                      normalizedData?.name ||
+                      normalizedData?.guest_name,
                     // Fallback for phone if it exists at root of store order
                     phone_no:
-                      (order?.data?.address as AddressData)?.phone_no ||
+                      (normalizedData?.address as AddressData)?.phone_no ||
                       specificStoreOrder?.phone ||
                       specificStoreOrder?.phone_no ||
-                      order?.data?.guest_phone,
+                      normalizedData?.guest_phone,
                   }}
                 />
-                <ProductTab data={order?.data?.orderItems || []} />
-                <PaymentStatusTab data={order?.data} />
+                <ProductTab data={normalizedData?.orderItems || []} />
+                <PaymentStatusTab data={normalizedData} />
               </div>
             </Col>
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
-                <SellerDetailsCard data={order?.data} />
-                <CustomerDetailsCard data={order?.data} />
-                <OrderStatusTab data={order?.data} />
+                <SellerDetailsCard data={normalizedData} />
+                <CustomerDetailsCard data={normalizedData} />
+                <OrderStatusTab data={normalizedData} />
               </div>
             </Col>
           </Row>
