@@ -1171,26 +1171,51 @@ function Checkout() {
                   </div>
                   <div className="checkout-txt3">ORDER SUMMARY</div>
                   <div style={{ margin: 10 }}>
-                    <List
-                      itemLayout="horizontal"
-                      dataSource={orderItems}
-                      renderItem={(item, index) => (
-                        <List.Item key={index}>
-                          <List.Item.Meta
-                            avatar={
-                              <Avatar
-                                src={item?.image}
-                                size={40}
-                                shape="square"
-                              />
-                            }
-                            title={item?.name ?? ""}
-                            description={<div>Total: {item?.totalPrice}</div>}
-                          />
-                        </List.Item>
-                      )}
-                    />
+                    {/* Group orderItems by storeId/store_id */}
+                    {(() => {
+                      // Group orderItems by storeId/store_id
+                      const grouped: { [storeId: string]: any[] } = {};
+                      orderItems.forEach((item) => {
+                        const storeId = item.storeId || item.store_id || "unknown";
+                        if (!grouped[storeId]) grouped[storeId] = [];
+                        grouped[storeId].push(item);
+                      });
+                      return Object.entries(grouped).map(([storeId, items], idx) => {
+                        // Find store name if available
+                        const storeName = items[0]?.storeName || items[0]?.store_name || `Store #${storeId}`;
+                        const storeSubtotal = items.reduce(
+                          (sum, it) => sum + Number(it.totalPrice || 0),
+                          0,
+                        );
+                        return (
+                          <div key={storeId} style={{ marginBottom: 18, borderBottom: "1px solid #eee", paddingBottom: 10 }}>
+                            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, color: "#1a237e" }}>
+                              🏪 {storeName}
+                            </div>
+                            <List
+                              itemLayout="horizontal"
+                              dataSource={items}
+                              renderItem={(item, index) => (
+                                <List.Item key={index}>
+                                  <List.Item.Meta
+                                    avatar={<Avatar src={item?.image} size={40} shape="square" />}
+                                    title={item?.name ?? ""}
+                                    description={<div>Total: {item?.totalPrice}</div>}
+                                  />
+                                </List.Item>
+                              )}
+                            />
+                            <div className="checkout-row" style={{ marginTop: 6 }}>
+                              <div>Subtotal for this seller</div>
+                              <div style={{ flex: 1 }} />
+                              <div>{getCurrencySymbol(Settings?.currency)} {storeSubtotal.toFixed(2)}</div>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
                     <br />
+                    {/* The rest of the summary remains unchanged */}
                     <div className="checkout-row">
                       <div>Total Product Price</div>
                       <div>
