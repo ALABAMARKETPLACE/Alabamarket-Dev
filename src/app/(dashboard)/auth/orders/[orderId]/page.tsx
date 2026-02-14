@@ -157,7 +157,7 @@ export default function OrderDetails() {
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
                 <SellerDetailsCard data={sellerData} />
-                <OrderStatusTab data={orderStatus} />
+                <OrderStatusTab data={{ id: order.id, statusHistory: orderStatus }} />
               </div>
             </Col>
           </Row>
