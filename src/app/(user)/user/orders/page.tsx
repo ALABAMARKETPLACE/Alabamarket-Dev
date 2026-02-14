@@ -20,6 +20,7 @@ import { formatCurrency } from "@/utils/formatNumber";
 import Image from "next/image";
 import { getActiveDeliveryPromo } from "@/config/promoConfig";
 import "./orders.scss";
+import { useSession } from "next-auth/react";
 
 const statusFilters = [
   { title: "All Orders", value: "" },
@@ -251,18 +252,24 @@ function UserOrders() {
   const router = useRouter();
   const Settings = useAppSelector(reduxSettings);
   const [orderStatus, setOrderStatus] = useState("");
+  const { data: session, status } = useSession();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userId = (session?.user as any)?.id || null;
 
   const { data: orders, isLoading, isError, error } = useQuery({
-    queryFn: async () =>
-      await GET(API.ORDER_GET, {
+    queryFn: async () => {
+      const base = `${API.ORDER_GET_USER}${userId ?? ""}`;
+      return await GET(base, {
         order: "DESC",
         page: page,
         take: pageSize,
         ...(search && { name: search }),
         status: orderStatus,
         sort: dateFilter,
-      }),
-    queryKey: ["order_items", page, search, orderStatus, dateFilter],
+      });
+    },
+    queryKey: ["order_items", userId, page, search, orderStatus, dateFilter],
+    enabled: Boolean(userId) && status === "authenticated",
     retry: 1,
   });
 
