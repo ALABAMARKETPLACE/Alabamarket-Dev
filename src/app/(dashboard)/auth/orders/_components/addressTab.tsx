@@ -78,6 +78,14 @@ export default function AddressTab(props: Props) {
       val.trim() !== "";
 
     // Priority order for contact name
+    // 1) Explicit customer_name from response (if provided by backend)
+    // 2) Name field passed down
+    // 3) order_contact_name (legacy)
+    // 4) Fetched user name
+    // 5) Fallbacks
+    if (isValid((props?.data as Record<string, unknown>)?.["customer_name"])) {
+      return (props?.data as Record<string, unknown>)?.["customer_name"] as string;
+    }
     if (isValid(props?.data?.name)) return props.data.name;
     if (isValid(props?.data?.order_contact_name))
       return props.data.order_contact_name;
