@@ -347,7 +347,9 @@ function Checkout() {
         : Checkout?.address?.full_name || "Guest Customer";
       // Always use guestEmail for guest checkout, user.email for authenticated
       const customerEmail = isAuthenticated
-        ? (user as any)?.email || (user as any)?.id || "customer@alabamarketplace.ng"
+        ? (user as any)?.email ||
+          (user as any)?.id ||
+          "customer@alabamarketplace.ng"
         : guestEmail || "guest@alabamarketplace.ng";
       // const resolvedCustomerId = (user as { id?: number })?.id || null;
 
