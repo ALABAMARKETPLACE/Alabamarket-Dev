@@ -65,6 +65,15 @@ function Checkout() {
     }
   }, [isAuthenticated]);
 
+  // Enforce guest email sync in address (if present)
+  useEffect(() => {
+    if (!isAuthenticated && Checkout?.address && guestEmail) {
+      if (Checkout.address.email !== guestEmail) {
+        Checkout.address.email = guestEmail;
+      }
+    }
+  }, [guestEmail, isAuthenticated, Checkout?.address]);
+
   useEffect(() => {
     if (Checkout?.Checkout && Checkout.Checkout.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -336,13 +345,10 @@ function Checkout() {
       const customerName = anyUser
         ? `${anyUser.first_name || "Customer"} ${anyUser.last_name || ""}`
         : Checkout?.address?.full_name || "Guest Customer";
-      const customerEmail =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (user as any)?.email ||
-        // guestEmail ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (user as any)?.id ||
-        "customer@alabamarketplace.ng";
+      // Always use guestEmail for guest checkout, user.email for authenticated
+      const customerEmail = isAuthenticated
+        ? (user as any)?.email || (user as any)?.id || "customer@alabamarketplace.ng"
+        : guestEmail || "guest@alabamarketplace.ng";
       // const resolvedCustomerId = (user as { id?: number })?.id || null;
 
       // Extract store IDs and group items by store for split payment
@@ -803,7 +809,7 @@ function Checkout() {
           JSON.stringify({
             reference,
             amount: amountInKobo,
-            email: paymentData.email,
+            email: customerEmail, // enforce guestEmail for guest
             stores: stores.map((s) => s.storeId),
             is_multi_seller: hasMultipleStores,
             store_allocations: storeAllocations,
@@ -814,16 +820,19 @@ function Checkout() {
                 type: payment_method,
                 split_payment: shouldUseSplitPayment,
                 is_multi_seller: hasMultipleStores,
+                email: customerEmail, // enforce guestEmail for guest
               },
               cart: Checkout?.Checkout,
-              address: Checkout?.address,
+              address: {
+                ...Checkout?.address,
+                email: !isAuthenticated ? guestEmail : Checkout?.address?.email,
+              },
               charges: {
                 token: deliveryToken,
               },
               user_id: customerId,
               user: user,
-              // Add guest_email to order_data for backend (commented out)
-              // guest_email: !isAuthenticated ? guestEmail : undefined,
+              guest_email: !isAuthenticated ? guestEmail : undefined,
             },
           }),
         );
