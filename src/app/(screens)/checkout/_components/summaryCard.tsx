@@ -36,6 +36,17 @@ const SummaryCard = (props: any) => {
     ? (props?.grand_total || 0) - deliveryDiscount.discountAmount
     : props?.grand_total || 0;
 
+  // Group items by storeId
+  const groupedByStore: Record<string, any[]> = {};
+  (props?.Cart?.Checkout || []).forEach((item: any) => {
+    const storeId = item.storeId || item.store_id || 'unknown';
+    if (!groupedByStore[storeId]) groupedByStore[storeId] = [];
+    groupedByStore[storeId].push(item);
+  });
+
+  // Optionally, get store names if available (assume item.storeName or item.store_name)
+  const getStoreName = (item: any) => item.storeName || item.store_name || `Store #${item.storeId || item.store_id}`;
+
   return (
     <div className="Cart-SummaryCard">
       <div className="Cart-row">
@@ -44,8 +55,27 @@ const SummaryCard = (props: any) => {
         <div className="Cart-txt6">{props?.Cart?.Checkout?.length} Item</div>
       </div>
       <div className="Cart-line" />
-      {props?.Cart?.Checkout?.map((item: any, index: number) => {
-        return <CheckoutItem key={index} data={item} Settings={Settings} />;
+      {/* Grouped by seller/store */}
+      {Object.entries(groupedByStore).map(([storeId, items], idx) => {
+        const storeName = getStoreName(items[0]);
+        const storeSubtotal = items.reduce((sum, it) => sum + Number(it.totalPrice || 0), 0);
+        return (
+          <div key={storeId} style={{ marginBottom: 18, borderBottom: '1px solid #eee', paddingBottom: 10 }}>
+            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, color: '#1a237e' }}>
+              🏪 {storeName}
+            </div>
+            {items.map((item: any, index: number) => (
+              <CheckoutItem key={index} data={item} Settings={Settings} />
+            ))}
+            <div className="Cart-row" style={{ marginTop: 6 }}>
+              <div className="Cart-txt3">Subtotal for this seller</div>
+              <div style={{ flex: 1 }} />
+              <div className="Cart-txt4">
+                {getCurrencySymbol()} {formatCurrency(storeSubtotal)}
+              </div>
+            </div>
+          </div>
+        );
       })}
       <br />
       <div className="Cart-row">

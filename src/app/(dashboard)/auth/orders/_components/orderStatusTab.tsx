@@ -84,8 +84,13 @@ export default function OrderStatusTab(props: Props) {
     enabled: !!props?.data?.id,
   });
 
-  // No need to filter, backend should return only this order's history
-  const history = Array.isArray(statusHistory) ? statusHistory : [];
+  // Filter to only this order's history, in case backend returns more than one
+  const history = Array.isArray(statusHistory)
+    ? statusHistory.filter((item: OrderHistoryItem) => {
+        const itemOrderId = item.order_id || item.orderId || item.order?.id;
+        return String(itemOrderId) === String(props?.data?.id);
+      })
+    : [];
 
   return (
     <Card
