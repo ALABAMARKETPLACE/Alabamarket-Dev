@@ -77,8 +77,8 @@ export default function OrderStatusTab(props: Props) {
       return Array.isArray(res)
         ? res
         : Array.isArray(res?.data)
-        ? res.data
-        : [];
+          ? res.data
+          : [];
     },
     queryKey: ["order_status_history", props?.data?.id],
     enabled: !!props?.data?.id,
