@@ -235,11 +235,7 @@ function Checkout() {
           !(User && typeof (User as { id?: unknown })?.id === "number") ||
           Boolean(orderData?.guest_email) ||
           Boolean(Checkout?.address?.is_guest);
-        const guestToken: string | undefined =
-          (orderData?.order_data?.charges?.token as string | undefined) ||
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ((Checkout?.charges as any)?.token as string | undefined) ||
-          undefined;
+        // No token required for verify-guest
 
         // Robust verification with fallbacks for guest
         let verificationResponse: Record<string, unknown> | null = null;
