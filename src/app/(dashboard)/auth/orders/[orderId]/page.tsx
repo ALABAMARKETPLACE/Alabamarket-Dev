@@ -41,7 +41,7 @@ interface StoreOrdersResponse {
 }
 
 export default function OrderDetails() {
-  const { orderId } = useParams();
+  const { orderId } = useParams() as { orderId: string };
   const route = useRouter();
 
   const { data: orderData, isLoading } = useQuery({
@@ -141,6 +141,49 @@ export default function OrderDetails() {
 
     return statusColors[status] || "#dfdddd";
   };
+  const str = (v: unknown): string | undefined =>
+    typeof v === "string" && v.trim() !== "" ? v : undefined;
+  const numOrStr = (v: unknown): number | string | undefined =>
+    typeof v === "number" || typeof v === "string" ? v : undefined;
+
+  const addrRoot =
+    (normalizedData?.address as Record<string, unknown> | undefined) || {};
+  const addrStore =
+    (specificStoreOrder?.address as Record<string, unknown> | undefined) || {};
+  const rootObj = normalizedData as unknown as Record<string, unknown>;
+
+  const mergedAddress: AddressData = {
+    ...(addrRoot as AddressData),
+    ...(addrStore as AddressData),
+    name:
+      str(rootObj["customer_name"]) ||
+      str(rootObj["name"]) ||
+      str(addrRoot["full_name"]),
+    city:
+      str(addrRoot["city"]) ||
+      str(rootObj["delivery_city"]) ||
+      str(addrStore["city"]) ||
+      str(rootObj["city"]),
+    state:
+      str(addrRoot["state"]) ||
+      str(rootObj["delivery_state"]) ||
+      str(rootObj["state"]),
+    state_id:
+      numOrStr(addrRoot["state_id"]) || numOrStr(rootObj["delivery_state_id"]),
+    seller_name: str(rootObj["store_name"]),
+    user_id:
+      (normalizedData?.userId as number | string | undefined) ??
+      (normalizedData?.user_id as number | string | undefined),
+    order_contact_name:
+      str(specificStoreOrder?.name) ||
+      str(rootObj["name"]) ||
+      str(rootObj["guest_name"]),
+    phone_no:
+      str(addrRoot["phone_no"] as unknown) ||
+      str(specificStoreOrder?.phone) ||
+      str(specificStoreOrder?.phone_no) ||
+      str(rootObj["guest_phone"]),
+  };
   return (
     <div>
       <PageHeader
@@ -169,26 +212,7 @@ export default function OrderDetails() {
           <Row className="gy-4">
             <Col lg={8} md={12}>
               <div className="d-flex flex-column gap-4">
-                <AddressTab
-                  data={{
-                    ...(normalizedData?.address as AddressData),
-                    ...(specificStoreOrder?.address || {}),
-                    user_id:
-                      normalizedData?.userId ??
-                      normalizedData?.user_id ??
-                      undefined,
-                    order_contact_name:
-                      specificStoreOrder?.name ||
-                      normalizedData?.name ||
-                      normalizedData?.guest_name,
-                    // Fallback for phone if it exists at root of store order
-                    phone_no:
-                      (normalizedData?.address as AddressData)?.phone_no ||
-                      specificStoreOrder?.phone ||
-                      specificStoreOrder?.phone_no ||
-                      normalizedData?.guest_phone,
-                  }}
-                />
+                <AddressTab data={mergedAddress} />
                 <ProductTab data={normalizedData?.orderItems || []} />
                 <PaymentStatusTab data={normalizedData} />
               </div>

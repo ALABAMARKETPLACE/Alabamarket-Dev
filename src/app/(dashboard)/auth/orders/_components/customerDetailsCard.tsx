@@ -46,6 +46,13 @@ export default function CustomerDetailsCard(props: Props) {
   // Only treat as guest if explicitly marked as guest order
   // Don't assume guest just because userId is missing
   const isGuest = props.data?.is_guest_order === true;
+  const hasInlineCustomer =
+    typeof (props.data as { customer_name?: unknown })?.customer_name ===
+      "string" ||
+    typeof (props.data as { customer_email?: unknown })?.customer_email ===
+      "string" ||
+    typeof (props.data as { customer_phone?: unknown })?.customer_phone ===
+      "string";
 
   const { data: customerData, isLoading } = useQuery({
     queryFn: async () => {
@@ -99,8 +106,49 @@ export default function CustomerDetailsCard(props: Props) {
     );
   }
 
-  // For non-guest orders without userId, show a message
+  // For non-guest orders without userId, show inline customer details if available
   if (!userId) {
+    if (hasInlineCustomer) {
+      const nameInline =
+        (props.data as { customer_name?: string })?.customer_name ||
+        (props.data as { name?: string })?.name ||
+        "N/A";
+      const emailInline =
+        (props.data as { customer_email?: string })?.customer_email || "N/A";
+      const phoneInline =
+        (props.data as { customer_phone?: string })?.customer_phone ||
+        (props.data?.address?.phone_no as string | undefined) ||
+        "N/A";
+      return (
+        <Card
+          title={
+            <span>
+              <UserOutlined style={{ marginRight: 8 }} />
+              Customer Details
+            </span>
+          }
+          className="h-100"
+        >
+          <Descriptions column={1} bordered>
+            <Descriptions.Item label="Customer Name">
+              <Tag color="cyan">{nameInline}</Tag>
+            </Descriptions.Item>
+            <Descriptions.Item label="Email">
+              <span>
+                <MailOutlined style={{ marginRight: 8 }} />
+                {emailInline}
+              </span>
+            </Descriptions.Item>
+            <Descriptions.Item label="Phone Number">
+              <span>
+                <PhoneOutlined style={{ marginRight: 8 }} />
+                {phoneInline}
+              </span>
+            </Descriptions.Item>
+          </Descriptions>
+        </Card>
+      );
+    }
     return (
       <Card
         title={
