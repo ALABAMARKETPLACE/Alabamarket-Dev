@@ -131,23 +131,28 @@ export default function OrderDetails() {
   })();
   const deriveCustomerName = (): string | undefined => {
     if (!userDetails) return undefined;
-    const n =
-      (userDetails["name"] as string | undefined) ||
-      (userDetails["user_name"] as string | undefined) ||
-      (userDetails["full_name"] as string | undefined) ||
-      (userDetails["first_name"] as string | undefined);
-    if (n) return String(n).trim();
-    const fn = userDetails["first_name"] as string | undefined;
-    const ln = userDetails["last_name"] as string | undefined;
+    const trim = (v: unknown) => (typeof v === "string" ? v.trim() : undefined);
+    const name = trim(userDetails["name"]);
+    if (name) return name;
+    const fn = trim(userDetails["first_name"]);
+    const ln = trim(userDetails["last_name"]);
     if (fn || ln) return [fn, ln].filter(Boolean).join(" ").trim();
+    const uname = trim(userDetails["user_name"]);
+    if (uname) return uname;
+    const full = trim(userDetails["full_name"]);
+    if (full) return full;
     return undefined;
   };
   const deriveCustomerPhone = (): string | undefined => {
     if (!userDetails) return undefined;
-    return (
+    const cc =
+      (userDetails["countrycode"] as string | undefined) ||
+      (userDetails["country_code"] as string | undefined);
+    const ph =
       (userDetails["phone"] as string | undefined) ||
-      (userDetails["phone_no"] as string | undefined)
-    );
+      (userDetails["phone_no"] as string | undefined);
+    if (cc && ph) return `${cc}${ph}`.replace(/\s+/g, "");
+    return ph;
   };
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
@@ -192,6 +197,11 @@ export default function OrderDetails() {
     ...(addrRoot as AddressData),
     ...(addrStore as AddressData),
     name:
+      deriveCustomerName() ||
+      str(rootObj["customer_name"]) ||
+      str(rootObj["name"]) ||
+      str(addrRoot["full_name"]),
+    customer_name:
       deriveCustomerName() ||
       str(rootObj["customer_name"]) ||
       str(rootObj["name"]) ||

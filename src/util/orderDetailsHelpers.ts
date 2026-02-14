@@ -109,13 +109,19 @@ export const fetchUserContactDetails = async (userId: string | number) => {
 export const getUserContactName = (userData: UserData | null): string => {
   if (!userData) return "Unknown Customer";
 
-  return (
-    userData.name ||
-    userData.user_name ||
-    userData.full_name ||
-    userData.firstName ||
-    "Unknown Customer"
-  );
+  const trim = (v: unknown) => (typeof v === "string" ? v.trim() : "");
+  const name = trim((userData as Record<string, unknown>)["name"]);
+  if (name) return name;
+  const fn = trim((userData as Record<string, unknown>)["first_name"]);
+  const ln = trim((userData as Record<string, unknown>)["last_name"]);
+  if (fn || ln) return `${fn}${fn && ln ? " " : ""}${ln}`.trim() || "Unknown Customer";
+  const userName = trim((userData as Record<string, unknown>)["user_name"]);
+  if (userName) return userName;
+  const full = trim((userData as Record<string, unknown>)["full_name"]);
+  if (full) return full;
+  const firstName = trim((userData as Record<string, unknown>)["firstName"]);
+  if (firstName) return firstName;
+  return "Unknown Customer";
 };
 
 /**
