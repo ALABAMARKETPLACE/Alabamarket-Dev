@@ -82,7 +82,7 @@ export default function AddressTab(props: Props) {
     // 2) Name field passed down
     // 3) order_contact_name (legacy)
     // 4) Fetched user name
-    // 5) Fallbacks
+    // 5) Fetched user first/last name
     if (isValid((props?.data as Record<string, unknown>)?.["customer_name"])) {
       return (props?.data as Record<string, unknown>)?.["customer_name"] as string;
     }
@@ -94,9 +94,6 @@ export default function AddressTab(props: Props) {
       const last = isValid(user?.data?.last_name) ? user.data.last_name : "";
       return `${user.data.first_name} ${last}`.trim();
     }
-    // Fallback to seller name if all else fails
-    if (isValid(props?.data?.seller_name)) return props.data.seller_name;
-
     // If still loading user data, show loading state
     if (props?.data?.user_id && !user?.data) return "Loading...";
 

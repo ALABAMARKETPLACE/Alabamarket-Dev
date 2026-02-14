@@ -269,7 +269,6 @@ export default function OrderDetails() {
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
                 <SellerDetailsCard data={normalizedData} />
-                <CustomerDetailsCard data={normalizedData} />
                 <OrderStatusTab data={normalizedData} />
               </div>
             </Col>
