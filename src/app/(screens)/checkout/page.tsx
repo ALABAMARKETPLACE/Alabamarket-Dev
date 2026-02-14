@@ -65,14 +65,7 @@ function Checkout() {
     }
   }, [isAuthenticated]);
 
-  // Enforce guest email sync in address (if present)
-  useEffect(() => {
-    if (!isAuthenticated && Checkout?.address && guestEmail) {
-      if (Checkout.address.email !== guestEmail) {
-        Checkout.address.email = guestEmail;
-      }
-    }
-  }, [guestEmail, isAuthenticated, Checkout?.address]);
+  // Do NOT mutate Checkout.address directly. Instead, always create a new object with email when needed.
 
   useEffect(() => {
     if (Checkout?.Checkout && Checkout.Checkout.length > 0) {
@@ -825,10 +818,9 @@ function Checkout() {
                 email: customerEmail, // enforce guestEmail for guest
               },
               cart: Checkout?.Checkout,
-              address: {
-                ...Checkout?.address,
-                email: !isAuthenticated ? guestEmail : Checkout?.address?.email,
-              },
+              address: !isAuthenticated
+                ? { ...(Checkout?.address || {}), email: guestEmail }
+                : Checkout?.address,
               charges: {
                 token: deliveryToken,
               },
