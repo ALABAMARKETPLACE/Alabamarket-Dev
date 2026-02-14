@@ -798,9 +798,29 @@ function Checkout() {
         );
         const actualDeliveryCharge = deliveryPromo.discountedCharge;
 
+        // Ensure all cart items have both store_id and storeId for backend grouping
+        const normalizedCart = Array.isArray(Checkout?.Checkout)
+          ? Checkout.Checkout.map((item: Record<string, unknown>) => {
+              const product = (item as { product?: Record<string, unknown> })
+                .product;
+              const store_id =
+                (item as { store_id?: number }).store_id ??
+                (item as { storeId?: number }).storeId ??
+                (product
+                  ? ((product as { store_id?: number }).store_id ??
+                    (product as { storeId?: number }).storeId)
+                  : null);
+              return {
+                ...(item as Record<string, unknown>),
+                store_id,
+                storeId: store_id,
+              };
+            })
+          : [];
+
         const obj = {
           payment: payment_method,
-          cart: Checkout?.Checkout,
+          cart: normalizedCart,
           address: Checkout?.address,
           charges: {
             token: deliveryToken,

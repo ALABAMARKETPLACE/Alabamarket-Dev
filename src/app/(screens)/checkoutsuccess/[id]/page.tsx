@@ -391,18 +391,45 @@ function Checkout() {
 
       console.log("Final order data:", finalOrderData);
 
-      // Normalize cart items to ensure store_id is present for multi-seller order creation
+      // Normalize cart items to ensure store_id and product_id are present for multi-seller order creation
       if (Array.isArray(finalOrderData?.cart)) {
         finalOrderData.cart = finalOrderData.cart.map(
           (item: CheckoutCartItem) => {
+            const asRecord = item as unknown as Record<string, unknown>;
             // Extract store_id from various possible field names
             const store_id =
               (item as CheckoutCartItem)?.store_id ||
               (item as { storeId?: number })?.storeId ||
-              (item as { product?: { store_id?: number; storeId?: number } })
-                ?.product?.store_id ||
-              (item as { product?: { store_id?: number; storeId?: number } })
-                ?.product?.storeId ||
+              (
+                asRecord.product as
+                  | { store_id?: number; storeId?: number }
+                  | undefined
+              )?.store_id ||
+              (
+                asRecord.product as
+                  | { store_id?: number; storeId?: number }
+                  | undefined
+              )?.storeId ||
+              null;
+            // Extract product_id from various possible field names
+            const toNumber = (x: unknown): number | null => {
+              const n =
+                typeof x === "string" ? parseInt(x, 10) : (x as number | null);
+              return Number.isFinite(n as number) && (n as number) > 0
+                ? (n as number)
+                : null;
+            };
+            const product_id =
+              toNumber((item as { productId?: number }).productId) ??
+              toNumber((item as { id?: number }).id) ??
+              toNumber((item as { pid?: number }).pid) ??
+              toNumber(
+                ((asRecord.product as Record<string, unknown>) || {})["id"],
+              ) ??
+              toNumber(
+                ((asRecord.product as Record<string, unknown>) || {})["pid"],
+              ) ??
+              (asRecord.product_id as number | undefined) ??
               null;
             // Remove storeId from the item if present
             const rest = { ...item };
@@ -410,6 +437,8 @@ function Checkout() {
             return {
               ...rest,
               store_id,
+              product_id:
+                product_id != null ? (product_id as number) : (rest as never),
             } as CheckoutCartItem;
           },
         );
@@ -501,7 +530,7 @@ function Checkout() {
         finalOrderData?.payment?.amount,
       );
 
-      // Determine if this is a multi-seller order (applies to both guest and authenticated)
+      // Determine if this is a multi-seller order (applies to authenticated)
       const storeIds = new Set<string | number>();
       if (Array.isArray(finalOrderData?.cart)) {
         finalOrderData.cart.forEach((item: CheckoutCartItem) => {
@@ -517,6 +546,8 @@ function Checkout() {
 
       // Add is_multi_seller flag to finalOrderData for backend
       finalOrderData.is_multi_seller = isMultiSeller;
+      // Also include explicit stores list for backend grouping
+      finalOrderData.stores = Array.from(storeIds);
 
       // Determine if this is a guest order
       const isGuestOrder =
