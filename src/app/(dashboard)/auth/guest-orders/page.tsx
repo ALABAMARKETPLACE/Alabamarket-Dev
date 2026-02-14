@@ -79,12 +79,9 @@ function Page() {
     refetch,
   } = useQuery({
     queryFn: ({ queryKey }) =>
-      GET(
-        queryKey[0] as string,
-        queryKey[1] as Record<string, unknown>,
-        null,
-        { token: session?.token },
-      ),
+      GET(queryKey[0] as string, queryKey[1] as Record<string, unknown>, null, {
+        token: session?.token,
+      }),
     queryKey: [API.ORDER_GUEST_ORDERS, params],
     enabled: status === "authenticated" && !!session?.token && !!email,
     retry: false,
@@ -142,7 +139,9 @@ function Page() {
                 <td>{o.payment?.ref}</td>
                 <td>{o.payment?.status}</td>
                 <td>
-                  {o.createdAt ? dayjs(o.createdAt).format("YYYY-MM-DD HH:mm") : "-"}
+                  {o.createdAt
+                    ? dayjs(o.createdAt).format("YYYY-MM-DD HH:mm")
+                    : "-"}
                 </td>
               </tr>
             ))}
@@ -168,7 +167,14 @@ function Page() {
   return (
     <>
       <PageHeader title="Guest Orders" bredcume="Dashboard / Guest Orders">
-        <div style={{ display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
           <Input
             placeholder="Guest email"
             value={email}
