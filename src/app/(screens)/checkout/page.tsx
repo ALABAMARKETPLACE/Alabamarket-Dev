@@ -662,7 +662,11 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        if (!isAuthenticated) {
+        if (isAuthenticated) {
+          // Authenticated users: use only /paystack/initialize, /paystack/initialize-split
+          response = await POST(endpointPrimary, paymentData);
+        } else {
+          // Guest users: use only /paystack/initialize-guest
           if (!deliveryToken || String(deliveryToken).trim().length === 0) {
             throw new Error(
               "Delivery token missing. Please select or reselect your delivery address to continue.",
@@ -714,8 +718,6 @@ function Checkout() {
             API.PAYSTACK_INITIALIZE_GUEST,
             guestInitData,
           );
-        } else {
-          response = await POST(endpointPrimary, paymentData);
         }
       } catch (primaryError: unknown) {
         const err =

@@ -245,6 +245,7 @@ function Checkout() {
         const skipVerify = false;
         try {
           if (isGuest) {
+            // Guest users: use only /paystack/verify-guest
             verificationResponse = await PUBLIC_POST(
               API.PAYSTACK_VERIFY_GUEST,
               {
@@ -257,6 +258,7 @@ function Checkout() {
               },
             );
           } else {
+            // Authenticated users: use only /paystack/verify
             verificationResponse = await POST(API.PAYSTACK_VERIFY, {
               reference: paymentRef,
             });
