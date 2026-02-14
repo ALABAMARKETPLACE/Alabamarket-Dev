@@ -398,18 +398,18 @@ function Checkout() {
             const asRecord = item as unknown as Record<string, unknown>;
             // Extract store_id from various possible field names
             const store_id =
-              (item as CheckoutCartItem)?.store_id ||
-              (item as { storeId?: number })?.storeId ||
+              (item as CheckoutCartItem)?.store_id ??
+              (item as { storeId?: number })?.storeId ??
               (
                 asRecord.product as
                   | { store_id?: number; storeId?: number }
                   | undefined
-              )?.store_id ||
+              )?.store_id ??
               (
                 asRecord.product as
                   | { store_id?: number; storeId?: number }
                   | undefined
-              )?.storeId ||
+              )?.storeId ??
               null;
             // Extract product_id from various possible field names
             const toNumber = (x: unknown): number | null => {
@@ -436,9 +436,14 @@ function Checkout() {
             delete (rest as { storeId?: unknown }).storeId;
             return {
               ...rest,
-              store_id,
+              store_id:
+                store_id != null ? Number(store_id) : (store_id as null),
               product_id:
-                product_id != null ? (product_id as number) : (rest as never),
+                product_id != null ? Number(product_id) : (product_id as null),
+              quantity: Number((item as { quantity?: number }).quantity ?? 0),
+              totalPrice: Number(
+                (item as { totalPrice?: number }).totalPrice ?? 0,
+              ),
             } as CheckoutCartItem;
           },
         );
@@ -548,6 +553,56 @@ function Checkout() {
       finalOrderData.is_multi_seller = isMultiSeller;
       // Also include explicit stores list for backend grouping
       finalOrderData.stores = Array.from(storeIds);
+
+      // Build store allocations to help backend validate/store grouping
+      if (
+        Array.isArray(finalOrderData?.cart) &&
+        finalOrderData.cart.length > 0
+      ) {
+        const allocationMap = new Map<
+          number | string,
+          {
+            store_id: number | string;
+            product_amount: number;
+            item_count: number;
+          }
+        >();
+        finalOrderData.cart.forEach((ci: CheckoutCartItem) => {
+          const sid =
+            (ci as { store_id?: number | string }).store_id ??
+            (ci as { storeId?: number | string }).storeId;
+          if (sid == null) return;
+          const key = sid as number | string;
+          const existing = allocationMap.get(key) || {
+            store_id: key,
+            product_amount: 0,
+            item_count: 0,
+          };
+          existing.product_amount += Number(
+            (ci as { totalPrice?: number }).totalPrice ?? 0,
+          );
+          existing.item_count += 1;
+          allocationMap.set(key, existing);
+        });
+        const store_allocations = Array.from(allocationMap.values());
+        (finalOrderData as Record<string, unknown>)["store_allocations"] =
+          store_allocations;
+
+        // Diagnostics
+        console.log("🧾 ORDER GROUPING DIAGNOSTICS");
+        console.log("Stores:", finalOrderData.stores);
+        console.log("Allocations:", store_allocations);
+        const byStoreCounts = Array.from(storeIds).map((sid) => ({
+          store_id: sid,
+          items:
+            finalOrderData.cart?.filter(
+              (ci: CheckoutCartItem) =>
+                ((ci as { store_id?: unknown }).store_id ??
+                  (ci as { storeId?: unknown }).storeId) === sid,
+            ).length ?? 0,
+        }));
+        console.log("Items per store:", byStoreCounts);
+      }
 
       // Determine if this is a guest order
       const isGuestOrder =
