@@ -681,22 +681,6 @@ function Checkout() {
               })
             : POST(API.PAYSTACK_INITIALIZE, nonSplitPaymentData));
         } else {
-          if (
-            !isAuthenticated &&
-            (statusCode === 401 ||
-              primaryMessage.includes("unauthorized") ||
-              primaryMessage.includes("no token"))
-          ) {
-            const ok = await FallbackInlinePayment(
-              paymentData.email as string,
-              paymentData.amount as number,
-              reference,
-            );
-            if (ok) {
-              setIsLoading(false);
-              return;
-            }
-          }
           throw primaryError;
         }
       }

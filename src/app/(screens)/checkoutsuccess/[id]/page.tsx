@@ -231,21 +231,15 @@ function Checkout() {
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
         // Determine if guest and derive any available delivery token for fallback authorization
-        const isGuest = !(
-          User && typeof (User as { id?: unknown })?.id === "number"
-        );
-        const guestToken: string | undefined =
-          (orderData?.order_data?.charges?.token as string | undefined) ||
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ((Checkout?.charges as any)?.token as string | undefined) ||
-          undefined;
+        const isGuest = false;
+        void 0;
 
         // Robust verification with fallbacks for guest
         let verificationResponse: Record<string, unknown> | null = null;
         let vStatus = "";
         let vAmount = 0;
         let vGatewayResponse: string | null = null;
-        let skipVerify = false;
+        const skipVerify = false;
         try {
           verificationResponse = isGuest
             ? await PUBLIC_POST(
@@ -256,65 +250,7 @@ function Checkout() {
               )
             : await POST(API.PAYSTACK_VERIFY, { reference: paymentRef });
         } catch (e: unknown) {
-          const is401 =
-            typeof e === "object" &&
-            e !== null &&
-            "statusCode" in e &&
-            ((e as { statusCode?: number }).statusCode === 401 ||
-              (e as { status?: number }).status === 401);
-          if (is401) {
-            // Fallback: Try public variants with/without headers for both guest and authenticated users
-            let verified = false;
-            const attempts: Array<{
-              body: Record<string, unknown>;
-              headers?: Record<string, string>;
-            }> = [
-              { body: { reference: paymentRef } },
-              { body: { ref: paymentRef } },
-              {
-                body: { reference: paymentRef },
-                headers: guestToken
-                  ? { Authorization: `Bearer ${guestToken}` }
-                  : undefined,
-              },
-              {
-                body: { ref: paymentRef },
-                headers: guestToken
-                  ? { Authorization: `Bearer ${guestToken}` }
-                  : undefined,
-              },
-              {
-                body: { reference: paymentRef, delivery_token: guestToken },
-              },
-              {
-                body: { ref: paymentRef, delivery_token: guestToken },
-              },
-            ];
-            for (const attempt of attempts) {
-              try {
-                verificationResponse = await PUBLIC_POST(
-                  API.PAYSTACK_VERIFY,
-                  attempt.body,
-                  null,
-                  attempt.headers ? { headers: attempt.headers } : undefined,
-                );
-                verified = true;
-                break;
-              } catch {
-                // continue
-              }
-            }
-            if (!verified) {
-              const inlineMode = localStorage.getItem("paystack_inline_mode");
-              if (inlineMode === "1") {
-                skipVerify = true;
-              } else {
-                throw e;
-              }
-            }
-          } else {
-            throw e;
-          }
+          throw e;
         }
 
         console.log("Payment verification response:", verificationResponse);
