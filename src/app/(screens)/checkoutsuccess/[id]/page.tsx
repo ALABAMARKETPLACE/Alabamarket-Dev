@@ -1140,44 +1140,96 @@ function Checkout() {
                   <div>
                     <div className="checkout-txt3">PAYMENT DETAILS</div>
                     <div className="checkout-txt4">
-                      Payment Type: {responseData?.[0]?.orderPayment?.paymentType ?? ""} Amount: {getCurrencySymbol(Settings?.currency)} {Number(responseData?.[0]?.orderPayment?.amount || 0).toFixed(2)}
+                      Payment Type:{" "}
+                      {responseData?.[0]?.orderPayment?.paymentType ?? ""}{" "}
+                      Amount: {getCurrencySymbol(Settings?.currency)}{" "}
+                      {Number(
+                        responseData?.[0]?.orderPayment?.amount || 0,
+                      ).toFixed(2)}
                     </div>
                   </div>
                   <div className="checkout-txt3">ORDER SUMMARY</div>
                   <div style={{ margin: 10 }}>
                     {/* Group by each order in responseData (each is a seller/store) */}
-                    {Array.isArray(responseData) && responseData.length > 0 ? (
-                      responseData.map((order, idx) => {
-                        const storeName = order?.storeName || order?.store_name || `Store #${order?.newOrder?.storeId || order?.newOrder?.store_id || idx + 1}`;
-                        const items = order?.orderItems as Array<{ image?: string; name?: string; totalPrice?: number }> || [];
-                        const storeSubtotal = items.reduce((sum: number, it: { totalPrice?: number }) => sum + Number(it.totalPrice || 0), 0);
-                        return (
-                          <div key={idx} style={{ marginBottom: 18, borderBottom: "1px solid #eee", paddingBottom: 10 }}>
-                            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 6, color: "#1a237e" }}>
-                              🏪 {storeName}
+                    {Array.isArray(responseData) && responseData.length > 0
+                      ? responseData.map((order, idx) => {
+                          const storeName =
+                            order?.storeName ||
+                            order?.store_name ||
+                            `Store #${order?.newOrder?.storeId || order?.newOrder?.store_id || idx + 1}`;
+                          const items =
+                            (order?.orderItems as Array<{
+                              image?: string;
+                              name?: string;
+                              totalPrice?: number;
+                            }>) || [];
+                          const storeSubtotal = items.reduce(
+                            (sum: number, it: { totalPrice?: number }) =>
+                              sum + Number(it.totalPrice || 0),
+                            0,
+                          );
+                          return (
+                            <div
+                              key={idx}
+                              style={{
+                                marginBottom: 18,
+                                borderBottom: "1px solid #eee",
+                                paddingBottom: 10,
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: 15,
+                                  marginBottom: 6,
+                                  color: "#1a237e",
+                                }}
+                              >
+                                🏪 {storeName}
+                              </div>
+                              <List
+                                itemLayout="horizontal"
+                                dataSource={items}
+                                renderItem={(
+                                  item: {
+                                    image?: string;
+                                    name?: string;
+                                    totalPrice?: number;
+                                  },
+                                  index: number,
+                                ) => (
+                                  <List.Item key={index}>
+                                    <List.Item.Meta
+                                      avatar={
+                                        <Avatar
+                                          src={item?.image}
+                                          size={40}
+                                          shape="square"
+                                        />
+                                      }
+                                      title={item?.name ?? ""}
+                                      description={
+                                        <div>Total: {item?.totalPrice}</div>
+                                      }
+                                    />
+                                  </List.Item>
+                                )}
+                              />
+                              <div
+                                className="checkout-row"
+                                style={{ marginTop: 6 }}
+                              >
+                                <div>Subtotal for this seller</div>
+                                <div style={{ flex: 1 }} />
+                                <div>
+                                  {getCurrencySymbol(Settings?.currency)}{" "}
+                                  {storeSubtotal.toFixed(2)}
+                                </div>
+                              </div>
                             </div>
-                            <List
-                              itemLayout="horizontal"
-                              dataSource={items}
-                              renderItem={(item: { image?: string; name?: string; totalPrice?: number }, index: number) => (
-                                <List.Item key={index}>
-                                  <List.Item.Meta
-                                    avatar={<Avatar src={item?.image} size={40} shape="square" />}
-                                    title={item?.name ?? ""}
-                                    description={<div>Total: {item?.totalPrice}</div>}
-                                  />
-                                </List.Item>
-                              )}
-                            />
-                            <div className="checkout-row" style={{ marginTop: 6 }}>
-                              <div>Subtotal for this seller</div>
-                              <div style={{ flex: 1 }} />
-                              <div>{getCurrencySymbol(Settings?.currency)} {storeSubtotal.toFixed(2)}</div>
-                            </div>
-                          </div>
-                        );
-                      })
-                    ) : null}
+                          );
+                        })
+                      : null}
                     <br />
                     <div className="checkout-row">
                       <div>Total Product Price</div>
