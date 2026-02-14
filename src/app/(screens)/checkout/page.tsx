@@ -8,7 +8,6 @@ import { notification } from "antd";
 import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
-import { getGuestAddress } from "./_components/guestAddressForm";
 
 import { useRouter } from "next/navigation";
 import { POST, PUBLIC_POST } from "@/util/apicall";
@@ -39,7 +38,7 @@ function Checkout() {
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
 
-  const [guestEmail, setGuestEmail] = useState<string>("");
+  // const [guestEmail, setGuestEmail] = useState<string>("");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [total, setTotal] = useState<any>(0);
@@ -56,13 +55,13 @@ function Checkout() {
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
 
-    // Load guest email if available
-    if (!isAuthenticated) {
-      const savedData = getGuestAddress();
-      if (savedData?.email) {
-        setGuestEmail(savedData.email);
-      }
-    }
+    // Guest checkout disabled
+    // if (!isAuthenticated) {
+    //   const savedData = getGuestAddress();
+    //   if (savedData?.email) {
+    //     setGuestEmail(savedData.email);
+    //   }
+    // }
   }, [isAuthenticated]);
 
   // Do NOT mutate Checkout.address directly. Instead, always create a new object with email when needed.
@@ -157,67 +156,15 @@ function Checkout() {
           };
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
         } else {
-          const guestPayload = {
-            cart_items: (Array.isArray(Checkout?.Checkout)
-              ? Checkout.Checkout
-              : calculationCart
-            ).map((item: Record<string, unknown>) => ({
-              product_id:
-                Number(
-                  (item as { productId?: number }).productId ??
-                    (item as { id?: number }).id ??
-                    ((item as { product?: Record<string, unknown> }).product ||
-                      {})["id"] ??
-                    0,
-                ) || 0,
-              store_id:
-                Number(
-                  (item as { storeId?: number }).storeId ??
-                    (item as { store_id?: number }).store_id ??
-                    ((item as { product?: Record<string, unknown> }).product ||
-                      {})["store_id"] ??
-                    0,
-                ) || 0,
-              quantity: Number((item as { quantity?: number }).quantity || 1),
-              weight: Number((item as { weight?: number }).weight || 1),
-            })),
-            delivery_address: {
-              state_id: Number(addressData.state_id || 0),
-              city: String(
-                (addressData as { city?: string }).city ||
-                  (addressData as { state?: string }).state ||
-                  "",
-              ),
-              country_id: Number(addressData.country_id || 0),
-            },
-          };
-          try {
-            response = await PUBLIC_POST(
-              API.GUEST_CALCULATE_DELIVERY_CHARGE,
-              guestPayload,
-            );
-          } catch (e: unknown) {
-            const er = e as Error & { status?: number; message?: string };
-            const msg =
-              typeof er?.message === "string" ? er.message.toLowerCase() : "";
-            const notFound =
-              er?.status === 404 ||
-              msg.includes("not found") ||
-              msg.includes("cannot post") ||
-              msg.includes("calculate-delivery-charge");
-            if (notFound) {
-              const fallbackPayload = {
-                cart: calculationCart,
-                address: addressData,
-              };
-              response = await PUBLIC_POST(
-                API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
-                fallbackPayload,
-              );
-            } else {
-              throw e;
-            }
-          }
+          notificationApi.error({
+            message: "Guest checkout is currently disabled. Please log in.",
+          });
+          setDeliveryToken("");
+          setDelivery_charge(0);
+          setGrand_total(totals);
+          setDiscount(0);
+          setIsDeliveryCalculating(false);
+          return;
         }
 
         console.log("Delivery response:", response);
@@ -338,12 +285,11 @@ function Checkout() {
       const customerName = anyUser
         ? `${anyUser.first_name || "Customer"} ${anyUser.last_name || ""}`
         : Checkout?.address?.full_name || "Guest Customer";
-      // Always use guestEmail for guest checkout, user.email for authenticated
-      const customerEmail = isAuthenticated
-        ? (user as any)?.email ||
-          (user as any)?.id ||
-          "customer@alabamarketplace.ng"
-        : guestEmail || "guest@alabamarketplace.ng";
+      const customerEmail = (
+        user && (user as { email?: string }).email
+          ? (user as { email?: string }).email
+          : "customer@alabamarketplace.ng"
+      ) as string;
       // const resolvedCustomerId = (user as { id?: number })?.id || null;
 
       // Extract store IDs and group items by store for split payment
@@ -662,63 +608,16 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        if (isAuthenticated) {
-          // Authenticated users: use only /paystack/initialize, /paystack/initialize-split
-          response = await POST(endpointPrimary, paymentData);
-        } else {
-          // Guest users: use only /paystack/initialize-guest
-          if (!deliveryToken || String(deliveryToken).trim().length === 0) {
-            throw new Error(
-              "Delivery token missing. Please select or reselect your delivery address to continue.",
-            );
-          }
-          const guestInitData = {
-            guest_info: {
-              email: guestEmail || "guest@alabamarketplace.ng",
-              first_name: (Checkout?.address?.full_name || "Guest").split(
-                " ",
-              )[0],
-              last_name:
-                (Checkout?.address?.full_name || "User")
-                  .split(" ")
-                  .slice(1)
-                  .join(" ") || "User",
-              phone:
-                Checkout?.address?.phone_no || Checkout?.address?.phone || "",
-            },
-            cart_items: Array.isArray(Checkout?.Checkout)
-              ? Checkout.Checkout.map((it: Record<string, unknown>) => ({
-                  product_id:
-                    Number(
-                      (it as { productId?: number }).productId ??
-                        (it as { id?: number }).id ??
-                        ((it as { product?: Record<string, unknown> })
-                          .product || {})["id"] ??
-                        0,
-                    ) || 0,
-                  store_id:
-                    Number(
-                      (it as { storeId?: number }).storeId ??
-                        (it as { store_id?: number }).store_id ??
-                        ((it as { product?: Record<string, unknown> })
-                          .product || {})["store_id"] ??
-                        0,
-                    ) || 0,
-                  quantity: Number((it as { quantity?: number }).quantity || 1),
-                  unit_price: Math.round(
-                    Number((it as { price?: number }).price || 0) * 100,
-                  ),
-                }))
-              : [],
-            amount: amountInKobo,
-            delivery_charge: deliveryChargeInKobo,
-            callback_url: `${window.location.origin}/checkoutsuccess/2`,
-          };
-          response = await PUBLIC_POST(
-            API.PAYSTACK_INITIALIZE_GUEST,
-            guestInitData,
-          );
+        // Guest purchase disabled
+        if (!isAuthenticated) {
+          notificationApi.error({
+            message:
+              "Guest checkout is currently disabled. Please log in to continue.",
+          });
+          setIsLoading(false);
+          return;
         }
+        response = await POST(endpointPrimary, paymentData);
       } catch (primaryError: unknown) {
         const err =
           typeof primaryError === "object" && primaryError !== null
@@ -806,29 +705,25 @@ function Checkout() {
           JSON.stringify({
             reference,
             amount: amountInKobo,
-            email: customerEmail, // enforce guestEmail for guest
+            email: customerEmail,
             stores: stores.map((s) => s.storeId),
             is_multi_seller: hasMultipleStores,
             store_allocations: storeAllocations,
-            guest_email: !isAuthenticated ? guestEmail : undefined,
             order_data: {
               payment: {
                 ref: reference,
                 type: payment_method,
                 split_payment: shouldUseSplitPayment,
                 is_multi_seller: hasMultipleStores,
-                email: customerEmail, // enforce guestEmail for guest
+                email: customerEmail,
               },
               cart: Checkout?.Checkout,
-              address: !isAuthenticated
-                ? { ...(Checkout?.address || {}), email: guestEmail }
-                : Checkout?.address,
+              address: Checkout?.address,
               charges: {
                 token: deliveryToken,
               },
               user_id: customerId,
               user: user,
-              guest_email: !isAuthenticated ? guestEmail : undefined,
             },
           }),
         );

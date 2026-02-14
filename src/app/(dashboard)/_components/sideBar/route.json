@@ -145,13 +145,6 @@
         "role": ["admin"]
       },
       {
-        "id": 34,
-        "menu": "Guest Orders",
-        "icon": "HiUsers",
-        "route": "/auth/guest-orders",
-        "role": ["admin"]
-      },
-      {
         "id": 33,
         "menu": "Manage News",
         "icon": "TbNews",

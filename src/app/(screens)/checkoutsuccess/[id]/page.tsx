@@ -83,7 +83,7 @@ import { Avatar, Button, List, Spin, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
-import { GET, POST, DELETE, PUBLIC_POST } from "@/util/apicall";
+import { GET, POST, DELETE } from "@/util/apicall";
 import API from "@/config/API";
 import { storeCart } from "@/redux/slice/cartSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -230,12 +230,7 @@ function Checkout() {
 
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
-        // Determine if guest and derive available delivery token for authorization
-        const isGuest =
-          !(User && typeof (User as { id?: unknown })?.id === "number") ||
-          Boolean(orderData?.guest_email) ||
-          Boolean(Checkout?.address?.is_guest);
-        // No token required for verify-guest
+        // Guest checkout disabled
 
         // Robust verification with fallbacks for guest
         let verificationResponse: Record<string, unknown> | null = null;
@@ -243,29 +238,9 @@ function Checkout() {
         let vAmount = 0;
         let vGatewayResponse: string | null = null;
         const skipVerify = false;
-        try {
-          if (isGuest) {
-            // Guest users: use only /paystack/verify-guest
-            verificationResponse = await PUBLIC_POST(
-              API.PAYSTACK_VERIFY_GUEST,
-              {
-                reference: paymentRef,
-                guest_email:
-                  orderData?.guest_email ||
-                  Checkout?.address?.email ||
-                  Checkout?.address?.guest_email ||
-                  "",
-              },
-            );
-          } else {
-            // Authenticated users: use only /paystack/verify
-            verificationResponse = await POST(API.PAYSTACK_VERIFY, {
-              reference: paymentRef,
-            });
-          }
-        } catch (e: unknown) {
-          throw e;
-        }
+        verificationResponse = await POST(API.PAYSTACK_VERIFY, {
+          reference: paymentRef,
+        });
 
         console.log("Payment verification response:", verificationResponse);
 
@@ -754,21 +729,7 @@ function Checkout() {
           return;
         }
 
-        console.log("Guest order payload:", guestOrderPayload);
-        response = await PUBLIC_POST(
-          API.ORDER_GUEST,
-          guestOrderPayload as unknown as Record<string, unknown>,
-          null,
-          {
-            headers: finalOrderData?.charges?.token
-              ? {
-                  Authorization: `Bearer ${String(
-                    finalOrderData?.charges?.token,
-                  )}`,
-                }
-              : undefined,
-          },
-        );
+        response = await POST(API.ORDER, finalOrderData);
       } else {
         // Create order for authenticated users (payment already verified above for Paystack)
         response = await POST(API.ORDER, finalOrderData);
