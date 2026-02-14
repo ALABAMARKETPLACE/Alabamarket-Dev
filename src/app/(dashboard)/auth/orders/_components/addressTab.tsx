@@ -84,7 +84,9 @@ export default function AddressTab(props: Props) {
     // 4) Fetched user name
     // 5) Fetched user first/last name
     if (isValid((props?.data as Record<string, unknown>)?.["customer_name"])) {
-      return (props?.data as Record<string, unknown>)?.["customer_name"] as string;
+      return (props?.data as Record<string, unknown>)?.[
+        "customer_name"
+      ] as string;
     }
     if (isValid(props?.data?.name)) return props.data.name;
     if (isValid(props?.data?.order_contact_name))
