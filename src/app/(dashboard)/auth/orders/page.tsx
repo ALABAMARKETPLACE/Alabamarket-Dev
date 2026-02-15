@@ -146,13 +146,21 @@ function Page() {
       return <Error description={error?.message} />;
     }
 
-    const ordersData = Array.isArray(orders?.data) ? orders?.data : [];
+    let ordersData = Array.isArray(orders?.data) ? orders?.data : [];
+    // Deduplicate by order_id (or fallback to id/_id)
+    const seen = new Set();
+    ordersData = ordersData.filter((order) => {
+      const key = order.order_id ?? order.id ?? order._id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
     return (
       <>
         <DataTable
           data={ordersData}
-          count={orders?.meta?.itemCount}
+          count={ordersData.length}
           setPage={(nextPage: number, nextTake: number) => {
             setPage(nextPage);
             setTake(nextTake);

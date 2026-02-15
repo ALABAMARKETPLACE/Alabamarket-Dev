@@ -10,6 +10,11 @@ import {
 } from "@ant-design/icons";
 import StoreInfoCard from "./storeInfoCard";
 
+// Helper to get fallback value from props.data
+function getInlineFallback(props: Props, key: string): string | undefined {
+  return (props?.data as Record<string, unknown>)?.[key] as string | undefined;
+}
+
 interface SellerData {
   seller_id?: string | number;
   storeId?: string | number;
@@ -42,9 +47,10 @@ export default function SellerDetailsCard(props: Props) {
 
   const { data: sellerData, isLoading } = useQuery({
     queryFn: async () => {
-      const res = (await GET(
-        API_ADMIN.AUTH_SELLER_DETAILS + storeId,
-      )) as Record<string, unknown>;
+      const res = (await GET(API_ADMIN.STORE_INFO_ADMIN + storeId)) as Record<
+        string,
+        unknown
+      >;
       // Handle both nested { data: ... } and flat response structures
       if (res?.data) {
         return res as unknown as SellerDetailsResponse;
@@ -53,6 +59,30 @@ export default function SellerDetailsCard(props: Props) {
     },
     queryKey: ["seller_details", storeId],
     enabled: !!storeId,
+  });
+
+  // Try to discover seller's userId to fetch phone/email from user profile
+  const sellerUserId =
+    (props.data as Record<string, unknown>)?.["seller_user_id"] ||
+    (props.data as Record<string, unknown>)?.["sellerId"] ||
+    (sellerData?.data as Record<string, unknown> | undefined)?.["user_id"] ||
+    (sellerData?.data as Record<string, unknown> | undefined)?.["userId"] ||
+    (sellerData?.data as Record<string, unknown> | undefined)?.[
+      "seller_user_id"
+    ] ||
+    null;
+
+  const { data: sellerUserRaw } = useQuery({
+    queryFn: async () => {
+      if (!sellerUserId) return null;
+      const res = (await GET(API_ADMIN.USER_DETAILS + sellerUserId)) as Record<
+        string,
+        unknown
+      >;
+      return (res as { data?: Record<string, unknown> })?.data || res || null;
+    },
+    queryKey: ["seller_user_details", sellerUserId],
+    enabled: !!sellerUserId,
   });
 
   const getSellerName = () => {
@@ -70,13 +100,52 @@ export default function SellerDetailsCard(props: Props) {
   };
 
   const getPhoneNumber = () => {
+    const user = sellerUserRaw as Record<string, unknown> | null;
+    const cc =
+      (user?.["countrycode"] as string | undefined) ||
+      (user?.["country_code"] as string | undefined);
+    const ph =
+      (user?.["phone"] as string | undefined) ||
+      (user?.["phone_no"] as string | undefined);
+    if (ph && cc) return `${cc}${ph}`.replace(/\s+/g, "");
+    if (ph) return ph;
     const phone = sellerData?.data?.phone;
-    return phone || "N/A";
+    if (phone) return phone;
+    // Fallback to inline order data
+    return (
+      getInlineFallback(props, "store_phone") ||
+      getInlineFallback(props, "seller_phone") ||
+      "N/A"
+    );
   };
 
-  const getAddress = () => {
-    const seller = sellerData?.data;
-    return seller?.business_address || seller?.address || "N/A";
+  const getEmail = () => {
+    const user = sellerUserRaw as Record<string, unknown> | null;
+    const email =
+      (user?.["email"] as string | undefined) ||
+      (sellerData?.data?.email as string | undefined);
+    if (email) return email;
+    // Fallback to inline order data
+    return (
+      getInlineFallback(props, "store_email") ||
+      getInlineFallback(props, "seller_email") ||
+      "N/A"
+    );
+  };
+
+  const getAddress = (): string => {
+    const seller = sellerData?.data as Record<string, unknown> | undefined;
+    const address =
+      (seller?.["business_address"] as string | undefined) ||
+      (seller?.["address"] as string | undefined) ||
+      (sellerUserRaw as Record<string, unknown> | null)?.["address"];
+    if (typeof address === "string") return address;
+    // Fallback to inline order data
+    const inline =
+      getInlineFallback(props, "store_address") ||
+      getInlineFallback(props, "seller_address");
+    if (typeof inline === "string") return inline;
+    return "N/A";
   };
 
   if (!storeId) {
@@ -128,7 +197,11 @@ export default function SellerDetailsCard(props: Props) {
       {sellerData?.data ? (
         <Descriptions column={1} bordered>
           <Descriptions.Item label="Store/Seller Name">
-            <Tag color="blue">{getSellerName()}</Tag>
+            {typeof getSellerName() === "string" ? (
+              <Tag color="blue">{getSellerName()}</Tag>
+            ) : (
+              <Tag color="blue">Unknown Seller</Tag>
+            )}
           </Descriptions.Item>
           <Descriptions.Item label="Phone Number">
             <span>
@@ -136,17 +209,13 @@ export default function SellerDetailsCard(props: Props) {
               {getPhoneNumber()}
             </span>
           </Descriptions.Item>
+          <Descriptions.Item label="Email">{getEmail()}</Descriptions.Item>
           <Descriptions.Item label="Address">
             <span>
               <EnvironmentOutlined style={{ marginRight: 8 }} />
-              {getAddress()}
+              {typeof getAddress() === "string" ? getAddress() : "N/A"}
             </span>
           </Descriptions.Item>
-          {sellerData?.data?.email && (
-            <Descriptions.Item label="Email">
-              {sellerData.data.email}
-            </Descriptions.Item>
-          )}
         </Descriptions>
       ) : (
         <Spin />

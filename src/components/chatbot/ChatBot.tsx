@@ -525,7 +525,7 @@ const ChatBot: React.FC = () => {
 
           <div className="chatbot-footer">
             <span className="footer-branding">
-              Powered by Taskgoglobal Limited ✨
+              Powered by Taxgoglobal Corporation✨
             </span>
             <Tooltip title="Start new conversation">
               <Button

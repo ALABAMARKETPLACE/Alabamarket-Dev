@@ -16,6 +16,7 @@ import { Button, Tag } from "antd";
 import { getOrderStatus } from "../_components/getOrderStatus";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 import API from "@/config/API";
 
@@ -43,6 +44,15 @@ interface StoreOrdersResponse {
 export default function OrderDetails() {
   const { orderId } = useParams() as { orderId: string };
   const route = useRouter();
+  const { data: sessionData, status } = useSession();
+  const session = (sessionData || null) as {
+    role?: string;
+    type?: string;
+    user?: { type?: string; role?: string } | null;
+  } | null;
+  const userRole = session?.role || session?.user?.role;
+  const userType = session?.type || session?.user?.type;
+  const isSeller = userRole === "seller" || userType === "seller";
 
   // Fetch order details using the new API response structure
   const { data: orderData, isLoading } = useQuery({
@@ -72,9 +82,11 @@ export default function OrderDetails() {
 
   // Order items (with product details)
   const orderItems = Array.isArray(order.orderItems)
-    ? order.orderItems.map((item: any) => ({
-        ...item,
-        product: item.productDetails || {},
+    ? order.orderItems.map((item: Record<string, unknown>) => ({
+        ...(item as Record<string, unknown>),
+        product:
+          (item as { productDetails?: Record<string, unknown> })
+            .productDetails || {},
       }))
     : [];
 
@@ -133,12 +145,14 @@ export default function OrderDetails() {
             <Tag color={getOrderStatusColor(order.status || "")}>
               {order.status}
             </Tag>
-            <Button
-              type="primary"
-              onClick={() => route.push("/auth/orders/substitute/" + orderId)}
-            >
-              Substitute Order
-            </Button>
+            {!isSeller && (
+              <Button
+                type="primary"
+                onClick={() => route.push("/auth/orders/substitute/" + orderId)}
+              >
+                Substitute Order
+              </Button>
+            )}
           </>
         )}
       </PageHeader>

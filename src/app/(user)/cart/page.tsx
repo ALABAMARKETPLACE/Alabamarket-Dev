@@ -269,6 +269,43 @@ function CartPage() {
                   ))}
                 </div>
                 <br />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: 16,
+                  }}
+                >
+                  <button
+                    style={{
+                      minWidth: 200,
+                      fontWeight: 500,
+                      background: "#ff8800",
+                      color: "#fff",
+                      border: "2px solid #ff8800",
+                      borderRadius: 6,
+                      padding: "10px 20px",
+                      transition: "background 0.2s, color 0.2s",
+                      cursor: "pointer",
+                    }}
+                    onMouseOver={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "#fff";
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        "#ff8800";
+                    }}
+                    onMouseOut={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "#ff8800";
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        "#fff";
+                    }}
+                    onClick={() => navigate.push("/")}
+                  >
+                    ← Select More Products
+                  </button>
+                </div>
+                <br />
                 <div className="Cart-txt8">
                   The price and availability of items at Alaba Marketplace are
                   subject to change. The Cart is a temporary place to store a
