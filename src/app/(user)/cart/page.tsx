@@ -269,7 +269,13 @@ function CartPage() {
                   ))}
                 </div>
                 <br />
-                <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginTop: 16,
+                  }}
+                >
                   <button
                     className="btn btn-outline-primary"
                     style={{ minWidth: 200, fontWeight: 500 }}
