@@ -269,6 +269,16 @@ function CartPage() {
                   ))}
                 </div>
                 <br />
+                <div style={{ display: "flex", justifyContent: "center", marginTop: 16 }}>
+                  <button
+                    className="btn btn-outline-primary"
+                    style={{ minWidth: 200, fontWeight: 500 }}
+                    onClick={() => navigate.push("/")}
+                  >
+                    ← Select More Products
+                  </button>
+                </div>
+                <br />
                 <div className="Cart-txt8">
                   The price and availability of items at Alaba Marketplace are
                   subject to change. The Cart is a temporary place to store a
