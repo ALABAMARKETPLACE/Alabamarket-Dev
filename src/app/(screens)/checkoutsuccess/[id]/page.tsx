@@ -177,7 +177,6 @@ function Checkout() {
         }
       });
     }
-
   }, []);
 
   const loadCartItems = useCallback(async () => {
@@ -233,7 +232,11 @@ function Checkout() {
         console.log("Processing Paystack order...");
 
         // Use the generated paymentRef for this attempt
-        let paystackRef = paymentRef || searchParams.get("reference") || searchParams.get("ref") || localStorage.getItem("paystack_payment_reference");
+        let paystackRef =
+          paymentRef ||
+          searchParams.get("reference") ||
+          searchParams.get("ref") ||
+          localStorage.getItem("paystack_payment_reference");
         if (!paystackRef || paystackRef === "null") {
           throw new Error("Payment reference not found. Please try again.");
         }
