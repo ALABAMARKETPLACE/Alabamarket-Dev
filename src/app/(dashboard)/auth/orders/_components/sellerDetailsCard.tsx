@@ -42,9 +42,10 @@ export default function SellerDetailsCard(props: Props) {
 
   const { data: sellerData, isLoading } = useQuery({
     queryFn: async () => {
-      const res = (await GET(
-        API_ADMIN.AUTH_SELLER_DETAILS + storeId,
-      )) as Record<string, unknown>;
+      const res = (await GET(API_ADMIN.STORE_INFO_ADMIN + storeId)) as Record<
+        string,
+        unknown
+      >;
       // Handle both nested { data: ... } and flat response structures
       if (res?.data) {
         return res as unknown as SellerDetailsResponse;
@@ -116,8 +117,12 @@ export default function SellerDetailsCard(props: Props) {
   };
 
   const getAddress = () => {
-    const seller = sellerData?.data;
-    return seller?.business_address || seller?.address || "N/A";
+    const seller = sellerData?.data as Record<string, unknown> | undefined;
+    const address =
+      (seller?.["business_address"] as string | undefined) ||
+      (seller?.["address"] as string | undefined) ||
+      (sellerUserRaw as Record<string, unknown> | null)?.["address"];
+    return (address as string | undefined) || "N/A";
   };
 
   if (!storeId) {
