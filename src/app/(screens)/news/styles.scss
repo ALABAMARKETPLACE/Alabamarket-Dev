@@ -4,14 +4,20 @@
   flex-direction: column;
   background: linear-gradient(135deg, #fff 60%, #f5f5fa 100%);
   border-radius: 18px;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.08), 0 1.5px 8px rgba(118, 75, 162, 0.04);
+  box-shadow:
+    0 8px 32px rgba(102, 126, 234, 0.08),
+    0 1.5px 8px rgba(118, 75, 162, 0.04);
   overflow: hidden;
   margin-bottom: 32px;
-  transition: box-shadow 0.3s, transform 0.3s;
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
   position: relative;
   min-height: 320px;
   &:hover {
-    box-shadow: 0 12px 36px rgba(102, 126, 234, 0.16), 0 2px 12px rgba(118, 75, 162, 0.08);
+    box-shadow:
+      0 12px 36px rgba(102, 126, 234, 0.16),
+      0 2px 12px rgba(118, 75, 162, 0.08);
     transform: translateY(-2px) scale(1.01);
   }
   .featured-news-image {
@@ -52,9 +58,13 @@
 
 // Subtle animation for news cards
 .news-card {
-  transition: box-shadow 0.3s, transform 0.3s;
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
   &:hover {
-    box-shadow: 0 12px 32px rgba(102, 126, 234, 0.10), 0 2px 12px rgba(118, 75, 162, 0.06);
+    box-shadow:
+      0 12px 32px rgba(102, 126, 234, 0.1),
+      0 2px 12px rgba(118, 75, 162, 0.06);
     transform: translateY(-3px) scale(1.01);
   }
 }

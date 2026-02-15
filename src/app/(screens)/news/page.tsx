@@ -64,14 +64,13 @@ export default function NewsPage() {
     retry: 2,
   });
 
-
   // Memoized filtered news for performance
   const filteredNews = useMemo(() => {
     if (!newsData?.data) return [];
     return newsData.data.filter(
       (item) =>
         item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+        item.description?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
   }, [newsData, searchTerm]);
 
@@ -114,7 +113,11 @@ export default function NewsPage() {
                 setCurrentPage(1);
               }}
               className="news-search"
-              style={{ background: "#fff", borderRadius: 12, boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
+              style={{
+                background: "#fff",
+                borderRadius: 12,
+                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+              }}
             />
           </Col>
         </Row>
@@ -152,7 +155,13 @@ export default function NewsPage() {
             {featuredNews && (
               <Row className="mb-5">
                 <Col lg={8} md={10} className="mx-auto">
-                  <div className="featured-news-card" onClick={() => window.location.href = `/news/${featuredNews.id}`} style={{ cursor: "pointer" }}>
+                  <div
+                    className="featured-news-card"
+                    onClick={() =>
+                      (window.location.href = `/news/${featuredNews.id}`)
+                    }
+                    style={{ cursor: "pointer" }}
+                  >
                     {featuredNews.image || featuredNews.thumbnail ? (
                       <img
                         src={featuredNews.image || featuredNews.thumbnail}
@@ -161,11 +170,23 @@ export default function NewsPage() {
                       />
                     ) : null}
                     <div className="featured-news-content">
-                      <h2 className="featured-news-title">{featuredNews.title}</h2>
-                      <p className="featured-news-description">{featuredNews.description?.substring(0, 180)}{featuredNews.description && featuredNews.description.length > 180 ? "..." : ""}</p>
+                      <h2 className="featured-news-title">
+                        {featuredNews.title}
+                      </h2>
+                      <p className="featured-news-description">
+                        {featuredNews.description?.substring(0, 180)}
+                        {featuredNews.description &&
+                        featuredNews.description.length > 180
+                          ? "..."
+                          : ""}
+                      </p>
                       <div className="featured-news-meta">
                         <span>{featuredNews.author}</span>
-                        <span>{new Date(featuredNews.createdAt).toLocaleDateString()}</span>
+                        <span>
+                          {new Date(
+                            featuredNews.createdAt,
+                          ).toLocaleDateString()}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -191,7 +212,11 @@ export default function NewsPage() {
                   total={newsData.total}
                   onChange={handlePageChange}
                   showSizeChanger={false}
-                  style={{ borderRadius: 8, background: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}
+                  style={{
+                    borderRadius: 8,
+                    background: "#fff",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+                  }}
                 />
               </div>
             )}
