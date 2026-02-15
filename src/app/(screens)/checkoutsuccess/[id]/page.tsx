@@ -231,17 +231,17 @@ function Checkout() {
         // Paystack Order Flow - Verify payment first
         console.log("Processing Paystack order...");
 
-        // Use the generated paymentRef for this attempt
-        let paystackRef =
-          paymentRef ||
-          searchParams.get("reference") ||
-          searchParams.get("ref") ||
-          localStorage.getItem("paystack_payment_reference");
-        if (!paystackRef || paystackRef === "null") {
+
+        // Robustly select a valid payment reference
+        const paystackRef =
+          (typeof paymentRef === "string" && paymentRef.trim()) ||
+          (typeof searchParams.get("reference") === "string" && searchParams.get("reference")?.trim()) ||
+          (typeof searchParams.get("ref") === "string" && searchParams.get("ref")?.trim()) ||
+          (typeof localStorage.getItem("paystack_payment_reference") === "string" && localStorage.getItem("paystack_payment_reference")?.trim()) ||
+          null;
+        if (!paystackRef) {
           throw new Error("Payment reference not found. Please try again.");
         }
-        // Always use the latest generated reference
-        paystackRef = paymentRef;
         console.log("Paystack payment reference:", paystackRef);
 
         // Load stored order data (for other order info, not for token)
