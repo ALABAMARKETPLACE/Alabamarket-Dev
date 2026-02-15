@@ -133,19 +133,19 @@ export default function SellerDetailsCard(props: Props) {
     );
   };
 
-  const getAddress = () => {
+  const getAddress = (): string => {
     const seller = sellerData?.data as Record<string, unknown> | undefined;
     const address =
       (seller?.["business_address"] as string | undefined) ||
       (seller?.["address"] as string | undefined) ||
       (sellerUserRaw as Record<string, unknown> | null)?.["address"];
-    if (address) return address;
+    if (typeof address === "string") return address;
     // Fallback to inline order data
-    return (
+    const inline =
       getInlineFallback(props, "store_address") ||
-      getInlineFallback(props, "seller_address") ||
-      "N/A"
-    );
+      getInlineFallback(props, "seller_address");
+    if (typeof inline === "string") return inline;
+    return "N/A";
   };
 
   if (!storeId) {
@@ -213,7 +213,7 @@ export default function SellerDetailsCard(props: Props) {
           <Descriptions.Item label="Address">
             <span>
               <EnvironmentOutlined style={{ marginRight: 8 }} />
-              {getAddress()}
+              {typeof getAddress() === "string" ? getAddress() : "N/A"}
             </span>
           </Descriptions.Item>
         </Descriptions>
