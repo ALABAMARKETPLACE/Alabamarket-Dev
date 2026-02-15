@@ -263,15 +263,18 @@ function UserOrders() {
     error,
   } = useQuery({
     queryFn: async () => {
+      // Use /order/user/:userId endpoint for user-specific filtering
       const base = `${API.ORDER_GET_USER}${userId ?? ""}`;
-      return await GET(base, {
+      const params = {
         order: "DESC",
         page: page,
         take: pageSize,
         ...(search && { name: search }),
         status: orderStatus,
         sort: dateFilter,
-      });
+      };
+      console.log("Fetching user orders endpoint:", base, params);
+      return await GET(base, params);
     },
     queryKey: ["order_items", userId, page, search, orderStatus, dateFilter],
     enabled: Boolean(userId) && status === "authenticated",
