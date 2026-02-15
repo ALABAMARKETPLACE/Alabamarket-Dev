@@ -1121,33 +1121,42 @@ function Checkout() {
                   <div>
                     <div className="checkout-txt3">PAYMENT DETAILS</div>
                     <div className="checkout-txt4">
-                      Payment Type: {" "}
+                      Payment Type:{" "}
                       {(() => {
                         // Prefer explicit payment type, fallback to logic
-                        const paymentType = responseData?.[0]?.orderPayment?.paymentType;
-                        if (paymentType && paymentType.toLowerCase().includes("cash")) {
+                        const paymentType =
+                          responseData?.[0]?.orderPayment?.paymentType;
+                        if (
+                          paymentType &&
+                          paymentType.toLowerCase().includes("cash")
+                        ) {
                           // If promo disables COD, show Online Payment
                           const promo = getActiveDeliveryPromo();
                           if (promo) return "Online Payment";
                           return "Cash On Delivery";
                         }
-                        if (paymentType && paymentType.toLowerCase().includes("online")) {
+                        if (
+                          paymentType &&
+                          paymentType.toLowerCase().includes("online")
+                        ) {
                           return "Online Payment";
                         }
                         // Fallback: if not COD, show Online Payment
                         return "Online Payment";
-                      })()} {" "}
+                      })()}{" "}
                       Amount: {getCurrencySymbol(Settings?.currency)}{" "}
                       {(() => {
                         // Exclude delivery price from amount if promo is active
                         const promo = getActiveDeliveryPromo();
-                        let amount = Number(responseData?.[0]?.orderPayment?.amount || 0);
+                        let amount = Number(
+                          responseData?.[0]?.orderPayment?.amount || 0,
+                        );
                         if (promo) {
                           // Subtract delivery charge if present
                           const delivery = Number(
                             responseData?.[0]?.newOrder?.deliveryCharge ||
-                            responseData?.[0]?.deliveryCharge ||
-                            0
+                              responseData?.[0]?.deliveryCharge ||
+                              0,
                           );
                           amount = amount - delivery;
                         }

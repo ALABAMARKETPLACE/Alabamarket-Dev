@@ -286,15 +286,19 @@ function CartPage() {
                       borderRadius: 6,
                       padding: "10px 20px",
                       transition: "background 0.2s, color 0.2s",
-                      cursor: "pointer"
+                      cursor: "pointer",
                     }}
-                    onMouseOver={e => {
-                      (e.currentTarget as HTMLButtonElement).style.background = '#fff';
-                      (e.currentTarget as HTMLButtonElement).style.color = '#ff8800';
+                    onMouseOver={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "#fff";
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        "#ff8800";
                     }}
-                    onMouseOut={e => {
-                      (e.currentTarget as HTMLButtonElement).style.background = '#ff8800';
-                      (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                    onMouseOut={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background =
+                        "#ff8800";
+                      (e.currentTarget as HTMLButtonElement).style.color =
+                        "#fff";
                     }}
                     onClick={() => navigate.push("/")}
                   >
