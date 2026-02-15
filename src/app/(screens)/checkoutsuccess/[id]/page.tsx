@@ -74,6 +74,7 @@ interface GuestOrderPayload {
 }
 
 import { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import "./styles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
@@ -141,15 +142,25 @@ function Checkout() {
   const { data: user }: any = useSession();
   const User = user?.user;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [orderItems, setOrderItems] = useState<any[]>([]);
+  // const [orderItems, setOrderItems] = useState<any[]>([]); // No longer used
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
+  const [paymentRef, setPaymentRef] = useState<string | null>(null);
 
   // Get route parameter to determine payment method
   const routeId = params?.id;
   const isCOD = routeId === "1";
   const isPaystack = routeId === "2";
+
+  // Always generate a new payment reference for each order attempt
+  useEffect(() => {
+    if (isPaystack) {
+      const newRef = `ps_${uuidv4()}`;
+      setPaymentRef(newRef);
+      localStorage.setItem("paystack_payment_reference", newRef);
+    }
+  }, [orderCreated, isPaystack]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderItems = useCallback((response: any[]) => {
@@ -166,7 +177,7 @@ function Checkout() {
         }
       });
     }
-    setOrderItems(array);
+
   }, []);
 
   const loadCartItems = useCallback(async () => {
@@ -191,6 +202,14 @@ function Checkout() {
     try {
       setOrderCreated(true); // Prevent multiple executions
 
+      // Always use a fresh payment reference for each attempt
+      let currentPaymentRef = paymentRef;
+      if (isPaystack && !currentPaymentRef) {
+        currentPaymentRef = `ps_${uuidv4()}`;
+        setPaymentRef(currentPaymentRef);
+        localStorage.setItem("paystack_payment_reference", currentPaymentRef);
+      }
+
       let finalOrderData;
 
       if (isCOD) {
@@ -213,16 +232,14 @@ function Checkout() {
         // Paystack Order Flow - Verify payment first
         console.log("Processing Paystack order...");
 
-        const paymentRef =
-          searchParams.get("reference") ||
-          searchParams.get("ref") ||
-          localStorage.getItem("paystack_payment_reference");
-
-        console.log("Paystack payment reference:", paymentRef);
-
-        if (!paymentRef || paymentRef === "null") {
+        // Use the generated paymentRef for this attempt
+        let paystackRef = paymentRef || searchParams.get("reference") || searchParams.get("ref") || localStorage.getItem("paystack_payment_reference");
+        if (!paystackRef || paystackRef === "null") {
           throw new Error("Payment reference not found. Please try again.");
         }
+        // Always use the latest generated reference
+        paystackRef = paymentRef;
+        console.log("Paystack payment reference:", paystackRef);
 
         // Load stored order data (for other order info, not for token)
         const storedOrderData = localStorage.getItem("paystack_order_data");
@@ -239,7 +256,7 @@ function Checkout() {
         let vGatewayResponse: string | null = null;
         const skipVerify = false;
         verificationResponse = await POST(API.PAYSTACK_VERIFY, {
-          reference: paymentRef,
+          reference: paystackRef,
         });
 
         console.log("Payment verification response:", verificationResponse);
@@ -294,7 +311,7 @@ function Checkout() {
 
         finalOrderData = orderData?.order_data || {
           payment: {
-            ref: paymentRef,
+            ref: paystackRef,
             type: "Pay Online",
             status: vStatus || "success",
             amount: vAmount || null,
@@ -829,66 +846,41 @@ function Checkout() {
         // Check for failed status in response data
         const orders = response?.data;
 
-        // Handle split orders: Check for any failed orders
-        if (Array.isArray(orders)) {
-          orders.forEach((order: Order) => {
-            if (
-              order?.newOrder?.status === "failed" ||
-              order?.status === "failed"
-            ) {
-              const failureReason =
-                order?.newOrder?.reason || order?.reason || "Unknown error";
-              const remark = order?.remark || order?.orderStatus?.remark || ""; // Check top-level remark too
-
-              // Check if failure is due to reference already used (idempotency issue)
-              const isReferenceError =
-                remark.includes("Already Used") ||
-                failureReason.includes("Already Used") ||
-                remark.includes("already used");
-
-              if (isReferenceError) {
-                console.log(
-                  "Order verification: Reference already used, treating as successful (idempotency check).",
-                );
-                // Fix status
-                if (order?.newOrder?.status === "failed") {
-                  order.newOrder.status = "Confirmed";
-                }
-                if (order?.status === "failed") {
-                  order.status = "Confirmed";
-                }
-              } else {
-                console.warn(
-                  "Order part marked as failed but proceeding to show available items:",
-                  order,
-                );
-                // We do NOT return here anymore. We try to show what succeeded.
-                // But we might want to notify the user if ALL failed.
-              }
-            }
-          });
-        }
-
-        // Re-check if ALL orders are still failed after our fix attempt
-        const allFailed =
+        // If any order failed, treat the whole order as failed
+        const anyFailed =
           Array.isArray(orders) &&
-          orders.length > 0 &&
-          orders.every(
+          orders.some(
             (order: Order) =>
               order?.newOrder?.status === "failed" ||
               order?.status === "failed",
           );
 
-        if (allFailed) {
-          const firstFailed = orders[0];
+        if (anyFailed) {
+          // Find the first failed order for the reason
+          const firstFailed = Array.isArray(orders)
+            ? orders.find(
+                (order: Order) =>
+                  order?.newOrder?.status === "failed" ||
+                  order?.status === "failed",
+              )
+            : null;
           const failureReason =
             firstFailed?.newOrder?.reason ||
             firstFailed?.reason ||
+            firstFailed?.remark ||
+            firstFailed?.orderStatus?.remark ||
             "Unknown error";
+
+          // Do NOT reuse the reference after a failed order
+          if (isPaystack) {
+            localStorage.removeItem("paystack_payment_reference");
+            localStorage.removeItem("paystack_order_data");
+            setPaymentRef(null);
+          }
 
           Notifications["error"]({
             message: "Order Processing Failed",
-            description: `Order processing failed: ${failureReason}. Please contact support.`,
+            description: `Order processing failed: ${failureReason}. Please try again or contact support.`,
           });
           setPaymentStatus(true);
           setOrderStatus(false);
@@ -896,23 +888,7 @@ function Checkout() {
           return;
         }
 
-        // If at least one success (or fixed), proceed.
-        // If some failed but not all, we show success for the valid ones.
-        // (Optionally we could warn about the partial failure, but for now let's prioritize showing the success)
-
-        if (
-          Array.isArray(orders) &&
-          orders.some(
-            (o: Order) =>
-              o?.newOrder?.status === "Confirmed" || o?.status === "Confirmed",
-          )
-        ) {
-          Notifications["success"]({
-            message: "Order Confirmed",
-            description: "Your order has been successfully placed.",
-          });
-        }
-
+        // If all orders succeeded, proceed as success
         getOrderItems(response?.data);
         setResponseData(response?.data);
 
@@ -935,9 +911,6 @@ function Checkout() {
           const firstOrder = response.data[0];
 
           response.data.forEach((order: Order) => {
-            // Check if order is valid/confirmed before tracking?
-            // Even if failed, if we fixed it or it's partial, we might want to track?
-            // Let's track everything that is in the response to be consistent with UI.
             if (order?.orderItems && Array.isArray(order.orderItems)) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               order.orderItems.forEach((item: any) => {
@@ -967,6 +940,7 @@ function Checkout() {
         if (isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
           localStorage.removeItem("paystack_order_data");
+          setPaymentRef(null);
         }
 
         // Clear cart from backend and redux
@@ -1022,6 +996,7 @@ function Checkout() {
     isPaystack,
     loadCartItems,
     searchParams,
+    paymentRef,
   ]);
 
   useEffect(() => {
