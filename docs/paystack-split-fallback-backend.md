@@ -3,7 +3,7 @@
 This document describes what to implement on the backend so that:
 
 - Normal case: **Seller has an active Paystack subaccount** → split payment **95% seller / 5% platform** uses the seller’s subaccount.
-- Fallback case: **Seller has no active Paystack subaccount** → do **NOT** attempt split; instead fall back to the older flow and call **Paystack normal initialize** (no split).
+- Fallback case: **Seller has no active Paystack subaccount** → do **NOT** attempt split; instead fall back to the older flow and call **Paystack normal initialize* (no split).
 
 <!--
 Previous approach (removed by request):

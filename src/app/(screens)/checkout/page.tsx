@@ -8,10 +8,9 @@ import { notification } from "antd";
 import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
-// import { getGuestAddress } from "./_components/guestAddressForm";
 
 import { useRouter } from "next/navigation";
-import { GET, POST, PUBLIC_POST } from "@/util/apicall";
+import { POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { storeFinal } from "@/redux/slice/checkoutSlice";
 import { useSession } from "next-auth/react";
@@ -39,7 +38,6 @@ function Checkout() {
   const [isLoading, setIsLoading] = useState<any>(false);
   const [deliveryToken, setDeliveryToken] = useState<string>("");
 
-  // Guest email state (commented out for now)
   // const [guestEmail, setGuestEmail] = useState<string>("");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -57,7 +55,7 @@ function Checkout() {
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
 
-    // Load guest email if available (commented out for now)
+    // Guest checkout disabled
     // if (!isAuthenticated) {
     //   const savedData = getGuestAddress();
     //   if (savedData?.email) {
@@ -65,6 +63,8 @@ function Checkout() {
     //   }
     // }
   }, [isAuthenticated]);
+
+  // Do NOT mutate Checkout.address directly. Instead, always create a new object with email when needed.
 
   useEffect(() => {
     if (Checkout?.Checkout && Checkout.Checkout.length > 0) {
@@ -146,53 +146,37 @@ function Checkout() {
             ]
           : Checkout?.Checkout;
 
-        const obj = {
-          cart: calculationCart,
-          address: addressData,
-        };
-
+        // Build payloads per auth state
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let response: any;
-
-        // Use authenticated endpoint only (guest logic commented out)
         if (isAuthenticated) {
+          const obj = {
+            cart: calculationCart,
+            address: addressData,
+          };
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
+        } else {
+          notificationApi.error({
+            message: "Guest checkout is currently disabled. Please log in.",
+          });
+          setDeliveryToken("");
+          setDelivery_charge(0);
+          setGrand_total(totals);
+          setDiscount(0);
+          setIsDeliveryCalculating(false);
+          return;
         }
-        // else {
-        //   // For guest users, try public endpoint first, fallback to default estimation
-        //   try {
-        //     response = await PUBLIC_POST(
-        //       API.PUBLIC_CALCULATE_DELIVERY_CHARGE,
-        //       obj,
-        //     );
-        //     console.log("Guest delivery calculation response:", response);
-        //   } catch (publicErr: unknown) {
-        //     // If public endpoint fails (404 or not implemented), use default delivery charge
-        //     console.log(
-        //       "Public delivery calculation failed, using default estimation:",
-        //       publicErr,
-        //     );
-        //
-        //     // Default delivery charge estimation for guests
-        //     const defaultDeliveryCharge = 2000; // Default delivery fee in Naira
-        //     // Generate a guest token for order processing
-        //     const guestToken = `GUEST_DELIVERY_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-        //     setDeliveryToken(guestToken);
-        //     setDelivery_charge(defaultDeliveryCharge);
-        //     setGrand_total(totals + defaultDeliveryCharge);
-        //     setDiscount(0);
-        //     setIsDeliveryCalculating(false);
-        //     return;
-        //   }
-        // }
 
         console.log("Delivery response:", response);
 
         if (response?.status) {
-          const deliveryToken = response?.token || "";
-          // API returns delivery charge in data.amount
+          const deliveryToken =
+            response?.data?.delivery_token || response?.token || "";
           const delivery = Number(
-            response?.data?.amount || response?.details?.totalCharge || 0,
+            response?.data?.amount ||
+              response?.details?.totalCharge ||
+              response?.amount ||
+              0,
           );
           const discountVal = Number(response?.data?.discount || 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
@@ -301,13 +285,11 @@ function Checkout() {
       const customerName = anyUser
         ? `${anyUser.first_name || "Customer"} ${anyUser.last_name || ""}`
         : Checkout?.address?.full_name || "Guest Customer";
-      const customerEmail =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (user as any)?.email ||
-        // guestEmail ||
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (user as any)?.id ||
-        "customer@alabamarketplace.ng";
+      const customerEmail = (
+        user && (user as { email?: string }).email
+          ? (user as { email?: string }).email
+          : "customer@alabamarketplace.ng"
+      ) as string;
       // const resolvedCustomerId = (user as { id?: number })?.id || null;
 
       // Extract store IDs and group items by store for split payment
@@ -626,12 +608,16 @@ function Checkout() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
       try {
-        // Guests always use PUBLIC_POST for initialize (split or non-split) (commented out for now)
+        // Guest purchase disabled
         if (!isAuthenticated) {
-          throw new Error("Guest checkout is temporarily disabled.");
-        } else {
-          response = await POST(endpointPrimary, paymentData);
+          notificationApi.error({
+            message:
+              "Guest checkout is currently disabled. Please log in to continue.",
+          });
+          setIsLoading(false);
+          return;
         }
+        response = await POST(endpointPrimary, paymentData);
       } catch (primaryError: unknown) {
         const err =
           typeof primaryError === "object" && primaryError !== null
@@ -719,18 +705,17 @@ function Checkout() {
           JSON.stringify({
             reference,
             amount: amountInKobo,
-            email: paymentData.email,
+            email: customerEmail,
             stores: stores.map((s) => s.storeId),
             is_multi_seller: hasMultipleStores,
             store_allocations: storeAllocations,
-            // Include guest email for guest orders (commented out)
-            // guest_email: !isAuthenticated ? guestEmail : undefined,
             order_data: {
               payment: {
                 ref: reference,
                 type: payment_method,
                 split_payment: shouldUseSplitPayment,
                 is_multi_seller: hasMultipleStores,
+                email: customerEmail,
               },
               cart: Checkout?.Checkout,
               address: Checkout?.address,
@@ -739,8 +724,6 @@ function Checkout() {
               },
               user_id: customerId,
               user: user,
-              // Add guest_email to order_data for backend (commented out)
-              // guest_email: !isAuthenticated ? guestEmail : undefined,
             },
           }),
         );
@@ -815,9 +798,29 @@ function Checkout() {
         );
         const actualDeliveryCharge = deliveryPromo.discountedCharge;
 
+        // Ensure all cart items have both store_id and storeId for backend grouping
+        const normalizedCart = Array.isArray(Checkout?.Checkout)
+          ? Checkout.Checkout.map((item: Record<string, unknown>) => {
+              const product = (item as { product?: Record<string, unknown> })
+                .product;
+              const store_id =
+                (item as { store_id?: number }).store_id ??
+                (item as { storeId?: number }).storeId ??
+                (product
+                  ? ((product as { store_id?: number }).store_id ??
+                    (product as { storeId?: number }).storeId)
+                  : null);
+              return {
+                ...(item as Record<string, unknown>),
+                store_id,
+                storeId: store_id,
+              };
+            })
+          : [];
+
         const obj = {
           payment: payment_method,
-          cart: Checkout?.Checkout,
+          cart: normalizedCart,
           address: Checkout?.address,
           charges: {
             token: deliveryToken,

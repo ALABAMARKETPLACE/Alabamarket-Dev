@@ -23,6 +23,18 @@
   .chat-avatar {
     font-size: 22px;
     line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
   }
 
   .chat-text {
@@ -188,6 +200,15 @@
     background: rgba(255, 255, 255, 0.2);
     padding: 6px;
     border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 8px;
+    }
 
     .online-indicator {
       position: absolute;
@@ -278,6 +299,15 @@
     font-size: 24px;
     flex-shrink: 0;
     margin-top: 4px;
+    display: inline-flex;
+    align-items: center;
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 6px;
+    }
   }
 
   &.message-bot {

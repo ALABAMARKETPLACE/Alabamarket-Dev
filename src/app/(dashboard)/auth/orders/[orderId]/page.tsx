@@ -41,50 +41,62 @@ interface StoreOrdersResponse {
 }
 
 export default function OrderDetails() {
-  const { orderId } = useParams();
+  const { orderId } = useParams() as { orderId: string };
   const route = useRouter();
 
+  // Fetch order details using the new API response structure
   const { data: orderData, isLoading } = useQuery({
     queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
     queryKey: ["order_details", orderId],
     staleTime: 0,
   });
 
-  const order = (
-    orderData && (orderData as { data?: unknown }).data
-      ? orderData
-      : { data: orderData }
-  ) as OrderDetailsResponse;
+  // Use the API response directly
+  const order = orderData?.data || {};
 
-  const { data: storeOrderDataRaw } = useQuery({
-    queryFn: async () => {
-      // Use the storeId from the fetched order details
-      const storeId = order?.data?.storeId;
-      if (!storeId) return null;
+  // Address mapping
+  const mergedAddress: AddressData = {
+    ...order.address,
+    name: order.customer_name || order.address?.full_name,
+    customer_name: order.customer_name || order.address?.full_name,
+    phone_no: order.customer_phone || order.address?.phone_no,
+    city: order.address?.city,
+    state: order.address?.state,
+    state_id: order.address?.state_id,
+    address_type: order.address?.address_type,
+    full_address: order.address?.full_address,
+    country: order.address?.country,
+    country_id: order.address?.country_id,
+    landmark: order.address?.landmark,
+  };
 
-      // Fetch orders for this store.
-      // Note: If the backend filters strictly by `orderId` param, this is fine.
-      // If it returns a paginated list, we might need to fetch a larger page or verify the filtering.
-      // Assuming 'orderId' param works as a filter:
-      return await GET(API.ORDER_GET_BYSTORE + storeId, { orderId });
-    },
-    queryKey: ["store_order_lookup", orderId, order?.data?.storeId],
-    enabled: !!order?.data?.storeId && !!orderId,
-  });
+  // Order items (with product details)
+  const orderItems = Array.isArray(order.orderItems)
+    ? order.orderItems.map((item: any) => ({
+        ...item,
+        product: item.productDetails || {},
+      }))
+    : [];
 
-  const storeOrderData = storeOrderDataRaw as StoreOrdersResponse;
+  // Payment details
+  const paymentData = order.orderPayment || {};
 
-  const specificStoreOrder = Array.isArray(storeOrderData?.data)
-    ? storeOrderData?.data.find(
-        (o) =>
-          String(o.id) === String(orderId) ||
-          String(o.order_id) === String(orderId),
-      )
-    : null;
+  // Order status history
+  const orderStatus = order.orderStatus || [];
+
+  // Seller/store details
+  const sellerData = {
+    store_name: order.store_name,
+    store_email: order.store_email,
+    store_phone: order.store_phone,
+    store_address: order.store_address,
+    store_logo: order.store_logo,
+  };
+
+  // Helper: format date
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
     const diffInHours = moment().diff(givenDate, "hours");
-
     if (diffInHours < 24) {
       return `${diffInHours} hrs ago`;
     } else {
@@ -106,9 +118,9 @@ export default function OrderDetails() {
       failed: "firebrick",
       substitution: "hotpink",
     };
-
     return statusColors[status] || "#dfdddd";
   };
+
   return (
     <div>
       <PageHeader
@@ -117,9 +129,9 @@ export default function OrderDetails() {
       >
         {!isLoading && (
           <>
-            <Tag>{formatDateRelative(order?.data?.createdAt || "")}</Tag>
-            <Tag color={getOrderStatusColor(order?.data?.status || "")}>
-              {getOrderStatus(order?.data?.status || "")}
+            <Tag>{formatDateRelative(order.createdAt || "")}</Tag>
+            <Tag color={getOrderStatusColor(order.status || "")}>
+              {order.status}
             </Tag>
             <Button
               type="primary"
@@ -137,33 +149,15 @@ export default function OrderDetails() {
           <Row className="gy-4">
             <Col lg={8} md={12}>
               <div className="d-flex flex-column gap-4">
-                <AddressTab
-                  data={{
-                    ...(order?.data?.address as AddressData),
-                    ...(specificStoreOrder?.address || {}),
-                    user_id:
-                      order?.data?.userId ?? order?.data?.user_id ?? undefined,
-                    order_contact_name:
-                      specificStoreOrder?.name ||
-                      order?.data?.name ||
-                      order?.data?.guest_name,
-                    // Fallback for phone if it exists at root of store order
-                    phone_no:
-                      (order?.data?.address as AddressData)?.phone_no ||
-                      specificStoreOrder?.phone ||
-                      specificStoreOrder?.phone_no ||
-                      order?.data?.guest_phone,
-                  }}
-                />
-                <ProductTab data={order?.data?.orderItems || []} />
-                <PaymentStatusTab data={order?.data} />
+                <AddressTab data={mergedAddress} />
+                <ProductTab data={orderItems} />
+                <PaymentStatusTab data={paymentData} />
               </div>
             </Col>
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
-                <SellerDetailsCard data={order?.data} />
-                <CustomerDetailsCard data={order?.data} />
-                <OrderStatusTab data={order?.data} />
+                <SellerDetailsCard data={sellerData} />
+                <OrderStatusTab data={{ id: order.id }} />
               </div>
             </Col>
           </Row>

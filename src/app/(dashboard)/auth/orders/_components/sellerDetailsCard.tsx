@@ -8,6 +8,7 @@ import {
   PhoneOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
+import StoreInfoCard from "./storeInfoCard";
 
 interface SellerData {
   seller_id?: string | number;
@@ -79,6 +80,25 @@ export default function SellerDetailsCard(props: Props) {
   };
 
   if (!storeId) {
+    const hasInline =
+      !!props?.data?.store_name ||
+      !!props?.data?.store_phone ||
+      !!props?.data?.store_address ||
+      !!props?.data?.store_logo ||
+      !!props?.data?.store_email;
+    if (hasInline) {
+      return (
+        <StoreInfoCard
+          store_name={(props?.data as { store_name?: string })?.store_name}
+          store_email={(props?.data as { store_email?: string })?.store_email}
+          store_phone={(props?.data as { store_phone?: string })?.store_phone}
+          store_address={
+            (props?.data as { store_address?: string })?.store_address
+          }
+          store_logo={(props?.data as { store_logo?: string })?.store_logo}
+        />
+      );
+    }
     return (
       <Card
         title={

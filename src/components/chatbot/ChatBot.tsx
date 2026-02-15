@@ -16,8 +16,11 @@ import {
 import "./chatbot.scss";
 
 // Storage keys for chat persistence
-const CHAT_STORAGE_KEY = "amaka_chat_messages";
-const CHAT_TIMESTAMP_KEY = "amaka_chat_timestamp";
+const CHATBOT_NAME = "Ifechukwu";
+const CHATBOT_AVATAR = "/images/ifechukwu-avatar.png";
+const FALLBACK_AVATAR = "/images/ifechukwu-avatar.svg";
+const CHAT_STORAGE_KEY = "ifechukwu_chat_messages";
+const CHAT_TIMESTAMP_KEY = "ifechukwu_chat_timestamp";
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 // Support contact information
@@ -86,7 +89,7 @@ const getGreeting = () => {
 const getInitialGreeting = (): Message => ({
   id: "1",
   type: "bot",
-  content: `${getGreeting()}! 👋 I'm Amaka, your personal shopping assistant at Alaba Marketplace. I'm here to help you discover amazing products, track your orders, find the best deals, and answer any questions you have. What would you like to explore today?`,
+  content: `${getGreeting()}! 👋 I'm ${CHATBOT_NAME}, your personal shopping assistant at Alaba Marketplace. I'm here to help you discover amazing products, track your orders, find the best deals, and answer any questions you have. What would you like to explore today?`,
   timestamp: new Date(),
 });
 
@@ -155,6 +158,7 @@ const ChatBot: React.FC = () => {
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+  const [avatarSrc, setAvatarSrc] = useState<string>(CHATBOT_AVATAR);
   const [showQuickActions, setShowQuickActions] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -225,7 +229,9 @@ const ChatBot: React.FC = () => {
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error:", error);
-      message.error("Oops! Amaka couldn't respond. Please try again.");
+      message.error(
+        `Oops! ${CHATBOT_NAME} couldn't respond. Please try again.`,
+      );
     } finally {
       setLoading(false);
     }
@@ -249,7 +255,7 @@ const ChatBot: React.FC = () => {
       {
         id: "1",
         type: "bot",
-        content: `${getGreeting()}! 👋 Welcome back! I'm Amaka, ready to help you with anything. What can I do for you today?`,
+        content: `${getGreeting()}! 👋 Welcome back! I'm ${CHATBOT_NAME}, ready to help you with anything. What can I do for you today?`,
         timestamp: new Date(),
       },
     ]);
@@ -323,15 +329,25 @@ const ChatBot: React.FC = () => {
 
   if (!isOpen) {
     return (
-      <Tooltip title="Chat with Amaka">
+      <Tooltip title={`Chat with ${CHATBOT_NAME}`}>
         <button
           className="chatbot-floating-button"
           onClick={() => setIsOpen(true)}
           aria-label="Open chat"
           suppressHydrationWarning
         >
-          <span className="chat-avatar">👩🏽‍💼</span>
-          <span className="chat-text">Ask Amaka</span>
+          <span className="chat-avatar">
+            <img
+              src={avatarSrc}
+              alt={CHATBOT_NAME}
+              width={28}
+              height={28}
+              onError={() => {
+                setAvatarSrc(FALLBACK_AVATAR);
+              }}
+            />
+          </span>
+          <span className="chat-text">Ask {CHATBOT_NAME}</span>
           <span className="chat-pulse"></span>
         </button>
       </Tooltip>
@@ -343,11 +359,19 @@ const ChatBot: React.FC = () => {
       <div className="chatbot-header">
         <div className="chatbot-header-content">
           <div className="amaka-avatar">
-            <span>👩🏽‍💼</span>
+            <img
+              src={avatarSrc}
+              alt={CHATBOT_NAME}
+              width={28}
+              height={28}
+              onError={() => {
+                setAvatarSrc(FALLBACK_AVATAR);
+              }}
+            />
             <span className="online-indicator"></span>
           </div>
           <div>
-            <h3 className="chatbot-title">Amaka</h3>
+            <h3 className="chatbot-title">{CHATBOT_NAME}</h3>
             <p className="chatbot-subtitle">Your Shopping Assistant • Online</p>
           </div>
         </div>
@@ -386,7 +410,17 @@ const ChatBot: React.FC = () => {
                 {messages.map((msg) => (
                   <div key={msg.id} className={`message message-${msg.type}`}>
                     {msg.type === "bot" && (
-                      <div className="message-avatar">👩🏽‍💼</div>
+                      <div className="message-avatar">
+                        <img
+                          src={avatarSrc}
+                          alt={CHATBOT_NAME}
+                          width={24}
+                          height={24}
+                          onError={() => {
+                            setAvatarSrc(FALLBACK_AVATAR);
+                          }}
+                        />
+                      </div>
                     )}
                     <div className="message-bubble">
                       <div className="message-content">{msg.content}</div>
@@ -437,14 +471,26 @@ const ChatBot: React.FC = () => {
             )}
             {loading && (
               <div className="message message-bot">
-                <div className="message-avatar">👩🏽‍💼</div>
+                <div className="message-avatar">
+                  <img
+                    src={avatarSrc}
+                    alt={CHATBOT_NAME}
+                    width={24}
+                    height={24}
+                    onError={() => {
+                      setAvatarSrc(FALLBACK_AVATAR);
+                    }}
+                  />
+                </div>
                 <div className="message-bubble loading-bubble">
                   <div className="typing-indicator">
                     <span></span>
                     <span></span>
                     <span></span>
                   </div>
-                  <span className="typing-text">Amaka is typing...</span>
+                  <span className="typing-text">
+                    {CHATBOT_NAME} is typing...
+                  </span>
                 </div>
               </div>
             )}
@@ -459,7 +505,7 @@ const ChatBot: React.FC = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask Amaka anything..."
+              placeholder={`Ask ${CHATBOT_NAME} anything...`}
               disabled={loading}
               autoSize={{ minRows: 1, maxRows: 3 }}
               className="chatbot-input"

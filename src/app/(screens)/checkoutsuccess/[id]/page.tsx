@@ -74,6 +74,7 @@ interface GuestOrderPayload {
 }
 
 import { useCallback, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import "./styles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
@@ -83,7 +84,7 @@ import { Avatar, Button, List, Spin, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
-import { GET, POST, DELETE, PUBLIC_POST } from "@/util/apicall";
+import { GET, POST, DELETE } from "@/util/apicall";
 import API from "@/config/API";
 import { storeCart } from "@/redux/slice/cartSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -141,15 +142,25 @@ function Checkout() {
   const { data: user }: any = useSession();
   const User = user?.user;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [orderItems, setOrderItems] = useState<any[]>([]);
+  // const [orderItems, setOrderItems] = useState<any[]>([]); // No longer used
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
+  const [paymentRef, setPaymentRef] = useState<string | null>(null);
 
   // Get route parameter to determine payment method
   const routeId = params?.id;
   const isCOD = routeId === "1";
   const isPaystack = routeId === "2";
+
+  // Always generate a new payment reference for each order attempt
+  useEffect(() => {
+    if (isPaystack) {
+      const newRef = `ps_${uuidv4()}`;
+      setPaymentRef(newRef);
+      localStorage.setItem("paystack_payment_reference", newRef);
+    }
+  }, [orderCreated, isPaystack]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderItems = useCallback((response: any[]) => {
@@ -166,7 +177,6 @@ function Checkout() {
         }
       });
     }
-    setOrderItems(array);
   }, []);
 
   const loadCartItems = useCallback(async () => {
@@ -191,6 +201,14 @@ function Checkout() {
     try {
       setOrderCreated(true); // Prevent multiple executions
 
+      // Always use a fresh payment reference for each attempt
+      let currentPaymentRef = paymentRef;
+      if (isPaystack && !currentPaymentRef) {
+        currentPaymentRef = `ps_${uuidv4()}`;
+        setPaymentRef(currentPaymentRef);
+        localStorage.setItem("paystack_payment_reference", currentPaymentRef);
+      }
+
       let finalOrderData;
 
       if (isCOD) {
@@ -213,16 +231,21 @@ function Checkout() {
         // Paystack Order Flow - Verify payment first
         console.log("Processing Paystack order...");
 
-        const paymentRef =
-          searchParams.get("reference") ||
-          searchParams.get("ref") ||
-          localStorage.getItem("paystack_payment_reference");
-
-        console.log("Paystack payment reference:", paymentRef);
-
-        if (!paymentRef || paymentRef === "null") {
+        // Robustly select a valid payment reference
+        const paystackRef =
+          (typeof paymentRef === "string" && paymentRef.trim()) ||
+          (typeof searchParams.get("reference") === "string" &&
+            searchParams.get("reference")?.trim()) ||
+          (typeof searchParams.get("ref") === "string" &&
+            searchParams.get("ref")?.trim()) ||
+          (typeof localStorage.getItem("paystack_payment_reference") ===
+            "string" &&
+            localStorage.getItem("paystack_payment_reference")?.trim()) ||
+          null;
+        if (!paystackRef) {
           throw new Error("Payment reference not found. Please try again.");
         }
+        console.log("Paystack payment reference:", paystackRef);
 
         // Load stored order data (for other order info, not for token)
         const storedOrderData = localStorage.getItem("paystack_order_data");
@@ -230,9 +253,7 @@ function Checkout() {
 
         // Verify payment with backend
         console.log("Verifying payment with reference:", paymentRef);
-        // Determine if guest and derive any available delivery token for fallback authorization
-        const isGuest = false;
-        void 0;
+        // Guest checkout disabled
 
         // Robust verification with fallbacks for guest
         let verificationResponse: Record<string, unknown> | null = null;
@@ -240,18 +261,9 @@ function Checkout() {
         let vAmount = 0;
         let vGatewayResponse: string | null = null;
         const skipVerify = false;
-        try {
-          verificationResponse = isGuest
-            ? await PUBLIC_POST(
-                API.PAYSTACK_VERIFY,
-                { reference: paymentRef },
-                null,
-                undefined,
-              )
-            : await POST(API.PAYSTACK_VERIFY, { reference: paymentRef });
-        } catch (e: unknown) {
-          throw e;
-        }
+        verificationResponse = await POST(API.PAYSTACK_VERIFY, {
+          reference: paystackRef,
+        });
 
         console.log("Payment verification response:", verificationResponse);
 
@@ -305,7 +317,7 @@ function Checkout() {
 
         finalOrderData = orderData?.order_data || {
           payment: {
-            ref: paymentRef,
+            ref: paystackRef,
             type: "Pay Online",
             status: vStatus || "success",
             amount: vAmount || null,
@@ -402,25 +414,59 @@ function Checkout() {
 
       console.log("Final order data:", finalOrderData);
 
-      // Normalize cart items to ensure store_id is present for multi-seller order creation
+      // Normalize cart items to ensure store_id and product_id are present for multi-seller order creation
       if (Array.isArray(finalOrderData?.cart)) {
         finalOrderData.cart = finalOrderData.cart.map(
           (item: CheckoutCartItem) => {
+            const asRecord = item as unknown as Record<string, unknown>;
             // Extract store_id from various possible field names
             const store_id =
-              (item as CheckoutCartItem)?.store_id ||
-              (item as { storeId?: number })?.storeId ||
-              (item as { product?: { store_id?: number; storeId?: number } })
-                ?.product?.store_id ||
-              (item as { product?: { store_id?: number; storeId?: number } })
-                ?.product?.storeId ||
+              (item as CheckoutCartItem)?.store_id ??
+              (item as { storeId?: number })?.storeId ??
+              (
+                asRecord.product as
+                  | { store_id?: number; storeId?: number }
+                  | undefined
+              )?.store_id ??
+              (
+                asRecord.product as
+                  | { store_id?: number; storeId?: number }
+                  | undefined
+              )?.storeId ??
+              null;
+            // Extract product_id from various possible field names
+            const toNumber = (x: unknown): number | null => {
+              const n =
+                typeof x === "string" ? parseInt(x, 10) : (x as number | null);
+              return Number.isFinite(n as number) && (n as number) > 0
+                ? (n as number)
+                : null;
+            };
+            const product_id =
+              toNumber((item as { productId?: number }).productId) ??
+              toNumber((item as { id?: number }).id) ??
+              toNumber((item as { pid?: number }).pid) ??
+              toNumber(
+                ((asRecord.product as Record<string, unknown>) || {})["id"],
+              ) ??
+              toNumber(
+                ((asRecord.product as Record<string, unknown>) || {})["pid"],
+              ) ??
+              (asRecord.product_id as number | undefined) ??
               null;
             // Remove storeId from the item if present
             const rest = { ...item };
             delete (rest as { storeId?: unknown }).storeId;
             return {
               ...rest,
-              store_id,
+              store_id:
+                store_id != null ? Number(store_id) : (store_id as null),
+              product_id:
+                product_id != null ? Number(product_id) : (product_id as null),
+              quantity: Number((item as { quantity?: number }).quantity ?? 0),
+              totalPrice: Number(
+                (item as { totalPrice?: number }).totalPrice ?? 0,
+              ),
             } as CheckoutCartItem;
           },
         );
@@ -512,7 +558,7 @@ function Checkout() {
         finalOrderData?.payment?.amount,
       );
 
-      // Determine if this is a multi-seller order (applies to both guest and authenticated)
+      // Determine if this is a multi-seller order (applies to authenticated)
       const storeIds = new Set<string | number>();
       if (Array.isArray(finalOrderData?.cart)) {
         finalOrderData.cart.forEach((item: CheckoutCartItem) => {
@@ -528,6 +574,58 @@ function Checkout() {
 
       // Add is_multi_seller flag to finalOrderData for backend
       finalOrderData.is_multi_seller = isMultiSeller;
+      // Also include explicit stores list for backend grouping
+      finalOrderData.stores = Array.from(storeIds);
+
+      // Build store allocations to help backend validate/store grouping
+      if (
+        Array.isArray(finalOrderData?.cart) &&
+        finalOrderData.cart.length > 0
+      ) {
+        const allocationMap = new Map<
+          number | string,
+          {
+            store_id: number | string;
+            product_amount: number;
+            item_count: number;
+          }
+        >();
+        finalOrderData.cart.forEach((ci: CheckoutCartItem) => {
+          const sid =
+            (ci as { store_id?: number | string }).store_id ??
+            (ci as { storeId?: number | string }).storeId;
+          if (sid == null) return;
+          const key = sid as number | string;
+          const existing = allocationMap.get(key) || {
+            store_id: key,
+            product_amount: 0,
+            item_count: 0,
+          };
+          existing.product_amount += Number(
+            (ci as { totalPrice?: number }).totalPrice ?? 0,
+          );
+          existing.item_count += 1;
+          allocationMap.set(key, existing);
+        });
+        const store_allocations = Array.from(allocationMap.values());
+        (finalOrderData as Record<string, unknown>)["store_allocations"] =
+          store_allocations;
+
+        // Diagnostics
+        console.log("🧾 ORDER GROUPING DIAGNOSTICS");
+        console.log("Stores:", finalOrderData.stores);
+        console.log("Allocations:", store_allocations);
+        const byStoreCounts = Array.from(storeIds).map((sid) => ({
+          store_id: sid,
+          items:
+            finalOrderData.cart?.filter(
+              (ci: CheckoutCartItem) =>
+                ((ci as { store_id?: unknown }).store_id ??
+                  (ci as { storeId?: unknown }).storeId) === sid,
+            ).length ?? 0,
+        }));
+        console.log("Items per store:", byStoreCounts);
+      }
 
       // Determine if this is a guest order
       const isGuestOrder =
@@ -740,21 +838,7 @@ function Checkout() {
           return;
         }
 
-        console.log("Guest order payload:", guestOrderPayload);
-        response = await PUBLIC_POST(
-          API.ORDER_GUEST,
-          guestOrderPayload as unknown as Record<string, unknown>,
-          null,
-          {
-            headers: finalOrderData?.charges?.token
-              ? {
-                  Authorization: `Bearer ${String(
-                    finalOrderData?.charges?.token,
-                  )}`,
-                }
-              : undefined,
-          },
-        );
+        response = await POST(API.ORDER, finalOrderData);
       } else {
         // Create order for authenticated users (payment already verified above for Paystack)
         response = await POST(API.ORDER, finalOrderData);
@@ -768,66 +852,41 @@ function Checkout() {
         // Check for failed status in response data
         const orders = response?.data;
 
-        // Handle split orders: Check for any failed orders
-        if (Array.isArray(orders)) {
-          orders.forEach((order: Order) => {
-            if (
-              order?.newOrder?.status === "failed" ||
-              order?.status === "failed"
-            ) {
-              const failureReason =
-                order?.newOrder?.reason || order?.reason || "Unknown error";
-              const remark = order?.remark || order?.orderStatus?.remark || ""; // Check top-level remark too
-
-              // Check if failure is due to reference already used (idempotency issue)
-              const isReferenceError =
-                remark.includes("Already Used") ||
-                failureReason.includes("Already Used") ||
-                remark.includes("already used");
-
-              if (isReferenceError) {
-                console.log(
-                  "Order verification: Reference already used, treating as successful (idempotency check).",
-                );
-                // Fix status
-                if (order?.newOrder?.status === "failed") {
-                  order.newOrder.status = "Confirmed";
-                }
-                if (order?.status === "failed") {
-                  order.status = "Confirmed";
-                }
-              } else {
-                console.warn(
-                  "Order part marked as failed but proceeding to show available items:",
-                  order,
-                );
-                // We do NOT return here anymore. We try to show what succeeded.
-                // But we might want to notify the user if ALL failed.
-              }
-            }
-          });
-        }
-
-        // Re-check if ALL orders are still failed after our fix attempt
-        const allFailed =
+        // If any order failed, treat the whole order as failed
+        const anyFailed =
           Array.isArray(orders) &&
-          orders.length > 0 &&
-          orders.every(
+          orders.some(
             (order: Order) =>
               order?.newOrder?.status === "failed" ||
               order?.status === "failed",
           );
 
-        if (allFailed) {
-          const firstFailed = orders[0];
+        if (anyFailed) {
+          // Find the first failed order for the reason
+          const firstFailed = Array.isArray(orders)
+            ? orders.find(
+                (order: Order) =>
+                  order?.newOrder?.status === "failed" ||
+                  order?.status === "failed",
+              )
+            : null;
           const failureReason =
             firstFailed?.newOrder?.reason ||
             firstFailed?.reason ||
+            firstFailed?.remark ||
+            firstFailed?.orderStatus?.remark ||
             "Unknown error";
+
+          // Do NOT reuse the reference after a failed order
+          if (isPaystack) {
+            localStorage.removeItem("paystack_payment_reference");
+            localStorage.removeItem("paystack_order_data");
+            setPaymentRef(null);
+          }
 
           Notifications["error"]({
             message: "Order Processing Failed",
-            description: `Order processing failed: ${failureReason}. Please contact support.`,
+            description: `Order processing failed: ${failureReason}. Please try again or contact support.`,
           });
           setPaymentStatus(true);
           setOrderStatus(false);
@@ -835,23 +894,7 @@ function Checkout() {
           return;
         }
 
-        // If at least one success (or fixed), proceed.
-        // If some failed but not all, we show success for the valid ones.
-        // (Optionally we could warn about the partial failure, but for now let's prioritize showing the success)
-
-        if (
-          Array.isArray(orders) &&
-          orders.some(
-            (o: Order) =>
-              o?.newOrder?.status === "Confirmed" || o?.status === "Confirmed",
-          )
-        ) {
-          Notifications["success"]({
-            message: "Order Confirmed",
-            description: "Your order has been successfully placed.",
-          });
-        }
-
+        // If all orders succeeded, proceed as success
         getOrderItems(response?.data);
         setResponseData(response?.data);
 
@@ -874,9 +917,6 @@ function Checkout() {
           const firstOrder = response.data[0];
 
           response.data.forEach((order: Order) => {
-            // Check if order is valid/confirmed before tracking?
-            // Even if failed, if we fixed it or it's partial, we might want to track?
-            // Let's track everything that is in the response to be consistent with UI.
             if (order?.orderItems && Array.isArray(order.orderItems)) {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               order.orderItems.forEach((item: any) => {
@@ -906,6 +946,7 @@ function Checkout() {
         if (isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
           localStorage.removeItem("paystack_order_data");
+          setPaymentRef(null);
         }
 
         // Clear cart from backend and redux
@@ -961,6 +1002,7 @@ function Checkout() {
     isPaystack,
     loadCartItems,
     searchParams,
+    paymentRef,
   ]);
 
   useEffect(() => {
@@ -1082,53 +1124,93 @@ function Checkout() {
                       Payment Type:{" "}
                       {responseData?.[0]?.orderPayment?.paymentType ?? ""}{" "}
                       Amount: {getCurrencySymbol(Settings?.currency)}{" "}
-                      {(() => {
-                        const paymentAmount = Number(
-                          responseData?.[0]?.orderPayment?.amount || 0,
-                        );
-                        // If promo is active, subtract delivery charges
-                        if (getActiveDeliveryPromo()) {
-                          const deliveryCharges = Number(
-                            Array.isArray(responseData)
-                              ? responseData.reduce(
-                                  (acc: number, order: Order) =>
-                                    acc +
-                                    (Number(order?.newOrder?.deliveryCharge) ||
-                                      Number(order?.deliveryCharge) ||
-                                      0),
-                                  0,
-                                )
-                              : responseData?.[0]?.newOrder?.deliveryCharge ||
-                                  responseData?.[0]?.deliveryCharge ||
-                                  0,
-                          );
-                          return (paymentAmount - deliveryCharges).toFixed(2);
-                        }
-                        return paymentAmount.toFixed(2);
-                      })()}
+                      {Number(
+                        responseData?.[0]?.orderPayment?.amount || 0,
+                      ).toFixed(2)}
                     </div>
                   </div>
                   <div className="checkout-txt3">ORDER SUMMARY</div>
                   <div style={{ margin: 10 }}>
-                    <List
-                      itemLayout="horizontal"
-                      dataSource={orderItems}
-                      renderItem={(item, index) => (
-                        <List.Item key={index}>
-                          <List.Item.Meta
-                            avatar={
-                              <Avatar
-                                src={item?.image}
-                                size={40}
-                                shape="square"
+                    {/* Group by each order in responseData (each is a seller/store) */}
+                    {Array.isArray(responseData) && responseData.length > 0
+                      ? responseData.map((order, idx) => {
+                          const storeName =
+                            order?.storeName ||
+                            order?.store_name ||
+                            `Store #${order?.newOrder?.storeId || order?.newOrder?.store_id || idx + 1}`;
+                          const items =
+                            (order?.orderItems as Array<{
+                              image?: string;
+                              name?: string;
+                              totalPrice?: number;
+                            }>) || [];
+                          const storeSubtotal = items.reduce(
+                            (sum: number, it: { totalPrice?: number }) =>
+                              sum + Number(it.totalPrice || 0),
+                            0,
+                          );
+                          return (
+                            <div
+                              key={idx}
+                              style={{
+                                marginBottom: 18,
+                                borderBottom: "1px solid #eee",
+                                paddingBottom: 10,
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: 15,
+                                  marginBottom: 6,
+                                  color: "#1a237e",
+                                }}
+                              >
+                                🏪 {storeName}
+                              </div>
+                              <List
+                                itemLayout="horizontal"
+                                dataSource={items}
+                                renderItem={(
+                                  item: {
+                                    image?: string;
+                                    name?: string;
+                                    totalPrice?: number;
+                                  },
+                                  index: number,
+                                ) => (
+                                  <List.Item key={index}>
+                                    <List.Item.Meta
+                                      avatar={
+                                        <Avatar
+                                          src={item?.image}
+                                          size={40}
+                                          shape="square"
+                                        />
+                                      }
+                                      title={item?.name ?? ""}
+                                      description={
+                                        <div>Total: {item?.totalPrice}</div>
+                                      }
+                                    />
+                                  </List.Item>
+                                )}
                               />
-                            }
-                            title={item?.name ?? ""}
-                            description={<div>Total: {item?.totalPrice}</div>}
-                          />
-                        </List.Item>
-                      )}
-                    />
+                              <div
+                                className="checkout-row"
+                                style={{ marginTop: 6 }}
+                              >
+                                <div>Subtotal for this seller</div>
+                                <div style={{ flex: 1 }} />
+                                <div>
+                                  {getCurrencySymbol(Settings?.currency)}{" "}
+                                  {storeSubtotal.toFixed(2)}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      : null}
                     <br />
                     <div className="checkout-row">
                       <div>Total Product Price</div>

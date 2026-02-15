@@ -218,6 +218,12 @@ const API = {
   PAYSTACK_BANKS: "paystack-subaccounts/banks/supported", //GET supported banks list
   PAYSTACK_RESOLVE_ACCOUNT: "paystack-subaccounts/banks/validate", //GET account verification
 
+  // GUEST CHECKOUT (Guide-specific)
+  GUEST_CALCULATE_DELIVERY_CHARGE: "calculate-delivery-charge", //POST for guest delivery calculation
+  PAYSTACK_INITIALIZE_GUEST: "paystack/initialize-guest", //POST initialize guest payment
+  PAYSTACK_VERIFY_GUEST: "paystack/verify-guest", //POST verify guest payment
+  ORDER_GUEST_ORDERS: "order/guest-orders", //GET guest orders by email
+
   //PAYMENT SPLITS
   PAYMENT_SPLITS_STORE: "payment-splits/store", //GET payment splits for store
   PAYMENT_SPLITS_ADMIN_SUMMARY: "payment-splits/admin/summary", //GET admin payment splits summary
