@@ -99,7 +99,6 @@ export default function SellerDetailsCard(props: Props) {
     return "Unknown Seller";
   };
 
-
   const getPhoneNumber = () => {
     const user = sellerUserRaw as Record<string, unknown> | null;
     const cc =
