@@ -55,6 +55,30 @@ export default function SellerDetailsCard(props: Props) {
     enabled: !!storeId,
   });
 
+  // Try to discover seller's userId to fetch phone/email from user profile
+  const sellerUserId =
+    (props.data as Record<string, unknown>)?.["seller_user_id"] ||
+    (props.data as Record<string, unknown>)?.["sellerId"] ||
+    (sellerData?.data as Record<string, unknown> | undefined)?.["user_id"] ||
+    (sellerData?.data as Record<string, unknown> | undefined)?.["userId"] ||
+    (sellerData?.data as Record<string, unknown> | undefined)?.[
+      "seller_user_id"
+    ] ||
+    null;
+
+  const { data: sellerUserRaw } = useQuery({
+    queryFn: async () => {
+      if (!sellerUserId) return null;
+      const res = (await GET(API_ADMIN.USER_DETAILS + sellerUserId)) as Record<
+        string,
+        unknown
+      >;
+      return (res as { data?: Record<string, unknown> })?.data || res || null;
+    },
+    queryKey: ["seller_user_details", sellerUserId],
+    enabled: !!sellerUserId,
+  });
+
   const getSellerName = () => {
     const seller = sellerData?.data;
     if (!seller) return "Loading...";
@@ -70,8 +94,25 @@ export default function SellerDetailsCard(props: Props) {
   };
 
   const getPhoneNumber = () => {
+    const user = sellerUserRaw as Record<string, unknown> | null;
+    const cc =
+      (user?.["countrycode"] as string | undefined) ||
+      (user?.["country_code"] as string | undefined);
+    const ph =
+      (user?.["phone"] as string | undefined) ||
+      (user?.["phone_no"] as string | undefined);
+    if (ph && cc) return `${cc}${ph}`.replace(/\s+/g, "");
+    if (ph) return ph;
     const phone = sellerData?.data?.phone;
     return phone || "N/A";
+  };
+
+  const getEmail = () => {
+    const user = sellerUserRaw as Record<string, unknown> | null;
+    const email =
+      (user?.["email"] as string | undefined) ||
+      (sellerData?.data?.email as string | undefined);
+    return email || "N/A";
   };
 
   const getAddress = () => {
@@ -136,17 +177,13 @@ export default function SellerDetailsCard(props: Props) {
               {getPhoneNumber()}
             </span>
           </Descriptions.Item>
+          <Descriptions.Item label="Email">{getEmail()}</Descriptions.Item>
           <Descriptions.Item label="Address">
             <span>
               <EnvironmentOutlined style={{ marginRight: 8 }} />
               {getAddress()}
             </span>
           </Descriptions.Item>
-          {sellerData?.data?.email && (
-            <Descriptions.Item label="Email">
-              {sellerData.data.email}
-            </Descriptions.Item>
-          )}
         </Descriptions>
       ) : (
         <Spin />
