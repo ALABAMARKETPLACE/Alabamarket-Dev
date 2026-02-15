@@ -290,43 +290,32 @@ function UserOrders() {
   };
 
   const currency = Settings.currency || "NGN";
+  // Accept both { data: [...] } and [...]
   const rawList: any[] = Array.isArray(orders?.data)
     ? (orders?.data as any[])
     : Array.isArray(orders)
       ? ((orders as unknown) as any[])
       : [];
+
+  // Map API response to normalized order objects (robust for /order/getall)
   const normalized = rawList.map((o) => {
-    const order_id = o?.order_id ?? o?.orderId ?? o?.id ?? o?._id ?? o?.reference;
-    const createdAt =
-      o?.createdAt ?? o?.created_at ?? o?.createdOn ?? o?.created_on ?? o?.date;
-    const status =
-      o?.status ??
-      o?.order_status ??
-      o?.state ??
-      (typeof o?.is_delivered === "boolean"
-        ? o.is_delivered
-          ? "delivered"
-          : "pending"
-        : undefined) ??
-      "pending";
-    const orderItems = Array.isArray(o?.orderItems)
-      ? o.orderItems
-      : Array.isArray(o?.items)
-        ? o.items
-        : Array.isArray(o?.products)
-          ? o.products
-          : [];
-    const grandTotal =
-      o?.grandTotal ?? o?.total ?? o?.amount ?? o?.amount_paid ?? 0;
-    const deliveryCharge = o?.deliveryCharge ?? o?.delivery_fee ?? o?.delivery ?? 0;
     return {
-      ...o,
-      order_id,
-      createdAt,
-      status,
-      orderItems,
-      grandTotal,
-      deliveryCharge,
+      id: o?.id ?? o?.order_id ?? o?.orderId ?? o?._id ?? '',
+      userId: o?.userId ?? '',
+      addressId: o?.addressId ?? '',
+      storeId: o?.storeId ?? '',
+      totalItems: o?.totalItems ?? (Array.isArray(o?.orderItems) ? o.orderItems.length : 0),
+      paymentType: o?.paymentType ?? '',
+      coupan: o?.coupan ?? '',
+      tax: o?.tax ?? 0,
+      deliveryCharge: o?.deliveryCharge ?? 0,
+      discount: o?.discount ?? 0,
+      total: o?.total ?? 0,
+      grandTotal: o?.grandTotal ?? 0,
+      status: o?.status ?? '',
+      order_id: o?.order_id ?? o?.id ?? '',
+      createdAt: o?.createdAt ?? o?.created_at ?? '',
+      orderItems: o?.orderItems ?? [],
     };
   });
   const totalOrders = orders?.meta?.itemCount ?? normalized.length ?? 0;
