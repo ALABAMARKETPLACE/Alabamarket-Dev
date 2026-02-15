@@ -197,7 +197,11 @@ export default function SellerDetailsCard(props: Props) {
       {sellerData?.data ? (
         <Descriptions column={1} bordered>
           <Descriptions.Item label="Store/Seller Name">
-            <Tag color="blue">{getSellerName()}</Tag>
+            {typeof getSellerName() === "string" ? (
+              <Tag color="blue">{getSellerName()}</Tag>
+            ) : (
+              <Tag color="blue">Unknown Seller</Tag>
+            )}
           </Descriptions.Item>
           <Descriptions.Item label="Phone Number">
             <span>
