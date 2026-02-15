@@ -231,13 +231,16 @@ function Checkout() {
         // Paystack Order Flow - Verify payment first
         console.log("Processing Paystack order...");
 
-
         // Robustly select a valid payment reference
         const paystackRef =
           (typeof paymentRef === "string" && paymentRef.trim()) ||
-          (typeof searchParams.get("reference") === "string" && searchParams.get("reference")?.trim()) ||
-          (typeof searchParams.get("ref") === "string" && searchParams.get("ref")?.trim()) ||
-          (typeof localStorage.getItem("paystack_payment_reference") === "string" && localStorage.getItem("paystack_payment_reference")?.trim()) ||
+          (typeof searchParams.get("reference") === "string" &&
+            searchParams.get("reference")?.trim()) ||
+          (typeof searchParams.get("ref") === "string" &&
+            searchParams.get("ref")?.trim()) ||
+          (typeof localStorage.getItem("paystack_payment_reference") ===
+            "string" &&
+            localStorage.getItem("paystack_payment_reference")?.trim()) ||
           null;
         if (!paystackRef) {
           throw new Error("Payment reference not found. Please try again.");
