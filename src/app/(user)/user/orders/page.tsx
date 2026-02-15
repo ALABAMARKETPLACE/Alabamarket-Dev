@@ -256,7 +256,12 @@ function UserOrders() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const userId = (session?.user as any)?.id || null;
 
-  const { data: orders, isLoading, isError, error } = useQuery({
+  const {
+    data: orders,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
     queryFn: async () => {
       const base = `${API.ORDER_GET_USER}${userId ?? ""}`;
       return await GET(base, {
@@ -294,27 +299,29 @@ function UserOrders() {
   const rawList: any[] = Array.isArray(orders?.data)
     ? (orders?.data as any[])
     : Array.isArray(orders)
-      ? ((orders as unknown) as any[])
+      ? (orders as unknown as any[])
       : [];
 
   // Map API response to normalized order objects (robust for /order/getall)
   const normalized = rawList.map((o) => {
     return {
-      id: o?.id ?? o?.order_id ?? o?.orderId ?? o?._id ?? '',
-      userId: o?.userId ?? '',
-      addressId: o?.addressId ?? '',
-      storeId: o?.storeId ?? '',
-      totalItems: o?.totalItems ?? (Array.isArray(o?.orderItems) ? o.orderItems.length : 0),
-      paymentType: o?.paymentType ?? '',
-      coupan: o?.coupan ?? '',
+      id: o?.id ?? o?.order_id ?? o?.orderId ?? o?._id ?? "",
+      userId: o?.userId ?? "",
+      addressId: o?.addressId ?? "",
+      storeId: o?.storeId ?? "",
+      totalItems:
+        o?.totalItems ??
+        (Array.isArray(o?.orderItems) ? o.orderItems.length : 0),
+      paymentType: o?.paymentType ?? "",
+      coupan: o?.coupan ?? "",
       tax: o?.tax ?? 0,
       deliveryCharge: o?.deliveryCharge ?? 0,
       discount: o?.discount ?? 0,
       total: o?.total ?? 0,
       grandTotal: o?.grandTotal ?? 0,
-      status: o?.status ?? '',
-      order_id: o?.order_id ?? o?.id ?? '',
-      createdAt: o?.createdAt ?? o?.created_at ?? '',
+      status: o?.status ?? "",
+      order_id: o?.order_id ?? o?.id ?? "",
+      createdAt: o?.createdAt ?? o?.created_at ?? "",
       orderItems: o?.orderItems ?? [],
     };
   });
