@@ -6,14 +6,10 @@ import API_ADMIN from "@/config/API_ADMIN";
 import {
   ShopOutlined,
   PhoneOutlined,
+  MailOutlined,
   EnvironmentOutlined,
 } from "@ant-design/icons";
 import StoreInfoCard from "./storeInfoCard";
-
-// Helper to get fallback value from props.data
-function getInlineFallback(props: Props, key: string): string | undefined {
-  return (props?.data as Record<string, unknown>)?.[key] as string | undefined;
-}
 
 interface SellerData {
   seller_id?: string | number;
@@ -22,149 +18,160 @@ interface SellerData {
   [key: string]: unknown;
 }
 
-interface SellerDetailsResponse {
-  data: {
-    id?: string | number;
-    seller_name?: string;
-    business_name?: string;
-    store_name?: string;
-    name?: string;
-    phone?: string;
-    email?: string;
-    user_name?: string;
-    address?: string;
-    business_address?: string;
-    [key: string]: unknown;
-  };
-}
-
 type Props = {
   data: SellerData;
 };
 
+/**
+ * Safely extract the first truthy string value from a record
+ * by trying multiple field names in order.
+ */
+function pick(
+  obj: Record<string, unknown> | null | undefined,
+  ...keys: string[]
+): string | undefined {
+  if (!obj) return undefined;
+  for (const k of keys) {
+    const v = obj[k];
+    if (typeof v === "string" && v.trim().length > 0) return v.trim();
+  }
+  return undefined;
+}
+
 export default function SellerDetailsCard(props: Props) {
   const storeId = props.data?.storeId || props.data?.seller_id;
+  const inline = props.data as Record<string, unknown>;
 
-  const { data: sellerData, isLoading } = useQuery({
+  // ── 1. Fetch store registration details (coorporate_store/sellerdetails/:id)
+  //    Response shape: { status, data: { name, email, phone, code, business_address, store_name, … } }
+  const { data: storeDetails, isLoading: isStoreLoading } = useQuery({
     queryFn: async () => {
       const res = (await GET(API_ADMIN.STORE_INFO_ADMIN + storeId)) as Record<
         string,
         unknown
       >;
-      // Handle both nested { data: ... } and flat response structures
-      if (res?.data) {
-        return res as unknown as SellerDetailsResponse;
-      }
-      return { data: res } as unknown as SellerDetailsResponse;
+      // Unwrap nested { data: { … } } if present
+      return ((res?.data as Record<string, unknown>) ?? res) as Record<
+        string,
+        unknown
+      >;
     },
     queryKey: ["seller_details", storeId],
     enabled: !!storeId,
   });
 
-  // Try to discover seller's userId to fetch phone/email from user profile
+  // ── 2. Discover seller user ID from store details
   const sellerUserId =
-    (props.data as Record<string, unknown>)?.["seller_user_id"] ||
-    (props.data as Record<string, unknown>)?.["sellerId"] ||
-    (sellerData?.data as Record<string, unknown> | undefined)?.["user_id"] ||
-    (sellerData?.data as Record<string, unknown> | undefined)?.["userId"] ||
-    (sellerData?.data as Record<string, unknown> | undefined)?.[
-      "seller_user_id"
-    ] ||
-    null;
+    pick(inline, "seller_user_id", "sellerId") ||
+    pick(storeDetails, "user_id", "userId", "seller_user_id", "sellerId");
 
-  const { data: sellerUserRaw } = useQuery({
+  // ── 3. Fetch seller auth profile (auth/sellers/:userId)
+  //    Often carries phone, email, address that the store record may lack.
+  const { data: sellerAuth } = useQuery({
     queryFn: async () => {
-      if (!sellerUserId) return null;
-      const res = (await GET(API_ADMIN.USER_DETAILS + sellerUserId)) as Record<
+      const res = (await GET(
+        API_ADMIN.AUTH_SELLER_DETAILS + sellerUserId,
+      )) as Record<string, unknown>;
+      return ((res?.data as Record<string, unknown>) ?? res) as Record<
         string,
         unknown
       >;
-      return (res as { data?: Record<string, unknown> })?.data || res || null;
+    },
+    queryKey: ["seller_auth_details", sellerUserId],
+    enabled: !!sellerUserId,
+  });
+
+  // ── 4. Fetch general user profile (user/details/:userId) — last resort
+  const { data: userProfile } = useQuery({
+    queryFn: async () => {
+      const res = (await GET(
+        API_ADMIN.USER_DETAILS + sellerUserId,
+      )) as Record<string, unknown>;
+      return ((res?.data as Record<string, unknown>) ?? res) as Record<
+        string,
+        unknown
+      >;
     },
     queryKey: ["seller_user_details", sellerUserId],
     enabled: !!sellerUserId,
   });
 
-  const getSellerName = () => {
-    const seller = sellerData?.data;
-    if (!seller) return "Loading...";
-
-    if (seller.seller_name) return seller.seller_name;
-    if (seller.business_name) return seller.business_name;
-    if (seller.store_name) return seller.store_name;
-    if (seller.user_name) return seller.user_name;
-    // Fallback for flat structure if properties are directly on data but named differently
-    if (seller.name) return seller.name;
-
-    return "Unknown Seller";
+  // ── Helper: build a phone string including country code when available
+  const buildPhone = (
+    src: Record<string, unknown> | null | undefined,
+  ): string | undefined => {
+    if (!src) return undefined;
+    const cc = pick(src, "code", "countrycode", "country_code");
+    const ph = pick(src, "phone", "phone_no", "phone_number");
+    if (ph && cc) return `${cc}${ph}`.replace(/\s+/g, "");
+    return ph;
   };
 
-  const getPhoneNumber = () => {
-    const user = sellerUserRaw as Record<string, unknown> | null;
-    const cc =
-      (user?.["countrycode"] as string | undefined) ||
-      (user?.["country_code"] as string | undefined);
-    const ph =
-      (user?.["phone"] as string | undefined) ||
-      (user?.["phone_no"] as string | undefined);
-    if (ph && cc) return `${cc}${ph}`.replace(/\s+/g, "");
-    if (ph) return ph;
-    const phone = sellerData?.data?.phone;
-    if (phone) return phone;
-    // Fallback to inline order data
+  // ── Derived display values ──
+
+  const getSellerName = (): string => {
     return (
-      getInlineFallback(props, "store_phone") ||
-      getInlineFallback(props, "seller_phone") ||
+      pick(
+        storeDetails,
+        "seller_name",
+        "business_name",
+        "store_name",
+        "user_name",
+        "name",
+      ) ||
+      pick(sellerAuth, "seller_name", "business_name", "store_name", "name") ||
+      pick(inline, "store_name", "seller_name") ||
+      (storeDetails ? "Unknown Seller" : "Loading...")
+    );
+  };
+
+  const getPhoneNumber = (): string => {
+    return (
+      buildPhone(storeDetails) ||
+      buildPhone(sellerAuth) ||
+      buildPhone(userProfile) ||
+      pick(inline, "store_phone", "seller_phone") ||
       "N/A"
     );
   };
 
-  const getEmail = () => {
-    const user = sellerUserRaw as Record<string, unknown> | null;
-    const email =
-      (user?.["email"] as string | undefined) ||
-      (sellerData?.data?.email as string | undefined);
-    if (email) return email;
-    // Fallback to inline order data
+  const getEmail = (): string => {
     return (
-      getInlineFallback(props, "store_email") ||
-      getInlineFallback(props, "seller_email") ||
+      pick(storeDetails, "email", "store_email", "seller_email") ||
+      pick(sellerAuth, "email") ||
+      pick(userProfile, "email") ||
+      pick(inline, "store_email", "seller_email") ||
       "N/A"
     );
   };
 
   const getAddress = (): string => {
-    const seller = sellerData?.data as Record<string, unknown> | undefined;
-    const address =
-      (seller?.["business_address"] as string | undefined) ||
-      (seller?.["address"] as string | undefined) ||
-      (sellerUserRaw as Record<string, unknown> | null)?.["address"];
-    if (typeof address === "string") return address;
-    // Fallback to inline order data
-    const inline =
-      getInlineFallback(props, "store_address") ||
-      getInlineFallback(props, "seller_address");
-    if (typeof inline === "string") return inline;
-    return "N/A";
+    return (
+      pick(storeDetails, "business_address", "address", "store_address") ||
+      pick(sellerAuth, "business_address", "address") ||
+      pick(userProfile, "address") ||
+      pick(inline, "store_address", "seller_address") ||
+      "N/A"
+    );
   };
+
+  // ── Render ──
 
   if (!storeId) {
     const hasInline =
-      !!props?.data?.store_name ||
-      !!props?.data?.store_phone ||
-      !!props?.data?.store_address ||
-      !!props?.data?.store_logo ||
-      !!props?.data?.store_email;
+      !!inline?.store_name ||
+      !!inline?.store_phone ||
+      !!inline?.store_address ||
+      !!inline?.store_logo ||
+      !!inline?.store_email;
     if (hasInline) {
       return (
         <StoreInfoCard
-          store_name={(props?.data as { store_name?: string })?.store_name}
-          store_email={(props?.data as { store_email?: string })?.store_email}
-          store_phone={(props?.data as { store_phone?: string })?.store_phone}
-          store_address={
-            (props?.data as { store_address?: string })?.store_address
-          }
-          store_logo={(props?.data as { store_logo?: string })?.store_logo}
+          store_name={inline.store_name as string | undefined}
+          store_email={inline.store_email as string | undefined}
+          store_phone={inline.store_phone as string | undefined}
+          store_address={inline.store_address as string | undefined}
+          store_logo={inline.store_logo as string | undefined}
         />
       );
     }
@@ -191,17 +198,13 @@ export default function SellerDetailsCard(props: Props) {
           Seller Details
         </span>
       }
-      loading={isLoading}
+      loading={isStoreLoading}
       className="h-100"
     >
-      {sellerData?.data ? (
+      {storeDetails ? (
         <Descriptions column={1} bordered>
           <Descriptions.Item label="Store/Seller Name">
-            {typeof getSellerName() === "string" ? (
-              <Tag color="blue">{getSellerName()}</Tag>
-            ) : (
-              <Tag color="blue">Unknown Seller</Tag>
-            )}
+            <Tag color="blue">{getSellerName()}</Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Phone Number">
             <span>
@@ -209,11 +212,16 @@ export default function SellerDetailsCard(props: Props) {
               {getPhoneNumber()}
             </span>
           </Descriptions.Item>
-          <Descriptions.Item label="Email">{getEmail()}</Descriptions.Item>
+          <Descriptions.Item label="Email">
+            <span>
+              <MailOutlined style={{ marginRight: 8 }} />
+              {getEmail()}
+            </span>
+          </Descriptions.Item>
           <Descriptions.Item label="Address">
             <span>
               <EnvironmentOutlined style={{ marginRight: 8 }} />
-              {typeof getAddress() === "string" ? getAddress() : "N/A"}
+              {getAddress()}
             </span>
           </Descriptions.Item>
         </Descriptions>
