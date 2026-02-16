@@ -84,9 +84,9 @@ import { Avatar, Button, List, Spin, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
-import { GET, POST, DELETE } from "@/util/apicall";
+import { POST, DELETE } from "@/util/apicall";
 import API from "@/config/API";
-import { storeCart } from "@/redux/slice/cartSlice";
+import { clearCart } from "@/redux/slice/cartSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
@@ -178,24 +178,6 @@ function Checkout() {
       });
     }
   }, []);
-
-  const loadCartItems = useCallback(async () => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const userId = (User as any)?.data?.id || (User as any)?.id;
-      if (userId) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const cartItems: any = await GET(API.CART_GET_ALL);
-        if (cartItems.status) {
-          dispatch(storeCart(cartItems.data));
-          return;
-        } else {
-        }
-      }
-    } catch {
-      return;
-    }
-  }, [User, dispatch]);
 
   const PlaceOrder = useCallback(async () => {
     try {
@@ -949,16 +931,21 @@ function Checkout() {
           setPaymentRef(null);
         }
 
-        // Clear cart from backend and redux
+        // Clear cart from backend, redux, and guest localStorage
         try {
           await DELETE(API.CART_CLEAR_ALL);
-          dispatch(storeCart([]));
         } catch (e) {
-          console.error("Failed to clear cart", e);
+          console.error("Failed to clear cart from backend", e);
         }
+        // clearCart() empties Redux cart state AND removes guest cart from localStorage
+        dispatch(clearCart());
 
         dispatch(clearCheckout());
-        loadCartItems();
+
+        // Clean up order-creation flags so future checkouts start fresh
+        localStorage.removeItem("order_creation_completed");
+        localStorage.removeItem("last_order_response");
+
         setPaymentStatus(true);
       } else {
         Notifications["error"]({
@@ -1000,7 +987,6 @@ function Checkout() {
     getOrderItems,
     isCOD,
     isPaystack,
-    loadCartItems,
     searchParams,
     paymentRef,
   ]);

@@ -25,6 +25,7 @@ export interface Order {
   deliveryCharge?: number;
   status?: string;
   orderItems?: Record<string, unknown>[];
+  totalItems?: number;
   storeId?: string | number;
   store_id?: string | number;
   // Guest order fields
@@ -194,13 +195,17 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
       },
       {
         title: "Items",
-        dataIndex: "orderItems",
         key: "orderItems",
-        render: (items: Order["orderItems"]) => (
-          <span className="dashboard-badge dashboard-badge--info">
-            {items?.length || 0} items
-          </span>
-        ),
+        render: (_: unknown, record: Order) => {
+          const count =
+            record.totalItems ??
+            (Array.isArray(record.orderItems) ? record.orderItems.length : 0);
+          return (
+            <span className="dashboard-badge dashboard-badge--info">
+              {count} items
+            </span>
+          );
+        },
         responsive: ["lg"] as ("xs" | "sm" | "md" | "lg" | "xl" | "xxl")[],
       },
       {
@@ -263,9 +268,13 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
           </div>
         </div>
       ) : (
-        data.map((order: Order, index: number) => (
+        data.map((order: Order, index: number) => {
+          const orderId = String(order.order_id ?? order.id ?? order._id ?? index);
+          const storeId = String(order.storeId ?? order.store_id ?? "");
+          const cardKey = storeId ? `${orderId}::${storeId}` : orderId;
+          return (
           <div
-            key={order.order_id || order._id || order.id || index}
+            key={cardKey}
             className="dashboard-mobile-card"
           >
             <div className="dashboard-mobile-card__header">
@@ -318,7 +327,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               <div className="dashboard-mobile-card__row">
                 <span className="dashboard-mobile-card__label">Items</span>
                 <span className="dashboard-mobile-card__value">
-                  {order.orderItems?.length || 0} items
+                  {order.totalItems ?? (Array.isArray(order.orderItems) ? order.orderItems.length : 0)} items
                 </span>
               </div>
               <div className="dashboard-mobile-card__row">
@@ -353,7 +362,8 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               </Button>
             </div>
           </div>
-        ))
+          );
+        })
       )}
     </div>
   );
@@ -368,12 +378,11 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
           columns={columns}
           pagination={false}
           size="middle"
-          rowKey={(record) =>
-            (record?._id ??
-              record?.id ??
-              record?.order_id ??
-              "unknown") as React.Key
-          }
+          rowKey={(record) => {
+            const orderId = String(record?.order_id ?? record?.id ?? record?._id ?? "unknown");
+            const storeId = String(record?.storeId ?? record?.store_id ?? "");
+            return storeId ? `${orderId}::${storeId}` : orderId;
+          }}
           scroll={{ x: "max-content" }}
           locale={{
             emptyText: (

@@ -147,10 +147,15 @@ function Page() {
     }
 
     let ordersData = Array.isArray(orders?.data) ? orders?.data : [];
-    // Deduplicate by order_id (or fallback to id/_id)
-    const seen = new Set();
+    // Deduplicate using composite key: order_id + storeId
+    // Multi-seller orders share the same order_id but have different storeId values,
+    // so each store's order is a distinct record. True duplicates (same order_id AND
+    // same storeId) from backend JOINs are removed.
+    const seen = new Set<string>();
     ordersData = ordersData.filter((order) => {
-      const key = order.order_id ?? order.id ?? order._id;
+      const orderId = String(order.order_id ?? order.id ?? order._id ?? "");
+      const storeId = String(order.storeId ?? order.store_id ?? "");
+      const key = `${orderId}::${storeId}`;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
@@ -160,7 +165,7 @@ function Page() {
       <>
         <DataTable
           data={ordersData}
-          count={ordersData.length}
+          count={orders?.meta?.itemCount ?? ordersData.length}
           setPage={(nextPage: number, nextTake: number) => {
             setPage(nextPage);
             setTake(nextTake);

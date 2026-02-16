@@ -54,10 +54,16 @@ export default function OrderDetails() {
   const userType = session?.type || session?.user?.type;
   const isSeller = userRole === "seller" || userType === "seller";
 
-  // Fetch order details using the new API response structure
+  // Use the correct endpoint based on role:
+  // Sellers use order/get_one/seller/ — admin endpoint rejects seller tokens
+  const orderEndpoint = isSeller
+    ? API_ADMIN.ORDER_GETONE_SELLER + orderId
+    : API_ADMIN.ORDER_DETAILS + orderId;
+
   const { data: orderData, isLoading } = useQuery({
-    queryFn: async () => await GET(API_ADMIN.ORDER_DETAILS + orderId),
-    queryKey: ["order_details", orderId],
+    queryFn: async () => await GET(orderEndpoint),
+    queryKey: ["order_details", orderId, isSeller],
+    enabled: status === "authenticated",
     staleTime: 0,
   });
 
@@ -90,19 +96,36 @@ export default function OrderDetails() {
       }))
     : [];
 
-  // Payment details
-  const paymentData = order.orderPayment || {};
+  // Payment details — PaymentStatusTab expects the full order object
+  // (it accesses orderPayment, total, tax, discount, deliveryCharge, grandTotal, order_id, etc.)
+  const paymentData = order;
 
   // Order status history
   const orderStatus = order.orderStatus || [];
 
-  // Seller/store details
+  // Seller/store details — include storeId so SellerDetailsCard can fetch full store info
   const sellerData = {
+    storeId: order.storeId || order.store_id,
     store_name: order.store_name,
     store_email: order.store_email,
     store_phone: order.store_phone,
     store_address: order.store_address,
     store_logo: order.store_logo,
+  };
+
+  // Customer details for CustomerDetailsCard
+  const customerData = {
+    userId: order.userId || order.user_id,
+    user_id: order.userId || order.user_id,
+    address: order.address,
+    is_guest_order: order.is_guest_order,
+    guest_name: order.guest_name,
+    guest_email: order.guest_email,
+    guest_phone: order.guest_phone,
+    customer_name: order.customer_name,
+    customer_email: order.customer_email,
+    customer_phone: order.customer_phone,
+    name: order.name,
   };
 
   // Helper: format date
@@ -170,7 +193,14 @@ export default function OrderDetails() {
             </Col>
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
-                <SellerDetailsCard data={sellerData} />
+                {isSeller ? (
+                  <CustomerDetailsCard data={customerData} />
+                ) : (
+                  <>
+                    <SellerDetailsCard data={sellerData} />
+                    <CustomerDetailsCard data={customerData} />
+                  </>
+                )}
                 <OrderStatusTab data={{ id: order.id }} />
               </div>
             </Col>
