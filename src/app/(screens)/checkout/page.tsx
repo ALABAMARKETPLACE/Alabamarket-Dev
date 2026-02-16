@@ -518,7 +518,7 @@ function Checkout() {
             }
           : {}),
         metadata: {
-          order_id: reference,
+          payment_reference: reference,
           customer_id: customerId,
           stores: stores.map((s) => s.storeId),
           store_allocations: storeAllocations,
