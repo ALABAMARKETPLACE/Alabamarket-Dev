@@ -153,19 +153,14 @@ function Checkout() {
   const isCOD = routeId === "1";
   const isPaystack = routeId === "2";
 
-  // Get payment reference from URL params or localStorage
+  // Always generate a new payment reference for each order attempt
   useEffect(() => {
     if (isPaystack) {
-      // Get reference from URL callback first, then fallback to localStorage
-      const urlRef = searchParams.get("reference") || searchParams.get("ref");
-      const storedRef = localStorage.getItem("paystack_payment_reference");
-      const ref = urlRef || storedRef;
-
-      if (ref) {
-        setPaymentRef(ref);
-      }
+      const newRef = `ps_${uuidv4()}`;
+      setPaymentRef(newRef);
+      localStorage.setItem("paystack_payment_reference", newRef);
     }
-  }, [searchParams, isPaystack]);
+  }, [orderCreated, isPaystack]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderItems = useCallback((response: any[]) => {
@@ -188,16 +183,12 @@ function Checkout() {
     try {
       setOrderCreated(true); // Prevent multiple executions
 
-      // Get payment reference from URL or localStorage (do not generate new ones)
+      // Always use a fresh payment reference for each attempt
       let currentPaymentRef = paymentRef;
       if (isPaystack && !currentPaymentRef) {
-        const urlRef = searchParams.get("reference") || searchParams.get("ref");
-        const storedRef = localStorage.getItem("paystack_payment_reference");
-        currentPaymentRef = urlRef || storedRef || null;
-
-        if (currentPaymentRef) {
-          setPaymentRef(currentPaymentRef);
-        }
+        currentPaymentRef = `ps_${uuidv4()}`;
+        setPaymentRef(currentPaymentRef);
+        localStorage.setItem("paystack_payment_reference", currentPaymentRef);
       }
 
       let finalOrderData;
@@ -243,7 +234,7 @@ function Checkout() {
         const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
         // Verify payment with backend
-        console.log("Verifying payment with reference:", paystackRef);
+        console.log("Verifying payment with reference:", paymentRef);
         // Guest checkout disabled
 
         // Robust verification with fallbacks for guest
@@ -327,7 +318,7 @@ function Checkout() {
         // Ensure payment info includes verification data
         finalOrderData.payment = {
           ...finalOrderData.payment,
-          ref: paystackRef,
+          ref: paymentRef,
           status: vStatus || "success",
           amount: vAmount || null,
           gateway_response: vGatewayResponse,
