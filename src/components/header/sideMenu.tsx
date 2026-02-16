@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styles from "./sideMenu.module.scss";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
 import { reduxCategoryItems } from "../../redux/slice/categorySlice";
 import { useSession, signOut } from "next-auth/react";
+import { clearReduxData } from "@/lib/clear_redux";
 import {
   IoClose,
   IoPersonOutline,
@@ -23,6 +24,7 @@ const SideMenu = ({
   onClose: () => void;
 }) => {
   const categories = useSelector(reduxCategoryItems);
+  const dispatch = useDispatch();
   const router = useRouter();
   const { data: session }: any = useSession();
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
@@ -212,6 +214,7 @@ const SideMenu = ({
               <button
                 className={styles.logoutBtn}
                 onClick={() => {
+                  clearReduxData(dispatch);
                   signOut({ callbackUrl: "/" });
                   onClose();
                 }}

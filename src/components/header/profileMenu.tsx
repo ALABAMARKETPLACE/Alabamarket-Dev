@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { GET } from "@/util/apicall";
+import { clearReduxData } from "@/lib/clear_redux";
 
 const ProfileMenu = (props: any) => {
   const navigation = useRouter();
@@ -92,6 +93,7 @@ const ProfileMenu = (props: any) => {
 
   const logotFunction = () => {
     if (User?.user) {
+      clearReduxData(dispatch);
       signOut({ callbackUrl: "/" });
     } else {
       navigation.push("/login");
