@@ -59,4 +59,4 @@ jobs:
       - name: Execute Remote Script
         run: |
           # Pass variables to the script and execute it
-          ssh "$SERVER_USER@$SERVER_HOST" "export APP_NAME=$APP_NAME; export APP_DIR=$APP_DIR; bash $APP_DIR/deploy_npm.sh"
+          ssh "$SERVER_USER@$SERVER_HOST" "cd $APP_DIR && export APP_NAME=$APP_NAME; export APP_DIR=$APP_DIR; bash deploy_npm.sh"
