@@ -36,7 +36,7 @@ jobs:
           else
             echo "SERVER_HOST=${{ vars.DEV_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.DEV_SERVER_USER }}" >> $GITHUB_ENV
-            echo "APP_DIR=/home/${{ vars.DEV_SERVER_USER }}/alaba-marketplace/website" >> $GITHUB_ENV
+            echo "APP_DIR=${{ vars.DEV_SCRIPT_PATH }}" >> $GITHUB_ENV
             echo "APP_NAME=alabamarketplace-frontend" >> $GITHUB_ENV
             echo "ENVIRONMENT=development" >> $GITHUB_ENV
 
@@ -96,7 +96,7 @@ jobs:
             set -e
 
             # Load NVM
-            export NVM_DIR="\$HOME/.nvm"
+            export NVM_DIR="$HOME/.nvm"
             [ -s "\$NVM_DIR/nvm.sh" ] && . "\$NVM_DIR/nvm.sh"
             nvm use 20.19.6
 
