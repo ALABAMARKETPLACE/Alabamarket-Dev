@@ -42,7 +42,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
       - name: Sync to Server
         run: |
@@ -51,9 +51,9 @@ jobs:
             --exclude '.git*' \
             --exclude 'node_modules' \
             --exclude '.next' \
-            ./ "$USER@$HOST:$DIR/"
+            ./ "$USER@$SERVER_HOST:$APP_DIR/"
 
       - name: Execute Remote Script
         run: |
           # Pass variables to the script and execute it
-          ssh "$USER@$HOST" "export APP_NAME=$NAME; export APP_DIR=$DIR; bash $DIR/deploy.sh"
+          ssh "$USER@$SERVER_HOST" "export APP_NAME=$APP_NAME; export APP_DIR=$APP_DIR; bash $APP_DIR/deploy.sh"
