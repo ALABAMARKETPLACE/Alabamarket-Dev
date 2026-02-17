@@ -18,8 +18,8 @@ jobs:
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             echo "SERVER_HOST=${{ vars.PROD_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.PROD_SERVER_USER }}" >> $GITHUB_ENV
-            echo "APP_DIR=/home/${{ vars.PROD_SERVER_USER }}/alaba-marketplace-production/website" >> $GITHUB_ENV
-            echo "APP_NAME=alabamarketplace-frontend" >> $GITHUB_ENV
+            echo "APP_DIR=${{ vars.PROD_SCRIPT_PATH }}" >> $GITHUB_ENV
+            echo "APP_NAME=prod-frontend" >> $GITHUB_ENV
             echo "ENVIRONMENT=production" >> $GITHUB_ENV
 
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
@@ -29,7 +29,7 @@ jobs:
             echo "SERVER_HOST=${{ vars.DEV_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.DEV_SERVER_USER }}" >> $GITHUB_ENV
             echo "APP_DIR=${{ vars.DEV_SCRIPT_PATH }}" >> $GITHUB_ENV
-            echo "APP_NAME=alabamarketplace-frontend" >> $GITHUB_ENV
+            echo "APP_NAME=dev-frontend" >> $GITHUB_ENV
             echo "ENVIRONMENT=development" >> $GITHUB_ENV
 
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
