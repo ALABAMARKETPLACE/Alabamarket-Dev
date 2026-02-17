@@ -4,6 +4,8 @@
 # Exit on error
 set -e
 
+export PATH=/opt/cpanel/ea-nodejs22/bin:$PATH
+
 echo "📍 Current Directory: $(pwd)"
 echo "🏷️ App Name: $APP_NAME"
 
