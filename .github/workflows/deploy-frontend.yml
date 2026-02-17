@@ -48,10 +48,13 @@ jobs:
         run: |
           # The --delete flag ensures the server matches the repo exactly
           rsync -avz --delete \
-            --exclude '.git*' \
-            --exclude 'node_modules' \
-            --exclude '.next' \
-            ./ "$USER@$SERVER_HOST:$APP_DIR/"
+            --exclude node_modules \
+            --exclude .next \
+            --exclude .env \
+            --exclude .git \
+            --exclude .github \
+            . \
+            $SERVER_USER@$SERVER_HOST:$APP_DIR/
 
       - name: Execute Remote Script
         run: |
