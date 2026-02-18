@@ -20,7 +20,7 @@ echo "♻️ Restarting Application..."
 # If app doesn't exist yet, start it from ecosystem file
 if pm2 describe "$APP_NAME" > /dev/null 2>&1; then
     # Restart using ecosystem config
-pm2 restart $APP_NAME
+pm2 restart $APP_NAME --update-env
 else
     cd ~  # Where ecosystem.config.js lives
     pm2 start ecosystem.config.js --only "$APP_NAME"
