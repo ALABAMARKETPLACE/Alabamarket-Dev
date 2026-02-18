@@ -40,7 +40,7 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          printf "%s\n" "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
@@ -53,8 +53,8 @@ jobs:
             --exclude .env \
             --exclude .git \
             --exclude .github \
-            . \
-            $SERVER_USER@$SERVER_HOST:$APP_DIR/
+            ./ \
+            "$SERVER_USER@$SERVER_HOST:$APP_DIR/"
 
       - name: Execute Remote Script
         run: |
