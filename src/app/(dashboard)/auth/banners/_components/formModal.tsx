@@ -103,13 +103,18 @@ function FormModal(props: Props) {
         (await resolveImageUpload(mobileImage, props?.data?.img_mob)) ??
         desktopUpload;
       console.log("[Banner] mobileUpload result:", mobileUpload);
-      const obj = {
+      const storeId =
+        (session as any)?.user?.store_id ??
+        (session as any)?.user?.storeId ??
+        null;
+      const obj: Record<string, unknown> = {
         description: body?.description,
         img_desk: desktopUpload.url,
         img_mob: mobileUpload.url,
         status:
           session?.role === "admin" && props?.data?.id ? body?.status : true,
         title: body?.title,
+        ...(storeId != null && { storeId: Number(storeId) }),
       };
       if (props?.data?.id) {
         console.log("[Banner] PUT", API.BANNER_EDIT + props?.data?.id, obj);
