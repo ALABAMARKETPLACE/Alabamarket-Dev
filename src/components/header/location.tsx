@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { IoCaretDownOutline } from "react-icons/io5";
 import { AutoComplete, Button, Input, message, Modal } from "antd";
@@ -13,44 +13,15 @@ import {
 } from "../../util/locationCalls";
 
 import { storeLocation } from "../../redux/slice/locationSlice";
-import { LOCATION_PROMPTED_KEY } from "@/lib/clear_redux";
 
 function Location() {
   const dispatch = useDispatch();
   const Location = useSelector((state: any) => state?.Location?.location);
   // Start with modal closed to avoid flash during redux-persist rehydration
   const [viewModal, setViewModal] = useState<boolean>(false);
-  const hasCheckedRef = useRef(false);
   const [loading, setLoading] = useState<any>(false);
   const [text, setText] = useState<any>(null);
   const [recommendation, setRecommendation] = useState<any>([]);
-
-  // Show modal only once after rehydration, if user has no saved location
-  // and hasn't been prompted before in this browser session
-  useEffect(() => {
-    const hasLocation =
-      Location &&
-      typeof Location === "object" &&
-      Object.keys(Location).length > 0;
-
-    if (hasLocation) {
-      // User already has a location — never auto-show the modal
-      setViewModal(false);
-      hasCheckedRef.current = true;
-      return;
-    }
-
-    // Only auto-prompt once: after the first rehydration pass
-    if (!hasCheckedRef.current) {
-      hasCheckedRef.current = true;
-      const alreadyPrompted = localStorage.getItem(LOCATION_PROMPTED_KEY);
-      if (!alreadyPrompted) {
-        // First time visiting with no location — show the modal once
-        setViewModal(true);
-        localStorage.setItem(LOCATION_PROMPTED_KEY, "true");
-      }
-    }
-  }, [Location]);
 
   const searchLocation = async (value: any) => {
     try {
@@ -153,7 +124,7 @@ function Location() {
             style={{ width: "100%", fontSize: "16px", padding: "8px 11px" }}
             onSearch={(text) => searchLocation(text)}
             options={recommendation}
-            onSelect={(value, option) => convertLocation(option)}
+            onSelect={(_value, option) => convertLocation(option)}
           >
             <Input
               prefix={<IoSearchOutline size={20} />}
