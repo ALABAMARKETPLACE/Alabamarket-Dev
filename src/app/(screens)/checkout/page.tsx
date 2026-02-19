@@ -152,7 +152,11 @@ function Checkout() {
             cart: calculationCart,
             address: addressData,
           };
-          console.log("[Checkout] POST", API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
+          console.log(
+            "[Checkout] POST",
+            API.NEW_CALCULATE_DELIVERY_CHARGE,
+            obj,
+          );
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
         } else {
           notificationApi.error({
@@ -606,11 +610,15 @@ function Checkout() {
         // Normalize cart items here too so localStorage has the same shape as PlaceOrder
         const normalizedCartForStorage = Array.isArray(Checkout?.Checkout)
           ? Checkout.Checkout.map((item: Record<string, unknown>) => {
-              const product = (item as { product?: Record<string, unknown> }).product;
+              const product = (item as { product?: Record<string, unknown> })
+                .product;
               const sid =
                 (item as { store_id?: number }).store_id ??
                 (item as { storeId?: number }).storeId ??
-                (product ? ((product as { store_id?: number }).store_id ?? (product as { storeId?: number }).storeId) : null);
+                (product
+                  ? ((product as { store_id?: number }).store_id ??
+                    (product as { storeId?: number }).storeId)
+                  : null);
               return { ...item, store_id: sid, storeId: sid };
             })
           : [];
@@ -642,8 +650,14 @@ function Checkout() {
             user: user,
           },
         };
-        console.log("[Checkout] localStorage('paystack_order_data') →", orderDataPayload);
-        localStorage.setItem("paystack_order_data", JSON.stringify(orderDataPayload));
+        console.log(
+          "[Checkout] localStorage('paystack_order_data') →",
+          orderDataPayload,
+        );
+        localStorage.setItem(
+          "paystack_order_data",
+          JSON.stringify(orderDataPayload),
+        );
 
         // Redirect to Paystack payment page
         window.location.href = authUrl;
