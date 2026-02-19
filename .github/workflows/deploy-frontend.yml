@@ -1,10 +1,8 @@
-name: Deploy Frontend (Website)
+name: Deploy Frontend
 
 on:
   push:
-    branches:
-      - dev
-      - main
+    branches: [main, dev]
 
 jobs:
   deploy:
@@ -12,22 +10,16 @@ jobs:
     environment: ${{ github.ref_name == 'main' && 'production' || 'development' }}
 
     steps:
-      # -------------------------------------------------
-      # Checkout
-      # -------------------------------------------------
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      # -------------------------------------------------
-      # Set environment based on branch
-      # -------------------------------------------------
-      - name: Set deployment environment
+      - name: Set Deployment Context
         run: |
           if [[ "${GITHUB_REF_NAME}" == "main" ]]; then
             echo "SERVER_HOST=${{ vars.PROD_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.PROD_SERVER_USER }}" >> $GITHUB_ENV
-            echo "APP_DIR=/home/${{ vars.PROD_SERVER_USER }}/alaba-marketplace-production/website" >> $GITHUB_ENV
-            echo "APP_NAME=alabamarket" >> $GITHUB_ENV
+            echo "APP_DIR=${{ vars.PROD_SCRIPT_PATH }}" >> $GITHUB_ENV
+            echo "APP_NAME=prod-frontend" >> $GITHUB_ENV
             echo "ENVIRONMENT=production" >> $GITHUB_ENV
 
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
@@ -37,7 +29,7 @@ jobs:
             echo "SERVER_HOST=${{ vars.DEV_SERVER_HOST }}" >> $GITHUB_ENV
             echo "SERVER_USER=${{ vars.DEV_SERVER_USER }}" >> $GITHUB_ENV
             echo "APP_DIR=${{ vars.DEV_SCRIPT_PATH }}" >> $GITHUB_ENV
-            echo "APP_NAME=alabamarketplace-frontend" >> $GITHUB_ENV
+            echo "APP_NAME=dev-frontend" >> $GITHUB_ENV
             echo "ENVIRONMENT=development" >> $GITHUB_ENV
 
             echo "SSH_KEY<<EOF" >> $GITHUB_ENV
@@ -45,38 +37,6 @@ jobs:
             echo "EOF" >> $GITHUB_ENV
           fi
 
-      # -------------------------------------------------
-      # Validate critical SSH variables
-      # -------------------------------------------------
-      - name: Validate SSH variables
-        run: |
-          if [ -z "$SERVER_USER" ]; then
-            echo "❌ SERVER_USER is empty."
-            exit 1
-          fi
-          if [ -z "$SERVER_HOST" ]; then
-            echo "❌ SERVER_HOST is empty."
-            exit 1
-          fi
-          if [ -z "$APP_DIR" ]; then
-            echo "❌ APP_DIR is empty."
-            exit 1
-          fi
-
-      # -------------------------------------------------
-      # Debug values
-      # -------------------------------------------------
-      - name: Debug deployment variables
-        run: |
-          echo "Branch      : $GITHUB_REF_NAME"
-          echo "Environment : $ENVIRONMENT"
-          echo "Server      : $SERVER_USER@$SERVER_HOST"
-          echo "App Dir     : $APP_DIR"
-          echo "SSH Key     : ${SSH_KEY:+SET}"
-
-      # -------------------------------------------------
-      # Setup SSH
-      # -------------------------------------------------
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -84,19 +44,9 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
-      # -------------------------------------------------
-      # Ensure target directory exists
-      # -------------------------------------------------
-      - name: Ensure target directory exists
+      - name: Sync to Server
         run: |
-          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=5 \
-            "$SERVER_USER@$SERVER_HOST" "mkdir -p $APP_DIR"
-
-      # -------------------------------------------------
-      # Sync frontend source
-      # -------------------------------------------------
-      - name: Sync frontend source
-        run: |
+          # The --delete flag ensures the server matches the repo exactly
           rsync -avz --delete \
             --exclude node_modules \
             --exclude .next \
@@ -106,58 +56,7 @@ jobs:
             ./ \
             "$SERVER_USER@$SERVER_HOST:$APP_DIR/"
 
-      # -------------------------------------------------
-      # Build & restart frontend (FINAL FIX)
-      # -------------------------------------------------
-      - name: Build & restart frontend
+      - name: Execute Remote Script
         run: |
-          ssh -o ServerAliveInterval=60 -o ServerAliveCountMax=5 \
-            "$SERVER_USER@$SERVER_HOST" << EOF
-          set -euo pipefail
-
-          # -------------------------------
-          # EXPLICIT ENV (CI SAFE)
-          # -------------------------------
-          export APP_DIR="$APP_DIR"
-          export APP_NAME="$APP_NAME"
-
-          # -------------------------------
-          # VERIFY NODE & NPM
-          # -------------------------------
-          node -v
-          npm -v
-
-          # -------------------------------
-          # BUILD APP
-          # -------------------------------
-          cd "\$APP_DIR"
-
-          npm install --legacy-peer-deps
-          npm run build
-
-          # -------------------------------
-          # RESTART / START FRONTEND
-          # -------------------------------
-          if pm2 describe "\$APP_NAME" > /dev/null 2>&1; then
-            echo "♻️ Reloading frontend..."
-            pm2 reload "\$APP_NAME"
-          else
-            echo "🚀 Starting frontend..."
-            pm2 start npm \
-              --name "\$APP_NAME" \
-              --cwd "\$APP_DIR" \
-              -- start
-          fi
-
-          pm2 save
-          EOF
-
-      # -------------------------------------------------
-      # Deployment summary
-      # -------------------------------------------------
-      - name: Deployment info
-        run: |
-          echo "✅ Branch: $GITHUB_REF_NAME"
-          echo "🌍 Environment: $ENVIRONMENT"
-          echo "🖥️ Server: $SERVER_USER@$SERVER_HOST"
-          echo "📁 Directory: $APP_DIR"
+          # Pass variables to the script and execute it
+          ssh "$SERVER_USER@$SERVER_HOST" "cd $APP_DIR && export APP_NAME=$APP_NAME; export APP_DIR=$APP_DIR; bash deploy_npm.sh"

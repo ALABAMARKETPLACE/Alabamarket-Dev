@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { IoCaretDownOutline } from "react-icons/io5";
 import { AutoComplete, Button, Input, message, Modal } from "antd";
@@ -12,35 +12,16 @@ import {
   GET_GEOCODE,
 } from "../../util/locationCalls";
 
-import { clearLocation, storeLocation } from "../../redux/slice/locationSlice";
+import { storeLocation } from "../../redux/slice/locationSlice";
 
 function Location() {
   const dispatch = useDispatch();
   const Location = useSelector((state: any) => state?.Location?.location);
-  const hasStoredLocation =
-    Location &&
-    typeof Location === "object" &&
-    Object.keys(Location).length > 0;
-  const [viewModal, setViewModal] = useState<boolean>(!hasStoredLocation);
-  const [hasDismissed, setHasDismissed] = useState<boolean>(false);
-  // dispatch(clearLocation())
+  // Start with modal closed to avoid flash during redux-persist rehydration
+  const [viewModal, setViewModal] = useState<boolean>(false);
   const [loading, setLoading] = useState<any>(false);
   const [text, setText] = useState<any>(null);
   const [recommendation, setRecommendation] = useState<any>([]);
-
-  useEffect(() => {
-    const hasLocation =
-      Location &&
-      typeof Location === "object" &&
-      Object.keys(Location).length > 0;
-
-    if (hasLocation) {
-      setHasDismissed(false);
-      setViewModal(false);
-    } else if (!hasDismissed) {
-      setViewModal(true);
-    }
-  }, [Location, hasDismissed]);
 
   const searchLocation = async (value: any) => {
     try {
@@ -133,7 +114,6 @@ function Location() {
           title="Delivery Location"
           open={viewModal}
           onCancel={() => {
-            setHasDismissed(true);
             setViewModal(false);
           }}
           width={500}
@@ -144,7 +124,7 @@ function Location() {
             style={{ width: "100%", fontSize: "16px", padding: "8px 11px" }}
             onSearch={(text) => searchLocation(text)}
             options={recommendation}
-            onSelect={(value, option) => convertLocation(option)}
+            onSelect={(_value, option) => convertLocation(option)}
           >
             <Input
               prefix={<IoSearchOutline size={20} />}
