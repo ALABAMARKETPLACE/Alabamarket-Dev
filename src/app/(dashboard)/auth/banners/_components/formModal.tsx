@@ -73,28 +73,36 @@ function FormModal(props: Props) {
     fallback?: string,
   ): Promise<{ url: string } | undefined> => {
     if (source?.file) {
-      return await COMPRESS_IMAGE(source.file);
+      console.log("[Banner] COMPRESS_IMAGE → img_compress/compress", { fileName: source.file?.name, size: source.file?.size });
+      const result = await COMPRESS_IMAGE(source.file);
+      console.log("[Banner] COMPRESS_IMAGE ←", result);
+      return result;
     }
     if (source?.url) {
+      console.log("[Banner] resolveImageUpload — reusing existing URL:", source.url);
       return { url: source.url };
     }
     if (fallback) {
+      console.log("[Banner] resolveImageUpload — using fallback URL:", fallback);
       return { url: fallback };
     }
     return undefined;
   };
   const mutationCreate = useMutation({
     mutationFn: async (body: any) => {
+      console.log("[Banner] upload start — desktopImage:", desktopImage, "mobileImage:", mobileImage);
       const desktopUpload = await resolveImageUpload(
         desktopImage,
         props?.data?.img_desk,
       );
+      console.log("[Banner] desktopUpload result:", desktopUpload);
       if (!desktopUpload?.url) {
         throw new Error("Desktop banner image is required");
       }
       const mobileUpload =
         (await resolveImageUpload(mobileImage, props?.data?.img_mob)) ??
         desktopUpload;
+      console.log("[Banner] mobileUpload result:", mobileUpload);
       const obj = {
         description: body?.description,
         img_desk: desktopUpload.url,
@@ -104,16 +112,20 @@ function FormModal(props: Props) {
         title: body?.title,
       };
       if (props?.data?.id) {
+        console.log("[Banner] PUT", API.BANNER_EDIT + props?.data?.id, obj);
         return PUT(API.BANNER_EDIT + props?.data?.id, obj);
       }
+      console.log("[Banner] POST", API.BANNER_ADD, obj);
       return POST(API.BANNER_ADD, obj);
     },
     onError: (error, variables, context) => {
+      console.error("[Banner] mutation error:", error);
       Notifications["error"]({
         message: error.message,
       });
     },
     onSuccess: (data, variables, context) => {
+      console.log("[Banner] mutation success ←", data);
       onClose();
       Notifications["success"]({
         message: `Successfully ${props?.data?.id ? "updated" : "Added"} Banner`,

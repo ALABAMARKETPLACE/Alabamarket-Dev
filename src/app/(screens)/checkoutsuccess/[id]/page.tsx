@@ -21,60 +21,24 @@ interface GuestCartItem {
   weight?: number;
 }
 
-interface GuestOrderPayload {
-  guest_info: {
-    email: string;
-    first_name: string;
-    last_name: string;
-    phone: string;
-    country_code: string;
-  };
-  cart_items: GuestCartItem[];
-  delivery_address: {
-    full_name: string;
-    phone_no: string;
-    country_code: string;
-    full_address: string;
-    city: string;
-    state: string;
-    state_id: number;
-    country: string;
-    country_id: number;
-    landmark?: string;
-    address_type?: string;
-  };
-  delivery: {
-    delivery_token: string;
-    delivery_charge: number;
-    total_weight: number;
-    estimated_delivery_days?: number | null;
-  };
-  payment: {
-    payment_reference: string;
-    payment_method: string;
-    transaction_reference: string;
-    amount_paid: number;
-    payment_status: string;
-    paid_at: string;
-  };
-  order_summary: {
-    subtotal: number;
-    delivery_fee: number;
-    tax: number;
-    discount: number;
-    total: number;
-  };
-  metadata: {
-    order_notes?: string;
-    source?: string;
-    device_id?: string;
-    preferred_delivery_time?: string | null;
-  };
-  is_multi_seller: boolean;
-}
+// GuestOrderPayload — disabled (guest order flow commented out)
+// interface GuestOrderPayload {
+//   guest_info: { email: string; first_name: string; last_name: string; phone: string; country_code: string; };
+//   cart_items: GuestCartItem[];
+//   delivery_address: { full_name: string; phone_no: string; country_code: string; full_address: string;
+//     city: string; state: string; state_id: number; country: string; country_id: number;
+//     landmark?: string; address_type?: string; };
+//   delivery: { delivery_token: string; delivery_charge: number; total_weight: number; estimated_delivery_days?: number | null; };
+//   payment: { payment_reference: string; payment_method: string; transaction_reference: string;
+//     amount_paid: number; payment_status: string; paid_at: string; };
+//   order_summary: { subtotal: number; delivery_fee: number; tax: number; discount: number; total: number; };
+//   metadata: { order_notes?: string; source?: string; device_id?: string; preferred_delivery_time?: string | null; };
+//   is_multi_seller: boolean;
+// }
 
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
+
 import "./styles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
@@ -153,12 +117,14 @@ function Checkout() {
   const isCOD = routeId === "1";
   const isPaystack = routeId === "2";
 
-  // Always generate a new payment reference for each order attempt
+  // Generate a fresh UUID ref for each order attempt.
+  // This is sent as payment.ref to the order endpoint so multi-seller sub-orders
+  // never collide on the backend's uniqueness check.
+  // The real Paystack reference (from URL) is used only for payment verification.
   useEffect(() => {
     if (isPaystack) {
       const newRef = `ps_${uuidv4()}`;
       setPaymentRef(newRef);
-      localStorage.setItem("paystack_payment_reference", newRef);
     }
   }, [orderCreated, isPaystack]);
 
@@ -183,15 +149,15 @@ function Checkout() {
     try {
       setOrderCreated(true); // Prevent multiple executions
 
-      // Always use a fresh payment reference for each attempt
+      // Ensure we have a fresh UUID ref for order creation
       let currentPaymentRef = paymentRef;
       if (isPaystack && !currentPaymentRef) {
         currentPaymentRef = `ps_${uuidv4()}`;
         setPaymentRef(currentPaymentRef);
-        localStorage.setItem("paystack_payment_reference", currentPaymentRef);
       }
 
       let finalOrderData;
+      let paystackRef: string | null = null;
 
       if (isCOD) {
         // COD Order Flow - No payment verification needed
@@ -213,28 +179,30 @@ function Checkout() {
         // Paystack Order Flow - Verify payment first
         console.log("Processing Paystack order...");
 
-        // Robustly select a valid payment reference
-        const paystackRef =
-          (typeof paymentRef === "string" && paymentRef.trim()) ||
-          (typeof searchParams.get("reference") === "string" &&
-            searchParams.get("reference")?.trim()) ||
-          (typeof searchParams.get("ref") === "string" &&
-            searchParams.get("ref")?.trim()) ||
-          (typeof localStorage.getItem("paystack_payment_reference") ===
-            "string" &&
-            localStorage.getItem("paystack_payment_reference")?.trim()) ||
-          null;
+        // Resolve a valid reference — used only to confirm a ref exists.
+        // Then immediately switch to the fresh UUID for both verification and order creation
+        // so the backend's uniqueness check never sees the real ORDER_xxx ref.
+        paystackRef =
+          searchParams.get("reference")?.trim() ||
+          searchParams.get("trxref")?.trim() ||
+          searchParams.get("ref")?.trim() ||
+          localStorage.getItem("paystack_payment_reference")?.trim() ||
+          currentPaymentRef;
         if (!paystackRef) {
           throw new Error("Payment reference not found. Please try again.");
         }
-        console.log("Paystack payment reference:", paystackRef);
+        // Always use the fresh UUID for both verification and order creation.
+        // Using the real ORDER_xxx ref triggers the backend to mark it as used,
+        // which then causes "already used" errors for multi-seller sub-orders.
+        paystackRef = currentPaymentRef;
+        console.log("Order payment.ref (fresh UUID):", paystackRef);
 
         // Load stored order data (for other order info, not for token)
         const storedOrderData = localStorage.getItem("paystack_order_data");
         const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
-        // Verify payment with backend
-        console.log("Verifying payment with reference:", paymentRef);
+        // Verify with backend using the UUID ref
+        console.log("Verifying payment with reference:", paystackRef);
         // Guest checkout disabled
 
         // Robust verification with fallbacks for guest
@@ -315,10 +283,12 @@ function Checkout() {
           user: User ?? Checkout?.user ?? null,
         };
 
-        // Ensure payment info includes verification data
+        // Set payment info for order creation.
+        // ref: fresh UUID (currentPaymentRef) — guarantees no "already used" collision
+        //      on the backend for multi-seller sub-orders.
         finalOrderData.payment = {
           ...finalOrderData.payment,
-          ref: paymentRef,
+          ref: currentPaymentRef,        // fresh UUID — never clashes with existing DB records
           status: vStatus || "success",
           amount: vAmount || null,
           gateway_response: vGatewayResponse,
@@ -436,13 +406,12 @@ function Checkout() {
               ) ??
               (asRecord.product_id as number | undefined) ??
               null;
-            // Remove storeId from the item if present
-            const rest = { ...item };
-            delete (rest as { storeId?: unknown }).storeId;
+            const resolvedStoreId =
+              store_id != null ? Number(store_id) : (store_id as null);
             return {
-              ...rest,
-              store_id:
-                store_id != null ? Number(store_id) : (store_id as null),
+              ...item,
+              store_id: resolvedStoreId,   // snake_case for backend
+              storeId: resolvedStoreId,    // camelCase — keep both, backend may use either
               product_id:
                 product_id != null ? Number(product_id) : (product_id as null),
               quantity: Number((item as { quantity?: number }).quantity ?? 0),
@@ -609,17 +578,20 @@ function Checkout() {
         console.log("Items per store:", byStoreCounts);
       }
 
-      // Determine if this is a guest order
-      const isGuestOrder =
-        finalOrderData?.address?.is_guest ||
-        !finalOrderData?.user_id ||
-        finalOrderData?.guest_email;
+      // Guest order flow — disabled for now
+      // const isGuestOrder =
+      //   finalOrderData?.address?.is_guest ||
+      //   !finalOrderData?.user_id ||
+      //   finalOrderData?.guest_email;
 
+      // All orders go through the authenticated endpoint for now.
+      // Guest order flow (API.ORDER_GUEST + guestOrderPayload) is commented out below.
+      console.log("[Order] POST (auth)", API.ORDER, finalOrderData);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let response: any;
+      const response: any = await POST(API.ORDER, finalOrderData);
 
+      /* ---------- GUEST ORDER FLOW (disabled) ----------
       if (isGuestOrder) {
-        // Parse full_name into first_name and last_name
         const fullName = finalOrderData?.address?.full_name || "";
         const nameParts = fullName.trim().split(/\s+/);
         const firstName = nameParts[0] || "Guest";
@@ -644,90 +616,43 @@ function Checkout() {
                     (item as CheckoutCartItem)?.productId,
                     (item as { id?: number })?.id,
                     (item as { pid?: number })?.pid,
-                    (asRecord.product as Record<string, unknown> | undefined)
-                      ?.id,
-                    (asRecord.product as Record<string, unknown> | undefined)
-                      ?.pid,
+                    (asRecord.product as Record<string, unknown> | undefined)?.id,
+                    (asRecord.product as Record<string, unknown> | undefined)?.pid,
                     asRecord.product_id as number | undefined,
                   ];
                   const toNumber = (x: unknown): number | null => {
-                    const n =
-                      typeof x === "string"
-                        ? parseInt(x, 10)
-                        : (x as number | null);
-                    return Number.isFinite(n as number) && (n as number) > 0
-                      ? (n as number)
-                      : null;
+                    const n = typeof x === "string" ? parseInt(x, 10) : (x as number | null);
+                    return Number.isFinite(n as number) && (n as number) > 0 ? (n as number) : null;
                   };
                   const product_id =
-                    toNumber(candidates[0]) ??
-                    toNumber(candidates[1]) ??
-                    toNumber(candidates[2]) ??
-                    toNumber(candidates[3]) ??
-                    toNumber(candidates[4]) ??
-                    toNumber(candidates[5]) ??
-                    0;
-
+                    toNumber(candidates[0]) ?? toNumber(candidates[1]) ??
+                    toNumber(candidates[2]) ?? toNumber(candidates[3]) ??
+                    toNumber(candidates[4]) ?? toNumber(candidates[5]) ?? 0;
                   const product_name =
                     (item as CheckoutCartItem)?.name ||
-                    ((asRecord.product as Record<string, unknown> | undefined)
-                      ?.name as string | undefined) ||
-                    "";
-
+                    ((asRecord.product as Record<string, unknown> | undefined)?.name as string | undefined) || "";
                   const variant_id_candidate =
                     (item as CheckoutCartItem)?.variantId ??
-                    ((
-                      asRecord.productVariant as
-                        | Record<string, unknown>
-                        | undefined
-                    )?.id as number | undefined) ??
-                    null;
-                  const variant_id =
-                    variant_id_candidate != null
-                      ? (toNumber(variant_id_candidate) ?? null)
-                      : null;
-
+                    ((asRecord.productVariant as Record<string, unknown> | undefined)?.id as number | undefined) ?? null;
+                  const variant_id = variant_id_candidate != null ? (toNumber(variant_id_candidate) ?? null) : null;
                   const store_id =
                     toNumber((item as CheckoutCartItem)?.store_id) ??
                     toNumber((item as { storeId?: number })?.storeId) ??
-                    toNumber(
-                      (asRecord.product as Record<string, unknown> | undefined)
-                        ?.store_id,
-                    ) ??
-                    0;
+                    toNumber((asRecord.product as Record<string, unknown> | undefined)?.store_id) ?? 0;
                   const unit_price =
                     typeof (asRecord as { price?: unknown })?.price === "number"
                       ? (asRecord as { price?: number }).price
-                      : Number(
-                          (item as { unit_price?: number })?.unit_price || 0,
-                        );
+                      : Number((item as { unit_price?: number })?.unit_price || 0);
                   const total_price =
-                    typeof (asRecord as { totalPrice?: unknown })
-                      ?.totalPrice === "number"
+                    typeof (asRecord as { totalPrice?: unknown })?.totalPrice === "number"
                       ? (asRecord as { totalPrice?: number }).totalPrice
-                      : Number(
-                          (item as { total_price?: number })?.total_price || 0,
-                        );
+                      : Number((item as { total_price?: number })?.total_price || 0);
                   const image =
-                    ((asRecord.product as Record<string, unknown> | undefined)
-                      ?.image as string | undefined) ||
-                    ((asRecord as { image?: string })?.image as
-                      | string
-                      | undefined) ||
-                    null;
-
-                  return {
-                    product_id,
-                    product_name,
-                    variant_id,
-                    variant_name: (item as CheckoutCartItem)?.combination,
-                    quantity: Number((item as CheckoutCartItem)?.quantity || 0),
-                    store_id,
-                    weight: Number((item as CheckoutCartItem)?.weight || 0),
-                    unit_price,
-                    total_price,
-                    image,
-                  };
+                    ((asRecord.product as Record<string, unknown> | undefined)?.image as string | undefined) ||
+                    ((asRecord as { image?: string })?.image as string | undefined) || null;
+                  return { product_id, product_name, variant_id, variant_name: (item as CheckoutCartItem)?.combination,
+                    quantity: Number((item as CheckoutCartItem)?.quantity || 0), store_id,
+                    weight: Number((item as CheckoutCartItem)?.weight || 0), unit_price, total_price, image };
                 },
               )
             : [],
@@ -748,83 +673,62 @@ function Checkout() {
             delivery_token: finalOrderData?.charges?.token || "",
             delivery_charge: finalOrderData?.charges?.totalCharge || 0,
             total_weight: Array.isArray(finalOrderData?.cart)
-              ? finalOrderData.cart.reduce(
-                  (sum: number, item: CheckoutCartItem) =>
-                    sum + (item.weight || 0),
-                  0,
-                )
+              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.weight || 0), 0)
               : 0,
             estimated_delivery_days:
-              ((finalOrderData?.charges as Record<string, unknown>)?.[
-                "estimated_days"
-              ] as number | undefined) ?? null,
+              ((finalOrderData?.charges as Record<string, unknown>)?.["estimated_days"] as number | undefined) ?? null,
           },
           payment: {
             payment_reference: finalOrderData?.payment?.ref || "",
             payment_method: finalOrderData?.payment?.type || "paystack",
             transaction_reference:
-              finalOrderData?.payment?.transaction_reference ||
-              finalOrderData?.payment?.ref ||
-              "",
+              finalOrderData?.payment?.transaction_reference || finalOrderData?.payment?.ref || "",
             amount_paid: finalOrderData?.payment?.amount || 0,
             payment_status: finalOrderData?.payment?.status || "success",
-            paid_at:
-              finalOrderData?.payment?.verified_at || new Date().toISOString(),
+            paid_at: finalOrderData?.payment?.verified_at || new Date().toISOString(),
           },
           order_summary: {
             subtotal: Array.isArray(finalOrderData?.cart)
-              ? finalOrderData.cart.reduce(
-                  (sum: number, item: CheckoutCartItem) =>
-                    sum + (item.totalPrice || 0),
-                  0,
-                )
+              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
               : 0,
             delivery_fee: finalOrderData?.charges?.totalCharge || 0,
             tax: 0,
             discount: 0,
             total:
               (Array.isArray(finalOrderData?.cart)
-                ? finalOrderData.cart.reduce(
-                    (sum: number, item: CheckoutCartItem) =>
-                      sum + (item.totalPrice || 0),
-                    0,
-                  )
+                ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
                 : 0) + (finalOrderData?.charges?.totalCharge || 0),
           },
           metadata: {
             order_notes: finalOrderData?.notes || "",
             preferred_delivery_time:
-              ((finalOrderData as Record<string, unknown>)?.[
-                "preferred_delivery_time"
-              ] as string | undefined) || null,
+              ((finalOrderData as Record<string, unknown>)?.["preferred_delivery_time"] as string | undefined) || null,
             source: finalOrderData?.source || "web_app",
             device_id: finalOrderData?.device_id || "",
           },
           is_multi_seller: isMultiSeller,
         };
 
-        // Validate payload before submitting
         const invalidItems =
           Array.isArray(guestOrderPayload.cart_items) &&
-          guestOrderPayload.cart_items.filter(
-            (ci) => !ci.product_id || Number(ci.product_id) <= 0,
-          );
+          guestOrderPayload.cart_items.filter((ci) => !ci.product_id || Number(ci.product_id) <= 0);
         if (Array.isArray(invalidItems) && invalidItems.length > 0) {
           console.error("Invalid guest cart items:", invalidItems);
           Notifications["error"]({
             message: "Order Validation Failed",
-            description:
-              "Some cart items are missing product IDs. Please remove and re-add those items, then try again.",
+            description: "Some cart items are missing product IDs. Please remove and re-add those items, then try again.",
           });
           setIsLoading(false);
           return;
         }
 
-        response = await POST(API.ORDER, finalOrderData);
+        console.log("[Order] POST (guest)", API.ORDER_GUEST, guestOrderPayload);
+        response = await POST(API.ORDER_GUEST, guestOrderPayload);
       } else {
-        // Create order for authenticated users (payment already verified above for Paystack)
+        console.log("[Order] POST (auth)", API.ORDER, finalOrderData);
         response = await POST(API.ORDER, finalOrderData);
       }
+      --------- END GUEST ORDER FLOW ---------- */
       console.log(
         "Order creation response:",
         JSON.stringify(response, null, 2),
@@ -866,9 +770,20 @@ function Checkout() {
             setPaymentRef(null);
           }
 
+          // Detect "already used reference" — this is a backend multi-seller bug where
+          // the backend marks payment.ref as used after sub-order 1, then rejects
+          // sub-order 2 with the same ref. The backend must allow the same payment.ref
+          // across all sub-orders of the same multi-seller checkout (see docs/order-duplication-fix.md).
+          const isAlreadyUsedRef =
+            typeof failureReason === "string" &&
+            failureReason.toLowerCase().includes("already used");
+
           Notifications["error"]({
             message: "Order Processing Failed",
-            description: `Order processing failed: ${failureReason}. Please try again or contact support.`,
+            description: isAlreadyUsedRef
+              ? `Your payment was received but the order could not be created (duplicate reference). Please contact support and quote your payment reference: ${paystackRef}.`
+              : `Order processing failed: ${failureReason}. Please try again or contact support.`,
+            duration: 0, // keep visible until user dismisses
           });
           setPaymentStatus(true);
           setOrderStatus(false);
@@ -1134,15 +1049,37 @@ function Checkout() {
                       {(() => {
                         // Exclude delivery price from amount if promo is active
                         const promo = getActiveDeliveryPromo();
+                        // Sum orderPayment.amount across all sub-orders (multi-seller
+                        // orders split the payment across store records, so [0] alone
+                        // only captures one store's portion).
                         let amount = Number(
-                          responseData?.[0]?.orderPayment?.amount || 0,
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                (acc: number, order: any) =>
+                                  acc +
+                                  (Number(order?.orderPayment?.amount) || 0),
+                                0,
+                              )
+                            : responseData?.[0]?.orderPayment?.amount || 0,
                         );
                         if (promo) {
                           // Subtract delivery charge if present
                           const delivery = Number(
-                            responseData?.[0]?.newOrder?.deliveryCharge ||
-                              responseData?.[0]?.deliveryCharge ||
-                              0,
+                            Array.isArray(responseData)
+                              ? responseData.reduce(
+                                  (acc: number, order: Order) =>
+                                    acc +
+                                    (Number(
+                                      order?.newOrder?.deliveryCharge,
+                                    ) ||
+                                      Number(order?.deliveryCharge) ||
+                                      0),
+                                  0,
+                                )
+                              : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                  responseData?.[0]?.deliveryCharge ||
+                                  0,
                           );
                           amount = amount - delivery;
                         }

@@ -147,6 +147,7 @@ function CartPage() {
       }
 
       setLoading(true);
+      console.log("[Cart] PUT", `${API.CART}${item?.id}?action=${action}`);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cartItems: any = await PUT(
         API.CART + item?.id + `?action=${action}`,
@@ -184,6 +185,7 @@ function CartPage() {
 
     try {
       const url = API.CART + id;
+      console.log("[Cart] DELETE", url);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cartItems: any = await DELETE(url);
       if (cartItems.status) {
@@ -201,8 +203,10 @@ function CartPage() {
     // Allow both authenticated and guest users to proceed to checkout
     try {
       setError(null);
+      console.log("[Cart] goCheckout — raw cart items →", Cart.items);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data: any = await checkoutCartItems(Cart.items);
+      console.log("[Cart] goCheckout — eligible →", data?.eligibleItems, "non-eligible →", data?.nonEligibleItems);
       if (data?.eligibleItems?.length) {
         dispatch(storeCheckout(data?.eligibleItems));
         navigate.push("/checkout");

@@ -105,6 +105,24 @@ function DetailsCard(props: any) {
   console.log("lllnggthh", props);
   return (
     <div className="page-Box pt-3">
+      <button
+        onClick={() => router.push("/")}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 6,
+          background: "none",
+          border: "1px solid #e0e0e0",
+          borderRadius: 8,
+          padding: "6px 14px",
+          fontSize: 14,
+          color: "#555",
+          cursor: "pointer",
+          margin: "0 0 12px 16px",
+        }}
+      >
+        &#8592; Back to Home
+      </button>
       <Container>
         <Row>
           <Col sm={6} md={6} xs={12} lg={5}>

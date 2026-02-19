@@ -54,12 +54,15 @@ export function useSyncGuestCartOnLogin() {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const syncPromises = guestCartItems.map(async (item: any) => {
           const cartItem = {
-            productId: item.productId,
+            // Backend cart endpoint (POST API.CART) accepts pid (UUID), same as auth add-to-cart.
+            // item.pid is stored by executeAddToCart; fall back to item.productId for legacy items.
+            productId: item.pid || item.productId,
             quantity: Math.floor(Number(item.quantity) || 1), // Ensure integer
             variantId: item.variantId || null,
           };
 
           try {
+            console.log("[Cart] POST (guest sync)", API.CART, cartItem);
             await POST(API.CART, cartItem);
             return { success: true, item };
           } catch (error) {

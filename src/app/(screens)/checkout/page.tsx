@@ -76,8 +76,6 @@ function Checkout() {
     }
   }, [Checkout?.Checkout, total, Settings?.currency]);
 
-  console.log("user ", user);
-
   const [isDeliveryCalculating, setIsDeliveryCalculating] = useState(false);
 
   /* Guest inline Paystack setup temporarily disabled */
@@ -154,6 +152,7 @@ function Checkout() {
             cart: calculationCart,
             address: addressData,
           };
+          console.log("[Checkout] POST", API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
           response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
         } else {
           notificationApi.error({
@@ -343,83 +342,6 @@ function Checkout() {
       const sellerTotalInKobo =
         totalProductPriceInKobo - platformProductFeeInKobo;
 
-      console.log("DEBUG: Payment Initialization", {
-        cartLength: Checkout?.Checkout?.length,
-        stores: stores.map((s) => ({ storeId: s.storeId, total: s.total })),
-        hasMultipleStores,
-        hasSingleStore,
-        shouldUseSplitPayment,
-        cartStoreIds: Checkout?.Checkout?.map(
-          (item: Record<string, unknown>) =>
-            (item as { storeId?: number; store_id?: number }).storeId ||
-            (item as { store_id?: number }).store_id,
-        ),
-        splitBreakdown: {
-          totalAmount: amountInKobo / 100,
-          productTotal: totalProductPriceInKobo / 100,
-          deliveryCharge: deliveryChargeInKobo / 100,
-          platformFee: `5% of products = ${platformProductFeeInKobo / 100}`,
-          platformTotal: `${platformProductFeeInKobo / 100} + ${deliveryChargeInKobo / 100} = ${platformTotalInKobo / 100}`,
-          sellerTotal: sellerTotalInKobo / 100,
-        },
-      });
-
-      // Console log for split payment breakdown
-      console.log(
-        "═══════════════════════════════════════════════════════════",
-      );
-      console.log("💰 SPLIT PAYMENT CALCULATION");
-      console.log(
-        "═══════════════════════════════════════════════════════════",
-      );
-      console.log(
-        `📦 Product Total:      ₦${(totalProductPriceInKobo / 100).toLocaleString()}`,
-      );
-      console.log(
-        `🚚 Delivery Charge:    ₦${(deliveryChargeInKobo / 100).toLocaleString()}`,
-      );
-      console.log(
-        `💵 Grand Total:        ₦${(amountInKobo / 100).toLocaleString()}`,
-      );
-      console.log(
-        "───────────────────────────────────────────────────────────",
-      );
-      console.log(`👤 SELLER GETS (95% of products):`);
-      console.log(`   ₦${(sellerTotalInKobo / 100).toLocaleString()}`);
-      console.log(
-        "───────────────────────────────────────────────────────────",
-      );
-      console.log(`🏢 PLATFORM GETS (5% of products + 100% delivery):`);
-      console.log(
-        `   5% of ₦${(totalProductPriceInKobo / 100).toLocaleString()} = ₦${(platformProductFeeInKobo / 100).toLocaleString()}`,
-      );
-      console.log(
-        `   + Delivery: ₦${(deliveryChargeInKobo / 100).toLocaleString()}`,
-      );
-      console.log(
-        `   = Total: ₦${(platformTotalInKobo / 100).toLocaleString()}`,
-      );
-      console.log(
-        "═══════════════════════════════════════════════════════════",
-      );
-
-      if (stores.length > 1) {
-        console.log("🏪 MULTI-SELLER BREAKDOWN:");
-        stores.forEach((s, idx) => {
-          const storeProductInKobo = Math.round(s.total * 100);
-          const sellerAmountInKobo = Math.round(
-            (storeProductInKobo * SELLER_PERCENTAGE) / 100,
-          );
-          console.log(`   Store ${idx + 1} (ID: ${s.storeId}):`);
-          console.log(
-            `     Products: ₦${(storeProductInKobo / 100).toLocaleString()} → Seller gets: ₦${(sellerAmountInKobo / 100).toLocaleString()}`,
-          );
-        });
-        console.log(
-          "═══════════════════════════════════════════════════════════",
-        );
-      }
-
       // Build store allocation for multi-store split payments
       // Each seller gets 95% of their product price, platform gets 5% + delivery
       const storeAllocations = stores.map((s) => {
@@ -583,26 +505,7 @@ function Checkout() {
         ? API.PAYSTACK_INITIALIZE_SPLIT
         : API.PAYSTACK_INITIALIZE;
 
-      // Log split payment data for debugging
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((paymentData as any).split_payment) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const storeInfo = (paymentData as any).store_id
-          ? `Single Store (${(paymentData as { store_id?: string }).store_id})`
-          : `Multiple Stores (${Array.isArray((paymentData as { stores?: number[] }).stores) ? ((paymentData as { stores: number[] }).stores || []).join(", ") : ""})`;
-        console.log("Initializing Split Payment:", {
-          endpoint: endpointPrimary,
-          paymentData,
-          storeInfo,
-          amount: paymentData.amount,
-          split_type: "automatic (5% Platform / 95% Seller per store)",
-        });
-      } else {
-        console.log("Initializing Regular Payment (no stores in cart):", {
-          endpoint: endpointPrimary,
-          amount: paymentData.amount,
-        });
-      }
+      console.log("[Checkout] POST", endpointPrimary, paymentData);
 
       // Try primary endpoint first
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -700,33 +603,47 @@ function Checkout() {
       if (authUrl) {
         // Store payment reference for verification
         localStorage.setItem("paystack_payment_reference", reference);
-        localStorage.setItem(
-          "paystack_order_data",
-          JSON.stringify({
-            reference,
-            amount: amountInKobo,
-            email: customerEmail,
-            stores: stores.map((s) => s.storeId),
-            is_multi_seller: hasMultipleStores,
-            store_allocations: storeAllocations,
-            order_data: {
-              payment: {
-                ref: reference,
-                type: payment_method,
-                split_payment: shouldUseSplitPayment,
-                is_multi_seller: hasMultipleStores,
-                email: customerEmail,
-              },
-              cart: Checkout?.Checkout,
-              address: Checkout?.address,
-              charges: {
-                token: deliveryToken,
-              },
-              user_id: customerId,
-              user: user,
+        // Normalize cart items here too so localStorage has the same shape as PlaceOrder
+        const normalizedCartForStorage = Array.isArray(Checkout?.Checkout)
+          ? Checkout.Checkout.map((item: Record<string, unknown>) => {
+              const product = (item as { product?: Record<string, unknown> }).product;
+              const sid =
+                (item as { store_id?: number }).store_id ??
+                (item as { storeId?: number }).storeId ??
+                (product ? ((product as { store_id?: number }).store_id ?? (product as { storeId?: number }).storeId) : null);
+              return { ...item, store_id: sid, storeId: sid };
+            })
+          : [];
+
+        const orderDataPayload = {
+          reference,
+          amount: amountInKobo,
+          email: customerEmail,
+          stores: stores.map((s) => s.storeId),
+          is_multi_seller: hasMultipleStores,
+          store_allocations: storeAllocations,
+          order_data: {
+            payment: {
+              ref: reference,
+              type: payment_method,
+              split_payment: shouldUseSplitPayment,
+              is_multi_seller: hasMultipleStores,
+              email: customerEmail,
             },
-          }),
-        );
+            cart: normalizedCartForStorage,
+            address: Checkout?.address,
+            charges: {
+              token: deliveryToken,
+              totalCharge: actualDeliveryCharge,
+              originalDeliveryCharge: delivery_charge,
+              discountedDeliveryCharge: actualDeliveryCharge,
+            },
+            user_id: customerId,
+            user: user,
+          },
+        };
+        console.log("[Checkout] localStorage('paystack_order_data') →", orderDataPayload);
+        localStorage.setItem("paystack_order_data", JSON.stringify(orderDataPayload));
 
         // Redirect to Paystack payment page
         window.location.href = authUrl;
@@ -838,6 +755,7 @@ function Checkout() {
           is_guest: !isAuthenticated,
           // guest_email: guestEmail || null,
         };
+        console.log("[Checkout] PlaceOrder payload →", obj);
         dispatch(storeFinal(obj));
         if (payment_method === "Pay Online") {
           InitializePaystackPayment();
