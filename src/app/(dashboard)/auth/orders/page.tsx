@@ -147,15 +147,17 @@ function Page() {
     }
 
     let ordersData = Array.isArray(orders?.data) ? orders?.data : [];
-    // Deduplicate using composite key: order_id + storeId
-    // Multi-seller orders share the same order_id but have different storeId values,
-    // so each store's order is a distinct record. True duplicates (same order_id AND
-    // same storeId) from backend JOINs are removed.
+    // Deduplicate orders:
+    // - Admin view: deduplicate by order_id alone. The backend returns one row per
+    //   (order, store) for multi-seller orders, causing the same order_id to appear
+    //   multiple times in the admin list. Admin should see each order once.
+    // - Seller view: deduplicate by composite key (order_id + storeId) to preserve
+    //   each store's distinct record while removing true backend JOIN duplicates.
     const seen = new Set<string>();
     ordersData = ordersData.filter((order) => {
       const orderId = String(order.order_id ?? order.id ?? order._id ?? "");
       const storeId = String(order.storeId ?? order.store_id ?? "");
-      const key = `${orderId}::${storeId}`;
+      const key = isSeller ? `${orderId}::${storeId}` : orderId;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
