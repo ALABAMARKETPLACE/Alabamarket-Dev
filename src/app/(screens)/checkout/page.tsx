@@ -106,9 +106,27 @@ function Checkout() {
       setGrand_total(totals);
 
       if (Checkout?.address?.id) {
-        // Map address to ensure country_id and state_id are present and are numbers
+        // Build cart in exact format required by calculate_delivery/new
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const calculationCart = (Checkout?.Checkout || []).map((item: any) => ({
+          userId: Number(customerId || 0),
+          productId: Number(item?.productId || item?.id || 0),
+          variantId: item?.variantId ? Number(item.variantId) : null,
+          quantity: Number(item?.quantity || 1),
+          weight: Number(item?.weight || 1),
+          image: item?.image || item?.product?.image || "",
+          productDetails: {
+            image: item?.image || item?.product?.image || "",
+            name: item?.name || item?.product?.name || "",
+            price: Number(item?.price || item?.buyPrice || 0),
+          },
+          storeDetails: null,
+          buyPrice: Number(item?.buyPrice || item?.price || 0),
+        }));
+
+        // Address: only id, country_id, state_id as required
         const addressData = {
-          ...Checkout?.address,
+          id: Number(Checkout?.address?.id),
           country_id: Number(
             Checkout?.address?.country_id ||
               Checkout?.address?.countryDetails?.id ||
@@ -119,30 +137,7 @@ function Checkout() {
               Checkout?.address?.stateDetails?.id ||
               0,
           ),
-          country: String(
-            Checkout?.address?.country ||
-              Checkout?.address?.countryDetails?.country_name ||
-              "",
-          ),
-          state:
-            Checkout?.address?.state || Checkout?.address?.stateDetails?.name,
         };
-
-        // Use single item with quantity 1 for delivery calculation to avoid weight-based price scaling
-        const firstItem = Checkout?.Checkout?.[0];
-        const calculationCart = firstItem
-          ? [
-              {
-                ...firstItem,
-                id: Number(firstItem?.id || 0),
-                productId: Number(firstItem?.productId || firstItem?.id || 0),
-                quantity: 1,
-                weight: Number(firstItem?.weight || 1), // Ensure weight exists
-                totalPrice: Number(firstItem?.totalPrice || 0),
-                storeId: Number(firstItem?.storeId || 0),
-              },
-            ]
-          : Checkout?.Checkout;
 
         // Build payloads per auth state
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -607,22 +602,6 @@ function Checkout() {
       if (authUrl) {
         // Store payment reference for verification
         localStorage.setItem("paystack_payment_reference", reference);
-        // Normalize cart items here too so localStorage has the same shape as PlaceOrder
-        const normalizedCartForStorage = Array.isArray(Checkout?.Checkout)
-          ? Checkout.Checkout.map((item: Record<string, unknown>) => {
-              const product = (item as { product?: Record<string, unknown> })
-                .product;
-              const sid =
-                (item as { store_id?: number }).store_id ??
-                (item as { storeId?: number }).storeId ??
-                (product
-                  ? ((product as { store_id?: number }).store_id ??
-                    (product as { storeId?: number }).storeId)
-                  : null);
-              return { ...item, store_id: sid, storeId: sid };
-            })
-          : [];
-
         const orderDataPayload = {
           reference,
           amount: amountInKobo,
@@ -633,21 +612,25 @@ function Checkout() {
           order_data: {
             payment: {
               ref: reference,
-              type: payment_method,
-              split_payment: shouldUseSplitPayment,
-              is_multi_seller: hasMultipleStores,
-              email: customerEmail,
+              type: "pay-online",
             },
-            cart: normalizedCartForStorage,
-            address: Checkout?.address,
-            charges: {
-              token: deliveryToken,
-              totalCharge: actualDeliveryCharge,
-              originalDeliveryCharge: delivery_charge,
-              discountedDeliveryCharge: actualDeliveryCharge,
-            },
-            user_id: customerId,
-            user: user,
+            cart: Array.isArray(Checkout?.Checkout)
+              ? Checkout.Checkout.map((item: Record<string, unknown>) => ({
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  id: Number((item as any)?.id || 0),
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  productId: Number((item as any)?.productId || 0),
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  variantId: (item as any)?.variantId
+                    ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      Number((item as any).variantId)
+                    : null,
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  quantity: Number((item as any)?.quantity || 0),
+                }))
+              : [],
+            address: { id: Number(Checkout?.address?.id) },
+            charges: { token: deliveryToken },
           },
         };
         console.log(
@@ -729,45 +712,26 @@ function Checkout() {
         );
         const actualDeliveryCharge = deliveryPromo.discountedCharge;
 
-        // Ensure all cart items have both store_id and storeId for backend grouping
-        const normalizedCart = Array.isArray(Checkout?.Checkout)
-          ? Checkout.Checkout.map((item: Record<string, unknown>) => {
-              const product = (item as { product?: Record<string, unknown> })
-                .product;
-              const store_id =
-                (item as { store_id?: number }).store_id ??
-                (item as { storeId?: number }).storeId ??
-                (product
-                  ? ((product as { store_id?: number }).store_id ??
-                    (product as { storeId?: number }).storeId)
-                  : null);
-              return {
-                ...(item as Record<string, unknown>),
-                store_id,
-                storeId: store_id,
-              };
-            })
+        const cleanCart = Array.isArray(Checkout?.Checkout)
+          ? Checkout.Checkout.map((item: Record<string, unknown>) => ({
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              id: Number((item as any)?.id || 0),
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              productId: Number((item as any)?.productId || 0),
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              variantId: (item as any)?.variantId
+                ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  Number((item as any).variantId)
+                : null,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              quantity: Number((item as any)?.quantity || 0),
+            }))
           : [];
 
         const obj = {
-          payment: payment_method,
-          cart: normalizedCart,
-          address: Checkout?.address,
-          charges: {
-            token: deliveryToken,
-            // Include promo info for backend
-            originalDeliveryCharge: delivery_charge,
-            discountedDeliveryCharge: actualDeliveryCharge,
-            deliveryDiscount: deliveryPromo.discountAmount,
-            promoApplied: deliveryPromo.hasDiscount,
-            promoId: deliveryPromo.promo?.id || null,
-            promoName: deliveryPromo.promo?.name || null,
-          },
-          user_id: customerId,
-          user: user,
-          // Guest checkout data (commented out)
-          is_guest: !isAuthenticated,
-          // guest_email: guestEmail || null,
+          cart: cleanCart,
+          address: { id: Number(Checkout?.address?.id) },
+          charges: { token: deliveryToken },
         };
         console.log("[Checkout] PlaceOrder payload →", obj);
         dispatch(storeFinal(obj));
