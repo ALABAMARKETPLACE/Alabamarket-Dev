@@ -1,2 +1,4 @@
 "use client";
-export { default } from "./index";
+import dynamic from "next/dynamic";
+const Header = dynamic(() => import("./index"), { ssr: false });
+export default Header;

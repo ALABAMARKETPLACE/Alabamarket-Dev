@@ -83,10 +83,7 @@ function Description(props: Props) {
     hasMounted &&
     cartItems?.some(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (item: any) =>
-        item.productId === props?.data?._id ||   // auth cart & new guest cart (integer _id)
-        item.productId === props?.data?.pid ||   // legacy guest cart items (UUID pid)
-        item.pid === props?.data?.pid,           // extra pid field stored on guest items
+      (item: any) => item.productId === props?.data?._id,
     );
   const router = useRouter();
   const dispatch = useDispatch();
@@ -267,8 +264,8 @@ function Description(props: Props) {
       const { addToGuestCart } = await import("@/redux/slice/cartSlice");
 
       const guestCartItem = {
-        productId: props?.data?._id,  // integer _id — matches backend cart response & isProductInCart check
-        pid: props?.data?.pid,        // UUID pid — kept so guest sync can send it to POST cart endpoint
+        productId: props?.data?.pid,
+        pid: props?.data?.pid, // Store numeric pid explicitly for guest order
         name: props?.data?.name,
         price: props?.currentVariant?.price ?? props?.data?.retail_rate,
         quantity: Math.floor(quantity), // Ensure integer quantity
@@ -298,7 +295,6 @@ function Description(props: Props) {
       variantId: props?.currentVariant?.id ?? null,
     };
     const url = API.CART;
-    console.log("[Cart] POST", url, obj);
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newCart: any = await POST(url, obj);

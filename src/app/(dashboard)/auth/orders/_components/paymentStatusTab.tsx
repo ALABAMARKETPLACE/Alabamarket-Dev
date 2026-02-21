@@ -54,14 +54,7 @@ export default function PaymentStatusTab(props: Props) {
         <div className="d-flex justify-content-between border-bottom pb-2">
           <span className="text-muted">Payment Type:</span>
           <span className="fw-medium text-capitalize">
-            {(() => {
-              // If a payment reference exists the order was paid online,
-              // regardless of what paymentType is stored in the database.
-              if (props?.data?.orderPayment?.ref) return "Online Payment";
-              const type = props?.data?.orderPayment?.paymentType ?? "";
-              if (type.toLowerCase().includes("cash")) return "Cash On Delivery";
-              return type || "N/A";
-            })()}
+            {props?.data?.orderPayment?.paymentType ?? "N/A"}
           </span>
         </div>
 
