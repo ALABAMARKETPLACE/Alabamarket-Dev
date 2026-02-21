@@ -119,19 +119,6 @@ function Page() {
   const orders = ordersDataRaw as OrdersResponse;
   const isLoading = isOrdersLoading || (isSeller && isStoreLoading);
 
-  // Log outgoing request whenever endpoint or params change
-  useEffect(() => {
-    console.log("[Orders] GET", endpoint, params);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [endpoint, JSON.stringify(params)]);
-
-  // Log raw backend response whenever it arrives
-  useEffect(() => {
-    if (ordersDataRaw !== undefined) {
-      console.log("[Orders] Raw response ←", ordersDataRaw);
-    }
-  }, [ordersDataRaw]);
-
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -160,29 +147,21 @@ function Page() {
     }
 
     let ordersData = Array.isArray(orders?.data) ? orders?.data : [];
-
-    // Group sub-orders from the same checkout by parent_order_id.
-    // The backend returns one row per store sub-order; all sub-orders from
-    // the same checkout share the same parent_order_id (the Paystack / checkout ref).
-    // Sub-orders without parent_order_id are treated as standalone rows.
-    const groupMap = new Map<string, Order>();
-    for (const order of ordersData) {
-      const groupKey =
-        String(order.parent_order_id ?? "").trim() ||
-        `solo::${order.order_id ?? order.id ?? order._id ?? Math.random()}`;
-
-      if (!groupMap.has(groupKey)) {
-        groupMap.set(groupKey, { ...order });
-      } else {
-        const base = groupMap.get(groupKey)!;
-        base.grandTotal = (Number(base.grandTotal) || 0) + (Number(order.grandTotal) || 0);
-        base.deliveryCharge = (Number(base.deliveryCharge) || 0) + (Number(order.deliveryCharge) || 0);
-        base.totalItems = (Number(base.totalItems) || 0) + (Number(order.totalItems) || 0);
-        base.is_multi_seller = true;
-      }
-    }
-    ordersData = Array.from(groupMap.values());
-    console.log("[Orders] Grouped result →", { count: ordersData.length, meta: orders?.meta, rows: ordersData });
+    // Deduplicate orders:
+    // - Admin view: deduplicate by order_id alone. The backend returns one row per
+    //   (order, store) for multi-seller orders, causing the same order_id to appear
+    //   multiple times in the admin list. Admin should see each order once.
+    // - Seller view: deduplicate by composite key (order_id + storeId) to preserve
+    //   each store's distinct record while removing true backend JOIN duplicates.
+    const seen = new Set<string>();
+    ordersData = ordersData.filter((order) => {
+      const orderId = String(order.order_id ?? order.id ?? order._id ?? "");
+      const storeId = String(order.storeId ?? order.store_id ?? "");
+      const key = isSeller ? `${orderId}::${storeId}` : orderId;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
 
     return (
       <>

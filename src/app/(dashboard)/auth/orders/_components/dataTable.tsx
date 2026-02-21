@@ -36,8 +36,6 @@ export interface Order {
   // Multi-seller order fields
   is_multi_seller?: boolean;
   stores?: (string | number)[];
-  // Checkout session reference — shared across all store sub-orders from the same checkout
-  parent_order_id?: string;
   // Payment reference
   payment_ref?: string;
   paymentRef?: string;
@@ -402,7 +400,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
           pageSize={pageSize}
           current={page}
           total={count ?? 0}
-          showTotal={() => `Total ${data.length} Orders`}
+          showTotal={() => `Total ${count ?? 0} Orders`}
           onChange={(nextPage, nextPageSize) => {
             setPage(nextPage, nextPageSize);
           }}

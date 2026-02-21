@@ -161,7 +161,7 @@ const API = {
   ORDER_CANCEL: "order/cancel_order/", //put cancel order for user
   ORDER_GETONE_SELLER: "order/get_one/seller/", //get details of an order for seller.
   ORDER_GETONE_USER: "order/get_one/user/", //get details of an order for user.
-  ORDER_GETONE_ADMIN: "order/details/", //get details of an order for admin.
+  ORDER_GETONE_ADMIN: "order/get_one/admin/", //get details of an order for admin.
   ORDER_GETCOUNT: "order/getall/", //get all orders count for a store only for seller
   ORDER_TRACK_GUEST: "order/track/", //GET track order by reference (no auth required)
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
