@@ -59,12 +59,22 @@ const SummaryCard = (props: any) => {
           type="warning"
           message={
             <div style={{ display: "flex", alignItems: "center" }}>
-              <IoInformationCircleOutline size={22} style={{ marginRight: 8 }} />
-              <span>Please select and fill your delivery address to proceed with checkout.</span>
+              <IoInformationCircleOutline
+                size={22}
+                style={{ marginRight: 8 }}
+              />
+              <span>
+                Please select and fill your delivery address to proceed with
+                checkout.
+              </span>
             </div>
           }
           showIcon
-          style={{ marginBottom: 12, background: "#fffbe6", border: "1px solid #ffe58f" }}
+          style={{
+            marginBottom: 12,
+            background: "#fffbe6",
+            border: "1px solid #ffe58f",
+          }}
         />
       )}
       <div className="Cart-row">
@@ -236,7 +246,10 @@ const SummaryCard = (props: any) => {
       ) : null}
       <div
         className="Cart-btn1"
-        style={{ cursor: addressSelected ? "pointer" : "not-allowed", opacity: addressSelected ? 1 : 0.6 }}
+        style={{
+          cursor: addressSelected ? "pointer" : "not-allowed",
+          opacity: addressSelected ? 1 : 0.6,
+        }}
         onClick={() => {
           if (addressSelected) {
             props?.placeOrder();
