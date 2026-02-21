@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./style.scss";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
@@ -41,11 +41,6 @@ function Header() {
   const { data: sessionData } = useSession();
   const [issharepopovervisible, setissharepopovervisible] = useState(false);
   const navigation = useRouter();
-  const [hasMounted, setHasMounted] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   useGetSettings();
   useTokenExpiration();
@@ -117,7 +112,7 @@ function Header() {
                   </div>
                 </Link>
                 <div className="Header-location d-none d-lg-block">
-                  {hasMounted && Settings?.isLocation ? <Location /> : null}
+                  {Settings?.isLocation ? <Location /> : null}
                 </div>
               </div>
 
