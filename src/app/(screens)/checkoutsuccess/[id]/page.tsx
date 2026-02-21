@@ -1,80 +1,23 @@
 "use client";
 
-interface CheckoutCartItem {
-  productId?: number;
-  id?: number;
-  name: string;
-  variantId?: number;
-  combination?: string;
-  quantity: number;
-  store_id?: number;
-  weight?: number;
-  totalPrice?: number;
-}
-interface GuestCartItem {
-  product_id: number;
-  product_name: string;
-  variant_id?: number;
-  variant_name?: string;
-  quantity: number;
-  store_id: number;
-  weight?: number;
-}
 
-interface GuestOrderPayload {
-  guest_info: {
-    email: string;
-    first_name: string;
-    last_name: string;
-    phone: string;
-    country_code: string;
-  };
-  cart_items: GuestCartItem[];
-  delivery_address: {
-    full_name: string;
-    phone_no: string;
-    country_code: string;
-    full_address: string;
-    city: string;
-    state: string;
-    state_id: number;
-    country: string;
-    country_id: number;
-    landmark?: string;
-    address_type?: string;
-  };
-  delivery: {
-    delivery_token: string;
-    delivery_charge: number;
-    total_weight: number;
-    estimated_delivery_days?: number | null;
-  };
-  payment: {
-    payment_reference: string;
-    payment_method: string;
-    transaction_reference: string;
-    amount_paid: number;
-    payment_status: string;
-    paid_at: string;
-  };
-  order_summary: {
-    subtotal: number;
-    delivery_fee: number;
-    tax: number;
-    discount: number;
-    total: number;
-  };
-  metadata: {
-    order_notes?: string;
-    source?: string;
-    device_id?: string;
-    preferred_delivery_time?: string | null;
-  };
-  is_multi_seller: boolean;
-}
+// GuestOrderPayload — disabled (guest order flow commented out)
+// interface GuestOrderPayload {
+//   guest_info: { email: string; first_name: string; last_name: string; phone: string; country_code: string; };
+//   cart_items: GuestCartItem[];
+//   delivery_address: { full_name: string; phone_no: string; country_code: string; full_address: string;
+//     city: string; state: string; state_id: number; country: string; country_id: number;
+//     landmark?: string; address_type?: string; };
+//   delivery: { delivery_token: string; delivery_charge: number; total_weight: number; estimated_delivery_days?: number | null; };
+//   payment: { payment_reference: string; payment_method: string; transaction_reference: string;
+//     amount_paid: number; payment_status: string; paid_at: string; };
+//   order_summary: { subtotal: number; delivery_fee: number; tax: number; discount: number; total: number; };
+//   metadata: { order_notes?: string; source?: string; device_id?: string; preferred_delivery_time?: string | null; };
+//   is_multi_seller: boolean;
+// }
 
 import { useCallback, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+
 import "./styles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
@@ -146,21 +89,11 @@ function Checkout() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
-  const [paymentRef, setPaymentRef] = useState<string | null>(null);
 
   // Get route parameter to determine payment method
   const routeId = params?.id;
   const isCOD = routeId === "1";
   const isPaystack = routeId === "2";
-
-  // Always generate a new payment reference for each order attempt
-  useEffect(() => {
-    if (isPaystack) {
-      const newRef = `ps_${uuidv4()}`;
-      setPaymentRef(newRef);
-      localStorage.setItem("paystack_payment_reference", newRef);
-    }
-  }, [orderCreated, isPaystack]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderItems = useCallback((response: any[]) => {
@@ -183,15 +116,8 @@ function Checkout() {
     try {
       setOrderCreated(true); // Prevent multiple executions
 
-      // Always use a fresh payment reference for each attempt
-      let currentPaymentRef = paymentRef;
-      if (isPaystack && !currentPaymentRef) {
-        currentPaymentRef = `ps_${uuidv4()}`;
-        setPaymentRef(currentPaymentRef);
-        localStorage.setItem("paystack_payment_reference", currentPaymentRef);
-      }
-
       let finalOrderData;
+      let paystackRef: string | null = null;
 
       if (isCOD) {
         // COD Order Flow - No payment verification needed
@@ -213,182 +139,62 @@ function Checkout() {
         // Paystack Order Flow - Verify payment first
         console.log("Processing Paystack order...");
 
-        // Robustly select a valid payment reference
-        const paystackRef =
-          (typeof paymentRef === "string" && paymentRef.trim()) ||
-          (typeof searchParams.get("reference") === "string" &&
-            searchParams.get("reference")?.trim()) ||
-          (typeof searchParams.get("ref") === "string" &&
-            searchParams.get("ref")?.trim()) ||
-          (typeof localStorage.getItem("paystack_payment_reference") ===
-            "string" &&
-            localStorage.getItem("paystack_payment_reference")?.trim()) ||
+        // Resolve the real Paystack reference from the URL — used ONLY for payment verification.
+        // The real ORDER_xxx ref is what Paystack knows about and must be used to confirm the charge.
+        const realPaystackRef =
+          searchParams.get("reference")?.trim() ||
+          searchParams.get("trxref")?.trim() ||
+          searchParams.get("ref")?.trim() ||
+          localStorage.getItem("paystack_payment_reference")?.trim() ||
           null;
-        if (!paystackRef) {
+        if (!realPaystackRef) {
           throw new Error("Payment reference not found. Please try again.");
         }
-        console.log("Paystack payment reference:", paystackRef);
+        // paystackRef is kept as the real ref for display in error messages only.
+        paystackRef = realPaystackRef;
 
-        // Load stored order data (for other order info, not for token)
+        console.log("Verifying payment with real Paystack ref:", realPaystackRef);
+
+        // Load stored order data
         const storedOrderData = localStorage.getItem("paystack_order_data");
         const orderData = storedOrderData ? JSON.parse(storedOrderData) : null;
 
-        // Verify payment with backend
-        console.log("Verifying payment with reference:", paymentRef);
-        // Guest checkout disabled
-
-        // Robust verification with fallbacks for guest
-        let verificationResponse: Record<string, unknown> | null = null;
-        let vStatus = "";
-        let vAmount = 0;
-        let vGatewayResponse: string | null = null;
-        const skipVerify = false;
-        verificationResponse = await POST(API.PAYSTACK_VERIFY, {
-          reference: paystackRef,
-        });
+        // Verify using the REAL Paystack reference so the actual charge is confirmed.
+        const verificationResponse: Record<string, unknown> | null =
+          await POST(API.PAYSTACK_VERIFY, { reference: realPaystackRef });
 
         console.log("Payment verification response:", verificationResponse);
 
-        if (!skipVerify && verificationResponse) {
+        if (verificationResponse) {
           const vObj = (
             verificationResponse as { data?: Record<string, unknown> }
           )?.data
             ? ((verificationResponse as { data: Record<string, unknown> })
                 .data as Record<string, unknown>)
             : (verificationResponse as Record<string, unknown>);
-          vStatus = String(vObj?.status ?? "");
-          vAmount = Number(
-            typeof vObj?.amount === "number"
-              ? vObj?.amount
-              : ((vObj?.amount as number | undefined) ?? 0),
-          );
-          vGatewayResponse =
-            (vObj?.gateway_response as string | undefined) || null;
+          const vStatus = String(vObj?.status ?? "");
           if (!vStatus) {
             throw new Error(
               (verificationResponse as { message?: string })?.message ||
                 "Payment verification failed. Please try again.",
             );
           }
-        } else if (skipVerify) {
-          vStatus = "success";
-          const maybeOrderDataAmount =
-            (orderData?.amount as number | undefined) ||
-            (orderData?.order_data?.payment?.amount as number | undefined) ||
-            null;
-          vAmount =
-            Number(maybeOrderDataAmount) ||
-            Number(
-              Array.isArray(Checkout?.cart)
-                ? Checkout.cart.reduce(
-                    (sum: number, it: Record<string, unknown>) =>
-                      sum +
-                      (Number((it as { totalPrice?: number }).totalPrice) || 0),
-                    0,
-                  )
-                : 0,
-            ) + Number(Checkout?.charges?.totalCharge || 0);
-          vGatewayResponse = "INLINE_OK";
         }
 
-        // Payment verified successfully, proceed with order
+        // Payment verified — build only what the /order endpoint needs
+        const storedCart = orderData?.order_data?.cart ?? Checkout?.cart ?? [];
+        const storedAddress = orderData?.order_data?.address ?? Checkout?.address ?? {};
+        const storedToken = orderData?.order_data?.charges?.token ?? Checkout?.charges?.token ?? "";
 
-        // Check if this is a multi-seller order
-        const isMultiSeller = orderData?.is_multi_seller || false;
-        const storeAllocations = orderData?.store_allocations || [];
-
-        finalOrderData = orderData?.order_data || {
+        finalOrderData = {
+          cart: storedCart,
+          address: storedAddress,
+          charges: { token: storedToken },
           payment: {
-            ref: paystackRef,
-            type: "Pay Online",
-            status: vStatus || "success",
-            amount: vAmount || null,
-            gateway_response: vGatewayResponse,
-            split_payment: isMultiSeller || storeAllocations.length > 0,
-            is_multi_seller: isMultiSeller,
+            type: "pay-online",
+            ref: realPaystackRef,
           },
-          cart: Checkout?.cart,
-          address: Checkout?.address,
-          charges: Checkout?.charges,
-          user_id:
-            User?.id ?? Checkout?.user_id ?? Checkout?.address?.user_id ?? null,
-          user: User ?? Checkout?.user ?? null,
         };
-
-        // Ensure payment info includes verification data
-        finalOrderData.payment = {
-          ...finalOrderData.payment,
-          ref: paymentRef,
-          status: vStatus || "success",
-          amount: vAmount || null,
-          gateway_response: vGatewayResponse,
-          verified: true,
-          verified_at: new Date().toISOString(),
-        };
-
-        const resolvedUserId =
-          finalOrderData.user_id ??
-          finalOrderData.userId ??
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (finalOrderData.user as any)?.id ??
-          Checkout?.user_id ??
-          Checkout?.address?.user_id ??
-          User?.id ??
-          null;
-
-        finalOrderData.user_id = resolvedUserId;
-
-        // Ensure IDs are numbers if they are numeric strings
-        if (finalOrderData.user_id && !isNaN(Number(finalOrderData.user_id))) {
-          finalOrderData.user_id = Number(finalOrderData.user_id);
-        }
-        if (finalOrderData.userId && !isNaN(Number(finalOrderData.userId))) {
-          finalOrderData.userId = Number(finalOrderData.userId);
-        }
-        if (
-          finalOrderData.address?.id &&
-          !isNaN(Number(finalOrderData.address.id))
-        ) {
-          finalOrderData.address.id = Number(finalOrderData.address.id);
-        }
-        if (
-          finalOrderData.address?.user_id &&
-          !isNaN(Number(finalOrderData.address.user_id))
-        ) {
-          finalOrderData.address.user_id = Number(
-            finalOrderData.address.user_id,
-          );
-        }
-
-        if (!finalOrderData.userId && resolvedUserId) {
-          finalOrderData.userId = resolvedUserId;
-        }
-
-        if (!finalOrderData.user && User) {
-          finalOrderData.user = User;
-        }
-
-        // Add guest_email for guest orders (from stored Paystack data or verification response)
-        const isGuestOrder =
-          finalOrderData.address?.is_guest || !finalOrderData.user_id;
-        if (isGuestOrder) {
-          // Get guest email from Paystack verification or stored order data
-          const guestEmail =
-            ((
-              verificationResponse as {
-                data?: { customer?: { email?: string } };
-              }
-            )?.data?.customer?.email as string | undefined) ||
-            ((verificationResponse as { customer?: { email?: string } })
-              ?.customer?.email as string | undefined) ||
-            orderData?.email ||
-            finalOrderData.address?.email;
-          if (guestEmail) {
-            finalOrderData.guest_email = guestEmail;
-          }
-        }
-
-        console.log("Final Order Payload:", finalOrderData);
       } else {
         // Unknown route
         throw new Error("Invalid checkout route. Please try again.");
@@ -396,230 +202,59 @@ function Checkout() {
 
       console.log("Final order data:", finalOrderData);
 
-      // Normalize cart items to ensure store_id and product_id are present for multi-seller order creation
-      if (Array.isArray(finalOrderData?.cart)) {
-        finalOrderData.cart = finalOrderData.cart.map(
-          (item: CheckoutCartItem) => {
-            const asRecord = item as unknown as Record<string, unknown>;
-            // Extract store_id from various possible field names
-            const store_id =
-              (item as CheckoutCartItem)?.store_id ??
-              (item as { storeId?: number })?.storeId ??
-              (
-                asRecord.product as
-                  | { store_id?: number; storeId?: number }
-                  | undefined
-              )?.store_id ??
-              (
-                asRecord.product as
-                  | { store_id?: number; storeId?: number }
-                  | undefined
-              )?.storeId ??
-              null;
-            // Extract product_id from various possible field names
-            const toNumber = (x: unknown): number | null => {
-              const n =
-                typeof x === "string" ? parseInt(x, 10) : (x as number | null);
-              return Number.isFinite(n as number) && (n as number) > 0
-                ? (n as number)
-                : null;
-            };
-            const product_id =
-              toNumber((item as { productId?: number }).productId) ??
-              toNumber((item as { id?: number }).id) ??
-              toNumber((item as { pid?: number }).pid) ??
-              toNumber(
-                ((asRecord.product as Record<string, unknown>) || {})["id"],
-              ) ??
-              toNumber(
-                ((asRecord.product as Record<string, unknown>) || {})["pid"],
-              ) ??
-              (asRecord.product_id as number | undefined) ??
-              null;
-            // Remove storeId from the item if present
-            const rest = { ...item };
-            delete (rest as { storeId?: unknown }).storeId;
-            return {
-              ...rest,
-              store_id:
-                store_id != null ? Number(store_id) : (store_id as null),
-              product_id:
-                product_id != null ? Number(product_id) : (product_id as null),
-              quantity: Number((item as { quantity?: number }).quantity ?? 0),
-              totalPrice: Number(
-                (item as { totalPrice?: number }).totalPrice ?? 0,
-              ),
-            } as CheckoutCartItem;
-          },
-        );
-      }
-
-      // Debug: Log cart items to verify storeId is present
-      console.log(
-        "═══════════════════════════════════════════════════════════",
-      );
-      console.log("📦 ORDER CREATION - CART ITEMS DEBUG");
-      console.log(
-        "═══════════════════════════════════════════════════════════",
-      );
-      if (Array.isArray(finalOrderData?.cart)) {
-        const storeGroups = new Map<number | string, CheckoutCartItem[]>();
-        finalOrderData.cart.forEach((item: CheckoutCartItem, index: number) => {
-          const store_id =
-            (item as CheckoutCartItem)?.store_id ||
-            (item as { storeId?: number })?.storeId ||
-            (item as { product?: { store_id?: number } })?.product?.store_id ||
-            "unknown";
-          console.log(`Item ${index + 1}:`, {
-            name:
-              (item as CheckoutCartItem)?.name ||
-              (item as { product?: { name?: string } })?.product?.name,
-            store_id: store_id,
-            quantity: (item as CheckoutCartItem)?.quantity,
-            totalPrice: (item as CheckoutCartItem)?.totalPrice,
-          });
-
-          if (!storeGroups.has(store_id)) {
-            storeGroups.set(store_id, []);
-          }
-          storeGroups.get(store_id)?.push(item as CheckoutCartItem);
-        });
-
-        console.log(
-          "───────────────────────────────────────────────────────────",
-        );
-        console.log(`🏪 Total Stores: ${storeGroups.size}`);
-        storeGroups.forEach((items, storeId) => {
-          console.log(`   Store ${storeId}: ${items.length} items`);
-        });
-        console.log(
-          "═══════════════════════════════════════════════════════════",
-        );
-      }
-
-      // Validate cart data
+      // Validate cart
       if (
         !finalOrderData?.cart ||
         !Array.isArray(finalOrderData.cart) ||
         finalOrderData.cart.length === 0
       ) {
-        console.error("Invalid cart data:", finalOrderData?.cart);
         throw new Error(
           "Cart is empty. Unable to process order. Please start over.",
         );
       }
 
-      // Validate address data (guest addresses have IDs like "guest_123456")
-      if (
-        !finalOrderData?.address ||
-        (!finalOrderData.address.id && !finalOrderData.address.is_guest)
-      ) {
-        console.error("Invalid address data:", finalOrderData?.address);
+      // Validate address
+      if (!finalOrderData?.address?.id) {
         throw new Error(
           "Delivery address is invalid. Please go back and select a valid address.",
         );
       }
 
-      // Validate charges data (guest tokens start with "GUEST_DELIVERY_")
-      const isGuestToken =
-        finalOrderData?.charges?.token?.startsWith("GUEST_DELIVERY_");
-      if (
-        !finalOrderData?.charges ||
-        (!finalOrderData.charges.token && !isGuestToken)
-      ) {
-        console.error("Invalid charges data:", finalOrderData?.charges);
+      // Validate delivery token
+      if (!finalOrderData?.charges?.token) {
         throw new Error(
           "Delivery charge calculation failed. Please go back and recalculate.",
         );
       }
 
-      // Ensure payment amount is in correct format (Paystack returns Kobo)
-      // We pass it as is, assuming backend handles Kobo/Naira conversion or comparison
-      console.log(
-        "Submitting order with payment amount:",
-        finalOrderData?.payment?.amount,
-      );
-
-      // Determine if this is a multi-seller order (applies to authenticated)
-      const storeIds = new Set<string | number>();
-      if (Array.isArray(finalOrderData?.cart)) {
-        finalOrderData.cart.forEach((item: CheckoutCartItem) => {
-          const store_id =
-            (item as CheckoutCartItem)?.store_id ||
-            (item as { storeId?: number })?.storeId ||
-            (item as { product?: { store_id?: number } })?.product?.store_id;
-          if (store_id) storeIds.add(store_id);
-        });
-      }
-      const isMultiSeller =
-        storeIds.size > 1 || finalOrderData?.payment?.is_multi_seller || false;
-
-      // Add is_multi_seller flag to finalOrderData for backend
-      finalOrderData.is_multi_seller = isMultiSeller;
-      // Also include explicit stores list for backend grouping
-      finalOrderData.stores = Array.from(storeIds);
-
-      // Build store allocations to help backend validate/store grouping
-      if (
-        Array.isArray(finalOrderData?.cart) &&
-        finalOrderData.cart.length > 0
-      ) {
-        const allocationMap = new Map<
-          number | string,
-          {
-            store_id: number | string;
-            product_amount: number;
-            item_count: number;
-          }
-        >();
-        finalOrderData.cart.forEach((ci: CheckoutCartItem) => {
-          const sid =
-            (ci as { store_id?: number | string }).store_id ??
-            (ci as { storeId?: number | string }).storeId;
-          if (sid == null) return;
-          const key = sid as number | string;
-          const existing = allocationMap.get(key) || {
-            store_id: key,
-            product_amount: 0,
-            item_count: 0,
-          };
-          existing.product_amount += Number(
-            (ci as { totalPrice?: number }).totalPrice ?? 0,
-          );
-          existing.item_count += 1;
-          allocationMap.set(key, existing);
-        });
-        const store_allocations = Array.from(allocationMap.values());
-        (finalOrderData as Record<string, unknown>)["store_allocations"] =
-          store_allocations;
-
-        // Diagnostics
-        console.log("🧾 ORDER GROUPING DIAGNOSTICS");
-        console.log("Stores:", finalOrderData.stores);
-        console.log("Allocations:", store_allocations);
-        const byStoreCounts = Array.from(storeIds).map((sid) => ({
-          store_id: sid,
-          items:
-            finalOrderData.cart?.filter(
-              (ci: CheckoutCartItem) =>
-                ((ci as { store_id?: unknown }).store_id ??
-                  (ci as { storeId?: unknown }).storeId) === sid,
-            ).length ?? 0,
-        }));
-        console.log("Items per store:", byStoreCounts);
-      }
-
-      // Determine if this is a guest order
-      const isGuestOrder =
-        finalOrderData?.address?.is_guest ||
-        !finalOrderData?.user_id ||
-        finalOrderData?.guest_email;
-
+      // Build exact payload per API spec
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      let response: any;
+      const cleanPayload: Record<string, unknown> = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        cart: (finalOrderData.cart as any[]).map((item: any) => ({
+          id: Number(item?.id || 0),
+          productId: Number(item?.productId || 0),
+          variantId: item?.variantId ? Number(item.variantId) : null,
+          quantity: Number(item?.quantity || 0),
+        })),
+        address: { id: Number(finalOrderData.address.id) },
+        payment: {
+          type: finalOrderData?.payment?.type || "pay-online",
+          ...(finalOrderData?.payment?.ref
+            ? { ref: String(finalOrderData.payment.ref) }
+            : {}),
+        },
+        charges: { token: String(finalOrderData?.charges?.token || "") },
+      };
 
+      console.log("========== ORDER PAYLOAD ==========");
+      console.log(JSON.stringify(cleanPayload, null, 2));
+      console.log("===================================");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response: any = await POST(API.ORDER, cleanPayload);
+
+      /* ---------- GUEST ORDER FLOW (disabled) ----------
       if (isGuestOrder) {
-        // Parse full_name into first_name and last_name
         const fullName = finalOrderData?.address?.full_name || "";
         const nameParts = fullName.trim().split(/\s+/);
         const firstName = nameParts[0] || "Guest";
@@ -644,90 +279,43 @@ function Checkout() {
                     (item as CheckoutCartItem)?.productId,
                     (item as { id?: number })?.id,
                     (item as { pid?: number })?.pid,
-                    (asRecord.product as Record<string, unknown> | undefined)
-                      ?.id,
-                    (asRecord.product as Record<string, unknown> | undefined)
-                      ?.pid,
+                    (asRecord.product as Record<string, unknown> | undefined)?.id,
+                    (asRecord.product as Record<string, unknown> | undefined)?.pid,
                     asRecord.product_id as number | undefined,
                   ];
                   const toNumber = (x: unknown): number | null => {
-                    const n =
-                      typeof x === "string"
-                        ? parseInt(x, 10)
-                        : (x as number | null);
-                    return Number.isFinite(n as number) && (n as number) > 0
-                      ? (n as number)
-                      : null;
+                    const n = typeof x === "string" ? parseInt(x, 10) : (x as number | null);
+                    return Number.isFinite(n as number) && (n as number) > 0 ? (n as number) : null;
                   };
                   const product_id =
-                    toNumber(candidates[0]) ??
-                    toNumber(candidates[1]) ??
-                    toNumber(candidates[2]) ??
-                    toNumber(candidates[3]) ??
-                    toNumber(candidates[4]) ??
-                    toNumber(candidates[5]) ??
-                    0;
-
+                    toNumber(candidates[0]) ?? toNumber(candidates[1]) ??
+                    toNumber(candidates[2]) ?? toNumber(candidates[3]) ??
+                    toNumber(candidates[4]) ?? toNumber(candidates[5]) ?? 0;
                   const product_name =
                     (item as CheckoutCartItem)?.name ||
-                    ((asRecord.product as Record<string, unknown> | undefined)
-                      ?.name as string | undefined) ||
-                    "";
-
+                    ((asRecord.product as Record<string, unknown> | undefined)?.name as string | undefined) || "";
                   const variant_id_candidate =
                     (item as CheckoutCartItem)?.variantId ??
-                    ((
-                      asRecord.productVariant as
-                        | Record<string, unknown>
-                        | undefined
-                    )?.id as number | undefined) ??
-                    null;
-                  const variant_id =
-                    variant_id_candidate != null
-                      ? (toNumber(variant_id_candidate) ?? null)
-                      : null;
-
+                    ((asRecord.productVariant as Record<string, unknown> | undefined)?.id as number | undefined) ?? null;
+                  const variant_id = variant_id_candidate != null ? (toNumber(variant_id_candidate) ?? null) : null;
                   const store_id =
                     toNumber((item as CheckoutCartItem)?.store_id) ??
                     toNumber((item as { storeId?: number })?.storeId) ??
-                    toNumber(
-                      (asRecord.product as Record<string, unknown> | undefined)
-                        ?.store_id,
-                    ) ??
-                    0;
+                    toNumber((asRecord.product as Record<string, unknown> | undefined)?.store_id) ?? 0;
                   const unit_price =
                     typeof (asRecord as { price?: unknown })?.price === "number"
                       ? (asRecord as { price?: number }).price
-                      : Number(
-                          (item as { unit_price?: number })?.unit_price || 0,
-                        );
+                      : Number((item as { unit_price?: number })?.unit_price || 0);
                   const total_price =
-                    typeof (asRecord as { totalPrice?: unknown })
-                      ?.totalPrice === "number"
+                    typeof (asRecord as { totalPrice?: unknown })?.totalPrice === "number"
                       ? (asRecord as { totalPrice?: number }).totalPrice
-                      : Number(
-                          (item as { total_price?: number })?.total_price || 0,
-                        );
+                      : Number((item as { total_price?: number })?.total_price || 0);
                   const image =
-                    ((asRecord.product as Record<string, unknown> | undefined)
-                      ?.image as string | undefined) ||
-                    ((asRecord as { image?: string })?.image as
-                      | string
-                      | undefined) ||
-                    null;
-
-                  return {
-                    product_id,
-                    product_name,
-                    variant_id,
-                    variant_name: (item as CheckoutCartItem)?.combination,
-                    quantity: Number((item as CheckoutCartItem)?.quantity || 0),
-                    store_id,
-                    weight: Number((item as CheckoutCartItem)?.weight || 0),
-                    unit_price,
-                    total_price,
-                    image,
-                  };
+                    ((asRecord.product as Record<string, unknown> | undefined)?.image as string | undefined) ||
+                    ((asRecord as { image?: string })?.image as string | undefined) || null;
+                  return { product_id, product_name, variant_id, variant_name: (item as CheckoutCartItem)?.combination,
+                    quantity: Number((item as CheckoutCartItem)?.quantity || 0), store_id,
+                    weight: Number((item as CheckoutCartItem)?.weight || 0), unit_price, total_price, image };
                 },
               )
             : [],
@@ -748,83 +336,62 @@ function Checkout() {
             delivery_token: finalOrderData?.charges?.token || "",
             delivery_charge: finalOrderData?.charges?.totalCharge || 0,
             total_weight: Array.isArray(finalOrderData?.cart)
-              ? finalOrderData.cart.reduce(
-                  (sum: number, item: CheckoutCartItem) =>
-                    sum + (item.weight || 0),
-                  0,
-                )
+              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.weight || 0), 0)
               : 0,
             estimated_delivery_days:
-              ((finalOrderData?.charges as Record<string, unknown>)?.[
-                "estimated_days"
-              ] as number | undefined) ?? null,
+              ((finalOrderData?.charges as Record<string, unknown>)?.["estimated_days"] as number | undefined) ?? null,
           },
           payment: {
             payment_reference: finalOrderData?.payment?.ref || "",
             payment_method: finalOrderData?.payment?.type || "paystack",
             transaction_reference:
-              finalOrderData?.payment?.transaction_reference ||
-              finalOrderData?.payment?.ref ||
-              "",
+              finalOrderData?.payment?.transaction_reference || finalOrderData?.payment?.ref || "",
             amount_paid: finalOrderData?.payment?.amount || 0,
             payment_status: finalOrderData?.payment?.status || "success",
-            paid_at:
-              finalOrderData?.payment?.verified_at || new Date().toISOString(),
+            paid_at: finalOrderData?.payment?.verified_at || new Date().toISOString(),
           },
           order_summary: {
             subtotal: Array.isArray(finalOrderData?.cart)
-              ? finalOrderData.cart.reduce(
-                  (sum: number, item: CheckoutCartItem) =>
-                    sum + (item.totalPrice || 0),
-                  0,
-                )
+              ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
               : 0,
             delivery_fee: finalOrderData?.charges?.totalCharge || 0,
             tax: 0,
             discount: 0,
             total:
               (Array.isArray(finalOrderData?.cart)
-                ? finalOrderData.cart.reduce(
-                    (sum: number, item: CheckoutCartItem) =>
-                      sum + (item.totalPrice || 0),
-                    0,
-                  )
+                ? finalOrderData.cart.reduce((sum: number, item: CheckoutCartItem) => sum + (item.totalPrice || 0), 0)
                 : 0) + (finalOrderData?.charges?.totalCharge || 0),
           },
           metadata: {
             order_notes: finalOrderData?.notes || "",
             preferred_delivery_time:
-              ((finalOrderData as Record<string, unknown>)?.[
-                "preferred_delivery_time"
-              ] as string | undefined) || null,
+              ((finalOrderData as Record<string, unknown>)?.["preferred_delivery_time"] as string | undefined) || null,
             source: finalOrderData?.source || "web_app",
             device_id: finalOrderData?.device_id || "",
           },
           is_multi_seller: isMultiSeller,
         };
 
-        // Validate payload before submitting
         const invalidItems =
           Array.isArray(guestOrderPayload.cart_items) &&
-          guestOrderPayload.cart_items.filter(
-            (ci) => !ci.product_id || Number(ci.product_id) <= 0,
-          );
+          guestOrderPayload.cart_items.filter((ci) => !ci.product_id || Number(ci.product_id) <= 0);
         if (Array.isArray(invalidItems) && invalidItems.length > 0) {
           console.error("Invalid guest cart items:", invalidItems);
           Notifications["error"]({
             message: "Order Validation Failed",
-            description:
-              "Some cart items are missing product IDs. Please remove and re-add those items, then try again.",
+            description: "Some cart items are missing product IDs. Please remove and re-add those items, then try again.",
           });
           setIsLoading(false);
           return;
         }
 
-        response = await POST(API.ORDER, finalOrderData);
+        console.log("[Order] POST (guest)", API.ORDER_GUEST, guestOrderPayload);
+        response = await POST(API.ORDER_GUEST, guestOrderPayload);
       } else {
-        // Create order for authenticated users (payment already verified above for Paystack)
+        console.log("[Order] POST (auth)", API.ORDER, finalOrderData);
         response = await POST(API.ORDER, finalOrderData);
       }
+      --------- END GUEST ORDER FLOW ---------- */
       console.log(
         "Order creation response:",
         JSON.stringify(response, null, 2),
@@ -863,12 +430,22 @@ function Checkout() {
           if (isPaystack) {
             localStorage.removeItem("paystack_payment_reference");
             localStorage.removeItem("paystack_order_data");
-            setPaymentRef(null);
           }
+
+          // Detect "already used reference" — this is a backend multi-seller bug where
+          // the backend marks payment.ref as used after sub-order 1, then rejects
+          // sub-order 2 with the same ref. The backend must allow the same payment.ref
+          // across all sub-orders of the same multi-seller checkout (see docs/order-duplication-fix.md).
+          const isAlreadyUsedRef =
+            typeof failureReason === "string" &&
+            failureReason.toLowerCase().includes("already used");
 
           Notifications["error"]({
             message: "Order Processing Failed",
-            description: `Order processing failed: ${failureReason}. Please try again or contact support.`,
+            description: isAlreadyUsedRef
+              ? `Your payment was received but the order could not be created (duplicate reference). Please contact support and quote your payment reference: ${paystackRef}.`
+              : `Order processing failed: ${failureReason}. Please try again or contact support.`,
+            duration: 0, // keep visible until user dismisses
           });
           setPaymentStatus(true);
           setOrderStatus(false);
@@ -928,7 +505,6 @@ function Checkout() {
         if (isPaystack) {
           localStorage.removeItem("paystack_payment_reference");
           localStorage.removeItem("paystack_order_data");
-          setPaymentRef(null);
         }
 
         // Clear cart from backend, redux, and guest localStorage
@@ -988,7 +564,6 @@ function Checkout() {
     isCOD,
     isPaystack,
     searchParams,
-    paymentRef,
   ]);
 
   useEffect(() => {
@@ -1134,15 +709,37 @@ function Checkout() {
                       {(() => {
                         // Exclude delivery price from amount if promo is active
                         const promo = getActiveDeliveryPromo();
+                        // Sum orderPayment.amount across all sub-orders (multi-seller
+                        // orders split the payment across store records, so [0] alone
+                        // only captures one store's portion).
                         let amount = Number(
-                          responseData?.[0]?.orderPayment?.amount || 0,
+                          Array.isArray(responseData)
+                            ? responseData.reduce(
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                (acc: number, order: any) =>
+                                  acc +
+                                  (Number(order?.orderPayment?.amount) || 0),
+                                0,
+                              )
+                            : responseData?.[0]?.orderPayment?.amount || 0,
                         );
                         if (promo) {
                           // Subtract delivery charge if present
                           const delivery = Number(
-                            responseData?.[0]?.newOrder?.deliveryCharge ||
-                              responseData?.[0]?.deliveryCharge ||
-                              0,
+                            Array.isArray(responseData)
+                              ? responseData.reduce(
+                                  (acc: number, order: Order) =>
+                                    acc +
+                                    (Number(
+                                      order?.newOrder?.deliveryCharge,
+                                    ) ||
+                                      Number(order?.deliveryCharge) ||
+                                      0),
+                                  0,
+                                )
+                              : responseData?.[0]?.newOrder?.deliveryCharge ||
+                                  responseData?.[0]?.deliveryCharge ||
+                                  0,
                           );
                           amount = amount - delivery;
                         }

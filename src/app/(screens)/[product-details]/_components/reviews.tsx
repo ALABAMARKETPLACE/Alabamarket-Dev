@@ -80,6 +80,8 @@ function Reviews(props: Props) {
     setPage(page);
     setTake(pageSize);
   };
+  // Removed Back to Home button from here
+  const handleBackToHome = undefined;
   return (
     <div>
       {contextHolder}
