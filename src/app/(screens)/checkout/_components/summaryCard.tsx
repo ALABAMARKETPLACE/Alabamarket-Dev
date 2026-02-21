@@ -50,8 +50,23 @@ const SummaryCard = (props: any) => {
     item.store_name ||
     `Store #${item.storeId || item.store_id}`;
 
+  // Subtle reminder for address selection
+  const addressSelected = !!props?.Cart?.address?.id;
   return (
     <div className="Cart-SummaryCard">
+      {!addressSelected && (
+        <Alert
+          type="warning"
+          message={
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <IoInformationCircleOutline size={22} style={{ marginRight: 8 }} />
+              <span>Please select and fill your delivery address to proceed with checkout.</span>
+            </div>
+          }
+          showIcon
+          style={{ marginBottom: 12, background: "#fffbe6", border: "1px solid #ffe58f" }}
+        />
+      )}
       <div className="Cart-row">
         <div className="Cart-txt5">Checkout Summary</div>
         <div style={{ flex: 1 }} />
@@ -221,8 +236,12 @@ const SummaryCard = (props: any) => {
       ) : null}
       <div
         className="Cart-btn1"
-        style={{ cursor: "pointer" }}
-        onClick={() => props?.placeOrder()}
+        style={{ cursor: addressSelected ? "pointer" : "not-allowed", opacity: addressSelected ? 1 : 0.6 }}
+        onClick={() => {
+          if (addressSelected) {
+            props?.placeOrder();
+          }
+        }}
       >
         <div>PLACE ORDER </div>
         <div className="Cart-btn1Box">
