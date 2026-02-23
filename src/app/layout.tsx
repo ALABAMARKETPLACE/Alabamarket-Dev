@@ -64,6 +64,11 @@ export default function RootLayout({
           name="google-site-verification"
           content="hjuHfzlO0fdL02U92aa34wv7wVNkG8yqQX-Hv-lhdLE"
         />
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380647700768846"
+          crossOrigin="anonymous"
+        />
       </head>
       <body>
         <noscript>
