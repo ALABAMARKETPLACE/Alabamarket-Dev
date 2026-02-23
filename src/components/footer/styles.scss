@@ -1,230 +1,178 @@
 @use "../../config/styleVariable.scss" as vars;
 
+// ─── Footer shell ─────────────────────────────────────────────────────────────
 .Footer {
-  background: linear-gradient(135deg, #ffffff 0%, #f0fffe 40%, #fff8f3 100%);
-  padding-top: 40px;
-  border-top: 4px solid transparent;
-  border-image: linear-gradient(90deg, #1abc9c 0%, #ff9500 100%) 1;
-  position: relative;
-  overflow: hidden;
-  animation: slideUp 0.6s ease-out;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      #ff9500 25%,
-      #1abc9c 50%,
-      #ff9500 75%,
-      transparent
-    );
-  }
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(
-        circle at 15% 50%,
-        rgba(26, 188, 156, 0.1) 0%,
-        transparent 50%
-      ),
-      radial-gradient(
-        circle at 85% 50%,
-        rgba(255, 149, 0, 0.1) 0%,
-        transparent 50%
-      );
-    pointer-events: none;
-    z-index: 0;
-  }
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding: 20px 10px;
-    padding-top: 30px;
-  }
-}
+  background: #111827;
+  border-top: 3px solid vars.$primary;
+  padding-top: 56px;
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  @media (max-width: 768px) {
+    padding-top: 40px;
   }
 }
 
 .Footer-container {
-  padding: 0 10px;
-  position: relative;
-  z-index: 1;
-}
+  padding: 0 40px 40px;
 
-.Footer-Box1 {
-  text-align: center;
-  border-top: 2px solid transparent;
-  border-image: linear-gradient(90deg, transparent, #ff9500 50%, transparent) 1;
-  font-size: 10px;
-  padding: 20px 10px;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(255, 149, 0, 0.02) 100%
-  );
-  color: #666;
-  transition: all 0.3s ease;
-  &:hover {
-    color: #ff9500;
+  @media (max-width: 1024px) {
+    padding: 0 24px 32px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 0 16px 28px;
   }
 }
 
+// ─── Copyright bar ────────────────────────────────────────────────────────────
+.Footer-Box1 {
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  padding: 18px 16px;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.3px;
+}
+
+// ─── Logo ─────────────────────────────────────────────────────────────────────
 .Footer_logoBox {
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  font-size: 30px;
-  font-family: vars.$Bold;
-  background: linear-gradient(135deg, #ff9500 0%, #1abc9c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-decoration: none;
-  transition: transform 0.3s ease;
+  margin-bottom: 18px;
+  transition: opacity 0.2s ease;
+
   &:hover {
-    transform: scale(1.03);
+    opacity: 0.82;
   }
 }
 
 .Footer_logo {
-  width: 50px;
-  height: 50px;
+  width: 48px;
+  height: 48px;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(26, 188, 156, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  &:hover {
-    transform: translateY(-2px) rotate(2deg);
-    box-shadow: 0 8px 20px rgba(255, 149, 0, 0.2);
-  }
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+// ─── App store badges ─────────────────────────────────────────────────────────
 .Footer_img {
   object-fit: fill;
   width: 100%;
   height: 100%;
   background-color: #fff;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid rgb(219, 219, 219);
-}
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: opacity 0.2s ease;
 
-.Footer-text1 {
-  font-size: 18px;
-  font-family: vars.$Bold;
-  padding-bottom: 15px;
-  padding-top: 10px;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    margin-top: 10px;
+  &:hover {
+    opacity: 0.88;
   }
 }
 
+// ─── Column headings ─────────────────────────────────────────────────────────
+.Footer-text1 {
+  font-size: 12px;
+  font-family: vars.$Bold;
+  font-weight: 700;
+  color: vars.$primary;
+  padding-bottom: 14px;
+  padding-top: 6px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+
+  @media (max-width: 768px) {
+    margin-top: 28px;
+    padding-top: 0;
+  }
+}
+
+// ─── Column links ─────────────────────────────────────────────────────────────
 .Footer-text2 {
   margin-bottom: 10px;
-  font-family: vars.$SemiBold;
   font-size: 14px;
+
   a {
     text-decoration: none;
-    color: rgb(89, 89, 89);
+    color: rgba(255, 255, 255, 0.5);
+    transition: color 0.2s ease;
+
     &:hover {
       color: vars.$primary;
-      border-bottom: 1px solid vars.$primary;
     }
   }
 }
 
+// ─── Description text ─────────────────────────────────────────────────────────
 .Footer-text3 {
-  font-size: 13px;
-  font-family: vars.$Medium;
-  color: #000;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.48);
+  line-height: 1.75;
+  margin-bottom: 20px;
 }
 
+// ─── Social icons ─────────────────────────────────────────────────────────────
 .Footer-icon {
-  font-size: 28px;
+  font-size: 26px;
+
   a {
     text-decoration: none;
-    color: rgb(59, 59, 59);
+    color: rgba(255, 255, 255, 0.48);
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.2s ease, transform 0.2s ease;
+
     &:hover {
       color: vars.$primary;
+      transform: translateY(-2px);
     }
   }
 }
 
+// ─── Payment method icons ─────────────────────────────────────────────────────
 .Footer_icon2 {
-  height: 40px;
+  height: 34px;
   object-fit: contain;
-  border: 1px solid rgb(224, 224, 224);
   width: 100%;
-  padding: 5px;
-  border-radius: 10px;
+  padding: 4px 6px;
+  border-radius: 6px;
   background-color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+// ─── Back to top ─────────────────────────────────────────────────────────────
 .back-to-top-btn {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #ff9500 0%, #1abc9c 100%);
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
+  background: vars.$primary;
+  border: none;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   color: #fff;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #1abc9c 0%, #ff9500 100%);
-    transition: left 0.3s ease;
-    z-index: -1;
-  }
+  transition: background 0.2s ease, transform 0.22s ease, box-shadow 0.22s ease;
+  box-shadow: 0 4px 14px rgba(255, 95, 21, 0.4);
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 149, 0, 0.4);
-
-    &::before {
-      left: 0;
-    }
+    box-shadow: 0 8px 22px rgba(255, 95, 21, 0.55);
+    background: #e55510;
   }
 
   &:active {
     transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(255, 149, 0, 0.3);
   }
 
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    width: 45px;
-    height: 45px;
+  @media (max-width: 768px) {
+    width: 38px;
+    height: 38px;
     font-size: 20px;
   }
 }
@@ -232,5 +180,5 @@
 .back-to-top-container {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 16px;
 }

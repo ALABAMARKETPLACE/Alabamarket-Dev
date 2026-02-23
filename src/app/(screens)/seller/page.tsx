@@ -17,27 +17,30 @@ import { GiCrystalGrowth } from "react-icons/gi";
 
 function Page() {
   const navigation = useRouter();
+
   const sellerFeatures = [
     {
-      icon: <FaHandshakeSimple size={30} color={API.COLOR} />,
+      icon: <FaHandshakeSimple size={22} color={API.COLOR} />,
       title: "5% Commission Fee",
       description: `Suppliers selling on ${API.NAME} keep 95% of their profit with a 5% commission fee`,
     },
     {
-      icon: <IoDocumentText size={30} color={API.COLOR} />,
+      icon: <IoDocumentText size={22} color={API.COLOR} />,
       title: "0 Penalty Charges",
       description:
         "Sell online without the fear of order cancellation charges with 0 Penalty for late dispatch or order cancellations.",
     },
     {
-      icon: <GiCrystalGrowth size={30} color={API.COLOR} />,
+      icon: <GiCrystalGrowth size={22} color={API.COLOR} />,
       title: "Growth for Every Supplier",
       description: `From small to large and unbranded to branded, and now open for Sellers who don't have a formal Business Registration too, ${API.NAME} fuels growth for all suppliers.`,
     },
   ];
+
   return (
     <div className="seller-screen-box">
       <Container>
+        {/* Hero */}
         <div className="seller-hero-section">
           <h1>
             Start Your Business on <span>{API.NAME}</span>
@@ -48,13 +51,24 @@ function Page() {
           </p>
         </div>
 
+        {/* Option Cards */}
         <Row className="seller-row" justify="center">
           <Col md={12} sm={12}>
             <div
               className="seller-option-card"
               onClick={() => navigation.push("/signup")}
             >
-              <span>Register as Buyer</span>
+              <div className="seller-option-card__icon">
+                <FcConferenceCall size={28} />
+              </div>
+              <div className="seller-option-card__body">
+                <span className="seller-option-card__title">
+                  Register as Buyer
+                </span>
+                <span className="seller-option-card__desc">
+                  Browse thousands of products at the best prices
+                </span>
+              </div>
               <span className="arrow">›</span>
             </div>
           </Col>
@@ -64,7 +78,17 @@ function Page() {
               className="seller-option-card"
               onClick={() => navigation.push("/seller/corporate")}
             >
-              <span>Become a Seller</span>
+              <div className="seller-option-card__icon">
+                <FcBriefcase size={28} />
+              </div>
+              <div className="seller-option-card__body">
+                <span className="seller-option-card__title">
+                  Become a Seller
+                </span>
+                <span className="seller-option-card__desc">
+                  List your products and earn with only 5% commission
+                </span>
+              </div>
               <span className="arrow">›</span>
             </div>
           </Col>
@@ -74,17 +98,31 @@ function Page() {
               className="seller-option-card"
               onClick={() => navigation.push("/seller/delivery-partner")}
             >
-              <span>Register as Delivery Partner</span>
+              <div className="seller-option-card__icon">
+                <FcInTransit size={28} />
+              </div>
+              <div className="seller-option-card__body">
+                <span className="seller-option-card__title">
+                  Register as Delivery Partner
+                </span>
+                <span className="seller-option-card__desc">
+                  Earn by delivering orders across Nigeria
+                </span>
+              </div>
               <span className="arrow">›</span>
             </div>
           </Col>
         </Row>
 
+        {/* Stats Banner */}
         <div className="sellerRegister-box12">
+          <p className="sellerRegister-banner-label">Why sellers choose us</p>
           <Row>
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcConferenceCall size={32} />
+                <div className="sellerRegister-banner-item__icon">
+                  <FcConferenceCall size={26} />
+                </div>
                 <span className="sellerRegister-text2">
                   Thousands of customers
                 </span>
@@ -93,15 +131,20 @@ function Page() {
 
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcBearish size={32} />
+                <div className="sellerRegister-banner-item__icon">
+                  <FcBearish size={26} />
+                </div>
                 <span className="sellerRegister-text2">
                   Low cost of business
                 </span>
               </div>
             </Col>
+
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcMoneyTransfer size={32} />
+                <div className="sellerRegister-banner-item__icon">
+                  <FcMoneyTransfer size={26} />
+                </div>
                 <span className="sellerRegister-text2">
                   Secure & regular payments
                 </span>
@@ -110,25 +153,34 @@ function Page() {
 
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcCustomerSupport size={32} />
-                <span className="sellerRegister-text2">One click Support</span>
+                <div className="sellerRegister-banner-item__icon">
+                  <FcCustomerSupport size={26} />
+                </div>
+                <span className="sellerRegister-text2">One click support</span>
               </div>
             </Col>
+
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcInTransit size={32} />
+                <div className="sellerRegister-banner-item__icon">
+                  <FcInTransit size={26} />
+                </div>
                 <span className="sellerRegister-text2">Faster shipping</span>
               </div>
             </Col>
+
             <Col md="2" sm="6" xs="6">
               <div className="sellerRegister-banner-item">
-                <FcBriefcase size={32} />
-                <span className="sellerRegister-text2">Shopping Festivals</span>
+                <div className="sellerRegister-banner-item__icon">
+                  <FcBriefcase size={26} />
+                </div>
+                <span className="sellerRegister-text2">Shopping festivals</span>
               </div>
             </Col>
           </Row>
         </div>
 
+        {/* Why Suppliers Love + Features */}
         <Row className="g-3">
           <Col md={6}>
             <div className="sellerRegister-box4">
@@ -138,23 +190,19 @@ function Page() {
               <p className="sellerRegister-text1">
                 All the benefits that come with selling on {API.NAME} are
                 designed to help you sell more, and make it easier to grow your
-                business.Selling on {API.NAME} opens up a world of opportunities
-                for businesses, providing a platform that goes beyond
-                traditional selling channels.
+                business. Selling on {API.NAME} opens up a world of
+                opportunities for businesses, providing a platform that goes
+                beyond traditional selling channels.
               </p>
             </div>
           </Col>
           <Col md={6}>
             <div className="sellerRegister-box5">
               {sellerFeatures.map((feature, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    marginBottom: index === sellerFeatures.length - 1 ? 0 : 15,
-                  }}
-                >
-                  <div style={{ marginRight: "12px" }}>{feature.icon}</div>
+                <div key={index} className="seller-feature-item">
+                  <div className="seller-feature-item__icon">
+                    {feature.icon}
+                  </div>
                   <div>
                     <p
                       className="sellerRegister-text2"

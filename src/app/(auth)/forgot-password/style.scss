@@ -1,12 +1,14 @@
 @use "../../../config/styleVariable.scss" as global;
 
-// Page Background
+// ========================================
+// Page Wrapper
+// ========================================
 .Screen-box {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('../../../assets/images/position.jpg');
+  background-image: url("../../../assets/images/position.jpg");
   background-size: cover;
   background-position: center;
   position: relative;
@@ -15,99 +17,112 @@
   &::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.25);
+    inset: 0;
+    background: rgba(0, 0, 0, 0.48);
     z-index: 0;
   }
 }
 
-// Centered Layout Container
+// ========================================
+// Auth Container
+// ========================================
 .auth-container {
   display: flex;
   width: 100%;
-  max-width: 480px; 
+  max-width: 460px;
   background: #ffffff;
   border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   margin: 0 auto;
   position: relative;
   z-index: 1;
+  border-top: 4px solid global.$primary;
 
   @media (max-width: 576px) {
     max-width: 100%;
-    border-radius: 16px;
+    border-radius: 20px;
   }
 }
 
-// Form Side (Full Width)
+// ========================================
+// Form Side
+// ========================================
 .auth-form-side {
   flex: 1;
-  padding: 40px;
+  padding: 44px 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: transparent;
 
+  // Lock icon block at top
+  &::before {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 56px;
+    background-color: rgba(255, 95, 21, 0.1);
+    border-radius: 16px;
+    margin: 0 auto 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FF5F15' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+    background-size: 26px 26px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
   @media (max-width: 576px) {
-    padding: 30px 20px;
+    padding: 36px 24px;
   }
 }
 
+// ========================================
 // Typography
+// ========================================
 .LoginScreen-txt1 {
   font-family: global.$Bold;
-  font-size: 28px;
-  color: #1a1a1a;
-  text-align: left;
+  font-size: 24px;
+  color: #111827;
+  text-align: center;
   margin-bottom: 8px;
-  
-  @media (max-width: 576px) {
-    font-size: 24px;
-    text-align: center;
-  }
 }
 
 .LoginScreen-txt2 {
   font-family: global.$Regular;
-  font-size: 15px;
-  color: #666;
-  text-align: left;
-  margin-bottom: 32px;
-  line-height: 1.5;
-
-  @media (max-width: 576px) {
-    text-align: center;
-  }
+  font-size: 14px;
+  color: #6b7280;
+  text-align: center;
+  margin-bottom: 28px;
+  line-height: 1.6;
 }
 
-// Input Styling Override (Scoped to .auth-container)
+// ========================================
+// Input Styling (scoped to .auth-container)
+// ========================================
 .auth-container {
   .ant-input-affix-wrapper-lg,
-  .ant-input-lg { 
-    padding: 14px 20px !important;
+  .ant-input-lg {
+    padding: 13px 20px !important;
     border-radius: 100px !important;
-    border: 1.5px solid #f1f5f9 !important;
-    background-color: #f8fafc !important;
-    font-size: 16px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: 1.5px solid #e5e7eb !important;
+    background-color: #f9fafb !important;
+    font-size: 15px !important;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease,
+      background-color 0.22s ease !important;
     box-shadow: none !important;
-    
+
     &:hover {
       background-color: #fff !important;
-      border-color: #cbd5e1 !important;
+      border-color: #d1d5db !important;
     }
 
-    &:focus, &:focus-within {
+    &:focus,
+    &:focus-within {
       background-color: #fff !important;
       border-color: global.$primary !important;
-      box-shadow: 0 4px 12px rgba(255, 95, 21, 0.1) !important;
-      transform: translateY(-1px);
+      box-shadow: 0 0 0 3px rgba(255, 95, 21, 0.12) !important;
     }
-    
+
     input {
       background-color: transparent !important;
       height: 100% !important;
@@ -115,49 +130,53 @@
   }
 }
 
+// ========================================
 // Primary Button
+// ========================================
 .btn-clr {
   background: global.$primary !important;
   border: none !important;
   border-radius: 100px !important;
-  height: 58px !important;
-  font-size: 16px !important;
+  height: 52px !important;
+  font-size: 15px !important;
   font-family: global.$Bold !important;
   color: white !important;
-  box-shadow: 0 10px 20px rgba(255, 95, 21, 0.2) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 16px rgba(255, 95, 21, 0.28) !important;
+  transition: all 0.22s ease !important;
   width: 100%;
-  margin-top: 12px;
-  letter-spacing: 0.5px;
-  text-transform: capitalize;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px rgba(255, 95, 21, 0.3) !important;
-    background: darken(#FF5F15, 5%) !important;
+    background: darken(#ff5f15, 6%) !important;
+    box-shadow: 0 6px 22px rgba(255, 95, 21, 0.4) !important;
+    transform: translateY(-1px);
   }
-  
+
   &:active {
     transform: translateY(0);
-    box-shadow: 0 5px 15px rgba(255, 95, 21, 0.2) !important;
+    box-shadow: 0 3px 10px rgba(255, 95, 21, 0.22) !important;
   }
-  
+
   span {
     font-weight: 700;
   }
 }
 
-// Back Link
+// ========================================
+// Back to Login Link
+// ========================================
 .LoginScreen-txt4 {
   text-align: center;
-  font-size: 15px;
-  color: #64748b;
-  margin-top: 32px;
+  font-size: 14px;
+  color: global.$primary;
+  margin-top: 24px;
   font-family: global.$Medium;
   cursor: pointer;
   transition: color 0.2s;
 
   &:hover {
-    color: global.$primary;
+    color: darken(#ff5f15, 10%);
+    text-decoration: underline;
   }
 }

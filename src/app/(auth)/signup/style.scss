@@ -1,12 +1,14 @@
 @use "../../../config/styleVariable.scss" as global;
 
-// Page Background
+// ========================================
+// Page Wrapper
+// ========================================
 .Screen-box {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('../../../assets/images/position.jpg'); // Changed to position.jpg
+  background-image: url("../../../assets/images/position.jpg");
   background-size: cover;
   background-position: center;
   position: relative;
@@ -15,113 +17,221 @@
   &::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.25); // Reduced opacity for clearer image
+    inset: 0;
+    background: rgba(0, 0, 0, 0.48);
     z-index: 0;
   }
 }
 
-// Centered Layout Container
+// ========================================
+// Auth Container
+// ========================================
 .auth-container {
   display: flex;
   width: 100%;
-  max-width: 600px;
-  background: #ffffff; // Solid white background
+  max-width: 960px;
+  background: #ffffff;
   border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); // Softer shadow
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
   overflow: hidden;
   margin: 0 auto;
   position: relative;
   z-index: 1;
 
+  @media (max-width: 768px) {
+    flex-direction: column;
+    max-width: 520px;
+  }
+
   @media (max-width: 576px) {
     max-width: 100%;
-    border-radius: 16px;
+    border-radius: 20px;
   }
 }
 
-// Image Side (Hidden)
+// ========================================
+// Image Side
+// ========================================
 .auth-image-side {
-  display: none; // Hide the side-by-side image
+  display: flex;
+  flex: 0 0 38%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+
+  // Orange gradient overlay
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      155deg,
+      rgba(255, 95, 21, 0.92) 0%,
+      rgba(178, 40, 0, 0.86) 100%
+    );
+    z-index: 0;
+  }
+
+  // Decorative circle
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -60px;
+    right: -60px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    z-index: 0;
+  }
+
+  @media (max-width: 768px) {
+    flex: 0 0 auto;
+    min-height: 175px;
+  }
 }
 
-// Form Side (Full Width)
+.auth-image-text {
+  position: relative;
+  z-index: 1;
+  padding: 44px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1;
+
+  // Brand name at top
+  &::before {
+    content: "Alabamarket";
+    display: block;
+    font-family: global.$Bold;
+    font-size: 17px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: 0.6px;
+    margin-bottom: auto;
+    padding-bottom: 56px;
+  }
+
+  h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 12px;
+    line-height: 1.35;
+    font-family: global.$Bold;
+    margin-top: 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.84);
+    line-height: 1.7;
+    font-family: global.$Regular;
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    padding: 20px 24px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    &::before {
+      display: none;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin-bottom: 0;
+    }
+
+    p {
+      display: none;
+    }
+  }
+}
+
+// ========================================
+// Form Side
+// ========================================
 .auth-form-side {
   flex: 1;
-  padding: 40px;
+  padding: 40px 44px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: transparent;
   overflow-y: auto;
 
+  @media (max-width: 768px) {
+    padding: 32px 28px;
+  }
+
   @media (max-width: 576px) {
-    padding: 30px 20px;
+    padding: 28px 20px;
   }
 }
 
+// ========================================
 // Typography
+// ========================================
 .signupScreen-txt1 {
   font-family: global.$Bold;
-  font-size: 28px;
-  color: #1a1a1a;
+  font-size: 24px;
+  color: #111827;
   text-align: left;
-  margin-bottom: 8px;
-  
+  margin-bottom: 6px;
+
   @media (max-width: 576px) {
-    font-size: 24px;
-    text-align: center;
+    font-size: 21px;
   }
 }
 
 .signupScreen-txt2 {
   font-family: global.$Regular;
-  font-size: 15px;
-  color: #666;
+  font-size: 14px;
+  color: #6b7280;
   text-align: left;
-  margin-bottom: 24px;
-  line-height: 1.5;
-
-  @media (max-width: 576px) {
-    text-align: center;
-  }
+  margin-bottom: 20px;
+  line-height: 1.55;
 }
 
-// Input Styling Override (Scoped to .auth-container)
+// ========================================
+// Input Styling (scoped to .auth-container)
+// ========================================
 .auth-container {
   .ant-input-affix-wrapper-lg,
   .ant-input-lg,
   .ant-input-password-lg,
   .ant-select-selector {
-    padding: 14px 20px !important;
+    padding: 12px 18px !important;
     border-radius: 100px !important;
-    border: 1.5px solid #f1f5f9 !important;
-    background-color: #f8fafc !important;
-    font-size: 16px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border: 1.5px solid #e5e7eb !important;
+    background-color: #f9fafb !important;
+    font-size: 15px !important;
+    transition: border-color 0.22s ease, box-shadow 0.22s ease,
+      background-color 0.22s ease !important;
     box-shadow: none !important;
-    
+
     &:hover {
       background-color: #fff !important;
-      border-color: #cbd5e1 !important;
+      border-color: #d1d5db !important;
     }
 
-    &:focus, &:focus-within {
+    &:focus,
+    &:focus-within {
       background-color: #fff !important;
       border-color: global.$primary !important;
-      box-shadow: 0 4px 12px rgba(255, 95, 21, 0.1) !important;
-      transform: translateY(-1px);
+      box-shadow: 0 0 0 3px rgba(255, 95, 21, 0.12) !important;
     }
-    
+
     input {
       background-color: transparent !important;
       height: 100% !important;
     }
 
-    // Ensure password input wrapper has transparent background to avoid double borders
     &.ant-input-password {
       input {
         border: none !important;
@@ -132,94 +242,139 @@
     }
   }
 
-  // Fix for Select (PrefixSelector) height matching inputs
+  // Phone prefix select height
   .ant-select-single .ant-select-selector {
-    height: 58px !important; // Match input height
+    height: 52px !important;
     display: flex;
     align-items: center;
   }
-  
-  // Fix for dropdown arrow positioning
+
   .ant-select-arrow {
     top: 50% !important;
-    margin-top: -6px !important; // Center vertically (half of icon height)
+    margin-top: -6px !important;
+  }
+
+  // Phone compact group: join prefix + input into one pill
+  .ant-space-compact {
+    width: 100%;
+
+    .ant-select .ant-select-selector {
+      border-radius: 100px 0 0 100px !important;
+      border-right: none !important;
+    }
+
+    .ant-input-affix-wrapper-lg,
+    .ant-input-lg {
+      border-radius: 0 100px 100px 0 !important;
+    }
   }
 }
 
+// ========================================
 // Primary Button
+// ========================================
 .btn-clr {
   background: global.$primary !important;
   border: none !important;
   border-radius: 100px !important;
-  height: 58px !important;
-  font-size: 16px !important;
+  height: 52px !important;
+  font-size: 15px !important;
   font-family: global.$Bold !important;
   color: white !important;
-  box-shadow: 0 10px 20px rgba(255, 95, 21, 0.2) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 16px rgba(255, 95, 21, 0.28) !important;
+  transition: all 0.22s ease !important;
   width: 100%;
-  margin-top: 12px;
-  letter-spacing: 0.5px;
-  text-transform: capitalize;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 15px 30px rgba(255, 95, 21, 0.3) !important;
-    background: darken(#FF5F15, 5%) !important;
+    background: darken(#ff5f15, 6%) !important;
+    box-shadow: 0 6px 22px rgba(255, 95, 21, 0.4) !important;
+    transform: translateY(-1px);
   }
-  
+
   &:active {
     transform: translateY(0);
-    box-shadow: 0 5px 15px rgba(255, 95, 21, 0.2) !important;
+    box-shadow: 0 3px 10px rgba(255, 95, 21, 0.22) !important;
   }
-  
+
   span {
     font-weight: 700;
   }
 }
 
-// Links
+// ========================================
+// Or Divider
+// ========================================
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: #9ca3af;
+  font-size: 12px;
+  font-family: global.$Regular;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e5e7eb;
+  }
+}
+
+// ========================================
+// Footer Links
+// ========================================
 .signupScreen-txt4 {
   text-align: center;
-  font-size: 15px;
-  color: #64748b;
-  margin-top: 32px;
+  font-size: 14px;
+  color: #6b7280;
+  margin-top: 20px;
   font-family: global.$Medium;
+  cursor: pointer;
 }
 
 .signupScreen-txt5 {
   color: global.$primary;
   font-family: global.$Bold;
   cursor: pointer;
-  margin-left: 6px;
+  margin-left: 4px;
   transition: color 0.2s;
-  
+
   &:hover {
-    color: darken(#FF5F15, 10%);
+    color: darken(#ff5f15, 10%);
     text-decoration: underline;
   }
 }
 
+// ========================================
 // Error Message
+// ========================================
 .signupScreen-errortxt {
   background-color: #fef2f2;
-  border: 1px solid #fee2e2;
-  color: #ef4444;
-  padding: 14px 20px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  font-size: 14px;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 13px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-family: global.$Medium;
 }
 
-// Social Login
+// ========================================
+// Social Login Button
+// ========================================
 .GmailLogin {
   width: 100%;
-  height: 58px;
-  border: 1.5px solid #e2e8f0;
+  height: 52px;
+  border: 1.5px solid #e5e7eb;
   border-radius: 100px;
   padding: 0 24px;
   display: flex;
@@ -227,27 +382,29 @@
   justify-content: center;
   background: white;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 24px;
+  transition: all 0.22s ease;
   gap: 12px;
-  
-  &:hover {
-    background-color: #f8fafc;
-    border-color: #cbd5e1;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  }
-  
   font-family: global.$SemiBold;
-  font-size: 16px;
-  color: #334155;
+  font-size: 15px;
+  color: #374151;
+
+  &:hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
 .GmailLogin-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-family: global.$SemiBold;
   font-size: 15px;
-  color: #333;
+  color: #374151;
 }
