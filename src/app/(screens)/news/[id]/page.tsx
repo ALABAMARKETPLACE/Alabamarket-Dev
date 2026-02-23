@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
-import { Card, Tag, Space, Spin, Button, Empty } from "antd";
+import { Spin, Empty } from "antd";
 import {
   CalendarOutlined,
   UserOutlined,
@@ -13,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
 import moment from "moment";
+import "../styles.scss";
 
 interface NewsItem {
   id: string | number;
@@ -48,141 +48,109 @@ export default function NewsDetailPage() {
 
   const news = newsData?.data;
   const isVideo = !!news?.video;
+  const mediaUrl = news?.video || news?.thumbnail || news?.image;
 
   if (isLoading) {
     return (
-      <div
-        style={{
-          minHeight: "80vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Spin size="large" />
+      <div className="news-detail-page">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "60vh",
+          }}
+        >
+          <Spin size="large" />
+        </div>
       </div>
     );
   }
 
   if (!news) {
     return (
-      <Container style={{ minHeight: "80vh" }}>
-        <Empty description="News not found" />
-      </Container>
+      <div className="news-detail-page">
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "60vh",
+          }}
+        >
+          <Empty description="Article not found" />
+        </div>
+      </div>
     );
   }
 
-  const mediaUrl = news.video || news.thumbnail || news.image;
-
   return (
-    <div
-      style={{
-        backgroundColor: "#f5f5f5",
-        minHeight: "100vh",
-        paddingTop: 20,
-        paddingBottom: 40,
-      }}
-    >
-      <Container>
-        <Button
-          type="text"
-          icon={<ArrowLeftOutlined />}
-          onClick={() => router.back()}
-          style={{ marginBottom: 20 }}
-        >
-          Back
-        </Button>
+    <div className="news-detail-page">
+      {/* Full-width hero media */}
+      {mediaUrl && (
+        <div className="news-detail-hero">
+          {isVideo ? (
+            // eslint-disable-next-line jsx-a11y/media-has-caption
+            <video src={news.video} poster={news.thumbnail} controls />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={mediaUrl} alt={news.title} />
+          )}
+        </div>
+      )}
 
-        <Card className="news-detail-card">
-          <Row gutter={[24, 24]}>
-            <Col lg={8} md={12} xs={24}>
-              {mediaUrl && (
-                <div style={{ marginBottom: 20 }}>
-                  {isVideo ? (
-                    <video
-                      src={news.video}
-                      poster={news.thumbnail}
-                      controls
-                      style={{
-                        width: "100%",
-                        borderRadius: 8,
-                      }}
-                    />
-                  ) : (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={mediaUrl}
-                      alt={news.title}
-                      style={{
-                        width: "100%",
-                        borderRadius: 8,
-                      }}
-                    />
-                  )}
-                </div>
+      <div className="news-detail-container">
+        {/* Back button */}
+        <button className="news-detail-back" onClick={() => router.back()}>
+          <ArrowLeftOutlined />
+          Back to News
+        </button>
+
+        <div className="news-detail-card">
+          <div className="news-detail-content">
+            {/* Category */}
+            {news.category && (
+              <span className="news-detail-category">{news.category}</span>
+            )}
+
+            {/* Title */}
+            <h1 className="news-detail-title">{news.title}</h1>
+
+            {/* Meta */}
+            <div className="news-detail-meta">
+              <span className="news-detail-meta-item">
+                <CalendarOutlined />
+                {moment(news.createdAt).format("MMMM DD, YYYY")}
+              </span>
+
+              {news.author && (
+                <span className="news-detail-meta-item">
+                  <UserOutlined />
+                  {news.author}
+                </span>
               )}
-            </Col>
 
-            <Col lg={16} md={12} xs={24}>
-              <div>
-                {news.category && (
-                  <Tag color="blue" style={{ marginBottom: 16 }}>
-                    {news.category}
-                  </Tag>
-                )}
+              {news.views !== undefined && (
+                <span className="news-detail-meta-item">
+                  <EyeOutlined />
+                  {news.views.toLocaleString()} views
+                </span>
+              )}
+            </div>
 
-                <h1 style={{ fontSize: 32, marginBottom: 16 }}>{news.title}</h1>
+            {/* Description */}
+            <p className="news-detail-description">{news.description}</p>
 
-                <Space
-                  className="news-detail-meta"
-                  split="|"
-                  style={{ marginBottom: 24, fontSize: 14, color: "#666" }}
-                >
-                  <Space size={4}>
-                    <CalendarOutlined />
-                    <span>
-                      {moment(news.createdAt).format("MMMM DD, YYYY")}
-                    </span>
-                  </Space>
-
-                  {news.author && (
-                    <Space size={4}>
-                      <UserOutlined />
-                      <span>{news.author}</span>
-                    </Space>
-                  )}
-
-                  {news.views !== undefined && (
-                    <Space size={4}>
-                      <EyeOutlined />
-                      <span>{news.views} views</span>
-                    </Space>
-                  )}
-                </Space>
-
-                <div
-                  style={{
-                    fontSize: 16,
-                    lineHeight: 1.8,
-                    color: "#333",
-                    borderTop: "1px solid #eee",
-                    paddingTop: 16,
-                  }}
-                >
-                  <p>{news.description}</p>
-
-                  {news.content && (
-                    <div
-                      style={{ whiteSpace: "pre-wrap", marginTop: 20 }}
-                      dangerouslySetInnerHTML={{ __html: news.content }}
-                    />
-                  )}
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Card>
-      </Container>
+            {/* Full content */}
+            {news.content && (
+              <div
+                className="news-detail-body"
+                dangerouslySetInnerHTML={{ __html: news.content }}
+              />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

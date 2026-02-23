@@ -102,9 +102,8 @@ function DetailsCard(props: any) {
     return div.textContent || div.innerText || "";
   };
 
-  console.log("lllnggthh", props);
   return (
-    <div className="page-Box pt-3">
+    <div className="page-Box pt-3 pb-5">
       <Container>
         <Row>
           <Col sm={6} md={6} xs={12} lg={5}>
@@ -115,25 +114,42 @@ function DetailsCard(props: any) {
             />
           </Col>
           <Col md={6} xs={12} lg={7}>
-            <h1>
+            <h1 className="pd-title">
               {props?.data?.name} {getVariantCurrentName()}
             </h1>
-            <div> {props?.data?.brand?.toUpperCase() ?? ""}</div>
-            <div> {props?.data?.description}</div>
-            <div className="d-flex justify-content-start gap-2">
-              {" "}
+            {props?.data?.brand && (
+              <div className="pd-brand">{props?.data?.brand?.toUpperCase()}</div>
+            )}
+            {props?.data?.description && (
+              <p className="pd-short-desc">{props?.data?.description}</p>
+            )}
+            <div className="pd-rating-row">
               {props?.data?.averageRating ? (
-                <div>{Number(props?.data?.averageRating).toFixed(1)}</div>
+                <span className="pd-rating-score">
+                  {Number(props?.data?.averageRating).toFixed(1)}
+                </span>
               ) : null}
               <Rate
                 disabled
                 allowHalf
                 value={Number(props?.data?.averageRating)}
+                style={{ fontSize: 14 }}
               />
-              <div>{`${props?.data?.averageRating || "No"} Ratings`}</div>
+              <span className="pd-rating-count">
+                {props?.data?.averageRating
+                  ? `${props?.data?.averageRating} Ratings`
+                  : "No Ratings"}
+              </span>
             </div>
-            <div> Seller: {props?.data?.storeDetails?.store_name}</div>
-            <hr />
+            {props?.data?.storeDetails?.store_name && (
+              <div className="pd-seller">
+                Sold by&nbsp;
+                <span className="pd-seller-name">
+                  {props?.data?.storeDetails?.store_name}
+                </span>
+              </div>
+            )}
+            <hr className="pd-divider" />
             {/* <Description
               data={props?.data}
               currentVariant={currentVariant}

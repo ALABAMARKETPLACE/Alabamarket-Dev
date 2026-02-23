@@ -2,11 +2,13 @@
 import React, { useState, useMemo } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Input, Pagination, Empty, Spin, Button, Result } from "antd";
+import { CalendarOutlined, UserOutlined, SearchOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
 import NewsCard from "./_components/newsCard";
 import { FiRefreshCw } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 import "./styles.scss";
 
 interface NewsItem {
@@ -34,6 +36,7 @@ interface NewsResponse {
 export default function NewsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
   const pageSize = 12;
 
   const {
@@ -49,22 +52,19 @@ export default function NewsPage() {
         page: currentPage,
         limit: pageSize,
       });
-      // Support both { data: [] } and [] shapes
       const data = Array.isArray((response as { data?: unknown })?.data)
         ? (response as { data: NewsItem[] }).data
         : Array.isArray(response)
           ? (response as NewsItem[])
           : [];
-      // Try to get total from response, fallback to data.length
       const total = (response as { total?: number })?.total ?? data.length;
       return { data, total } as NewsResponse;
     },
     queryKey: ["news_list", currentPage],
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 1000 * 60 * 5,
     retry: 2,
   });
 
-  // Memoized filtered news for performance
   const filteredNews = useMemo(() => {
     if (!newsData?.data) return [];
     return newsData.data.filter(
@@ -74,37 +74,34 @@ export default function NewsPage() {
     );
   }, [newsData, searchTerm]);
 
-  // Featured news: first item in filtered list
   const featuredNews = filteredNews.length > 0 ? filteredNews[0] : null;
   const otherNews = filteredNews.length > 1 ? filteredNews.slice(1) : [];
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <div className="news-page">
-      {/* Page Header */}
+      {/* Hero Header */}
       <div className="news-page-header">
         <Container fluid>
-          <Row className="align-items-center">
-            <Col md={8}>
-              <h1 className="news-page-title">News & Updates</h1>
-              <p className="news-page-subtitle">
-                Stay updated with our latest news and announcements
-              </p>
-            </Col>
-          </Row>
+          <span className="news-header-badge">Latest Updates</span>
+          <h1 className="news-page-title">News &amp; Updates</h1>
+          <p className="news-page-subtitle">
+            Stay informed with the latest news, announcements, and stories from
+            Alaba Marketplace
+          </p>
         </Container>
       </div>
 
       <Container fluid className="news-container">
-        {/* Search Bar */}
-        <Row className="mb-4">
-          <Col lg={8} className="mx-auto">
-            <Input.Search
-              placeholder="Search news..."
+        {/* Search */}
+        <Row className="mb-5">
+          <Col lg={7} className="mx-auto news-search-wrap">
+            <Input
+              placeholder="Search articles..."
               size="large"
               allowClear
               value={searchTerm}
@@ -112,19 +109,15 @@ export default function NewsPage() {
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
+              suffix={<SearchOutlined style={{ color: "#9ca3af" }} />}
               className="news-search"
-              style={{
-                background: "#fff",
-                borderRadius: 12,
-                boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
-              }}
             />
           </Col>
         </Row>
 
-        {/* Loading State */}
+        {/* Loading */}
         {isLoading ? (
-          <div className="text-center py-5">
+          <div className="news-loading-state">
             <Spin size="large" />
           </div>
         ) : isError ? (
@@ -134,7 +127,7 @@ export default function NewsPage() {
               title="Unable to load news"
               subTitle={
                 (error as Error)?.message ||
-                "We're having trouble fetching the latest news. Please try again later."
+                "We're having trouble fetching the latest news. Please try again."
               }
               extra={
                 <Button
@@ -142,7 +135,7 @@ export default function NewsPage() {
                   icon={<FiRefreshCw />}
                   onClick={() => refetch()}
                   loading={isFetching}
-                  style={{ borderRadius: 8 }}
+                  style={{ background: "#ff5f15", borderColor: "#ff5f15", borderRadius: 8 }}
                 >
                   Try Again
                 </Button>
@@ -151,43 +144,71 @@ export default function NewsPage() {
           </div>
         ) : filteredNews.length > 0 ? (
           <>
-            {/* Featured News Section */}
+            {/* Featured Article */}
             {featuredNews && (
               <Row className="mb-5">
-                <Col lg={8} md={10} className="mx-auto">
+                <Col xs={12}>
+                  <p className="news-section-label">Top Story</p>
                   <div
                     className="featured-news-card"
-                    onClick={() =>
-                      (window.location.href = `/news/${featuredNews.id}`)
-                    }
-                    style={{ cursor: "pointer" }}
+                    onClick={() => router.push(`/news/${featuredNews.id}`)}
                   >
-                    {featuredNews.image || featuredNews.thumbnail ? (
-                      <img
-                        src={featuredNews.image || featuredNews.thumbnail}
-                        alt={featuredNews.title}
-                        className="featured-news-image"
-                      />
-                    ) : null}
+                    {/* Image side */}
+                    <div className="featured-news-media">
+                      {featuredNews.image || featuredNews.thumbnail ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={featuredNews.image || featuredNews.thumbnail}
+                          alt={featuredNews.title}
+                          className="featured-news-image"
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            background:
+                              "linear-gradient(135deg, #fff5f0 0%, #ffe8d6 100%)",
+                          }}
+                        />
+                      )}
+                    </div>
+
+                    {/* Content side */}
                     <div className="featured-news-content">
+                      {featuredNews.category && (
+                        <span className="featured-news-category">
+                          {featuredNews.category}
+                        </span>
+                      )}
                       <h2 className="featured-news-title">
                         {featuredNews.title}
                       </h2>
                       <p className="featured-news-description">
-                        {featuredNews.description?.substring(0, 180)}
+                        {featuredNews.description?.substring(0, 200)}
                         {featuredNews.description &&
-                        featuredNews.description.length > 180
-                          ? "..."
+                        featuredNews.description.length > 200
+                          ? "…"
                           : ""}
                       </p>
                       <div className="featured-news-meta">
-                        <span>{featuredNews.author}</span>
                         <span>
-                          {new Date(
-                            featuredNews.createdAt,
-                          ).toLocaleDateString()}
+                          <CalendarOutlined />
+                          {new Date(featuredNews.createdAt).toLocaleDateString(
+                            "en-US",
+                            { year: "numeric", month: "long", day: "numeric" },
+                          )}
                         </span>
+                        {featuredNews.author && (
+                          <span>
+                            <UserOutlined />
+                            {featuredNews.author}
+                          </span>
+                        )}
                       </div>
+                      <span className="featured-news-cta">
+                        Read Full Story&nbsp;→
+                      </span>
                     </div>
                   </div>
                 </Col>
@@ -195,13 +216,19 @@ export default function NewsPage() {
             )}
 
             {/* News Grid */}
-            <Row className="g-4">
-              {otherNews.map((news) => (
-                <Col key={news.id} lg={4} md={6} sm={12}>
-                  <NewsCard news={news} />
-                </Col>
-              ))}
-            </Row>
+            {otherNews.length > 0 && (
+              <>
+                <p className="news-section-label">More Articles</p>
+                <p className="news-section-title">Latest News</p>
+                <Row className="g-4">
+                  {otherNews.map((news) => (
+                    <Col key={news.id} lg={4} md={6} sm={12}>
+                      <NewsCard news={news} />
+                    </Col>
+                  ))}
+                </Row>
+              </>
+            )}
 
             {/* Pagination */}
             {newsData?.total && newsData.total > pageSize && (
@@ -212,17 +239,14 @@ export default function NewsPage() {
                   total={newsData.total}
                   onChange={handlePageChange}
                   showSizeChanger={false}
-                  style={{
-                    borderRadius: 8,
-                    background: "#fff",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-                  }}
                 />
               </div>
             )}
           </>
         ) : (
-          <Empty description="No news found" />
+          <div className="news-empty-state">
+            <Empty description="No articles found" />
+          </div>
         )}
       </Container>
     </div>

@@ -1,142 +1,67 @@
 @use "../../config/styleVariable.scss" as global;
 
+// ─── Entry animation ─────────────────────────────────────────────────────────
 @keyframes cardEnter {
   from {
     opacity: 0;
-    transform: translateY(30px) scale(0.95);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }
 
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-@keyframes cardHover {
-  0% {
-    box-shadow: 0 4px 8px rgba(255, 149, 0, 0.1);
-  }
-  50% {
-    box-shadow: 0 16px 32px rgba(255, 149, 0, 0.25);
-  }
-  100% {
-    box-shadow: 0 20px 48px rgba(255, 149, 0, 0.2);
-  }
-}
-
-@keyframes orangeGlow {
-  0% {
-    border-color: rgba(255, 149, 0, 0.2);
-  }
-  50% {
-    border-color: rgba(255, 149, 0, 0.5);
-  }
-  100% {
-    border-color: rgba(255, 149, 0, 0.2);
-  }
-}
-
+// ─── Card shell ──────────────────────────────────────────────────────────────
 .ProductItem {
   height: 100%;
   width: 100%;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  min-width: 124px;
-  background: linear-gradient(135deg, #ffffff 0%, #fffbf8 100%);
-  border-radius: 12px;
-  border: 2px solid rgba(255, 149, 0, 0.15);
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  animation: cardEnter 0.6s ease-out backwards;
-  position: relative;
+  min-width: 130px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid #ebebeb;
   overflow: hidden;
-  box-shadow:
-    0 6px 18px rgba(255, 149, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-      135deg,
-      rgba(255, 149, 0, 0.2) 0%,
-      rgba(255, 184, 77, 0.1) 100%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-    z-index: 3;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(
-      circle,
-      rgba(255, 149, 0, 0.15) 0%,
-      transparent 70%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
-    z-index: 1;
-  }
+  cursor: pointer;
+  animation: cardEnter 0.4s ease-out backwards;
+  transition: box-shadow 0.25s ease, transform 0.25s ease,
+    border-color 0.25s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 32px rgba(255, 95, 21, 0.14);
-    border-color: rgba(255, 95, 21, 0.3);
-
-    &::before {
-      opacity: 1;
-    }
-
-    &::after {
-      opacity: 1;
-      animation: shimmer 2s infinite linear;
-    }
+    box-shadow: 0 10px 32px rgba(0, 0, 0, 0.11);
+    transform: translateY(-5px);
+    border-color: #d1d5db;
 
     .ProductItem-img {
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
 
-    .action-overlay {
-      opacity: 1;
-      transform: translateY(0);
+    .ProductItem-txt1 {
+      color: global.$primary;
     }
+  }
+
+  @media (max-width: 768px) {
+    min-width: 110px;
+    border-radius: 8px;
   }
 }
 
+// ─── Image area ──────────────────────────────────────────────────────────────
 .ProductItem-Box1 {
-  height: 150px;
+  height: 195px;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  border-bottom: 2px solid rgba(255, 149, 0, 0.12);
-}
+  background: #f8f9fa;
+  border-bottom: 1px solid #f0f0f0;
 
-@media (max-width: 768px) {
-  .ProductItem-Box1 {
-    height: 132px;
+  @media (max-width: 768px) {
+    height: 155px;
   }
 }
 
@@ -145,146 +70,106 @@
   width: 100%;
   object-fit: cover;
   mix-blend-mode: multiply;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
-  border-bottom: none;
-  box-shadow: none;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.action-overlay {
-  position: absolute;
-  bottom: 15px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 5;
-}
-
-.action-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: #444;
-  font-size: 18px;
-
-  &:hover {
-    background: global.$primary;
-    color: white;
-    transform: translateY(-3px) scale(1.1);
-    box-shadow: 0 8px 20px rgba(255, 95, 21, 0.3);
-  }
-}
-
+// ─── Info area ───────────────────────────────────────────────────────────────
 .ProductItem-Box2 {
   flex: 1 1 auto;
-  padding: 10px;
-  position: relative;
-  z-index: 2;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 149, 0, 0.02) 100%
-  );
+  gap: 5px;
 
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding: 10px;
+  @media (max-width: 768px) {
+    padding: 8px 8px 10px;
+    gap: 4px;
   }
 }
 
+// ─── Name ────────────────────────────────────────────────────────────────────
 .ProductItem-txt1 {
   font-family: global.$SemiBold;
-  text-transform: capitalize;
   font-size: 13px;
-  white-space: wrap;
-  cursor: pointer;
-  color: #1f1f1f;
   font-weight: 600;
-  line-height: 1.3;
-  letter-spacing: -0.3px;
+  color: #1a1a2e;
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  transition: all 0.3s ease;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  text-transform: capitalize;
+  letter-spacing: -0.1px;
 
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 13px;
-  }
-
-  &:hover {
-    background: linear-gradient(135deg, #ff9500 0%, #1abc9c 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  @media (max-width: 768px) {
+    font-size: 12px;
   }
 }
 
+// ─── Secondary text ──────────────────────────────────────────────────────────
 .ProductItem-txt2 {
   font-family: global.$Regular;
   font-size: 12px;
-  color: #999;
+  color: #9ca3af;
   white-space: nowrap;
-  overflow: hidden !important;
+  overflow: hidden;
   text-overflow: ellipsis;
-  transition: color 0.3s ease;
 
-  @media screen and (min-width: 320px) and (max-width: 768px) {
+  @media (max-width: 768px) {
     font-size: 11px;
   }
 }
-.ProductItem-txt3 {
-  font-size: 16px;
-  cursor: pointer;
-  font-family: global.$Bold;
-  font-weight: 700;
-  background: linear-gradient(135deg, #ff9500 0%, #ffb84d 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
-  transition: all 0.3s ease;
-  display: inline-block;
 
-  @media (max-width: 762px) {
-    font-size: 15px;
-  }
+// ─── Rating ──────────────────────────────────────────────────────────────────
+.ProductItem-txt5 {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: color 0.2s ease;
 
   &:hover {
-    filter: brightness(1.2);
-    transform: scale(1.05);
+    color: global.$primary;
   }
 }
 
+// ─── Price row ───────────────────────────────────────────────────────────────
 .ProductItem-price-section {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   cursor: pointer;
+  margin-top: 3px;
+}
+
+.ProductItem-txt3 {
+  font-family: global.$Bold;
+  font-size: 16px;
+  font-weight: 700;
+  color: global.$primary;
+  letter-spacing: -0.3px;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
 }
 
 .ProductItem-original-price {
-  font-family: global.$Medium;
+  font-family: global.$Regular;
   font-size: 12px;
-  color: #999;
+  color: #9ca3af;
   text-decoration: line-through;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
 
-  @media (max-width: 762px) {
+  @media (max-width: 768px) {
     font-size: 11px;
   }
 }
@@ -293,140 +178,65 @@
   font-family: global.$Bold;
   font-size: 11px;
   font-weight: 700;
-  color: #ff5f15;
-  background-color: rgba(255, 95, 21, 0.1);
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
   padding: 2px 6px;
   border-radius: 4px;
   white-space: nowrap;
 
-  @media (max-width: 762px) {
+  @media (max-width: 768px) {
     font-size: 10px;
-    padding: 1px 4px;
+    padding: 1px 5px;
   }
 }
 
-// Mobile and Tablet: Clean, minimal product card styling
-@media (max-width: 991px) {
-  .ProductItem {
-    background: #ffffff;
-    border: 1px solid #f0f0f0;
-    box-shadow: none;
-    border-radius: 8px;
+// ─── Status badges (top-left corner ribbon) ───────────────────────────────────
+.product_status_tag {
+  font-size: 10px;
+  font-family: global.$SemiBold;
+  display: flex;
+  inset: 0 auto auto 0;
 
-    &::before,
+  .badge2 {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    position: relative;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-radius: 0 0 8px 0;
+
     &::after {
       display: none;
     }
 
-    &:hover {
-      transform: none;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      border-color: #e0e0e0;
-
-      .ProductItem-img {
-        transform: none;
-      }
-
-      .action-overlay {
-        display: none;
-      }
-    }
-  }
-
-  .ProductItem-Box1 {
-    border-bottom: 1px solid #f5f5f5;
-  }
-
-  .ProductItem-Box2 {
-    background: transparent;
-    padding: 8px;
-  }
-
-  .action-overlay {
-    display: none;
-  }
-}
-
-@media (max-width: 768px) {
-  .ProductItem {
-    min-width: 100px;
-    border-radius: 6px;
-  }
-
-  .ProductItem-Box2 {
-    padding: 6px;
-    gap: 4px;
-  }
-
-  .ProductItem-txt1 {
-    font-size: 12px;
-    -webkit-line-clamp: 2;
-  }
-
-  .ProductItem-txt3 {
-    font-size: 14px;
-  }
-}
-
-.ProductItem-txt5 {
-  font-size: 12px;
-  font-weight: 600;
-  color: #1abc9c;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  &:hover {
-    color: #ff9500;
-    transform: scale(1.05);
-  }
-}
-.product_status_tag {
-  font-size: 12px;
-  font-family: global.$SemiBold;
-  display: flex;
-  color: rgb(31, 31, 31);
-  inset: 0 auto auto 0;
-  & .badge2 {
-    $backgroundColor: rgb(203, 203, 203);
-    padding-block: 2px;
-    padding-left: 6px;
-    padding-right: 3px;
-    position: relative;
-    &::after {
-      content: "";
-      position: absolute;
-      width: 0;
-      height: 0;
-      border-left: 0px solid transparent;
-      border-right: 10px solid transparent;
-      top: 0;
-      right: -10px;
-    }
     &.orange {
-      background-color: rgb(255, 221, 159);
-      &::after {
-        border-top: 22px solid rgb(255, 221, 159);
-      }
+      background: #fff7ed;
+      color: #c2410c;
+      border-right: 1px solid #fed7aa;
+      border-bottom: 1px solid #fed7aa;
     }
+
     &.blue {
-      background-color: rgb(154, 221, 255);
-      &::after {
-        border-top: 22px solid rgb(154, 221, 255);
-      }
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-right: 1px solid #bfdbfe;
+      border-bottom: 1px solid #bfdbfe;
     }
+
     &.red {
-      background-color: rgb(255, 128, 128);
-      &::after {
-        border-top: 22px solid rgb(255, 128, 128);
-      }
+      background: #fef2f2;
+      color: #b91c1c;
+      border-right: 1px solid #fecaca;
+      border-bottom: 1px solid #fecaca;
     }
+
     &.grey {
-      background-color: rgb(203, 203, 203);
-      &::after {
-        border-top: 22px solid rgb(203, 203, 203);
-      }
+      background: #f9fafb;
+      color: #6b7280;
+      border-right: 1px solid #e5e7eb;
+      border-bottom: 1px solid #e5e7eb;
     }
   }
 }

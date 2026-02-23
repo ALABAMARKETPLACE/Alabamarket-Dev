@@ -52,7 +52,7 @@ function LoginScreen() {
 
           <EmailLogin />
 
-          <br />
+          <div className="auth-divider">or</div>
           <GmailLogin
             openModal={() => setSuccessmodal(true)}
             closeModal={() => setSuccessmodal(false)}

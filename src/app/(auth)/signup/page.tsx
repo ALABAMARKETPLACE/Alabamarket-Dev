@@ -352,13 +352,12 @@ export default function SignupScreen() {
             </Button>
           </Form>
 
-          <br />
+          <div className="auth-divider">or</div>
 
           <GmailLogin
             closeModal={() => setSuccessmodal(false)}
             openModal={() => setSuccessmodal(true)}
           />
-          <br />
           <div
             className="signupScreen-txt4"
             onClick={() => router.push("/login")}

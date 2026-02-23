@@ -449,3 +449,79 @@
     transform: scale(1.05);
   }
 }
+
+// ─── Product detail info panel ────────────────────────────────────────────────
+.pd-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.3;
+  letter-spacing: -0.4px;
+  margin-bottom: 8px;
+  text-transform: capitalize;
+
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+}
+
+.pd-brand {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.pd-short-desc {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.65;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pd-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.pd-rating-score {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.pd-rating-count {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.pd-seller {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.pd-seller-name {
+  color: global.$primary;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.pd-divider {
+  margin: 16px 0;
+  border-color: #f0f0f0;
+}

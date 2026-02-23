@@ -15,8 +15,7 @@ import Image from "next/image";
 import Logo from "../../assets/images/new-logo.jpeg";
 import Search from "./search"; // or wherever your Search component is
 
-import { IoCartOutline } from "react-icons/io5";
-import { BsShopWindow } from "react-icons/bs";
+import { IoCartOutline, IoNewspaperOutline } from "react-icons/io5";
 import { PiUserCircle } from "react-icons/pi";
 
 import dynamic from "next/dynamic";
@@ -174,7 +173,7 @@ function Header() {
 
                   <Link href={"/news"}>
                     <div className="Header-action-item">
-                      <BsShopWindow size={28} color={"#475569"} />
+                      <IoNewspaperOutline size={28} color={"#475569"} />
                       <span className="d-none d-xl-block ms-2 text-dark fw-medium">
                         News
                       </span>
