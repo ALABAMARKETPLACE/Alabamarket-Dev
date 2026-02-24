@@ -1,6 +1,6 @@
 import { RiDeleteBinLine } from "react-icons/ri";
 import { Row, Col } from "react-bootstrap";
-import { Button, Popconfirm, Space } from "antd";
+import { Popconfirm } from "antd";
 
 import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/utils/formatNumber";
@@ -106,29 +106,29 @@ const CartItem = (props: CartItemProps) => {
               className="Cart-row"
               style={{ alignItems: "center", height: "100%" }}
             >
-              <div>
-                <Space.Compact block>
-                  <Button
-                    disabled={props.data.quantity === 1}
-                    onClick={() => {
-                      if (props?.loading == false) {
-                        props?.updateQuantity("reduce", props?.data);
-                      }
-                    }}
-                  >
-                    -
-                  </Button>
-                  <Button>{props?.data?.quantity}</Button>
-                  <Button
-                    onClick={() => {
-                      if (props?.loading == false) {
-                        props?.updateQuantity("add", props?.data);
-                      }
-                    }}
-                  >
-                    +
-                  </Button>
-                </Space.Compact>
+              <div className="qty-controls">
+                <button
+                  className="qty-btn"
+                  disabled={props.data.quantity === 1}
+                  onClick={() => {
+                    if (props?.loading == false) {
+                      props?.updateQuantity("reduce", props?.data);
+                    }
+                  }}
+                >
+                  −
+                </button>
+                <span className="qty-count">{props?.data?.quantity}</span>
+                <button
+                  className="qty-btn"
+                  onClick={() => {
+                    if (props?.loading == false) {
+                      props?.updateQuantity("add", props?.data);
+                    }
+                  }}
+                >
+                  +
+                </button>
               </div>
               <div style={{ flex: 1 }}></div>
               <div className="Cart-CartItem-txt3">
@@ -137,20 +137,19 @@ const CartItem = (props: CartItemProps) => {
                 </span>
                 {formatCurrency(props?.data?.totalPrice)}
               </div>
-              <div>
-                <Popconfirm
-                  placement="bottomRight"
-                  title={"Are you sure to remove item from cart?"}
-                  okText="Yes"
-                  cancelText="No"
-                  className="ms-auto align-self-center"
-                  onConfirm={() =>
-                    props?.removeItem(props?.data?.id, props?.data)
-                  }
-                >
-                  <RiDeleteBinLine size={20} />
-                </Popconfirm>
-              </div>
+              <Popconfirm
+                placement="bottomRight"
+                title={"Are you sure to remove item from cart?"}
+                okText="Yes"
+                cancelText="No"
+                onConfirm={() =>
+                  props?.removeItem(props?.data?.id, props?.data)
+                }
+              >
+                <button className="cart-item__delete-btn" aria-label="Remove item">
+                  <RiDeleteBinLine size={18} />
+                </button>
+              </Popconfirm>
             </div>
           </Col>
         </Row>

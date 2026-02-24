@@ -436,3 +436,277 @@
   font-family: global.$Bold;
   flex: 1;
 }
+
+// ===== CART QUANTITY CONTROLS =====
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qty-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+  padding: 0;
+  line-height: 1;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    border-color: global.$primary;
+    color: global.$primary;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+}
+
+.qty-count {
+  min-width: 36px;
+  text-align: center;
+  font-family: global.$Bold;
+  font-size: 16px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 15px;
+  }
+}
+
+.cart-item__delete-btn {
+  background: none;
+  border: none;
+  color: #dc2626;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  opacity: 0.65;
+  transition: opacity 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  &:hover {
+    opacity: 1;
+    background: #fee2e2;
+  }
+}
+
+// ===== CHECKOUT STEP FLOW =====
+.checkout-steps {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 48px;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 0 32px;
+  }
+}
+
+.step-card {
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &.step-card--active {
+    border-color: global.$primary;
+    box-shadow: 0 0 0 3px rgba(255, 95, 21, 0.1);
+  }
+
+  &.step-card--completed {
+    border-color: #d1fae5;
+    background: #fafffe;
+  }
+
+  &.step-card--locked {
+    opacity: 0.55;
+    pointer-events: none;
+  }
+}
+
+.step-card__header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  gap: 12px;
+
+  @media screen and (max-width: 768px) {
+    padding: 14px 16px;
+  }
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 50%;
+  background: global.$primary;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .step-card--completed & {
+    background: #16a34a;
+  }
+
+  .step-card--locked & {
+    background: #9ca3af;
+  }
+}
+
+.step-card__title {
+  font-family: global.$Bold;
+  font-size: 16px;
+  color: #111;
+  flex: 1;
+
+  @media screen and (max-width: 768px) {
+    font-size: 15px;
+  }
+}
+
+.step-card__header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-completed-badge {
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 100px;
+  white-space: nowrap;
+
+  @media screen and (max-width: 480px) {
+    display: none;
+  }
+}
+
+.step-edit-btn {
+  background: none;
+  border: 1px solid global.$primary;
+  color: global.$primary;
+  padding: 4px 14px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover {
+    background: global.$primary;
+    color: #fff;
+  }
+}
+
+.step-card__summary {
+  padding: 10px 20px 14px;
+  font-size: 13px;
+  color: #555;
+  border-top: 1px solid #f0f0f0;
+
+  @media screen and (max-width: 768px) {
+    padding: 10px 16px 14px;
+  }
+}
+
+.step-card__body {
+  padding: 0 20px 20px;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 16px 16px;
+  }
+}
+
+.step-continue-btn {
+  width: 100%;
+  background: global.$primary;
+  border: none;
+  color: #fff;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-family: global.$Bold;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s, transform 0.15s;
+
+  &:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+// ===== STEP 3 DELIVERY INFO =====
+.step3-delivery-info {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #444;
+
+  .step3-info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .step3-info-label {
+      font-weight: 600;
+      min-width: 70px;
+      color: #666;
+      flex-shrink: 0;
+    }
+
+    .step3-info-value {
+      color: #111;
+    }
+  }
+}

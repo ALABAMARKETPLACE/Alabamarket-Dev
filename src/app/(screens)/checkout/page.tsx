@@ -78,6 +78,7 @@ function Checkout() {
 
   console.log("user ", user);
 
+  const [currentStep, setCurrentStep] = useState(1);
   const [isDeliveryCalculating, setIsDeliveryCalculating] = useState(false);
 
   /* Guest inline Paystack setup temporarily disabled */
@@ -875,31 +876,120 @@ function Checkout() {
       {contextHolder}
       <br />
       <Container fluid style={{ minHeight: "80vh" }}>
-        <Row>
-          <Col sm={7}>
-            <NewAddressBox />
-            <PaymentBox
-              method={payment_method}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => setPayment_method(value)}
-              isGuest={!isAuthenticated}
-            />
-            <br />
-          </Col>
-          <Col sm={5}>
-            <div className="Cart-box2">
-              <SummaryCard
-                Cart={Checkout}
-                total={total}
-                delivery_charge={delivery_charge}
-                grand_total={grand_total}
-                placeOrder={() => PlaceOrder()}
-                loading={isLoading}
-                discount={discount}
-              />
+        <div className="checkout-steps">
+          {/* Step 1: Delivery Address */}
+          <div
+            className={`step-card ${
+              currentStep === 1
+                ? "step-card--active"
+                : currentStep > 1
+                  ? "step-card--completed"
+                  : ""
+            }`}
+          >
+            <div className="step-card__header">
+              <div className="step-number">{currentStep > 1 ? "✓" : "1"}</div>
+              <div className="step-card__title">Delivery Address</div>
+              {currentStep > 1 && (
+                <div className="step-card__header-right">
+                  <span className="step-completed-badge">Completed</span>
+                  <button
+                    className="step-edit-btn"
+                    onClick={() => setCurrentStep(1)}
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
             </div>
-          </Col>
-        </Row>
+            {currentStep > 1 && Checkout?.address && (
+              <div className="step-card__summary">
+                📍{" "}
+                {[
+                  Checkout.address?.address,
+                  Checkout.address?.city,
+                  Checkout.address?.stateDetails?.name ||
+                    Checkout.address?.state,
+                ]
+                  .filter(Boolean)
+                  .join(", ")}
+              </div>
+            )}
+            {currentStep === 1 && (
+              <div className="step-card__body">
+                <NewAddressBox onContinue={() => setCurrentStep(2)} />
+              </div>
+            )}
+          </div>
+
+          {/* Step 2: Payment Method */}
+          <div
+            className={`step-card ${
+              currentStep === 2
+                ? "step-card--active"
+                : currentStep > 2
+                  ? "step-card--completed"
+                  : "step-card--locked"
+            }`}
+          >
+            <div className="step-card__header">
+              <div className="step-number">{currentStep > 2 ? "✓" : "2"}</div>
+              <div className="step-card__title">Payment Method</div>
+              {currentStep > 2 && (
+                <div className="step-card__header-right">
+                  <span className="step-completed-badge">Completed</span>
+                  <button
+                    className="step-edit-btn"
+                    onClick={() => setCurrentStep(2)}
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
+            </div>
+            {currentStep > 2 && (
+              <div className="step-card__summary">💳 {payment_method}</div>
+            )}
+            {currentStep === 2 && (
+              <div className="step-card__body">
+                <PaymentBox
+                  method={payment_method}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  onChange={(value: any) => setPayment_method(value)}
+                  isGuest={!isAuthenticated}
+                  onContinue={() => setCurrentStep(3)}
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Step 3: Review & Place Order */}
+          <div
+            className={`step-card ${
+              currentStep === 3 ? "step-card--active" : "step-card--locked"
+            }`}
+          >
+            <div className="step-card__header">
+              <div className="step-number">3</div>
+              <div className="step-card__title">Review & Place Order</div>
+            </div>
+            {currentStep === 3 && (
+              <div className="step-card__body">
+                <SummaryCard
+                  Cart={Checkout}
+                  total={total}
+                  delivery_charge={delivery_charge}
+                  grand_total={grand_total}
+                  placeOrder={() => PlaceOrder()}
+                  loading={isLoading}
+                  discount={discount}
+                  selectedAddress={Checkout?.address}
+                  selectedPayment={payment_method}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </Container>
       <br />
     </div>

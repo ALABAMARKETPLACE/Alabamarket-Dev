@@ -254,7 +254,8 @@ function UserOrders() {
   const [orderStatus, setOrderStatus] = useState("");
   const { data: session, status } = useSession();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userId = (session?.user as any)?.id || null;
+  const userId = (session?.user as any)?.id || (session?.user as any)?._id || null;
+  const sessionToken = (session as any)?.token as string | undefined;
 
   const {
     data: orders,
@@ -263,21 +264,18 @@ function UserOrders() {
     error,
   } = useQuery({
     queryFn: async () => {
-      // Use /order/user/:userId endpoint for user-specific filtering
-      const base = `${API.ORDER_GET_USER}${userId ?? ""}`;
-      const params = {
+      const params: Record<string, any> = {
         order: "DESC",
-        page: page,
+        page,
         take: pageSize,
-        ...(search && { name: search }),
-        status: orderStatus,
-        sort: dateFilter,
       };
-      console.log("Fetching user orders endpoint:", base, params);
-      return await GET(base, params);
+      if (orderStatus) params.status = orderStatus;
+      if (dateFilter) params.sort = dateFilter;
+      if (search) params.name = search;
+      return await GET(`${API.ORDER_GET_USER}${userId}`, params, null, { token: sessionToken });
     },
-    queryKey: ["order_items", userId, page, search, orderStatus, dateFilter],
-    enabled: Boolean(userId) && status === "authenticated",
+    queryKey: ["order_items", userId, sessionToken, page, search, orderStatus, dateFilter],
+    enabled: Boolean(userId) && Boolean(sessionToken) && status === "authenticated",
     retry: 1,
   });
 
