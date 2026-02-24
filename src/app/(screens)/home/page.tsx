@@ -155,6 +155,43 @@ const PREFERRED_CATEGORY_TOKENS = [
   "dslr",
   "webcam",
   "camcorder",
+  // Solar & Power backup
+  "solar",
+  "solar panel",
+  "solar system",
+  "solar inverter",
+  "solar energy",
+  "solar light",
+  "battery",
+  "power bank",
+  "powerbank",
+  "voltage regulator",
+  "charge controller",
+  // Brands
+  "samsung",
+  "tecno",
+  "iphone",
+  "apple",
+  "lg",
+  "hisense",
+  "nexus",
+  "infinix",
+  "itel",
+  "nokia",
+  "xiaomi",
+  "huawei",
+  "oppo",
+  "vivo",
+  "realme",
+  "sony",
+  "panasonic",
+  "haier",
+  "midea",
+  "scanfrost",
+  "thermocool",
+  "polystar",
+  "syinix",
+  "bosch",
   // Other electronics
   "vacuum cleaner",
   "air purifier",
@@ -183,6 +220,37 @@ function productMatchesCategoryToken(item: Product, token: string) {
   );
 }
 
+// Televisions, phones/handsets, and refrigerators get top billing
+const HIGH_PRIORITY_TOKENS = [
+  // Televisions
+  "television",
+  "tv",
+  "led tv",
+  "smart tv",
+  "plasma",
+  // Refrigerators
+  "refrigerator",
+  "fridge",
+  "freezer",
+  // Phones & Handsets
+  "phone",
+  "smartphone",
+  "mobile",
+  "handset",
+  "iphone",
+  "apple",
+  "samsung",
+  "tecno",
+  "infinix",
+  "itel",
+  "nokia",
+  "xiaomi",
+  "huawei",
+  "oppo",
+  "vivo",
+  "realme",
+] as const;
+
 // Check if a product is in electronics category
 function isElectronicsProduct(item: Product): boolean {
   return PREFERRED_CATEGORY_TOKENS.some((token) =>
@@ -190,20 +258,30 @@ function isElectronicsProduct(item: Product): boolean {
   );
 }
 
-// Split products into electronics and other categories
-function splitElectronicsAndOthers(items: Product[]) {
-  const electronics: Product[] = [];
+// Check if a product is in the high-priority tier (TVs, phones, fridges)
+function isHighPriorityProduct(item: Product): boolean {
+  return HIGH_PRIORITY_TOKENS.some((token) =>
+    productMatchesCategoryToken(item, token),
+  );
+}
+
+// Split products into 3 priority tiers
+function splitProductsByPriority(items: Product[]) {
+  const highPriority: Product[] = [];
+  const normalElectronics: Product[] = [];
   const others: Product[] = [];
 
   for (const item of items) {
-    if (isElectronicsProduct(item)) {
-      electronics.push(item);
+    if (isHighPriorityProduct(item)) {
+      highPriority.push(item);
+    } else if (isElectronicsProduct(item)) {
+      normalElectronics.push(item);
     } else {
       others.push(item);
     }
   }
 
-  return { electronics, others };
+  return { highPriority, normalElectronics, others };
 }
 
 function mulberry32(seed: number) {
@@ -593,26 +671,26 @@ function Home() {
       ...featuredByPosition[4],
     ]);
 
-    // Split into electronics and other categories
-    const { electronics, others } = splitElectronicsAndOthers(globalPool);
+    // Split into 3 priority tiers
+    const { highPriority, normalElectronics, others } =
+      splitProductsByPriority(globalPool);
 
-    // Split each category into old (90%) and new (10%) pools
-    const { newPool: electronicsNew, oldPool: electronicsOld } =
-      splitNewOldPools(electronics);
-    const { newPool: othersNew, oldPool: othersOld } = splitNewOldPools(others);
+    // Split each tier into old (90%) and new (10%) pools
+    const { newPool: highPriorityNew, oldPool: highPriorityOld } =
+      splitNewOldPools(highPriority);
+    const { newPool: normalNew, oldPool: normalOld } =
+      splitNewOldPools(normalElectronics);
+    const { newPool: othersNew, oldPool: othersOld } =
+      splitNewOldPools(others);
 
     // Shuffle all pools
-    const shuffledElectronicsOld = shuffleCandidates(
-      electronicsOld,
-      rotationSeed + 10,
-    );
-    const shuffledElectronicsNew = shuffleCandidates(
-      electronicsNew,
-      rotationSeed + 20,
-    );
-    const shuffledOthersOld = shuffleCandidates(othersOld, rotationSeed + 30);
-    const shuffledOthersNew = shuffleCandidates(othersNew, rotationSeed + 40);
-    const shuffledAll = shuffleCandidates(globalPool, rotationSeed + 50);
+    const shuffledHighOld = shuffleCandidates(highPriorityOld, rotationSeed + 10);
+    const shuffledHighNew = shuffleCandidates(highPriorityNew, rotationSeed + 20);
+    const shuffledNormalOld = shuffleCandidates(normalOld, rotationSeed + 30);
+    const shuffledNormalNew = shuffleCandidates(normalNew, rotationSeed + 40);
+    const shuffledOthersOld = shuffleCandidates(othersOld, rotationSeed + 50);
+    const shuffledOthersNew = shuffleCandidates(othersNew, rotationSeed + 60);
+    const shuffledAll = shuffleCandidates(globalPool, rotationSeed + 70);
 
     const used = new Set<string>();
     const allocationOrder: Array<1 | 2 | 3 | 4> = [4, 1, 2, 3];
@@ -626,91 +704,77 @@ function Home() {
 
     const buildMixedSection = (position: 1 | 2 | 3 | 4) => {
       const desired = desiredCounts[position];
-      // 50% electronics, 50% other categories
-      const desiredElectronics = Math.round(desired * 0.5);
-      const desiredOthers = desired - desiredElectronics;
+      // ~45% TVs/phones/fridges, ~35% other electronics, ~15% everything else
+      const desiredHigh = Math.round(desired * 0.45);
+      const desiredNormal = Math.round(desired * 0.35);
+      const desiredOthers = desired - desiredHigh - desiredNormal;
 
-      // Within each category: 90% old, 10% new
-      const desiredElectronicsOld = Math.round(desiredElectronics * 0.9);
-      const desiredElectronicsNew = desiredElectronics - desiredElectronicsOld;
+      // Within each tier: 90% old, 10% new
+      const desiredHighOld = Math.round(desiredHigh * 0.9);
+      const desiredHighNew = desiredHigh - desiredHighOld;
+      const desiredNormalOld = Math.round(desiredNormal * 0.9);
+      const desiredNormalNew = desiredNormal - desiredNormalOld;
       const desiredOthersOld = Math.round(desiredOthers * 0.9);
       const desiredOthersNew = desiredOthers - desiredOthersOld;
 
-      const maxPerCategory = desired >= 30 ? 3 : 2;
+      const maxPerCategory = desired >= 30 ? 5 : 4;
       const categoryCounts = new Map<string, number>();
 
-      // Pick from electronics old pool (45% of total)
-      const pickedElectronicsOld = takeUniqueProductsByCategory(
-        shuffledElectronicsOld,
-        used,
-        desiredElectronicsOld,
-        [],
-        categoryCounts,
-        maxPerCategory,
+      // Tier 1 – TVs, phones, fridges (~45%)
+      const pickedHighOld = takeUniqueProductsByCategory(
+        shuffledHighOld, used, desiredHighOld, [], categoryCounts, maxPerCategory,
+      );
+      const pickedHighNew = takeUniqueProductsByCategory(
+        shuffledHighNew, used, desiredHighNew, [], categoryCounts, maxPerCategory,
       );
 
-      // Pick from electronics new pool (5% of total)
-      const pickedElectronicsNew = takeUniqueProductsByCategory(
-        shuffledElectronicsNew,
-        used,
-        desiredElectronicsNew,
-        [],
-        categoryCounts,
-        maxPerCategory,
+      // Tier 2 – other electronics: generators, washing machines, etc. (~35%)
+      const pickedNormalOld = takeUniqueProductsByCategory(
+        shuffledNormalOld, used, desiredNormalOld, [], categoryCounts, maxPerCategory,
+      );
+      const pickedNormalNew = takeUniqueProductsByCategory(
+        shuffledNormalNew, used, desiredNormalNew, [], categoryCounts, maxPerCategory,
       );
 
-      // Pick from others old pool (45% of total)
+      // Tier 3 – everything else: furniture, food, etc. (~15%)
       const pickedOthersOld = takeUniqueProductsByCategory(
-        shuffledOthersOld,
-        used,
-        desiredOthersOld,
-        [],
-        categoryCounts,
-        maxPerCategory,
+        shuffledOthersOld, used, desiredOthersOld, [], categoryCounts, maxPerCategory,
       );
-
-      // Pick from others new pool (5% of total)
       const pickedOthersNew = takeUniqueProductsByCategory(
-        shuffledOthersNew,
-        used,
-        desiredOthersNew,
-        [],
-        categoryCounts,
-        maxPerCategory,
+        shuffledOthersNew, used, desiredOthersNew, [], categoryCounts, maxPerCategory,
       );
 
       const combined = [
-        ...pickedElectronicsOld,
-        ...pickedElectronicsNew,
+        ...pickedHighOld,
+        ...pickedHighNew,
+        ...pickedNormalOld,
+        ...pickedNormalNew,
         ...pickedOthersOld,
         ...pickedOthersNew,
       ];
 
-      // Fill remaining slots from any available pool
+      // Fill remaining slots — prefer high-priority, then normal, then any
       if (combined.length < desired) {
-        const remaining = desired - combined.length;
-        // Try electronics first
-        const fillElectronics = takeUniqueProductsByCategory(
-          [...shuffledElectronicsOld, ...shuffledElectronicsNew],
+        const fillHigh = takeUniqueProductsByCategory(
+          [...shuffledHighOld, ...shuffledHighNew],
           used,
-          Math.ceil(remaining / 2),
+          Math.ceil((desired - combined.length) * 0.7),
           [],
           categoryCounts,
           maxPerCategory,
         );
-        combined.push(...fillElectronics);
+        combined.push(...fillHigh);
 
-        // Then others
         if (combined.length < desired) {
-          const fillOthers = takeUniqueProductsByCategory(
-            [...shuffledOthersOld, ...shuffledOthersNew],
+          const fillNormal = takeUniqueProductsByCategory(
+            [...shuffledNormalOld, ...shuffledNormalNew],
             used,
             desired - combined.length,
             [],
             categoryCounts,
             maxPerCategory,
           );
-          combined.push(...fillOthers);
+          combined.push(...fillNormal);
         }
       }
 

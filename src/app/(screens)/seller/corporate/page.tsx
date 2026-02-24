@@ -102,15 +102,11 @@ function Page() {
         idToken: token,
         business_types: formData?.step2Data?.business_types,
       };
-      console.log(obj, "objjjjjjj");
       const url = User
         ? API.CORPORATE_STORE_CREATESELLER
         : API.CORPORATE_STORE_CREATE;
 
-      console.log("urllll", url);
-      console.log("[SellerRegister] payload:", obj);
       const response: any = await POST(url, obj);
-      console.log("resssponnsss", response);
       if (response.status) {
         notification.success({
           message: "Success",
@@ -137,6 +133,15 @@ function Page() {
       setLoading(false);
     }
   };
+  const stepLabels = ["Profile", "Business", "Identity", "Documents", "Review"];
+  const stepDescriptions = [
+    "Personal Info",
+    "Company Details",
+    "Seller Identity",
+    "Upload Proofs",
+    "Review & Submit",
+  ];
+
   return (
     <div className="seller-screen-box">
       <Container>
@@ -144,20 +149,38 @@ function Page() {
           <div className="sellerRegister-Heading">
             Create Your Seller Account
           </div>
-          <div
-            className="text-center mb-5"
-            style={{ fontSize: "16px", color: "#64748b" }}
-          >
+          <div className="text-center mb-4 sellerRegister-text1">
             Join our community of sellers and start growing your business today.
             <br />
             <span
-              style={{ color: "#FF5F15", cursor: "pointer", fontWeight: 600 }}
+              className="sellerRegister-link"
               onClick={() => navigation.push("/seller/individual")}
             >
               Register as an Individual instead?
             </span>
           </div>
 
+          {/* Mobile progress indicator */}
+          <div className="sellerRegister-mobile-steps">
+            <div className="sellerRegister-mobile-step-meta">
+              <span className="sellerRegister-mobile-step-count">
+                Step {currentStep + 1} of {stepLabels.length}
+              </span>
+              <span className="sellerRegister-mobile-step-name">
+                {stepLabels[currentStep]} — {stepDescriptions[currentStep]}
+              </span>
+            </div>
+            <div className="sellerRegister-mobile-progress">
+              <div
+                className="sellerRegister-mobile-progress-bar"
+                style={{
+                  width: `${((currentStep + 1) / stepLabels.length) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Desktop stepper */}
           <Steps className="sellerRegister-steps" current={currentStep}>
             <Step title={"Profile"} description={"Personal Info"} />
             <Step title={"Business"} description={"Company Details"} />
@@ -166,7 +189,7 @@ function Page() {
             <Step title={"Complete"} description={"Review & Submit"} />
           </Steps>
 
-          <div className="mt-5">
+          <div className="mt-4">
             {currentStep === 0 ? (
               <Step1
                 moveToNextStep={moveToNextStep}

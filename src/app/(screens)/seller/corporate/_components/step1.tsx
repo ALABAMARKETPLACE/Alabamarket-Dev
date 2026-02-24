@@ -1,5 +1,5 @@
 import { Col, Container, Row } from "react-bootstrap";
-import { Form, Input, Button, Select, notification } from "antd";
+import { Form, Input, Button, Select, Space, notification } from "antd";
 import {
   FcBullish,
   FcCustomerSupport,
@@ -28,81 +28,6 @@ function Step1({ moveToNextStep, formData }: any) {
       console.log(error);
     }
   };
-  // const checkEmailandPhone = async (values: any) => {
-
-  //   const url = API.USER_CHECK_IFEXIS;
-  //   if (Auth) {
-  //     //only if user is not signed in we'll check if the phone or email is already used
-  //     moveToNextStep({ step1Data: values });
-  //   } else {
-  //     try {
-  //       setLoading(true);
-  //       const obj = {
-  //         email: values?.email,
-  //         phone: values.phone,
-  //       };
-  //       const response: any = await POST(url, obj);
-  //       if (response.status) {
-  //         moveToNextStep({ step1Data: values });
-  //       } else {
-  //         Notifications["error"]({
-  //           message: response?.message ?? "",
-  //         });
-  //       }
-  //     } catch (err) {
-  //       Notifications["error"]({
-  //         message: `Something went wrong`,
-  //       });
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-  // };
-  // const checkEmailandPhone = async (values: any) => {
-  //   const url = API.USER_CHECK_IFEXIS;
-
-  //   if (Auth) {
-  //     moveToNextStep({ step1Data: values });
-  //   } else {
-  //     try {
-  //       setLoading(true);
-  //       const obj = {
-  //         email: values?.email,
-  //         phone: values.phone,
-  //       };
-
-  //       const response: any = await POST(url, obj);
-
-  //       if (response.status) {
-  //         moveToNextStep({ step1Data: values });
-  //       } else {
-  //         // Show specific error messages for phone/email existence
-  //         if (response.type === "phone") {
-  //           Notifications["error"]({
-  //             message:
-  //               "This phone number is already registered. Please use a different number.",
-  //           });
-  //         } else if (response.type === "email") {
-  //           Notifications["error"]({
-  //             message:
-  //               "This email is already registered. Please use a different email.",
-  //           });
-  //         } else {
-  //           Notifications["error"]({
-  //             message:
-  //               response?.message || "This information is already registered",
-  //           });
-  //         }
-  //       }
-  //     } catch (err) {
-  //       Notifications["error"]({
-  //         message: "Something went wrong",
-  //       });
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-  // };
   const checkEmailandPhone = async (values: any) => {
     const url = API.USER_CHECK_IFEXIS;
     if (Auth) {
@@ -249,26 +174,32 @@ function Step1({ moveToNextStep, formData }: any) {
 
                 <Form.Item
                   label={<span className="input-form-label">Phone Number</span>}
-                  name="phone"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Input your phone number!",
-                    },
-                    { max: 16, message: "Phone number is Invalid" },
-                    { min: 7, message: "Phone number is Invalid" },
-                  ]}
                 >
-                  <Input
-                    addonBefore={<PrefixSelector />}
-                    style={{ width: "100%" }}
-                    size="large"
-                    placeholder="Enter Phone Number"
-                    type="tel"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    disabled={userType === "user" && User?.data?.phone}
-                  />
+                  <Space.Compact style={{ width: "100%" }}>
+                    <PrefixSelector />
+                    <Form.Item
+                      name="phone"
+                      noStyle
+                      rules={[
+                        {
+                          required: true,
+                          message: "Input your phone number!",
+                        },
+                        { max: 16, message: "Phone number is Invalid" },
+                        { min: 7, message: "Phone number is Invalid" },
+                      ]}
+                    >
+                      <Input
+                        style={{ width: "100%" }}
+                        size="large"
+                        placeholder="Enter Phone Number"
+                        type="tel"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        disabled={userType === "user" && User?.data?.phone}
+                      />
+                    </Form.Item>
+                  </Space.Compact>
                 </Form.Item>
 
                 <Row>

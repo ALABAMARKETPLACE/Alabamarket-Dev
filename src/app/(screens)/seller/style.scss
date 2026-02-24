@@ -469,6 +469,74 @@ $transition: 260ms cubic-bezier(0.4, 0, 0.2, 1);
     > .ant-steps-item-tail::after {
     background-color: global.$primary;
   }
+
+  @media (max-width: 768px) {
+    display: none; // replaced by .sellerRegister-mobile-steps on small screens
+  }
+}
+
+// ─── Mobile Step Progress Indicator ──────────────────────────────────────────
+.sellerRegister-mobile-steps {
+  display: none;
+
+  @media (max-width: 768px) {
+    display: block;
+    margin-bottom: 20px;
+    padding: 14px 16px;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+  }
+}
+
+.sellerRegister-mobile-step-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.sellerRegister-mobile-step-count {
+  font-size: 11px;
+  font-family: global.$Bold;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: global.$primary;
+  flex-shrink: 0;
+}
+
+.sellerRegister-mobile-step-name {
+  font-size: 14px;
+  font-family: global.$SemiBold;
+  color: #111827;
+}
+
+.sellerRegister-mobile-progress {
+  height: 5px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.sellerRegister-mobile-progress-bar {
+  height: 100%;
+  background: $primary-gradient;
+  border-radius: 3px;
+  transition: width 0.35s ease;
+}
+
+// ─── Inline link style ────────────────────────────────────────────────────────
+.sellerRegister-link {
+  color: global.$primary;
+  cursor: pointer;
+  font-family: global.$SemiBold;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 // ─── Input Labels & Buttons ───────────────────────────────────────────────────
