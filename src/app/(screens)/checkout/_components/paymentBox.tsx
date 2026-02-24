@@ -21,7 +21,7 @@ function PaymentBox(props: any) {
           <span className="Cart-txt1Icon">
             <IoCashOutline />
           </span>
-          PAYMENT MEHTOD
+          PAYMENT METHOD
         </div>
       </div>
       <div className="Cart-line" />
@@ -131,6 +131,14 @@ function PaymentBox(props: any) {
           </div>
         </div>
       ) : null} */}
+      {props?.onContinue && (
+        <button
+          className="step-continue-btn"
+          onClick={() => props.onContinue(props?.method)}
+        >
+          Continue to Review →
+        </button>
+      )}
     </div>
   );
 }

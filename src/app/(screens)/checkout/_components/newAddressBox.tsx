@@ -13,9 +13,10 @@ import { useSession } from "next-auth/react";
 
 interface NewAddressBoxProps {
   onGuestEmailChange?: (email: string) => void;
+  onContinue?: () => void;
 }
 
-function NewAddressBox({ onGuestEmailChange }: NewAddressBoxProps) {
+function NewAddressBox({ onGuestEmailChange, onContinue }: NewAddressBoxProps) {
   const dispatch = useDispatch();
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated" && !!session?.user;
@@ -133,21 +134,34 @@ function NewAddressBox({ onGuestEmailChange }: NewAddressBoxProps) {
       ) : (
         <div>
           {data?.length && !addNew ? (
-            <Row>
-              {data?.map((item: any, key: number) => {
-                return (
-                  <Col sm={6} xs={12} style={{ marginBottom: 10 }} key={key}>
-                    <NewAddressItem
-                      item={item}
-                      selected={Checkout?.address?.id}
-                      onSelect={(value: any) => {
-                        dispatch(storeAddress(value));
-                      }}
-                    />
-                  </Col>
-                );
-              })}
-            </Row>
+            <>
+              <Row>
+                {data?.map((item: any, key: number) => {
+                  return (
+                    <Col sm={6} xs={12} style={{ marginBottom: 10 }} key={key}>
+                      <NewAddressItem
+                        item={item}
+                        selected={Checkout?.address?.id}
+                        onSelect={(value: any) => {
+                          dispatch(storeAddress(value));
+                        }}
+                      />
+                    </Col>
+                  );
+                })}
+              </Row>
+              {onContinue && (
+                <button
+                  className="step-continue-btn"
+                  disabled={!Checkout?.address?.id}
+                  onClick={() => {
+                    if (Checkout?.address?.id) onContinue();
+                  }}
+                >
+                  Continue to Payment →
+                </button>
+              )}
+            </>
           ) : (
             <NewAddressForm
               closable={data?.length ? true : false}

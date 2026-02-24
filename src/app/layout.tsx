@@ -49,6 +49,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <script
+          suppressHydrationWarning
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -65,6 +66,7 @@ export default function RootLayout({
           content="hjuHfzlO0fdL02U92aa34wv7wVNkG8yqQX-Hv-lhdLE"
         />
         <script
+          suppressHydrationWarning
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5380647700768846"
           crossOrigin="anonymous"

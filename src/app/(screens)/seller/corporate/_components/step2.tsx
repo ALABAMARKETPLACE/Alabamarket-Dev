@@ -36,24 +36,20 @@ function Step2({ businessType, formData, moveToNextStep, goBack }: any) {
   const loadBanks = async () => {
     try {
       setLoadingBanks(true);
-      console.log('Loading banks from:', API.PAYSTACK_BANKS);
       const response = await GET(API.PAYSTACK_BANKS);
-      console.log('Banks response:', response);
       if (response.status) {
         setBanks(response.data || []);
-        console.log('Banks loaded:', response.data?.length || 0, 'banks');
       } else {
-        console.error('Failed to load banks - response not successful:', response);
         Notifications.error({
-          message: 'Failed to load supported banks',
-          description: response.message || 'Server returned unsuccessful response'
+          message: "Failed to load supported banks",
+          description:
+            response.message || "Server returned unsuccessful response",
         });
       }
     } catch (error) {
-      console.error('Failed to load banks:', error);
       Notifications.error({
-        message: 'Failed to load supported banks',
-        description: 'Please try again later'
+        message: "Failed to load supported banks",
+        description: "Please try again later",
       });
     } finally {
       setLoadingBanks(false);

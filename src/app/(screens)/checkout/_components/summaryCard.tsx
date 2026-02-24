@@ -50,8 +50,38 @@ const SummaryCard = (props: any) => {
     item.store_name ||
     `Store #${item.storeId || item.store_id}`;
 
+  const getAddressSummary = (addr: any) => {
+    if (!addr) return null;
+    const parts = [
+      addr.full_name || addr.name,
+      addr.address || addr.street,
+      addr.city,
+      addr.stateDetails?.name || addr.state,
+    ].filter(Boolean);
+    return parts.join(", ");
+  };
+
   return (
     <div className="Cart-SummaryCard">
+      {/* Compact delivery & payment info for step 3 */}
+      {(props?.selectedAddress || props?.selectedPayment) && (
+        <div className="step3-delivery-info">
+          {props?.selectedAddress && (
+            <div className="step3-info-row">
+              <span className="step3-info-label">📍 Ship to:</span>
+              <span className="step3-info-value">
+                {getAddressSummary(props.selectedAddress)}
+              </span>
+            </div>
+          )}
+          {props?.selectedPayment && (
+            <div className="step3-info-row">
+              <span className="step3-info-label">💳 Payment:</span>
+              <span className="step3-info-value">{props.selectedPayment}</span>
+            </div>
+          )}
+        </div>
+      )}
       <div className="Cart-row">
         <div className="Cart-txt5">Checkout Summary</div>
         <div style={{ flex: 1 }} />

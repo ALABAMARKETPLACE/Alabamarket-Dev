@@ -4,19 +4,21 @@ import useWindowWidth from "../../../../shared/hook/useWindowWidth";
 import { Container } from "react-bootstrap";
 function Banners(props: any) {
   const Slidesettings = {
-    dots: false,
+    dots: true,
     infinite: true,
     autoplay: true,
-    autoplaySpeed: 6000,
-    speed: 3000,
+    autoplaySpeed: 5000,
+    speed: 700,
     slidesToShow: 1,
     fade: true,
     slidesToScroll: 1,
+    arrows: false,
+    pauseOnHover: true,
   };
 
   const isSmaller = useWindowWidth(762);
   return (
-    <div className="HomeScreen-BannerBox mt-3">
+    <div className="HomeScreen-BannerBox mt-2">
       <Container fluid className="home-full-width">
         {props?.data?.length ? (
           // @ts-ignore
