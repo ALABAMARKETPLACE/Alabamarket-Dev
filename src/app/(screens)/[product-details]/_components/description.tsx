@@ -1,7 +1,7 @@
 "use client";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { Button, notification } from "antd";
+import { Button, notification, Form, Input, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
@@ -12,6 +12,7 @@ import { storeCheckout } from "../../../../redux/slice/checkoutSlice";
 import { GET, POST } from "../../../../util/apicall";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackAddToCart } from "@/utils/analytics";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import GuestCheckoutModal from "@/components/guestCheckoutModal";
 
 // Helper functions for discount display (visual only - does not affect payment)
@@ -30,6 +31,14 @@ const calculateOriginalPrice = (
   discountPercent: number,
 ): number => {
   return Math.round(actualPrice / (1 - discountPercent / 100));
+};
+
+type EnquiryFormValues = {
+  subject: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
 };
 
 interface ProductData {
@@ -109,6 +118,8 @@ function Description(props: Props) {
     props?.currentVariant?.units ?? props?.data?.unit ?? 0;
   const settings = useAppSelector(reduxSettings);
   const [api, contextHolder] = notification.useNotification();
+  const [form] = Form.useForm<EnquiryFormValues>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [quantity, setQuantity] = useState<number>(1);
   const [formattedPrice, setFormattedPrice] = useState<string>("");
   const [formattedOriginalPrice, setFormattedOriginalPrice] =
@@ -210,6 +221,23 @@ function Description(props: Props) {
     // }
 
     executeBuyNow();
+  };
+
+  const onFinishSendMessage = async (values: EnquiryFormValues) => {
+    try {
+      setIsSubmitting(true);
+      const response = await POST(API.ENQUIRY_CREATE, values);
+      if (response?.status) {
+        api.success({ message: "Successfully Submitted" });
+        form.resetFields();
+      } else {
+        api.error({ message: "Failed to Submit Request" });
+      }
+    } catch {
+      api.error({ message: "An error occurred" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const executeBuyNow = () => {
@@ -583,183 +611,58 @@ function Description(props: Props) {
           >
             Send a message to seller
           </div>
-          <form
-            style={{ width: "100%" }}
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const form = e.target as HTMLFormElement;
-              const input = form.elements.namedItem(
-                "message",
-              ) as HTMLInputElement;
-              const message = input.value.trim();
-              const nameInput = form.elements.namedItem(
-                "name",
-              ) as HTMLInputElement;
-              const emailInput = form.elements.namedItem(
-                "email",
-              ) as HTMLInputElement;
-              const phoneInput = form.elements.namedItem(
-                "phone",
-              ) as HTMLInputElement;
-              const subjectInput = form.elements.namedItem(
-                "subject",
-              ) as HTMLInputElement;
-              const name = nameInput?.value.trim() || "";
-              const email = emailInput?.value.trim() || "";
-              const phone = phoneInput?.value.trim() || "";
-              const subject = subjectInput?.value.trim() || "";
-              if (!message || !name || !email || !phone || !subject) {
-                api.error({
-                  message: "All fields are required",
-                  description: "Please fill in all fields.",
-                });
-                return;
-              }
-              try {
-                const res = await fetch("/Enquiry/post", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    name,
-                    email,
-                    phone,
-                    subject,
-                    message,
-                  }),
-                });
-                if (res.ok) {
-                  api.success({
-                    message: "Message sent!",
-                    description: "Your enquiry has been delivered.",
-                  });
-                  input.value = "";
-                  nameInput.value = "";
-                  emailInput.value = "";
-                  phoneInput.value = "";
-                  subjectInput.value = "";
-                } else {
-                  api.error({
-                    message: "Failed to send message",
-                    description: "Please try again later.",
-                  });
-                }
-              } catch {
-                api.error({
-                  message: "Failed to send message",
-                  description: "Please try again later.",
-                });
-              }
-            }}
-          >
-            <textarea
-              name="name"
-              placeholder="Your Name"
-              style={{
-                width: "100%",
-                borderRadius: 8,
-                border: "1px solid #d9d9d9",
-                padding: "10px 12px",
-                fontSize: 15,
-                fontFamily: "inherit",
-                marginBottom: 8,
-                background: "#fafbfc",
-                color: "#262941",
-              }}
-              required
-            />
-            <input
-              name="email"
-              type="email"
-              placeholder="Your Email"
-              style={{
-                width: "100%",
-                borderRadius: 8,
-                border: "1px solid #d9d9d9",
-                padding: "10px 12px",
-                fontSize: 15,
-                fontFamily: "inherit",
-                marginBottom: 8,
-                background: "#fafbfc",
-                color: "#262941",
-              }}
-              required
-            />
-            <input
-              name="phone"
-              type="tel"
-              placeholder="Your Phone Number"
-              style={{
-                width: "100%",
-                borderRadius: 8,
-                border: "1px solid #d9d9d9",
-                padding: "10px 12px",
-                fontSize: 15,
-                fontFamily: "inherit",
-                marginBottom: 8,
-                background: "#fafbfc",
-                color: "#262941",
-              }}
-              required
-            />
-            <select
-              name="subject"
-              required
-              style={{
-                width: "100%",
-                borderRadius: 8,
-                border: "1px solid #d9d9d9",
-                padding: "10px 12px",
-                fontSize: 15,
-                fontFamily: "inherit",
-                marginBottom: 8,
-                background: "#fafbfc",
-                color: "#262941",
-                appearance: "none",
-              }}
-            >
-              <option value="">Select Subject</option>
-              <option value="Booking">Booking</option>
-              <option value="Orders">Orders</option>
-              <option value="Services">Services</option>
-              <option value="Others">Others</option>
-            </select>
-            <textarea
-              name="message"
-              placeholder="Type your message here..."
-              rows={3}
-              style={{
-                width: "100%",
-                borderRadius: 8,
-                border: "1px solid #d9d9d9",
-                padding: "10px 12px",
-                fontSize: 15,
-                fontFamily: "inherit",
-                resize: "vertical",
-                marginBottom: 8,
-                background: "#fafbfc",
-                color: "#262941",
-              }}
-              required
-            />
-            <button
-              type="submit"
-              style={{
-                background:
-                  "linear-gradient(to bottom, #FFBF00 0%, #FF5F15 40%)",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                padding: "8px 18px",
-                fontWeight: 600,
-                fontSize: 15,
-                cursor: "pointer",
-                boxShadow: "0 2px 8px rgba(255,95,21,0.08)",
-                transition: "background 0.2s",
-              }}
-            >
-              Send Message
-            </button>
-          </form>
+          <div style={{ width: "100%" }}>
+            <Form form={form} onFinish={onFinishSendMessage} layout="vertical">
+              <Form.Item
+                name="subject"
+                label="Subject"
+                rules={[{ required: true, message: "Please select a subject" }]}
+              >
+                <Select placeholder="Select Subject">
+                  <Select.Option value="booking">Booking</Select.Option>
+                  <Select.Option value="orders">Orders</Select.Option>
+                  <Select.Option value="services">Services</Select.Option>
+                  <Select.Option value="others">Others</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                <Input placeholder="Your Name" />
+              </Form.Item>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{ required: true, type: "email" }]}
+              >
+                <Input placeholder="Your Email" />
+              </Form.Item>
+              <Form.Item
+                name="phone"
+                label="Phone"
+                rules={[{ required: true }]}
+              >
+                <Input type="number" placeholder="Your Phone Number" />
+              </Form.Item>
+              <Form.Item
+                name="message"
+                label="Message"
+                rules={[{ required: true }]}
+              >
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Type your message here..."
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  htmlType="submit"
+                  loading={isSubmitting}
+                  className="btn-clr"
+                >
+                  Send Message
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
         </div>
       </div>
       {/* Additional Actions */}
