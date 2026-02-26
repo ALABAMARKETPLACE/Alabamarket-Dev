@@ -184,10 +184,10 @@ function Description(props: Props) {
           url: window?.location?.href,
         });
       } else {
-        Notifications.error({ message: `Failed to share link` });
+        api.error({ message: `Failed to share link` });
       }
     } catch {
-      Notifications.error({ message: `Failed to share link` });
+      api.error({ message: `Failed to share link` });
     }
   };
   const buyNow = () => {
