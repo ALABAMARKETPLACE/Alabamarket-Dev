@@ -299,15 +299,15 @@ function Description(props: Props) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newCart: any = await POST(url, obj);
       if (newCart.status) {
-        Notifications.success({ message: newCart?.message });
+        api.success({ message: newCart?.message });
         setTimeout(() => {
           router.push("/cart");
         }, 1000);
       } else {
-        Notifications.error({ message: newCart?.message });
+        api.error({ message: newCart?.message });
       }
     } catch {
-      Notifications.error({ message: "Something went wrong!" });
+      api.error({ message: "Something went wrong!" });
     }
   };
 
