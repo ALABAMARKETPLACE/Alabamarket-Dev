@@ -20,35 +20,43 @@ import {
 } from "react-icons/io5";
 // import { useTranslation } from "next-i18next";
 import { useSelector } from "react-redux";
-import API from "@/config/API";
-// import { POST } from "@/utils/apiCalls";
 import { useTranslation } from "react-i18next";
-import { POST } from "@/util/apicall";
 import CONFIG from "@/config/configuration";
+import { POST } from "@/util/apicall";
+import API from "@/config/API";
+type ContactFormValues = {
+  subject: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+};
 
 function ContactUs() {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
-  const Settings = useSelector((state: any) => state.Settings.Settings);
+  const Settings = useSelector(
+    (state: unknown) =>
+      (state as { Settings?: { Settings?: unknown } })?.Settings?.Settings,
+  );
   const [notificationApi, contextHolder] = notification.useNotification();
 
   const map = `<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.0!2d3.180982!3d6.460719!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b87bf2173a035%3A0x46d6a31cf47025c5!2sAlaba%20International%20Market!5e0!3m2!1sen!2sng!4v1700000000000!5m2!1sen!2sng" width="100%" height="300" style="border:0;border-radius:10px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
   const phoneNumber = CONFIG.CONTACT_NUMBER;
   const whatsappNumber = phoneNumber.replace(/[^\d]/g, "");
 
-  const onFinish = async (values: any) => {
+  const onFinish = async (values: ContactFormValues) => {
     try {
       setIsLoading(true);
       const response = await POST(API.ENQUIRY_CREATE, values);
-
-      if (response.status) {
+      if (response?.status) {
         notificationApi.success({ message: "Successfully Submitted" });
         form.resetFields();
       } else {
         notificationApi.error({ message: "Failed to Submit Request" });
       }
-    } catch (error) {
+    } catch {
       notificationApi.error({ message: "An error occurred" });
     } finally {
       setIsLoading(false);
