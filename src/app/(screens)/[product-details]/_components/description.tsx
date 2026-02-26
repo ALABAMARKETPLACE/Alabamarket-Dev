@@ -224,17 +224,31 @@ function Description(props: Props) {
   };
 
   const onFinishSendMessage = async (values: EnquiryFormValues) => {
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      const response = await POST(API.ENQUIRY_CREATE, values);
-      if (response?.status) {
-        api.success({ message: "Successfully Submitted" });
-        form.resetFields();
-      } else {
-        api.error({ message: "Failed to Submit Request" });
+      const email = "customerservice@alabamarketplace.ng";
+      const subject = `Product Enquiry: ${props?.data?.name ?? ""}`.trim();
+      const bodyLines = [
+        `Subject: ${values?.subject}`,
+        `Name: ${values?.name}`,
+        `Email: ${values?.email}`,
+        `Phone: ${values?.phone}`,
+        "",
+        `Message:`,
+        `${values?.message}`,
+        "",
+        `Product: ${props?.data?.name ?? ""}`,
+        `Store: ${props?.data?.storeDetails?.store_name ?? ""}`,
+      ];
+      const body = encodeURIComponent(bodyLines.join("\n"));
+      const mailto = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${body}`;
+      if (typeof window !== "undefined") {
+        window.open(mailto, "_blank");
       }
+      api.success({ message: "Mail composer opened" });
+      form.resetFields();
     } catch {
-      api.error({ message: "An error occurred" });
+      api.error({ message: "Unable to open mail client" });
     } finally {
       setIsSubmitting(false);
     }
