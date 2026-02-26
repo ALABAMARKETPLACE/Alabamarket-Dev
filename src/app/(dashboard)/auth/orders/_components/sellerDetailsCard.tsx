@@ -50,8 +50,9 @@ export default function SellerDetailsCard(props: Props) {
         string,
         unknown
       >;
-      // Unwrap nested { data: { … } } if present
-      return ((res?.data as Record<string, unknown>) ?? res) as Record<
+      // Unwrap nested { data: { data: { … } } } or { data: { … } }
+      const inner = res?.data as Record<string, unknown> | null | undefined;
+      return ((inner?.data as Record<string, unknown>) ?? inner ?? res) as Record<
         string,
         unknown
       >;
@@ -114,14 +115,18 @@ export default function SellerDetailsCard(props: Props) {
       pick(
         storeDetails,
         "seller_name",
+        "sellerName",
         "business_name",
+        "businessName",
         "store_name",
+        "storeName",
         "user_name",
+        "userName",
         "name",
       ) ||
       pick(sellerAuth, "seller_name", "business_name", "store_name", "name") ||
       pick(inline, "store_name", "seller_name") ||
-      (storeDetails ? "Unknown Seller" : "Loading...")
+      (storeId ? `Store #${storeId}` : "N/A")
     );
   };
 
@@ -137,7 +142,7 @@ export default function SellerDetailsCard(props: Props) {
 
   const getEmail = (): string => {
     return (
-      pick(storeDetails, "email", "store_email", "seller_email") ||
+      pick(storeDetails, "email", "store_email", "storeEmail", "seller_email") ||
       pick(sellerAuth, "email") ||
       pick(userProfile, "email") ||
       pick(inline, "store_email", "seller_email") ||
@@ -147,7 +152,14 @@ export default function SellerDetailsCard(props: Props) {
 
   const getAddress = (): string => {
     return (
-      pick(storeDetails, "business_address", "address", "store_address") ||
+      pick(
+        storeDetails,
+        "business_address",
+        "businessAddress",
+        "address",
+        "store_address",
+        "storeAddress",
+      ) ||
       pick(sellerAuth, "business_address", "address") ||
       pick(userProfile, "address") ||
       pick(inline, "store_address", "seller_address") ||

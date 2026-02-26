@@ -6,19 +6,16 @@ import ProductTab from "../_components/productsTab";
 import PaymentStatusTab from "../_components/paymentStatusTab";
 import OrderStatusTab from "../_components/orderStatusTab";
 import SellerDetailsCard from "../_components/sellerDetailsCard";
-import CustomerDetailsCard from "../_components/customerDetailsCard";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
 import { Col, Container, Row } from "react-bootstrap";
 import Loading from "@/app/(dashboard)/_components/loading";
 import { Button, Tag } from "antd";
-import { getOrderStatus } from "../_components/getOrderStatus";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-import API from "@/config/API";
 
 import { Order } from "../_components/dataTable";
 import { AddressData } from "../_components/addressTab";
@@ -113,21 +110,6 @@ export default function OrderDetails() {
     store_logo: order.store_logo,
   };
 
-  // Customer details for CustomerDetailsCard
-  const customerData = {
-    userId: order.userId || order.user_id,
-    user_id: order.userId || order.user_id,
-    address: order.address,
-    is_guest_order: order.is_guest_order,
-    guest_name: order.guest_name,
-    guest_email: order.guest_email,
-    guest_phone: order.guest_phone,
-    customer_name: order.customer_name,
-    customer_email: order.customer_email,
-    customer_phone: order.customer_phone,
-    name: order.name,
-  };
-
   // Helper: format date
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
@@ -193,13 +175,8 @@ export default function OrderDetails() {
             </Col>
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
-                {isSeller ? (
-                  <CustomerDetailsCard data={customerData} />
-                ) : (
-                  <>
-                    <SellerDetailsCard data={sellerData} />
-                    <CustomerDetailsCard data={customerData} />
-                  </>
+                {!isSeller && (
+                  <SellerDetailsCard data={sellerData} />
                 )}
                 <OrderStatusTab data={{ id: order.id }} />
               </div>

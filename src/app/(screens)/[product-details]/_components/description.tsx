@@ -1,7 +1,7 @@
 "use client";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { Button, notification } from "antd";
+import { Button, notification, Form, Input, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
@@ -12,6 +12,7 @@ import { storeCheckout } from "../../../../redux/slice/checkoutSlice";
 import { GET, POST } from "../../../../util/apicall";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackAddToCart } from "@/utils/analytics";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import GuestCheckoutModal from "@/components/guestCheckoutModal";
 
 // Helper functions for discount display (visual only - does not affect payment)
@@ -30,6 +31,14 @@ const calculateOriginalPrice = (
   discountPercent: number,
 ): number => {
   return Math.round(actualPrice / (1 - discountPercent / 100));
+};
+
+type EnquiryFormValues = {
+  subject: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
 };
 
 interface ProductData {
@@ -108,7 +117,9 @@ function Description(props: Props) {
   const availableQuantity =
     props?.currentVariant?.units ?? props?.data?.unit ?? 0;
   const settings = useAppSelector(reduxSettings);
-  const [Notifications, contextHolder] = notification.useNotification();
+  const [api, contextHolder] = notification.useNotification();
+  const [form] = Form.useForm<EnquiryFormValues>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [quantity, setQuantity] = useState<number>(1);
   const [formattedPrice, setFormattedPrice] = useState<string>("");
   const [formattedOriginalPrice, setFormattedOriginalPrice] =
@@ -184,10 +195,10 @@ function Description(props: Props) {
           url: window?.location?.href,
         });
       } else {
-        Notifications.error({ message: `Failed to share link` });
+        api.error({ message: `Failed to share link` });
       }
     } catch {
-      Notifications.error({ message: `Failed to share link` });
+      api.error({ message: `Failed to share link` });
     }
   };
   const buyNow = () => {
@@ -210,6 +221,23 @@ function Description(props: Props) {
     // }
 
     executeBuyNow();
+  };
+
+  const onFinishSendMessage = async (values: EnquiryFormValues) => {
+    try {
+      setIsSubmitting(true);
+      const response = await POST(API.ENQUIRY_CREATE, values);
+      if (response?.status) {
+        api.success({ message: "Successfully Submitted" });
+        form.resetFields();
+      } else {
+        api.error({ message: "Failed to Submit Request" });
+      }
+    } catch {
+      api.error({ message: "An error occurred" });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const executeBuyNow = () => {
@@ -281,7 +309,7 @@ function Description(props: Props) {
       };
 
       dispatch(addToGuestCart(guestCartItem));
-      Notifications.success({ message: "Added to cart successfully!" });
+      api.success({ message: "Added to cart successfully!" });
       setTimeout(() => {
         router.push("/cart");
       }, 1000);
@@ -299,15 +327,15 @@ function Description(props: Props) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const newCart: any = await POST(url, obj);
       if (newCart.status) {
-        Notifications.success({ message: newCart?.message });
+        api.success({ message: newCart?.message });
         setTimeout(() => {
           router.push("/cart");
         }, 1000);
       } else {
-        Notifications.error({ message: newCart?.message });
+        api.error({ message: newCart?.message });
       }
     } catch {
-      Notifications.error({ message: "Something went wrong!" });
+      api.error({ message: "Something went wrong!" });
     }
   };
 
@@ -338,13 +366,13 @@ function Description(props: Props) {
         const message = newFavoritedState
           ? "Successfully added to Wishlist"
           : "Item removed from wishlist.";
-        Notifications.success({ message });
+        api.success({ message });
       } else {
-        Notifications.error({ message: response?.message });
+        api.error({ message: response?.message });
       }
     } catch (error) {
       console.error("Error toggling wishlist:", error);
-      Notifications.error({
+      api.error({
         message: "Something went wrong. Please try again later.",
       });
     }
@@ -431,6 +459,212 @@ function Description(props: Props) {
         </Button>
       </div>
       <br />
+      {/* PROMOTIONS Section */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "24px",
+          alignItems: "stretch",
+          marginBottom: "22px",
+          flexWrap: "wrap",
+        }}
+      >
+        {/* Promotions Card */}
+        <div
+          style={{
+            background: "linear-gradient(90deg, #fff4f8 60%, #eff1f5 100%)",
+            borderRadius: "14px",
+            padding: "22px 24px",
+            boxShadow: "0 4px 16px rgba(255,95,21,0.10)",
+            border: "1.5px solid #fff4f8",
+            fontFamily: "inherit",
+            minWidth: 280,
+            maxWidth: 480,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "10px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="12" r="12" fill="#FF5F15" />
+              <path
+                d="M17 9.5C17 8.11929 15.8807 7 14.5 7C13.1193 7 12 8.11929 12 9.5C12 10.8807 13.1193 12 14.5 12C15.8807 12 17 10.8807 17 9.5Z"
+                fill="white"
+              />
+              <path
+                d="M7 14.5C7 13.1193 8.11929 12 9.5 12C10.8807 12 12 13.1193 12 14.5C12 15.8807 10.8807 17 9.5 17C8.11929 17 7 15.8807 7 14.5Z"
+                fill="white"
+              />
+            </svg>
+            <span
+              style={{
+                fontWeight: 700,
+                color: "#FF5F15",
+                fontSize: 19,
+                letterSpacing: 1,
+              }}
+            >
+              PROMOTIONS
+            </span>
+          </div>
+          <div
+            style={{
+              color: "#222",
+              fontSize: 16,
+              fontWeight: 500,
+              lineHeight: 1.5,
+            }}
+          >
+            Call{" "}
+            <a
+              href="tel:09117356897"
+              style={{
+                color: "#FF5F15",
+                textDecoration: "underline dotted",
+                fontWeight: 700,
+              }}
+            >
+              0911 735 6897
+            </a>{" "}
+            to place your order{" "}
+            <span style={{ color: "#888c99", fontWeight: 400 }}>|</span>{" "}
+            <span style={{ color: "#003f4a", fontWeight: 600 }}>
+              for wholesale prices
+            </span>
+          </div>
+          <div
+            style={{
+              color: "#008060",
+              fontSize: 16,
+              fontWeight: 600,
+              marginTop: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="24" height="24" rx="12" fill="#003f4a" />
+              <path
+                d="M7 13.5L10.5 17L17 10.5"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span
+              style={{
+                background: "#eff1f5",
+                borderRadius: 8,
+                padding: "3px 12px",
+                fontSize: 15,
+                color: "#003f4a",
+              }}
+            >
+              Free shipping nationwide till <b>April 30th</b>
+            </span>
+          </div>
+        </div>
+        {/* Message to Seller Card */}
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "14px",
+            padding: "22px 24px",
+            boxShadow: "0 4px 16px rgba(38,41,65,0.07)",
+            border: "1.5px solid #eff1f5",
+            fontFamily: "inherit",
+            minWidth: 280,
+            maxWidth: 380,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "12px",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              color: "#262941",
+              fontSize: 17,
+              marginBottom: 2,
+              letterSpacing: 0.5,
+            }}
+          >
+            Send a message to seller
+          </div>
+          <div style={{ width: "100%" }}>
+            <Form form={form} onFinish={onFinishSendMessage} layout="vertical">
+              <Form.Item
+                name="subject"
+                label="Subject"
+                rules={[{ required: true, message: "Please select a subject" }]}
+              >
+                <Select placeholder="Select Subject">
+                  <Select.Option value="booking">Booking</Select.Option>
+                  <Select.Option value="orders">Orders</Select.Option>
+                  <Select.Option value="services">Services</Select.Option>
+                  <Select.Option value="others">Others</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                <Input placeholder="Your Name" />
+              </Form.Item>
+              <Form.Item
+                name="email"
+                label="Email"
+                rules={[{ required: true, type: "email" }]}
+              >
+                <Input placeholder="Your Email" />
+              </Form.Item>
+              <Form.Item
+                name="phone"
+                label="Phone"
+                rules={[{ required: true }]}
+              >
+                <Input type="number" placeholder="Your Phone Number" />
+              </Form.Item>
+              <Form.Item
+                name="message"
+                label="Message"
+                rules={[{ required: true }]}
+              >
+                <Input.TextArea
+                  rows={3}
+                  placeholder="Type your message here..."
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button
+                  htmlType="submit"
+                  loading={isSubmitting}
+                  className="btn-clr"
+                >
+                  Send Message
+                </Button>
+              </Form.Item>
+            </Form>
+          </div>
+        </div>
+      </div>
       {/* Additional Actions */}
       <div className="d-flex gap-2 align-items-center">
         <Button

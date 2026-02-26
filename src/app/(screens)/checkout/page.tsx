@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import "../../(user)/cart/styles.scss";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { notification } from "antd";
 
@@ -194,11 +194,7 @@ function Checkout() {
           setGrand_total(gTotal);
           setDiscount(discountVal);
         } else {
-          notificationApi.error({
-            message: "Delivery Not Available",
-            description:
-              response?.message || "Please select another delivery address.",
-          });
+          // No delivery charge configured for this state — allow with ₦0 delivery
           setDeliveryToken("");
           setDelivery_charge(0);
           setGrand_total(totals);
@@ -790,8 +786,14 @@ function Checkout() {
     //   return;
     // }
 
-    if (deliveryToken) {
-      try {
+    if (!Checkout?.address?.id) {
+      notificationApi.error({
+        message: "Please Choose a Delivery Address to place an Order",
+      });
+      return;
+    }
+
+    try {
         // Apply delivery promo discount if active
         const deliveryPromo = calculateDiscountedDelivery(
           Number(delivery_charge),
@@ -852,18 +854,6 @@ function Checkout() {
       } catch (err) {
         console.log(err);
       }
-    } else {
-      if (Checkout?.address?.id) {
-        notificationApi.error({
-          message:
-            "Delivery to the selected address is not available. Please choose another one.",
-        });
-        return;
-      }
-      notificationApi.error({
-        message: `Please Choose a Delivery Address to place an Order`,
-      });
-    }
   };
 
   // Handler for guest email updates - wrapped in useCallback to prevent infinite loops
