@@ -59,8 +59,8 @@ export default function RootLayout({
           }}
         />
 
-        <link rel="icon" href="/icon.jpeg" type="image/jpeg" />
-        <link rel="apple-touch-icon" href="/icon.jpeg" />
+        <link rel="icon" href="/images/nextmelogo.jpg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/images/nextmelogo.jpg" />
         <meta
           name="google-site-verification"
           content="hjuHfzlO0fdL02U92aa34wv7wVNkG8yqQX-Hv-lhdLE"
