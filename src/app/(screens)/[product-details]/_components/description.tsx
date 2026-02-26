@@ -432,111 +432,238 @@ function Description(props: Props) {
       </div>
       <br />
       {/* PROMOTIONS Section */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'row',
-        gap: '24px',
-        alignItems: 'stretch',
-        marginBottom: '22px',
-        flexWrap: 'wrap',
-      }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          gap: "24px",
+          alignItems: "stretch",
+          marginBottom: "22px",
+          flexWrap: "wrap",
+        }}
+      >
         {/* Promotions Card */}
-        <div style={{
-          background: 'linear-gradient(90deg, #fff4f8 60%, #eff1f5 100%)',
-          borderRadius: '14px',
-          padding: '22px 24px',
-          boxShadow: '0 4px 16px rgba(255,95,21,0.10)',
-          border: '1.5px solid #fff4f8',
-          fontFamily: 'inherit',
-          minWidth: 280,
-          maxWidth: 480,
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: '10px',
-        }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#FF5F15"/><path d="M17 9.5C17 8.11929 15.8807 7 14.5 7C13.1193 7 12 8.11929 12 9.5C12 10.8807 13.1193 12 14.5 12C15.8807 12 17 10.8807 17 9.5Z" fill="white"/><path d="M7 14.5C7 13.1193 8.11929 12 9.5 12C10.8807 12 12 13.1193 12 14.5C12 15.8807 10.8807 17 9.5 17C8.11929 17 7 15.8807 7 14.5Z" fill="white"/></svg>
-          <span style={{ fontWeight: 700, color: '#FF5F15', fontSize: 19, letterSpacing: 1 }}>PROMOTIONS</span>
-        </div>
-        <div style={{ color: '#222', fontSize: 16, fontWeight: 500, lineHeight: 1.5 }}>
-          Call <a href="tel:09117356897" style={{ color: '#FF5F15', textDecoration: 'underline dotted', fontWeight: 700 }}>0911 735 6897</a> to place your order <span style={{ color: '#888c99', fontWeight: 400 }}>|</span> <span style={{ color: '#003f4a', fontWeight: 600 }}>for wholesale prices</span>
-        </div>
-        <div style={{ color: '#008060', fontSize: 16, fontWeight: 600, marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="12" fill="#003f4a"/><path d="M7 13.5L10.5 17L17 10.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          <span style={{ background: '#eff1f5', borderRadius: 8, padding: '3px 12px', fontSize: 15, color: '#003f4a' }}>Free shipping nationwide till <b>April 30th</b></span>
-        </div>
+        <div
+          style={{
+            background: "linear-gradient(90deg, #fff4f8 60%, #eff1f5 100%)",
+            borderRadius: "14px",
+            padding: "22px 24px",
+            boxShadow: "0 4px 16px rgba(255,95,21,0.10)",
+            border: "1.5px solid #fff4f8",
+            fontFamily: "inherit",
+            minWidth: 280,
+            maxWidth: 480,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "10px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="12" cy="12" r="12" fill="#FF5F15" />
+              <path
+                d="M17 9.5C17 8.11929 15.8807 7 14.5 7C13.1193 7 12 8.11929 12 9.5C12 10.8807 13.1193 12 14.5 12C15.8807 12 17 10.8807 17 9.5Z"
+                fill="white"
+              />
+              <path
+                d="M7 14.5C7 13.1193 8.11929 12 9.5 12C10.8807 12 12 13.1193 12 14.5C12 15.8807 10.8807 17 9.5 17C8.11929 17 7 15.8807 7 14.5Z"
+                fill="white"
+              />
+            </svg>
+            <span
+              style={{
+                fontWeight: 700,
+                color: "#FF5F15",
+                fontSize: 19,
+                letterSpacing: 1,
+              }}
+            >
+              PROMOTIONS
+            </span>
+          </div>
+          <div
+            style={{
+              color: "#222",
+              fontSize: 16,
+              fontWeight: 500,
+              lineHeight: 1.5,
+            }}
+          >
+            Call{" "}
+            <a
+              href="tel:09117356897"
+              style={{
+                color: "#FF5F15",
+                textDecoration: "underline dotted",
+                fontWeight: 700,
+              }}
+            >
+              0911 735 6897
+            </a>{" "}
+            to place your order{" "}
+            <span style={{ color: "#888c99", fontWeight: 400 }}>|</span>{" "}
+            <span style={{ color: "#003f4a", fontWeight: 600 }}>
+              for wholesale prices
+            </span>
+          </div>
+          <div
+            style={{
+              color: "#008060",
+              fontSize: 16,
+              fontWeight: 600,
+              marginTop: 2,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect width="24" height="24" rx="12" fill="#003f4a" />
+              <path
+                d="M7 13.5L10.5 17L17 10.5"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span
+              style={{
+                background: "#eff1f5",
+                borderRadius: 8,
+                padding: "3px 12px",
+                fontSize: 15,
+                color: "#003f4a",
+              }}
+            >
+              Free shipping nationwide till <b>April 30th</b>
+            </span>
+          </div>
         </div>
         {/* Message to Seller Card */}
-        <div style={{
-          background: '#fff',
-          borderRadius: '14px',
-          padding: '22px 24px',
-          boxShadow: '0 4px 16px rgba(38,41,65,0.07)',
-          border: '1.5px solid #eff1f5',
-          fontFamily: 'inherit',
-          minWidth: 280,
-          maxWidth: 380,
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: '12px',
-        }}>
-          <div style={{ fontWeight: 700, color: '#262941', fontSize: 17, marginBottom: 2, letterSpacing: 0.5 }}>
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "14px",
+            padding: "22px 24px",
+            boxShadow: "0 4px 16px rgba(38,41,65,0.07)",
+            border: "1.5px solid #eff1f5",
+            fontFamily: "inherit",
+            minWidth: 280,
+            maxWidth: 380,
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            gap: "12px",
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 700,
+              color: "#262941",
+              fontSize: 17,
+              marginBottom: 2,
+              letterSpacing: 0.5,
+            }}
+          >
             Send a message to seller
           </div>
-          <form style={{ width: '100%' }} onSubmit={async (e) => {
-            e.preventDefault();
-            const form = e.target as HTMLFormElement;
-            const input = form.elements.namedItem('message') as HTMLInputElement;
-            const message = input.value.trim();
-            const nameInput = form.elements.namedItem('name') as HTMLInputElement;
-            const emailInput = form.elements.namedItem('email') as HTMLInputElement;
-            const phoneInput = form.elements.namedItem('phone') as HTMLInputElement;
-            const subjectInput = form.elements.namedItem('subject') as HTMLInputElement;
-            const name = nameInput?.value.trim() || '';
-            const email = emailInput?.value.trim() || '';
-            const phone = phoneInput?.value.trim() || '';
-            const subject = subjectInput?.value.trim() || '';
-            if (!message || !name || !email || !phone || !subject) {
-              api.error({ message: 'All fields are required', description: 'Please fill in all fields.' });
-              return;
-            }
-            try {
-              const res = await fetch('/Enquiry/post', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, phone, subject, message }),
-              });
-              if (res.ok) {
-                api.success({ message: 'Message sent!', description: 'Your enquiry has been delivered.' });
-                input.value = '';
-                nameInput.value = '';
-                emailInput.value = '';
-                phoneInput.value = '';
-                subjectInput.value = '';
-              } else {
-                api.error({ message: 'Failed to send message', description: 'Please try again later.' });
+          <form
+            style={{ width: "100%" }}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.target as HTMLFormElement;
+              const input = form.elements.namedItem(
+                "message",
+              ) as HTMLInputElement;
+              const message = input.value.trim();
+              const nameInput = form.elements.namedItem(
+                "name",
+              ) as HTMLInputElement;
+              const emailInput = form.elements.namedItem(
+                "email",
+              ) as HTMLInputElement;
+              const phoneInput = form.elements.namedItem(
+                "phone",
+              ) as HTMLInputElement;
+              const subjectInput = form.elements.namedItem(
+                "subject",
+              ) as HTMLInputElement;
+              const name = nameInput?.value.trim() || "";
+              const email = emailInput?.value.trim() || "";
+              const phone = phoneInput?.value.trim() || "";
+              const subject = subjectInput?.value.trim() || "";
+              if (!message || !name || !email || !phone || !subject) {
+                api.error({
+                  message: "All fields are required",
+                  description: "Please fill in all fields.",
+                });
+                return;
               }
-            } catch {
-              api.error({ message: 'Failed to send message', description: 'Please try again later.' });
-            }
-          }}>
+              try {
+                const res = await fetch("/Enquiry/post", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    name,
+                    email,
+                    phone,
+                    subject,
+                    message,
+                  }),
+                });
+                if (res.ok) {
+                  api.success({
+                    message: "Message sent!",
+                    description: "Your enquiry has been delivered.",
+                  });
+                  input.value = "";
+                  nameInput.value = "";
+                  emailInput.value = "";
+                  phoneInput.value = "";
+                  subjectInput.value = "";
+                } else {
+                  api.error({
+                    message: "Failed to send message",
+                    description: "Please try again later.",
+                  });
+                }
+              } catch {
+                api.error({
+                  message: "Failed to send message",
+                  description: "Please try again later.",
+                });
+              }
+            }}
+          >
             <textarea
               name="name"
               placeholder="Your Name"
               style={{
-                width: '100%',
+                width: "100%",
                 borderRadius: 8,
-                border: '1px solid #d9d9d9',
-                padding: '10px 12px',
+                border: "1px solid #d9d9d9",
+                padding: "10px 12px",
                 fontSize: 15,
-                fontFamily: 'inherit',
+                fontFamily: "inherit",
                 marginBottom: 8,
-                background: '#fafbfc',
-                color: '#262941',
+                background: "#fafbfc",
+                color: "#262941",
               }}
               required
             />
@@ -545,15 +672,15 @@ function Description(props: Props) {
               type="email"
               placeholder="Your Email"
               style={{
-                width: '100%',
+                width: "100%",
                 borderRadius: 8,
-                border: '1px solid #d9d9d9',
-                padding: '10px 12px',
+                border: "1px solid #d9d9d9",
+                padding: "10px 12px",
                 fontSize: 15,
-                fontFamily: 'inherit',
+                fontFamily: "inherit",
                 marginBottom: 8,
-                background: '#fafbfc',
-                color: '#262941',
+                background: "#fafbfc",
+                color: "#262941",
               }}
               required
             />
@@ -562,15 +689,15 @@ function Description(props: Props) {
               type="tel"
               placeholder="Your Phone Number"
               style={{
-                width: '100%',
+                width: "100%",
                 borderRadius: 8,
-                border: '1px solid #d9d9d9',
-                padding: '10px 12px',
+                border: "1px solid #d9d9d9",
+                padding: "10px 12px",
                 fontSize: 15,
-                fontFamily: 'inherit',
+                fontFamily: "inherit",
                 marginBottom: 8,
-                background: '#fafbfc',
-                color: '#262941',
+                background: "#fafbfc",
+                color: "#262941",
               }}
               required
             />
@@ -578,16 +705,16 @@ function Description(props: Props) {
               name="subject"
               required
               style={{
-                width: '100%',
+                width: "100%",
                 borderRadius: 8,
-                border: '1px solid #d9d9d9',
-                padding: '10px 12px',
+                border: "1px solid #d9d9d9",
+                padding: "10px 12px",
                 fontSize: 15,
-                fontFamily: 'inherit',
+                fontFamily: "inherit",
                 marginBottom: 8,
-                background: '#fafbfc',
-                color: '#262941',
-                appearance: 'none',
+                background: "#fafbfc",
+                color: "#262941",
+                appearance: "none",
               }}
             >
               <option value="">Select Subject</option>
@@ -601,32 +728,33 @@ function Description(props: Props) {
               placeholder="Type your message here..."
               rows={3}
               style={{
-                width: '100%',
+                width: "100%",
                 borderRadius: 8,
-                border: '1px solid #d9d9d9',
-                padding: '10px 12px',
+                border: "1px solid #d9d9d9",
+                padding: "10px 12px",
                 fontSize: 15,
-                fontFamily: 'inherit',
-                resize: 'vertical',
+                fontFamily: "inherit",
+                resize: "vertical",
                 marginBottom: 8,
-                background: '#fafbfc',
-                color: '#262941',
+                background: "#fafbfc",
+                color: "#262941",
               }}
               required
             />
             <button
               type="submit"
               style={{
-                background: 'linear-gradient(to bottom, #FFBF00 0%, #FF5F15 40%)',
-                color: '#fff',
-                border: 'none',
+                background:
+                  "linear-gradient(to bottom, #FFBF00 0%, #FF5F15 40%)",
+                color: "#fff",
+                border: "none",
                 borderRadius: 8,
-                padding: '8px 18px',
+                padding: "8px 18px",
                 fontWeight: 600,
                 fontSize: 15,
-                cursor: 'pointer',
-                boxShadow: '0 2px 8px rgba(255,95,21,0.08)',
-                transition: 'background 0.2s',
+                cursor: "pointer",
+                boxShadow: "0 2px 8px rgba(255,95,21,0.08)",
+                transition: "background 0.2s",
               }}
             >
               Send Message
