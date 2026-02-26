@@ -338,13 +338,13 @@ function Description(props: Props) {
         const message = newFavoritedState
           ? "Successfully added to Wishlist"
           : "Item removed from wishlist.";
-        Notifications.success({ message });
+        api.success({ message });
       } else {
-        Notifications.error({ message: response?.message });
+        api.error({ message: response?.message });
       }
     } catch (error) {
       console.error("Error toggling wishlist:", error);
-      Notifications.error({
+      api.error({
         message: "Something went wrong. Please try again later.",
       });
     }
