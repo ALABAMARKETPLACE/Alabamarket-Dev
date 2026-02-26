@@ -281,7 +281,7 @@ function Description(props: Props) {
       };
 
       dispatch(addToGuestCart(guestCartItem));
-      Notifications.success({ message: "Added to cart successfully!" });
+      api.success({ message: "Added to cart successfully!" });
       setTimeout(() => {
         router.push("/cart");
       }, 1000);
