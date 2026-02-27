@@ -450,6 +450,263 @@
   }
 }
 
+// ─── Promotions + Enquiry Section ─────────────────────────────────────────────
+
+.promo-enquiry-section {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: stretch;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+// ── Promotions Card ────────────────────────────────────────────────────────────
+.promo-card {
+  flex: 1;
+  min-width: 260px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  border: 1.5px solid #fde8d0;
+  box-shadow: 0 4px 20px rgba(255, 95, 21, 0.08);
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    background: linear-gradient(135deg, #ff5f15 0%, #ff8c42 100%);
+    padding: 20px 22px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: -28px;
+      right: -28px;
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      pointer-events: none;
+    }
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      pointer-events: none;
+    }
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.22);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    backdrop-filter: blur(4px);
+  }
+
+  &__title {
+    font-size: 21px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    font-family: "DM Sans", sans-serif;
+  }
+
+  &__subtitle {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  &__body {
+    padding: 16px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+
+  &__cta {
+    background: #fff8f5;
+    border: 1.5px solid #fde8d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__cta-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff5f15;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+  }
+
+  &__phone {
+    font-size: 22px;
+    font-weight: 800;
+    color: #1a1a2e;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+    font-family: "DM Sans", sans-serif;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #ff5f15;
+    }
+  }
+
+  &__cta-hint {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  &__shipping {
+    background: #f0fdf4;
+    border: 1.5px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__shipping-emoji {
+    font-size: 26px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  &__shipping-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #166534;
+  }
+
+  &__shipping-date {
+    font-size: 12px;
+    color: #16a34a;
+    margin-top: 2px;
+  }
+}
+
+// ── Enquiry / Message Card ─────────────────────────────────────────────────────
+.enquiry-card {
+  flex: 1;
+  min-width: 260px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1.5px solid #f0f0f0;
+  box-shadow: 0 4px 20px rgba(38, 41, 65, 0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    padding: 18px 22px 14px;
+    border-bottom: 1px solid #f5f5f5;
+  }
+
+  &__title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a2e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-family: "DM Sans", sans-serif;
+  }
+
+  &__subtitle {
+    font-size: 12px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.25);
+  }
+
+  &__form {
+    padding: 16px 22px 20px;
+    flex: 1;
+  }
+}
+
+.enquiry-form {
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__icon {
+    color: #9ca3af;
+    font-size: 14px;
+  }
+
+  &__submit {
+    width: 100%;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #ff5f15 0%, #ff8c42 100%);
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    font-family: "DM Sans", sans-serif;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 14px rgba(255, 95, 21, 0.28);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 6px 22px rgba(255, 95, 21, 0.4);
+      transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 3px 10px rgba(255, 95, 21, 0.3);
+    }
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
 // ─── Product detail info panel ────────────────────────────────────────────────
 .pd-title {
   font-size: 26px;
@@ -524,4 +781,281 @@
 .pd-divider {
   margin: 16px 0;
   border-color: #f0f0f0;
+}
+
+// ─── Description component internals ──────────────────────────────────────────
+
+.pd-description {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+// Category breadcrumb chips
+.pd-category-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pd-category-chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ff5f15;
+  background: #fff4ee;
+  border: 1px solid #fde8d0;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.4px;
+  text-transform: capitalize;
+}
+
+.pd-category-sep {
+  color: #d1d5db;
+  font-size: 13px;
+}
+
+// Stock status badge
+.pd-stock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  width: fit-content;
+
+  &--in {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+  }
+
+  &--low {
+    background: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fde68a;
+  }
+
+  &--out {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+  }
+}
+
+// Price block
+.pd-price-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pd-price-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+// Quantity + actions row
+.pd-purchase-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pd-qty-control {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.pd-qty-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #374151;
+  transition: background 0.15s;
+
+  &:hover:not(:disabled) {
+    background: #f9fafb;
+    color: #ff5f15;
+  }
+
+  &:disabled {
+    color: #d1d5db;
+    cursor: not-allowed;
+  }
+}
+
+.pd-qty-value {
+  min-width: 36px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  font-family: "DM Sans", sans-serif;
+  border-left: 1.5px solid #e5e7eb;
+  border-right: 1.5px solid #e5e7eb;
+  padding: 0 4px;
+  line-height: 38px;
+}
+
+// Action buttons
+.pd-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.pd-btn {
+  height: 42px;
+  padding: 0 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: "DM Sans", sans-serif;
+  transition: all 0.22s ease;
+  white-space: nowrap;
+
+  &--primary {
+    background: linear-gradient(135deg, #ff5f15 0%, #ff8c42 100%);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(255, 95, 21, 0.28);
+
+    &:hover {
+      box-shadow: 0 6px 20px rgba(255, 95, 21, 0.4);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &--outline {
+    background: #fff;
+    color: #1a1a2e;
+    border: 1.5px solid #e5e7eb;
+
+    &:hover {
+      border-color: #ff5f15;
+      color: #ff5f15;
+      background: #fff4ee;
+    }
+  }
+}
+
+// Secondary actions (wishlist + share)
+.pd-secondary-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pd-wishlist-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #fbb6ce;
+    color: #ec4899;
+    background: #fff5f8;
+  }
+
+  &--active {
+    border-color: #fbb6ce;
+    color: #ec4899;
+    background: #fff5f8;
+  }
+}
+
+.pd-share-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #93c5fd;
+    color: #3b82f6;
+    background: #eff6ff;
+  }
+}
+
+// Specs / More Details section
+.pd-specs-section {
+  margin-top: 16px;
+  padding: 18px 20px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+}
+
+.pd-specs-header {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+  font-family: "DM Sans", sans-serif;
+}
+
+.pd-specs-text {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.pd-specs-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ff5f15;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 0.75;
+  }
 }

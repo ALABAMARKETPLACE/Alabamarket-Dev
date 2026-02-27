@@ -4,7 +4,7 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { Button, notification, Form, Input, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { AiOutlineMinus, AiOutlinePlus } from "react-icons/ai";
+import { AiOutlineMinus, AiOutlinePlus, AiOutlineMessage, AiOutlinePhone, AiOutlineMail, AiOutlineUser, AiOutlineTags } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../../../config/API";
@@ -226,29 +226,34 @@ function Description(props: Props) {
   const onFinishSendMessage = async (values: EnquiryFormValues) => {
     setIsSubmitting(true);
     try {
-      const email = "customerservice@alabamarketplace.ng";
-      const subject = `Product Enquiry: ${props?.data?.name ?? ""}`.trim();
-      const bodyLines = [
-        `Subject: ${values?.subject}`,
-        `Name: ${values?.name}`,
-        `Email: ${values?.email}`,
-        `Phone: ${values?.phone}`,
-        "",
-        `Message:`,
-        `${values?.message}`,
-        "",
-        `Product: ${props?.data?.name ?? ""}`,
-        `Store: ${props?.data?.storeDetails?.store_name ?? ""}`,
-      ];
-      const body = encodeURIComponent(bodyLines.join("\n"));
-      const mailto = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${body}`;
-      if (typeof window !== "undefined") {
-        window.open(mailto, "_blank");
+      const res = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: values.name,
+          email: values.email,
+          phone: values.phone,
+          subject: values.subject,
+          message: values.message,
+          productName: props?.data?.name ?? "",
+          storeName: props?.data?.storeDetails?.store_name ?? "",
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || "Failed to send");
       }
-      api.success({ message: "Mail composer opened" });
+      api.success({
+        message: "Message submitted successfully",
+        description: "We'll get back to you within 24 hours.",
+      });
       form.resetFields();
-    } catch {
-      api.error({ message: "Unable to open mail client" });
+    } catch (err) {
+      api.error({
+        message: "Failed to send message",
+        description:
+          err instanceof Error ? err.message : "Please try again later.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -393,32 +398,47 @@ function Description(props: Props) {
   };
 
   return (
-    <div>
+    <div className="pd-description">
       {contextHolder}
 
-      {/* Guest Checkout Modal (commented out for now) */}
-      {/**
-      <GuestCheckoutModal
-        open={showGuestModal}
-        onClose={() => {
-          setShowGuestModal(false);
-          setPendingAction(null);
-        }}
-        onContinueAsGuest={handleGuestContinue}
-        action={pendingAction || "cart"}
-      />
-      */}
+      {/* Category breadcrumb */}
+      {(props?.data?.categoryName?.name ||
+        props?.data?.subCategoryName?.name) && (
+        <div className="pd-category-breadcrumb">
+          {props?.data?.categoryName?.name && (
+            <span className="pd-category-chip">
+              {props?.data?.categoryName?.name}
+            </span>
+          )}
+          {props?.data?.subCategoryName?.name && (
+            <>
+              <span className="pd-category-sep">›</span>
+              <span className="pd-category-chip">
+                {props?.data?.subCategoryName?.name}
+              </span>
+            </>
+          )}
+        </div>
+      )}
 
-      <div>category: {props?.data?.categoryName?.name}</div>
-      <div>subCategory: {props?.data?.subCategoryName?.name}</div>
+      {/* Stock status */}
       {availableQuantity === 0 ? (
-        <h5 className="text-danger">Currently Out of Stock</h5>
-      ) : availableQuantity < quantity ? (
-        <h5 className="text-danger">{`Only ${availableQuantity} units left`}</h5>
-      ) : null}
-      <br />
-      <div className="d-flex align-items-center flex-wrap gap-2">
-        <span style={{ color: "#666", fontSize: "14px" }}>Total Price:</span>
+        <div className="pd-stock-badge pd-stock-badge--out">
+          <span>✕</span> Out of Stock
+        </div>
+      ) : availableQuantity <= 5 ? (
+        <div className="pd-stock-badge pd-stock-badge--low">
+          <span>⚡</span> Only {availableQuantity} left
+        </div>
+      ) : (
+        <div className="pd-stock-badge pd-stock-badge--in">
+          <span>✓</span> In Stock
+        </div>
+      )}
+
+      {/* Price block */}
+      <div className="pd-price-block">
+        <div className="pd-price-label">Total Price</div>
         <div className="productDetails-price-section">
           <span className="productDetails-current-price">{formattedPrice}</span>
           <span className="productDetails-original-price">
@@ -429,261 +449,191 @@ function Description(props: Props) {
           </span>
         </div>
       </div>
-      <br />
-      <div className="d-flex gap-2 align-items-center">
-        <Button
-          shape="circle"
-          icon={<AiOutlineMinus />}
-          disabled={quantity === 1}
-          onClick={() => updateQuantity("decrement")}
-        />
-        <div>{quantity}</div>
-        <Button
-          shape="circle"
-          icon={<AiOutlinePlus />}
-          disabled={availableQuantity <= quantity}
-          onClick={() => updateQuantity("increment")}
-        />
-      </div>
-      <br />
-      <div className="d-flex gap-2 align-items-center">
-        {availableQuantity > 0 && (
-          <Button
-            className="buybtn btn-clr"
-            // type="primary"
+
+      {/* Quantity + action buttons */}
+      <div className="pd-purchase-row">
+        <div className="pd-qty-control">
+          <button
+            className="pd-qty-btn"
+            disabled={quantity === 1}
+            onClick={() => updateQuantity("decrement")}
+          >
+            <AiOutlineMinus />
+          </button>
+          <span className="pd-qty-value">{quantity}</span>
+          <button
+            className="pd-qty-btn"
+            disabled={availableQuantity <= quantity}
+            onClick={() => updateQuantity("increment")}
+          >
+            <AiOutlinePlus />
+          </button>
+        </div>
+        <div className="pd-actions">
+          {availableQuantity > 0 && (
+            <button
+              className="pd-btn pd-btn--primary"
+              onClick={() => {
+                props?.handleBuyNow(quantity);
+                buyNow();
+              }}
+            >
+              Buy Now
+            </button>
+          )}
+          <button
+            className="pd-btn pd-btn--outline"
             onClick={() => {
-              props?.handleBuyNow(quantity);
-              buyNow();
+              if (isProductInCart) {
+                router.push("/cart");
+              } else {
+                addToCart();
+              }
             }}
           >
-            Buy Now
-          </Button>
-        )}
-        <Button
-          className="buybtn"
-          onClick={() => {
-            if (isProductInCart) {
-              router.push("/cart");
-            } else {
-              addToCart();
-            }
-          }}
-        >
-          {isProductInCart ? "View Cart" : "Add to Cart"}
-        </Button>
+            {isProductInCart ? "View Cart" : "Add to Cart"}
+          </button>
+        </div>
       </div>
-      <br />
-      {/* PROMOTIONS Section */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: "24px",
-          alignItems: "stretch",
-          marginBottom: "22px",
-          flexWrap: "wrap",
-        }}
-      >
+
+      {/* PROMOTIONS + ENQUIRY Section */}
+      <div className="promo-enquiry-section">
         {/* Promotions Card */}
-        <div
-          style={{
-            background: "linear-gradient(90deg, #fff4f8 60%, #eff1f5 100%)",
-            borderRadius: "14px",
-            padding: "22px 24px",
-            boxShadow: "0 4px 16px rgba(255,95,21,0.10)",
-            border: "1.5px solid #fff4f8",
-            fontFamily: "inherit",
-            minWidth: 280,
-            maxWidth: 480,
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: "10px",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <svg
-              width="26"
-              height="26"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="12" cy="12" r="12" fill="#FF5F15" />
-              <path
-                d="M17 9.5C17 8.11929 15.8807 7 14.5 7C13.1193 7 12 8.11929 12 9.5C12 10.8807 13.1193 12 14.5 12C15.8807 12 17 10.8807 17 9.5Z"
-                fill="white"
-              />
-              <path
-                d="M7 14.5C7 13.1193 8.11929 12 9.5 12C10.8807 12 12 13.1193 12 14.5C12 15.8807 10.8807 17 9.5 17C8.11929 17 7 15.8807 7 14.5Z"
-                fill="white"
-              />
-            </svg>
-            <span
-              style={{
-                fontWeight: 700,
-                color: "#FF5F15",
-                fontSize: 19,
-                letterSpacing: 1,
-              }}
-            >
+        <div className="promo-card">
+          <div className="promo-card__header">
+            <div className="promo-card__badge">
+              <AiOutlineTags size={13} />
               PROMOTIONS
-            </span>
+            </div>
+            <div className="promo-card__title">Special Offers</div>
+            <div className="promo-card__subtitle">
+              Exclusive deals for our customers
+            </div>
           </div>
-          <div
-            style={{
-              color: "#222",
-              fontSize: 16,
-              fontWeight: 500,
-              lineHeight: 1.5,
-            }}
-          >
-            Call{" "}
-            <a
-              href="tel:09117356897"
-              style={{
-                color: "#FF5F15",
-                textDecoration: "underline dotted",
-                fontWeight: 700,
-              }}
-            >
-              0911 735 6897
-            </a>{" "}
-            to place your order{" "}
-            <span style={{ color: "#888c99", fontWeight: 400 }}>|</span>{" "}
-            <span style={{ color: "#003f4a", fontWeight: 600 }}>
-              for wholesale prices
-            </span>
-          </div>
-          <div
-            style={{
-              color: "#008060",
-              fontSize: 16,
-              fontWeight: 600,
-              marginTop: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="24" height="24" rx="12" fill="#003f4a" />
-              <path
-                d="M7 13.5L10.5 17L17 10.5"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            <span
-              style={{
-                background: "#eff1f5",
-                borderRadius: 8,
-                padding: "3px 12px",
-                fontSize: 15,
-                color: "#003f4a",
-              }}
-            >
-              Free shipping nationwide till <b>April 30th</b>
-            </span>
+          <div className="promo-card__body">
+            <div className="promo-card__cta">
+              <div className="promo-card__cta-label">
+                Wholesale Prices Available
+              </div>
+              <a href="tel:09117356897" className="promo-card__phone">
+                0911 735 6897
+              </a>
+              <div className="promo-card__cta-hint">
+                Call to place your order
+              </div>
+            </div>
+            <div className="promo-card__shipping">
+              <span className="promo-card__shipping-emoji">🚚</span>
+              <div>
+                <div className="promo-card__shipping-title">
+                  Free Nationwide Shipping
+                </div>
+                <div className="promo-card__shipping-date">
+                  Valid till <strong>April 30th</strong>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
         {/* Message to Seller Card */}
-        <div
-          style={{
-            background: "#fff",
-            borderRadius: "14px",
-            padding: "22px 24px",
-            boxShadow: "0 4px 16px rgba(38,41,65,0.07)",
-            border: "1.5px solid #eff1f5",
-            fontFamily: "inherit",
-            minWidth: 280,
-            maxWidth: 380,
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            gap: "12px",
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 700,
-              color: "#262941",
-              fontSize: 17,
-              marginBottom: 2,
-              letterSpacing: 0.5,
-            }}
-          >
-            Send a message to seller
+        <div className="enquiry-card">
+          <div className="enquiry-card__header">
+            <div className="enquiry-card__title">
+              <AiOutlineMessage size={18} />
+              Message the Seller
+            </div>
+            <div className="enquiry-card__subtitle">
+              <span className="enquiry-card__dot" />
+              Usually responds within 24 hours
+            </div>
           </div>
-          <div style={{ width: "100%" }}>
+          <div className="enquiry-card__form">
             <Form form={form} onFinish={onFinishSendMessage} layout="vertical">
               <Form.Item
                 name="subject"
                 label="Subject"
-                rules={[{ required: true, message: "Please select a subject" }]}
+                rules={[
+                  { required: true, message: "Please select a subject" },
+                ]}
               >
-                <Select placeholder="Select Subject">
+                <Select placeholder="What is this about?">
                   <Select.Option value="booking">Booking</Select.Option>
                   <Select.Option value="orders">Orders</Select.Option>
                   <Select.Option value="services">Services</Select.Option>
                   <Select.Option value="others">Others</Select.Option>
                 </Select>
               </Form.Item>
-              <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-                <Input placeholder="Your Name" />
-              </Form.Item>
+              <div className="enquiry-form__row">
+                <Form.Item
+                  name="name"
+                  label="Name"
+                  rules={[{ required: true, message: "Required" }]}
+                >
+                  <Input
+                    prefix={
+                      <AiOutlineUser className="enquiry-form__icon" />
+                    }
+                    placeholder="Your name"
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="phone"
+                  label="Phone"
+                  rules={[{ required: true, message: "Required" }]}
+                >
+                  <Input
+                    prefix={
+                      <AiOutlinePhone className="enquiry-form__icon" />
+                    }
+                    type="tel"
+                    placeholder="Phone number"
+                  />
+                </Form.Item>
+              </div>
               <Form.Item
                 name="email"
                 label="Email"
-                rules={[{ required: true, type: "email" }]}
+                rules={[
+                  {
+                    required: true,
+                    type: "email",
+                    message: "Valid email required",
+                  },
+                ]}
               >
-                <Input placeholder="Your Email" />
-              </Form.Item>
-              <Form.Item
-                name="phone"
-                label="Phone"
-                rules={[{ required: true }]}
-              >
-                <Input type="number" placeholder="Your Phone Number" />
+                <Input
+                  prefix={<AiOutlineMail className="enquiry-form__icon" />}
+                  placeholder="your@email.com"
+                />
               </Form.Item>
               <Form.Item
                 name="message"
                 label="Message"
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: "Please write a message" }]}
               >
                 <Input.TextArea
                   rows={3}
                   placeholder="Type your message here..."
                 />
               </Form.Item>
-              <Form.Item>
-                <Button
-                  htmlType="submit"
-                  loading={isSubmitting}
-                  className="btn-clr"
+              <Form.Item style={{ marginBottom: 0 }}>
+                <button
+                  type="submit"
+                  className="enquiry-form__submit"
+                  disabled={isSubmitting}
                 >
-                  Send Message
-                </Button>
+                  {isSubmitting ? "Sending…" : "Send Message →"}
+                </button>
               </Form.Item>
             </Form>
           </div>
         </div>
       </div>
-      {/* Additional Actions */}
-      <div className="d-flex gap-2 align-items-center">
-        <Button
-          type="text"
-          className="productDetails-text-btn1 ps-md-0"
+      {/* Secondary actions */}
+      <div className="pd-secondary-actions">
+        <button
+          className={`pd-wishlist-btn${favourited ? " pd-wishlist-btn--active" : ""}`}
           onClick={() => {
             if (user) {
               AddWishlist();
@@ -691,19 +641,29 @@ function Description(props: Props) {
               router.push("/login");
             }
           }}
-          icon={
-            favourited ? (
-              <FaHeart
-                color="#FF006A"
-                // className={isWobbling ? "wobble" : ""}
-                size={20}
-              />
-            ) : (
-              <FaHeart color="#DBDBDB" size={20} />
-            )
-          }
-        />
-        <Button onClick={shareLink}>Share</Button>
+        >
+          <FaHeart size={15} />
+          {favourited ? "Saved" : "Save"}
+        </button>
+        <button className="pd-share-btn" onClick={shareLink}>
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="18" cy="5" r="3" />
+            <circle cx="6" cy="12" r="3" />
+            <circle cx="18" cy="19" r="3" />
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+          </svg>
+          Share
+        </button>
       </div>
     </div>
   );
