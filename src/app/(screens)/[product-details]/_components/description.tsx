@@ -1,7 +1,7 @@
 "use client";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { Button, notification, Form, Input, Select } from "antd";
+import { notification, Form, Input, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { AiOutlineMinus, AiOutlinePlus, AiOutlineMessage, AiOutlinePhone, AiOutlineMail, AiOutlineUser, AiOutlineTags } from "react-icons/ai";
@@ -224,7 +224,6 @@ function Description(props: Props) {
   };
 
   const onFinishSendMessage = async (values: EnquiryFormValues) => {
-    setIsSubmitting(true);
     try {
       const res = await fetch("/api/enquiry", {
         method: "POST",
