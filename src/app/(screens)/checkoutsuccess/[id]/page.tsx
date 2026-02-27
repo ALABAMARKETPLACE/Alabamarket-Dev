@@ -160,7 +160,7 @@ function Checkout() {
       setPaymentRef(newRef);
       localStorage.setItem("paystack_payment_reference", newRef);
     }
-  }, [orderCreated, isPaystack]);
+  }, [isPaystack]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderItems = useCallback((response: any[]) => {
@@ -299,7 +299,8 @@ function Checkout() {
 
         finalOrderData = orderData?.order_data || {
           payment: {
-            ref: paystackRef,
+            ref: isMultiSeller || storeAllocations.length > 1 ? null : paystackRef,
+            transaction_reference: paystackRef,
             type: "Pay Online",
             status: vStatus || "success",
             amount: vAmount || null,
@@ -315,10 +316,16 @@ function Checkout() {
           user: User ?? Checkout?.user ?? null,
         };
 
-        // Ensure payment info includes verification data
+        // Ensure payment info includes verification data.
+        // For multi-seller orders the backend creates one orderPayment record per store —
+        // reusing the same `ref` hits a unique constraint. Set ref=null for multi-seller
+        // and always carry the Paystack reference in `transaction_reference` instead.
+        const isMultiSellerPayment =
+          isMultiSeller || storeAllocations.length > 1;
         finalOrderData.payment = {
           ...finalOrderData.payment,
-          ref: paymentRef,
+          ref: isMultiSellerPayment ? null : paystackRef,
+          transaction_reference: paystackRef,
           status: vStatus || "success",
           amount: vAmount || null,
           gateway_response: vGatewayResponse,
@@ -344,6 +351,10 @@ function Checkout() {
         }
         if (finalOrderData.userId && !isNaN(Number(finalOrderData.userId))) {
           finalOrderData.userId = Number(finalOrderData.userId);
+        }
+        // Shallow-copy address before mutating to avoid Redux state mutation
+        if (finalOrderData.address) {
+          finalOrderData.address = { ...finalOrderData.address };
         }
         if (
           finalOrderData.address?.id &&
@@ -941,10 +952,6 @@ function Checkout() {
         dispatch(clearCart());
 
         dispatch(clearCheckout());
-
-        // Clean up order-creation flags so future checkouts start fresh
-        localStorage.removeItem("order_creation_completed");
-        localStorage.removeItem("last_order_response");
 
         setPaymentStatus(true);
       } else {

@@ -622,7 +622,14 @@ function Description(props: Props) {
                   className="enquiry-form__submit"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Sending…" : "Send Message →"}
+                  {isSubmitting ? (
+                    <>
+                      <span className="enquiry-form__spinner" />
+                      Sending…
+                    </>
+                  ) : (
+                    "Send Message →"
+                  )}
                 </button>
               </Form.Item>
             </Form>
