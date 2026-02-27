@@ -459,12 +459,23 @@
   align-items: stretch;
   margin-bottom: 24px;
   flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
 
 // ── Promotions Card ────────────────────────────────────────────────────────────
 .promo-card {
   flex: 1;
   min-width: 260px;
+
+  @media (max-width: 768px) {
+    flex: none;
+    width: 100%;
+    min-width: unset;
+  }
   border-radius: 16px;
   overflow: hidden;
   background: #fff;
@@ -611,6 +622,12 @@
 .enquiry-card {
   flex: 1;
   min-width: 260px;
+
+  @media (max-width: 768px) {
+    flex: none;
+    width: 100%;
+    min-width: unset;
+  }
   border-radius: 16px;
   background: #fff;
   border: 1.5px solid #f0f0f0;
@@ -656,6 +673,10 @@
   &__form {
     padding: 16px 22px 20px;
     flex: 1;
+
+    @media (max-width: 480px) {
+      padding: 12px 14px 16px;
+    }
   }
 }
 
@@ -889,6 +910,12 @@
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
 }
 
 .pd-qty-control {
@@ -899,6 +926,11 @@
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
+
+  @media (max-width: 576px) {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 .pd-qty-btn {
@@ -942,12 +974,17 @@
 .pd-actions {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
   flex: 1;
+
+  @media (max-width: 576px) {
+    flex: none;
+    width: 100%;
+  }
 }
 
 .pd-btn {
-  height: 42px;
+  flex: 1;
+  height: 44px;
   padding: 0 24px;
   border-radius: 10px;
   font-size: 14px;

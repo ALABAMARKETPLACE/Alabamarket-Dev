@@ -557,7 +557,6 @@ function Description(props: Props) {
                 ]}
               >
                 <Select placeholder="What is this about?">
-                  <Select.Option value="booking">Booking</Select.Option>
                   <Select.Option value="orders">Orders</Select.Option>
                   <Select.Option value="services">Services</Select.Option>
                   <Select.Option value="others">Others</Select.Option>
