@@ -171,15 +171,9 @@ function Checkout() {
         console.log("Delivery response:", response);
 
         if (response?.status) {
-          const deliveryToken =
-            response?.data?.delivery_token || response?.token || "";
-          const delivery = Number(
-            response?.data?.amount ||
-              response?.details?.totalCharge ||
-              response?.amount ||
-              0,
-          );
-          const discountVal = Number(response?.data?.discount || 0);
+          const deliveryToken = response?.token ?? "";
+          const delivery = Number(response?.details?.totalCharge ?? 0);
+          const discountVal = Number(response?.details?.discount ?? 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
 
           console.log(
@@ -718,6 +712,8 @@ function Checkout() {
               address: Checkout?.address,
               charges: {
                 token: deliveryToken,
+                totalCharge: delivery_charge,
+                discount: discount,
               },
               user_id: customerId,
               user: user,
@@ -827,6 +823,8 @@ function Checkout() {
           address: Checkout?.address,
           charges: {
             token: deliveryToken,
+            totalCharge: delivery_charge,
+            discount: discount,
             // Include promo info for backend
             originalDeliveryCharge: delivery_charge,
             discountedDeliveryCharge: actualDeliveryCharge,

@@ -173,26 +173,17 @@ function DetailsCard(props: any) {
               </>
             )}
             {stripTags(props?.data?.specifications)?.trim().length > 0 ? (
-              <>
-                <hr />
-
-                <div className="fs-5">More Details</div>
-                <p>
+              <div className="pd-specs-section">
+                <div className="pd-specs-header">More Details</div>
+                <p className="pd-specs-text">
                   {showFullText
                     ? stripTags(props?.data?.specifications)
-                    : `${stripTags(props?.data?.specifications).substring(
-                        0,
-                        100
-                      )}...`}
+                    : `${stripTags(props?.data?.specifications).substring(0, 150)}…`}
                 </p>
-                <button
-                  className="btn btn-link p-0"
-                  onClick={toggleText}
-                  style={{ textDecoration: "none" }}
-                >
-                  {showFullText ? "Read Less" : "Read More"}
+                <button className="pd-specs-toggle" onClick={toggleText}>
+                  {showFullText ? "Read Less ↑" : "Read More ↓"}
                 </button>
-              </>
+              </div>
             ) : null}
 
             {/* <div
