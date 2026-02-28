@@ -4,13 +4,12 @@ import { notification } from "antd";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { POST } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
+import API from "@/config/API";
 import { useRouter, useSearchParams } from "next/navigation";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import RequestForm from "../_components/requestForm";
-import { usePaystack } from "@/hooks/usePaystack";
 import { useSession } from "next-auth/react";
 import Loading from "@/app/(dashboard)/_components/loading";
-import type { PaystackInitializeResponse } from "@/types/paystack.types";
 
 function CreateBoostRequest() {
   const [Notifications, contextHolder] = notification.useNotification();
@@ -18,7 +17,6 @@ function CreateBoostRequest() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const { initializePayment } = usePaystack();
   const [isVerifying, setIsVerifying] = useState(false);
 
   const rawStoreId =
@@ -86,9 +84,8 @@ function CreateBoostRequest() {
 
     if (paymentRef && !isVerifying) {
       verifyAndCreate(paymentRef);
-    } else {
-      sessionStorage.removeItem("boost_request_data");
     }
+    // Don't clear sessionStorage here — it is cleared in verifyAndCreate after success
   }, [searchParams, isVerifying, verifyAndCreate]);
 
   const mutationPay = useMutation({
@@ -102,10 +99,13 @@ function CreateBoostRequest() {
         JSON.stringify({ ...body, seller_id: sellerId }),
       );
 
-      const paymentResult = await initializePayment({
+      // Use the base path without any existing query params as callback
+      const callbackUrl = `${window.location.origin}${window.location.pathname}`;
+
+      const response: any = await POST(API.PAYSTACK_INITIALIZE, {
         email: session?.user?.email || "seller@alabamarketplace.ng",
         amount: body.amount * 100,
-        callback_url: window.location.href,
+        callback_url: callbackUrl,
         metadata: {
           custom_fields: [
             {
@@ -117,17 +117,23 @@ function CreateBoostRequest() {
         },
       });
 
-      return paymentResult;
+      // Handle all possible response shapes from backend
+      const authUrl =
+        response?.authorization_url ||
+        response?.data?.data?.authorization_url ||
+        response?.data?.authorization_url;
+
+      if (authUrl) {
+        window.location.href = authUrl;
+        return;
+      }
+
+      throw new Error(response?.message || "Failed to initialize payment");
     },
     onError: (error: unknown) => {
       Notifications["error"]({
         message: (error instanceof Error && error.message) || "Payment failed",
       });
-    },
-    onSuccess: (data: PaystackInitializeResponse) => {
-      if (data?.data?.data?.authorization_url) {
-        window.location.href = data.data.data.authorization_url;
-      }
     },
   });
 
