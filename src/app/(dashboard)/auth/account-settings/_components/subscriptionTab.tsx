@@ -22,7 +22,6 @@ import { GET, POST, PUT } from "@/util/apicall";
 import API from "@/config/API";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { usePaystack } from "@/hooks/usePaystack";
 
 function SubscriptionTab() {
   const { data: session } = useSession();
@@ -31,7 +30,6 @@ function SubscriptionTab() {
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(false);
   const [subscribingPlanId, setSubscribingPlanId] = useState<number | null>(null);
-  const { initializePayment } = usePaystack();
 
   // Get current store details (including subscription)
   const {
@@ -48,7 +46,11 @@ function SubscriptionTab() {
   const { data: plans, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-active"],
     queryFn: () => GET(API.SUBSCRIPTION_PLANS_ACTIVE),
-    select: (data: any) => (Array.isArray(data?.data) ? data?.data : []),
+    select: (data: any) => {
+      if (Array.isArray(data?.data?.data)) return data.data.data;
+      if (Array.isArray(data?.data)) return data.data;
+      return [];
+    },
   });
 
   // Handle Payment Verification on Mount
@@ -114,7 +116,7 @@ function SubscriptionTab() {
       const amountInKobo = Math.round(Number(plan.price || plan.price_per_day || 0) * 100);
       const callbackUrl = `${window.location.origin}/auth/account-settings?tab=subscription&plan_id=${plan.id}`;
 
-      const result = await initializePayment({
+      const response: any = await POST(API.PAYSTACK_INITIALIZE, {
         email: user.email,
         amount: amountInKobo,
         callback_url: callbackUrl,
@@ -132,8 +134,15 @@ function SubscriptionTab() {
         },
       });
 
-      if (result?.data?.data?.authorization_url) {
-        window.location.href = result.data.data.authorization_url;
+      // Handle both possible response shapes from backend
+      const authUrl =
+        response?.data?.data?.authorization_url ||
+        response?.data?.authorization_url;
+
+      if (response?.status && authUrl) {
+        window.location.href = authUrl;
+      } else {
+        throw new Error(response?.message || "Failed to initialize payment");
       }
     } catch (err: any) {
       notification.error({
