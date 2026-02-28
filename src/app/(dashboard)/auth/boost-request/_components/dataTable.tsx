@@ -170,9 +170,10 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
   const columns: ColumnsType<BoostRequest> = [
     {
       title: "Request ID",
-      dataIndex: "id",
       key: "id",
       width: 100,
+      render: (_: unknown, record: BoostRequest) =>
+        record.id ?? record._id ?? "-",
     },
     {
       title: "Seller Name",
@@ -232,12 +233,11 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     },
     {
       title: "Action",
-      dataIndex: "id",
-      key: "id",
+      key: "action",
       width: 150,
       fixed: "right" as const,
-      render: (id: number, record: BoostRequest) =>
-        renderDesktopActions(id, record),
+      render: (_: unknown, record: BoostRequest) =>
+        renderDesktopActions((record.id ?? record._id) as number, record),
     },
   ];
 
