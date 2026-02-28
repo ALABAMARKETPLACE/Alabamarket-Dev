@@ -1,12 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
   Button,
   Tag,
   List,
-  Badge,
   notification,
   Spin,
   Row,
@@ -16,7 +15,6 @@ import {
 } from "antd";
 import {
   CheckCircleOutlined,
-  SyncOutlined,
   CrownOutlined,
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
@@ -24,7 +22,7 @@ import { GET, POST, PUT } from "@/util/apicall";
 import API from "@/config/API";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import moment from "moment";
+import { usePaystack } from "@/hooks/usePaystack";
 
 function SubscriptionTab() {
   const { data: session } = useSession();
@@ -33,6 +31,7 @@ function SubscriptionTab() {
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(false);
   const [subscribingPlanId, setSubscribingPlanId] = useState<number | null>(null);
+  const { initializePayment } = usePaystack();
 
   // Get current store details (including subscription)
   const {
@@ -112,20 +111,12 @@ function SubscriptionTab() {
         return;
       }
 
-      // Initialize Paystack Payment
       const amountInKobo = Math.round(Number(plan.price || plan.price_per_day || 0) * 100);
-      const reference = `SUB_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase()}`;
-
       const callbackUrl = `${window.location.origin}/auth/account-settings?tab=subscription&plan_id=${plan.id}`;
 
-      const payload = {
+      const result = await initializePayment({
         email: user.email,
         amount: amountInKobo,
-        currency: "NGN",
-        reference: reference,
         callback_url: callbackUrl,
         metadata: {
           plan_id: plan.id,
@@ -139,14 +130,10 @@ function SubscriptionTab() {
             },
           ],
         },
-      };
+      });
 
-      const response: any = await POST(API.PAYSTACK_INITIALIZE, payload);
-
-      if (response?.status && response?.data?.data?.authorization_url) {
-        window.location.href = response.data.data.authorization_url;
-      } else {
-        throw new Error(response?.message || "Failed to initialize payment");
+      if (result?.data?.data?.authorization_url) {
+        window.location.href = result.data.data.authorization_url;
       }
     } catch (err: any) {
       notification.error({
