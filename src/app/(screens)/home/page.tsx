@@ -662,14 +662,23 @@ function Home() {
       4: featuredProducts[4],
     } as const;
 
+    // Track IDs of boosted products so they stay in their correct section
+    const boostedIds = new Set<string>();
+    for (const pos of [1, 2, 3, 4] as const) {
+      for (const item of featuredByPosition[pos]) {
+        const id = getProductIdentifier(item);
+        if (id) boostedIds.add(id);
+      }
+    }
+
+    // General pool excludes boosted products (they are pinned to their sections)
     const globalPool = dedupeProducts([
       ...allProductsPool,
       ...recent,
-      ...featuredByPosition[1],
-      ...featuredByPosition[2],
-      ...featuredByPosition[3],
-      ...featuredByPosition[4],
-    ]);
+    ]).filter((item) => {
+      const id = getProductIdentifier(item);
+      return id ? !boostedIds.has(id) : true;
+    });
 
     // Split into 3 priority tiers
     const { highPriority, normalElectronics, others } =
@@ -704,10 +713,23 @@ function Home() {
 
     const buildMixedSection = (position: 1 | 2 | 3 | 4) => {
       const desired = desiredCounts[position];
+
+      // Pin boosted products for this position first
+      const pinned = featuredByPosition[position].filter((item) => {
+        const id = getProductIdentifier(item);
+        return id ? !used.has(id) : false;
+      });
+      for (const item of pinned) {
+        const id = getProductIdentifier(item);
+        if (id) used.add(id);
+      }
+
+      const remainingSlots = Math.max(0, desired - pinned.length);
+
       // ~45% TVs/phones/fridges, ~35% other electronics, ~15% everything else
-      const desiredHigh = Math.round(desired * 0.45);
-      const desiredNormal = Math.round(desired * 0.35);
-      const desiredOthers = desired - desiredHigh - desiredNormal;
+      const desiredHigh = Math.round(remainingSlots * 0.45);
+      const desiredNormal = Math.round(remainingSlots * 0.35);
+      const desiredOthers = remainingSlots - desiredHigh - desiredNormal;
 
       // Within each tier: 90% old, 10% new
       const desiredHighOld = Math.round(desiredHigh * 0.9);
@@ -754,22 +776,22 @@ function Home() {
       ];
 
       // Fill remaining slots — prefer high-priority, then normal, then any
-      if (combined.length < desired) {
+      if (combined.length < remainingSlots) {
         const fillHigh = takeUniqueProductsByCategory(
           [...shuffledHighOld, ...shuffledHighNew],
           used,
-          Math.ceil((desired - combined.length) * 0.7),
+          Math.ceil((remainingSlots - combined.length) * 0.7),
           [],
           categoryCounts,
           maxPerCategory,
         );
         combined.push(...fillHigh);
 
-        if (combined.length < desired) {
+        if (combined.length < remainingSlots) {
           const fillNormal = takeUniqueProductsByCategory(
             [...shuffledNormalOld, ...shuffledNormalNew],
             used,
-            desired - combined.length,
+            remainingSlots - combined.length,
             [],
             categoryCounts,
             maxPerCategory,
@@ -779,17 +801,21 @@ function Home() {
       }
 
       // Final fallback: use any remaining products
-      if (combined.length < desired) {
+      if (combined.length < remainingSlots) {
         const fillers = takeUniqueProducts(
           shuffledAll,
           used,
-          desired - combined.length,
+          remainingSlots - combined.length,
           [],
         );
         combined.push(...fillers);
       }
 
-      return shuffleCandidates(combined, rotationSeed + position * 1000);
+      // Boosted products lead the section, filler shuffled behind them
+      return [
+        ...pinned,
+        ...shuffleCandidates(combined, rotationSeed + position * 1000),
+      ];
     };
 
     for (const position of allocationOrder) {

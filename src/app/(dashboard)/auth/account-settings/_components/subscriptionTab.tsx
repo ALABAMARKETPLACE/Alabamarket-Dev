@@ -111,7 +111,7 @@ function SubscriptionTab() {
       }
 
       // Initialize Paystack Payment
-      const amountInKobo = Math.round(Number(plan.price_per_day || 0) * 100);
+      const amountInKobo = Math.round(Number(plan.price || plan.price_per_day || 0) * 100);
       const reference = `SUB_${Date.now()}_${Math.random()
         .toString(36)
         .substring(2, 8)
@@ -227,7 +227,7 @@ function SubscriptionTab() {
                 >
                   <div className="text-center mb-3">
                     <h2 className="mb-0">
-                      ₦{Number(plan.price_per_day).toLocaleString()}
+                      ₦{Number(plan.price || plan.price_per_day || 0).toLocaleString()}
                     </h2>
                     <small className="text-muted">per day</small>
                   </div>

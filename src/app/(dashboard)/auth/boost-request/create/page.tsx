@@ -46,6 +46,10 @@ function CreateBoostRequest() {
 
         const response = await POST(API_ADMIN.BOOST_REQUESTS, {
           seller_id: sellerId || body.seller_id,
+          plan_id: body.plan_id,
+          product_ids: body.product_ids,
+          remarks: body.remarks,
+          amount: body.amount,
           payment_reference: reference,
           payment_status: "success",
         });
