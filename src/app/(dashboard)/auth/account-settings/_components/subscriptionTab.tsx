@@ -134,12 +134,13 @@ function SubscriptionTab() {
         },
       });
 
-      // Handle both possible response shapes from backend
+      // Handle all possible response shapes from backend
       const authUrl =
+        response?.authorization_url ||
         response?.data?.data?.authorization_url ||
         response?.data?.authorization_url;
 
-      if (response?.status && authUrl) {
+      if (authUrl) {
         window.location.href = authUrl;
       } else {
         throw new Error(response?.message || "Failed to initialize payment");
