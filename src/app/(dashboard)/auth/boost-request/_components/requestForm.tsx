@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Button, Form, Select, Card, Input } from "antd";
+import { Button, Form, Select, Card, Input, InputNumber } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
@@ -20,6 +20,7 @@ interface Plan {
   duration?: number;
   price?: number;
   price_per_day?: number;
+  featured_position?: number;
 }
 
 interface Product {
@@ -41,6 +42,7 @@ interface RequestFormProps {
     product_ids: number[];
     remarks?: string;
     amount: number;
+    duration_days?: number;
   }) => void;
   loading?: boolean;
   mode: "create" | "edit";
@@ -57,6 +59,15 @@ function RequestForm({
   const [form] = Form.useForm();
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
+  const [durationDays, setDurationDays] = useState<number>(1);
+
+  const isDiscountedPlan = (plan: Plan | null) => {
+    if (!plan) return false;
+    return (
+      plan.featured_position === 4 ||
+      plan.name?.toLowerCase().includes("discount")
+    );
+  };
 
   // Fetch all subscription plans
   const { data: plansData, isLoading: plansLoading } = useQuery({
@@ -124,17 +135,27 @@ function RequestForm({
     }
   }, [initialData, plansData, form, mode]);
 
-  // Helper to get plan duration
-  const getPlanDuration = (plan: Plan) => {
-    const days = Number(plan?.duration_days || plan?.duration);
-    return isNaN(days) ? 0 : days;
+  // Helper to get plan price per day (for non-discounted plans)
+  const getPlanPricePerDay = (plan: Plan | null) => {
+    if (!plan) return 0;
+    const price = Number(plan?.price_per_day || plan?.price);
+    return isNaN(price) ? 0 : price;
   };
 
-  // Helper to get plan price
-  const getPlanPrice = (plan: Plan | null) => {
+  // Helper to get fixed price (for discounted plans)
+  const getPlanFixedPrice = (plan: Plan | null) => {
     if (!plan) return 0;
     const price = Number(plan?.price || plan?.price_per_day);
     return isNaN(price) ? 0 : price;
+  };
+
+  // Calculate total amount based on plan type
+  const calculateTotal = (plan: Plan | null, days: number) => {
+    if (!plan) return 0;
+    if (isDiscountedPlan(plan)) {
+      return getPlanFixedPrice(plan);
+    }
+    return getPlanPricePerDay(plan) * days;
   };
 
   const handlePlanChange = (planId: number) => {
@@ -142,22 +163,25 @@ function RequestForm({
     const plan = plansList.find((p) => (p.id || p._id) === planId) || null;
     setSelectedPlan(plan);
     setSelectedProducts([]);
-    form.setFieldsValue({ product_ids: [] });
+    setDurationDays(1);
+    form.setFieldsValue({ product_ids: [], duration_days: 1 });
   };
 
   const handleSubmit = (values: {
     plan_id: number;
     product_ids: number[];
     remarks?: string;
+    duration_days?: number;
   }) => {
-    // Calculate total price based on selected plan
-    const price = getPlanPrice(selectedPlan);
+    const days = isDiscountedPlan(selectedPlan) ? undefined : (values.duration_days ?? durationDays);
+    const amount = calculateTotal(selectedPlan, days ?? 1);
 
     const payload = {
       plan_id: values.plan_id,
       product_ids: values.product_ids,
       remarks: values.remarks,
-      amount: price,
+      amount,
+      ...(days !== undefined && { duration_days: days }),
     };
     onSubmit(payload);
   };
@@ -195,11 +219,9 @@ function RequestForm({
               }
               options={plans.map((plan: Plan) => ({
                 value: plan.id || plan._id,
-                label: `${plan.name} (${plan.min_products}-${
-                  plan.max_products
-                } products, ${getPlanDuration(plan)} days, ₦${getPlanPrice(
-                  plan,
-                ).toFixed(2)})`,
+                label: isDiscountedPlan(plan)
+                  ? `${plan.name} (${plan.min_products}-${plan.max_products} products, Fixed ₦${getPlanFixedPrice(plan).toLocaleString()})`
+                  : `${plan.name} (${plan.min_products}-${plan.max_products} products, ₦${getPlanPricePerDay(plan).toLocaleString()}/day)`,
               }))}
             />
           </Form.Item>
@@ -209,11 +231,40 @@ function RequestForm({
               <div style={{ fontSize: 13, color: "#0050b3" }}>
                 💡 Plan Info: Select between{" "}
                 <strong>{selectedPlan.min_products}</strong> and{" "}
-                <strong>{selectedPlan.max_products}</strong> products. Duration:{" "}
-                <strong>{getPlanDuration(selectedPlan)} days</strong>. Price:{" "}
-                <strong>₦{getPlanPrice(selectedPlan).toFixed(2)}</strong>
+                <strong>{selectedPlan.max_products}</strong> products.{" "}
+                {isDiscountedPlan(selectedPlan) ? (
+                  <>
+                    Fixed Price:{" "}
+                    <strong>₦{getPlanFixedPrice(selectedPlan).toLocaleString()}</strong>
+                  </>
+                ) : (
+                  <>
+                    Price:{" "}
+                    <strong>₦{getPlanPricePerDay(selectedPlan).toLocaleString()}</strong>{" "}
+                    per day &times; <strong>{durationDays}</strong> day(s) ={" "}
+                    <strong>₦{calculateTotal(selectedPlan, durationDays).toLocaleString()}</strong>
+                  </>
+                )}
               </div>
             </div>
+          )}
+
+          {selectedPlan && !isDiscountedPlan(selectedPlan) && (
+            <Form.Item
+              label="Number of Days"
+              name="duration_days"
+              initialValue={1}
+              rules={[{ required: true, message: "Please enter number of days" }]}
+            >
+              <InputNumber
+                min={1}
+                max={365}
+                size="large"
+                style={{ width: "100%" }}
+                addonAfter="days"
+                onChange={(val) => setDurationDays(Number(val) || 1)}
+              />
+            </Form.Item>
           )}
 
           <Form.Item

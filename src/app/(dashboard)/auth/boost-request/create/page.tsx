@@ -50,6 +50,7 @@ function CreateBoostRequest() {
           product_ids: body.product_ids,
           remarks: body.remarks,
           amount: body.amount,
+          ...(body.duration_days !== undefined && { duration_days: body.duration_days }),
           payment_reference: reference,
           payment_status: "success",
         });

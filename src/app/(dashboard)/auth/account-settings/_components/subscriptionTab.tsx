@@ -32,6 +32,7 @@ function SubscriptionTab() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(false);
+  const [subscribingPlanId, setSubscribingPlanId] = useState<number | null>(null);
 
   // Get current store details (including subscription)
   const {
@@ -100,6 +101,7 @@ function SubscriptionTab() {
   };
 
   const handleSubscribe = async (plan: any) => {
+    setSubscribingPlanId(plan.id);
     try {
       const user = session?.user as any;
       if (!user?.email) {
@@ -151,6 +153,8 @@ function SubscriptionTab() {
         message: "Payment Error",
         description: err?.message || "Could not start payment process.",
       });
+    } finally {
+      setSubscribingPlanId(null);
     }
   };
 
@@ -212,7 +216,8 @@ function SubscriptionTab() {
         <h3 className="mb-3">Available Plans</h3>
         <Row gutter={[16, 16]}>
           {plans.map((plan: any) => {
-            const isCurrent = plan.id === currentPlanId;
+            const isCurrent = String(plan.id) === String(currentPlanId);
+            const isSubscribing = subscribingPlanId === plan.id;
             return (
               <Col xs={24} sm={12} md={8} key={plan.id}>
                 <Card
@@ -229,7 +234,7 @@ function SubscriptionTab() {
                     <h2 className="mb-0">
                       ₦{Number(plan.price || plan.price_per_day || 0).toLocaleString()}
                     </h2>
-                    <small className="text-muted">per day</small>
+                    <small className="text-muted">per month</small>
                   </div>
 
                   <List
@@ -251,7 +256,8 @@ function SubscriptionTab() {
                       type={isCurrent ? "default" : "primary"}
                       block
                       size="large"
-                      disabled={isCurrent}
+                      disabled={isCurrent || !!subscribingPlanId}
+                      loading={isSubscribing}
                       onClick={() => handleSubscribe(plan)}
                     >
                       {isCurrent ? "Active" : "Subscribe Now"}
