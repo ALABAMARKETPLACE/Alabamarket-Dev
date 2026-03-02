@@ -124,48 +124,51 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     }
   };
 
-  const renderDesktopActions = (id: number, record: BoostRequest) => (
-    <div className="table-action">
-      <Tooltip title="View details">
-        <Button
-          type="text"
-          size="small"
-          onClick={() => router.push(`/auth/boost-request/${id}`)}
-          icon={<FiEye size={16} color="#1890ff" />}
-        />
-      </Tooltip>
-      {record.status === "pending" && (
-        <Tooltip title="Edit">
+  const renderDesktopActions = (id: number | undefined, record: BoostRequest) => {
+    if (!id) return <span>—</span>;
+    return (
+      <div className="table-action">
+        <Tooltip title="View details">
           <Button
             type="text"
             size="small"
-            onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
-            icon={<FiEdit2 size={16} color="#1890ff" />}
+            onClick={() => router.push(`/auth/boost-request/${id}`)}
+            icon={<FiEye size={16} color="#1890ff" />}
           />
         </Tooltip>
-      )}
-      <Popconfirm
-        title="Delete Boost Request"
-        description="Are you sure you want to delete this boost request?"
-        onConfirm={() => mutationDelete.mutate(id)}
-        okText="Yes, Delete"
-        cancelText="Cancel"
-        okButtonProps={{ danger: true }}
-      >
-        <Tooltip title="Delete">
-          <Button
-            type="text"
-            size="small"
-            danger
-            loading={
-              mutationDelete.isPending && mutationDelete.variables === id
-            }
-            icon={<FiTrash2 size={16} />}
-          />
-        </Tooltip>
-      </Popconfirm>
-    </div>
-  );
+        {record.status === "pending" && (
+          <Tooltip title="Edit">
+            <Button
+              type="text"
+              size="small"
+              onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
+              icon={<FiEdit2 size={16} color="#1890ff" />}
+            />
+          </Tooltip>
+        )}
+        <Popconfirm
+          title="Delete Boost Request"
+          description="Are you sure you want to delete this boost request?"
+          onConfirm={() => mutationDelete.mutate(id)}
+          okText="Yes, Delete"
+          cancelText="Cancel"
+          okButtonProps={{ danger: true }}
+        >
+          <Tooltip title="Delete">
+            <Button
+              type="text"
+              size="small"
+              danger
+              loading={
+                mutationDelete.isPending && mutationDelete.variables === id
+              }
+              icon={<FiTrash2 size={16} />}
+            />
+          </Tooltip>
+        </Popconfirm>
+      </div>
+    );
+  };
 
   const columns: ColumnsType<BoostRequest> = [
     {
@@ -334,7 +337,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
               ghost
               icon={<FiEye size={14} />}
               size="small"
-              onClick={() => router.push(`/auth/boost-request/${id}`)}
+              onClick={() => id && router.push(`/auth/boost-request/${id}`)}
+              disabled={!id}
             >
               View
             </Button>
@@ -342,7 +346,8 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
               <Button
                 icon={<FiEdit2 size={14} />}
                 size="small"
-                onClick={() => router.push(`/auth/boost-request/${id}/edit`)}
+                onClick={() => id && router.push(`/auth/boost-request/${id}/edit`)}
+                disabled={!id}
               >
                 Edit
               </Button>
@@ -350,7 +355,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             <Popconfirm
               title="Delete Boost Request"
               description="Are you sure you want to delete this boost request?"
-              onConfirm={() => mutationDelete.mutate(id as number)}
+              onConfirm={() => id && mutationDelete.mutate(id as number)}
               okText="Delete"
               cancelText="Cancel"
               okButtonProps={{ danger: true }}

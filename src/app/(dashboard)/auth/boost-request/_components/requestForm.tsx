@@ -63,10 +63,18 @@ function RequestForm({
 
   const isDiscountedPlan = (plan: Plan | null) => {
     if (!plan) return false;
-    return (
-      plan.featured_position === 4 ||
-      plan.name?.toLowerCase().includes("discount")
-    );
+    return plan.featured_position === 4;
+  };
+
+  const getPlanSectionLabel = (plan: Plan | null): string => {
+    if (!plan) return "";
+    switch (plan.featured_position) {
+      case 1: return "Platinum Section";
+      case 2: return "Gold Section";
+      case 3: return "Silver Section";
+      case 4: return "Discounted Deals Section";
+      default: return "No featured section";
+    }
   };
 
   // Fetch all subscription plans
@@ -246,6 +254,16 @@ function RequestForm({
                   </>
                 )}
               </div>
+              {selectedPlan.featured_position ? (
+                <div style={{ fontSize: 12, color: "#595959", marginTop: 4 }}>
+                  📍 Products will appear in the{" "}
+                  <strong>{getPlanSectionLabel(selectedPlan)}</strong> on the homepage.
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: "#8c8c8c", marginTop: 4 }}>
+                  📍 This plan has no featured homepage section.
+                </div>
+              )}
             </div>
           )}
 
