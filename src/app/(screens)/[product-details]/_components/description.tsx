@@ -225,28 +225,21 @@ function Description(props: Props) {
 
   const onFinishSendMessage = async (values: EnquiryFormValues) => {
     try {
-      const res = await fetch("/api/enquiry", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          phone: values.phone,
-          subject: values.subject,
-          message: values.message,
-          productName: props?.data?.name ?? "",
-          storeName: props?.data?.storeDetails?.store_name ?? "",
-        }),
+      setIsSubmitting(true);
+      const response = await POST(API.ENQUIRY_CREATE, {
+        ...values,
+        productName: props?.data?.name ?? "",
+        storeName: props?.data?.storeDetails?.store_name ?? "",
       });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data?.error || "Failed to send");
+      if (response?.status) {
+        api.success({
+          message: "Message submitted successfully",
+          description: "We'll get back to you within 24 hours.",
+        });
+        form.resetFields();
+      } else {
+        api.error({ message: response?.message || "Failed to send message" });
       }
-      api.success({
-        message: "Message submitted successfully",
-        description: "We'll get back to you within 24 hours.",
-      });
-      form.resetFields();
     } catch (err) {
       api.error({
         message: "Failed to send message",

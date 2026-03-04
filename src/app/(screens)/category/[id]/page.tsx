@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import PageHeader from "./_components/pageHeader";
 import { Space, Tag, notification, Button } from "antd";
@@ -16,7 +16,6 @@ import {
   useParams,
   useRouter,
   useSearchParams,
-  usePathname,
 } from "next/navigation";
 import "./styles.scss";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
@@ -34,9 +33,24 @@ const getCategoryId = (cid: any): string => {
 const ProductByCategory = () => {
   const pageSize = 100;
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const params = useParams();
+
+  // Snapshot all URL params on first render — replaceState clears useSearchParams()
+  // so we freeze the original values here before the useEffect fires.
+  const snap = useRef<Record<string, string | null> | null>(null);
+  if (!snap.current) {
+    snap.current = {
+      id: searchParams.get("id"),
+      ogCategory: searchParams.get("ogCategory"),
+      categoryId: searchParams.get("categoryId"),
+      type: searchParams.get("type"),
+      order: searchParams.get("order"),
+      price: searchParams.get("price"),
+      page: searchParams.get("page"),
+      query: searchParams.get("query"),
+    };
+  }
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [Notifications, contextHolder] = notification.useNotification();
@@ -44,7 +58,7 @@ const ProductByCategory = () => {
   const Settings = useSelector(reduxSettings);
   const categories = useSelector(reduxCategoryItems);
 
-  const [page, setPage] = useState(Number(searchParams?.get("page")) || 1);
+  const [page, setPage] = useState(Number(snap.current?.page) || 1);
   const [initial, setInitial] = useState(true);
 
   const groupedProducts = useMemo<any[]>(() => {
@@ -86,11 +100,9 @@ const ProductByCategory = () => {
     return false;
   }, [meta, page, pageSize]);
 
-  const categoryId = searchParams.get("id")
-    ? getCategoryId(searchParams.get("id"))
-    : "";
-  const ogcategory = searchParams.get("ogCategory");
-  const categoryIdParam = searchParams.get("categoryId");
+  const categoryId = snap.current?.id ? getCategoryId(snap.current.id) : "";
+  const ogcategory = snap.current?.ogCategory ?? null;
+  const categoryIdParam = snap.current?.categoryId ?? null;
 
   const getItemId = (item: any) => {
     const raw = item?.id ?? item?._id ?? item?.pid ?? item?.slug;
@@ -129,37 +141,28 @@ const ProductByCategory = () => {
   };
 
   const updateSearchParams = useCallback(
-    (updates: Record<string, string>) => {
-      const params = new URLSearchParams(searchParams.toString());
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value) {
-          params.set(key, value);
-        } else {
-          params.delete(key);
-        }
-      });
-      router.replace(pathname + "?" + params.toString());
+    (_updates: Record<string, string>) => {
+      // URL is intentionally hidden — keep address bar clean
+      window.history.replaceState(null, "", "/category");
     },
-    [searchParams, pathname, router]
+    []
   );
 
   const initialValues = [
     {
-      status: searchParams.get("order") === "DESC",
-      value: searchParams.get("order") || "ASC",
+      status: snap.current?.order === "DESC",
+      value: snap.current?.order || "ASC",
       title: "New",
     },
     {
       status:
-        searchParams.get("price") === "DESC" &&
-        searchParams.get("order") === "ASC",
+        snap.current?.price === "DESC" && snap.current?.order === "ASC",
       value: "ASC",
       title: "Price: High to Low",
     },
     {
       status:
-        searchParams.get("price") === "ASC" &&
-        searchParams.get("order") === "ASC",
+        snap.current?.price === "ASC" && snap.current?.order === "ASC",
       value: "ASC",
       title: "Price: Low to High",
     },
@@ -185,7 +188,7 @@ const ProductByCategory = () => {
     if (categoryIdParam) {
       const subCategoryIds = getSubCategoryIdsForCategory(categoryIdParam);
       if (subCategoryIds.length > 0) {
-        const searchQuery = searchParams.get("query");
+        const searchQuery = snap.current?.query;
         if (searchQuery) {
           baseParams.set("search", searchQuery);
         }
@@ -246,7 +249,7 @@ const ProductByCategory = () => {
       baseParams.set("category", ogcategory);
     }
 
-    const searchQuery = searchParams.get("query");
+    const searchQuery = snap.current?.query;
     if (searchQuery) {
       baseParams.set("search", searchQuery);
     }
@@ -312,6 +315,11 @@ const ProductByCategory = () => {
     window.scrollTo(0, 0);
   }, [selectedTags]);
 
+  // Hide /[id]?id=...&type=...&categoryId=... — address bar shows /category
+  useEffect(() => {
+    window.history.replaceState(null, "", "/category");
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
     getProductsBySubCategory(1);
@@ -328,7 +336,7 @@ const ProductByCategory = () => {
         <Row>
           <Col lg={12} style={{ margin: 0 }}>
             <PageHeader
-              title={searchParams.get("type")}
+              title={snap.current?.type}
               page={page}
               pageSize={pageSize}
               meta={meta}
@@ -358,7 +366,7 @@ const ProductByCategory = () => {
                   data={item}
                   type="category"
                   cid={categoryId}
-                  cname={searchParams.get("type")}
+                  cname={snap.current?.type}
                   count={3}
                   ogcategory={ogcategory}
                 />
@@ -374,9 +382,7 @@ const ProductByCategory = () => {
             ) : (
               <NoData
                 header="No Products"
-                text1={`No Products found for "${
-                  searchParams.get("type") ?? ""
-                }"`}
+                text1={`No Products found for "${snap.current?.type ?? ""}"`}
               />
             )}
             <div

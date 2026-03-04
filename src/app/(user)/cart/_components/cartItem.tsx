@@ -67,7 +67,7 @@ const CartItem = (props: CartItemProps) => {
       <div
         onClick={() => {
           router.push(
-            `/${props?.data?.slug}/?pid=${props?.data?.pid}&review=2`,
+            `/${props?.data?.slug}/?pid=${props?.data?.pid}`,
           );
         }}
       >
