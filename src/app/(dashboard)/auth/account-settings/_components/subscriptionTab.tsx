@@ -1,12 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Card,
   Button,
   Tag,
   List,
-  Badge,
   notification,
   Spin,
   Row,
@@ -16,7 +15,6 @@ import {
 } from "antd";
 import {
   CheckCircleOutlined,
-  SyncOutlined,
   CrownOutlined,
   SafetyCertificateOutlined,
 } from "@ant-design/icons";
@@ -24,7 +22,6 @@ import { GET, POST, PUT } from "@/util/apicall";
 import API from "@/config/API";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import moment from "moment";
 
 function SubscriptionTab() {
   const { data: session } = useSession();
@@ -32,6 +29,7 @@ function SubscriptionTab() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [verifying, setVerifying] = useState(false);
+  const [subscribingPlanId, setSubscribingPlanId] = useState<number | null>(null);
 
   // Get current store details (including subscription)
   const {
@@ -48,7 +46,11 @@ function SubscriptionTab() {
   const { data: plans, isLoading: plansLoading } = useQuery({
     queryKey: ["subscription-plans-active"],
     queryFn: () => GET(API.SUBSCRIPTION_PLANS_ACTIVE),
-    select: (data: any) => (Array.isArray(data?.data) ? data?.data : []),
+    select: (data: any) => {
+      if (Array.isArray(data?.data?.data)) return data.data.data;
+      if (Array.isArray(data?.data)) return data.data;
+      return [];
+    },
   });
 
   // Handle Payment Verification on Mount
@@ -100,6 +102,7 @@ function SubscriptionTab() {
   };
 
   const handleSubscribe = async (plan: any) => {
+    setSubscribingPlanId(plan.id);
     try {
       const user = session?.user as any;
       if (!user?.email) {
@@ -110,20 +113,12 @@ function SubscriptionTab() {
         return;
       }
 
-      // Initialize Paystack Payment
-      const amountInKobo = Math.round(Number(plan.price_per_day || 0) * 100);
-      const reference = `SUB_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 8)
-        .toUpperCase()}`;
-
+      const amountInKobo = Math.round(Number(plan.price || plan.price_per_day || 0) * 100);
       const callbackUrl = `${window.location.origin}/auth/account-settings?tab=subscription&plan_id=${plan.id}`;
 
-      const payload = {
+      const response: any = await POST(API.PAYSTACK_INITIALIZE, {
         email: user.email,
         amount: amountInKobo,
-        currency: "NGN",
-        reference: reference,
         callback_url: callbackUrl,
         metadata: {
           plan_id: plan.id,
@@ -137,12 +132,16 @@ function SubscriptionTab() {
             },
           ],
         },
-      };
+      });
 
-      const response: any = await POST(API.PAYSTACK_INITIALIZE, payload);
+      // Handle all possible response shapes from backend
+      const authUrl =
+        response?.authorization_url ||
+        response?.data?.data?.authorization_url ||
+        response?.data?.authorization_url;
 
-      if (response?.status && response?.data?.data?.authorization_url) {
-        window.location.href = response.data.data.authorization_url;
+      if (authUrl) {
+        window.location.href = authUrl;
       } else {
         throw new Error(response?.message || "Failed to initialize payment");
       }
@@ -151,6 +150,8 @@ function SubscriptionTab() {
         message: "Payment Error",
         description: err?.message || "Could not start payment process.",
       });
+    } finally {
+      setSubscribingPlanId(null);
     }
   };
 
@@ -212,7 +213,8 @@ function SubscriptionTab() {
         <h3 className="mb-3">Available Plans</h3>
         <Row gutter={[16, 16]}>
           {plans.map((plan: any) => {
-            const isCurrent = plan.id === currentPlanId;
+            const isCurrent = String(plan.id) === String(currentPlanId);
+            const isSubscribing = subscribingPlanId === plan.id;
             return (
               <Col xs={24} sm={12} md={8} key={plan.id}>
                 <Card
@@ -227,9 +229,9 @@ function SubscriptionTab() {
                 >
                   <div className="text-center mb-3">
                     <h2 className="mb-0">
-                      ₦{Number(plan.price_per_day).toLocaleString()}
+                      ₦{Number(plan.price || plan.price_per_day || 0).toLocaleString()}
                     </h2>
-                    <small className="text-muted">per day</small>
+                    <small className="text-muted">per month</small>
                   </div>
 
                   <List
@@ -251,7 +253,8 @@ function SubscriptionTab() {
                       type={isCurrent ? "default" : "primary"}
                       block
                       size="large"
-                      disabled={isCurrent}
+                      disabled={isCurrent || !!subscribingPlanId}
+                      loading={isSubscribing}
                       onClick={() => handleSubscribe(plan)}
                     >
                       {isCurrent ? "Active" : "Subscribe Now"}

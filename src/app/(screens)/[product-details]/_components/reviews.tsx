@@ -41,7 +41,7 @@ function Reviews(props: Props) {
   const router = useRouter();
   const { data: sessionData } = useSession();
   const session = sessionData as SessionData | null;
-  const pid = searchParams.get("pid");
+  const pid = props?.data?.pid || searchParams.get("pid");
   const [Notifications, contextHolder] = notification.useNotification();
   //state
   const [formModal, setFormModal] = useState<boolean>(false);

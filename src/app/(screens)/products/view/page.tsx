@@ -1,6 +1,6 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import PageHeader from "../../../../components/pageHeader/pageHeader";
 import SkelotonProductLoading from "../../../../components/skeleton";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -25,6 +25,21 @@ const result: any = {
 
 function Page() {
   const searchParams = useSearchParams();
+
+  // Snapshot params on first render — replaceState clears useSearchParams()
+  const snap = useRef<Record<string, string | null> | null>(null);
+  if (!snap.current) {
+    snap.current = {
+      type: searchParams.get("type"),
+      position: searchParams.get("position"),
+    };
+  }
+
+  // Hide /view?... from browser — address bar shows /products
+  useEffect(() => {
+    window.history.replaceState(null, "", "/products");
+  }, []);
+
   const [products, setProducts] = useState<any[]>([]);
   const [Notifications, contextHolder] = notification.useNotification();
   const Location = useSelector(reduxLocation);
@@ -58,14 +73,8 @@ function Page() {
     visited: API.USER_HISTORY + `?take=18`,
   };
   //=====================
-  const typeParam = useMemo(
-    () => searchParams.get("type") ?? "",
-    [searchParams],
-  );
-  const positionParam = useMemo(
-    () => searchParams.get("position") ?? "",
-    [searchParams],
-  );
+  const typeParam = snap.current?.type ?? "";
+  const positionParam = snap.current?.position ?? "";
   const isFeaturedView = typeParam === "featured";
   const isAllProductsView = typeParam === "all";
 
@@ -349,7 +358,13 @@ function Page() {
         <SkelotonProductLoading count={mediaQuery ? 6 : 18} />
       ) : products?.length ? (
         isFeaturedView ? (
-          <>
+          <InfiniteScroll
+            dataLength={products.length}
+            next={handleShowMore}
+            hasMore={hasFeaturedMore || fallbackHasMore}
+            loader={<SkelotonProductLoading count={mediaQuery ? 2 : 6} />}
+            endMessage={<p />}
+          >
             <Row className="gy-2 gy-md-3 mx-0 gx-2 gx-md-3 mt-md-3">
               {products?.map((item: any, index: number) => (
                 <Col
@@ -362,32 +377,15 @@ function Page() {
                 </Col>
               ))}
             </Row>
-            {loadingMore ? (
-              <div className="text-center mt-3">
-                <SkelotonProductLoading count={mediaQuery ? 2 : 6} />
-              </div>
-            ) : null}
-            {(hasFeaturedMore || fallbackHasMore) && (
-              <div className="d-flex justify-content-center mt-3">
-                <button
-                  className="btn"
-                  style={{
-                    border: "1px solid #A10244",
-                    color: "#A10244",
-                    backgroundColor: "#ffffff",
-                    padding: "8px 20px",
-                    borderRadius: "30px",
-                  }}
-                  onClick={handleShowMore}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? "Loading..." : "Show More"}
-                </button>
-              </div>
-            )}
-          </>
+          </InfiniteScroll>
         ) : isAllProductsView ? (
-          <>
+          <InfiniteScroll
+            dataLength={products.length}
+            next={handleShowMore}
+            hasMore={meta?.hasNextPage ?? false}
+            loader={<SkelotonProductLoading count={mediaQuery ? 2 : 6} />}
+            endMessage={<p />}
+          >
             <Row className="gy-2 gy-md-3 mx-0 gx-2 gx-md-3 mt-md-3">
               {products?.map((item: any, index: number) => (
                 <Col
@@ -400,25 +398,7 @@ function Page() {
                 </Col>
               ))}
             </Row>
-            {(meta?.hasNextPage ?? false) && (
-              <div className="d-flex justify-content-center mt-3">
-                <button
-                  className="btn"
-                  style={{
-                    border: "1px solid #A10244",
-                    color: "#A10244",
-                    backgroundColor: "#ffffff",
-                    padding: "8px 20px",
-                    borderRadius: "30px",
-                  }}
-                  onClick={handleShowMore}
-                  disabled={loadingMore}
-                >
-                  {loadingMore ? "Loading..." : "Show More"}
-                </button>
-              </div>
-            )}
-          </>
+          </InfiniteScroll>
         ) : (
           <InfiniteScroll
             dataLength={products.length}

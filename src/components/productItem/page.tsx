@@ -46,7 +46,7 @@ function ProductItem(props: any) {
   }, [props?.item?.pid, props?.item?.id, props?.item?.retail_rate]);
 
   const openDetails = () => {
-    navigate.push(`/${props?.item?.slug}/?pid=${props?.item?.pid}&review=2`);
+    navigate.push(`/${props?.item?.slug}/?pid=${props?.item?.pid}`);
   };
   const content = (
     <div>
