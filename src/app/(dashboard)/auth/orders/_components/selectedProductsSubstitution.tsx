@@ -1,49 +1,107 @@
+import { Empty, Button, Badge, Avatar, Divider } from "antd";
+import { DeleteOutlined, CheckCircleFilled, InboxOutlined } from "@ant-design/icons";
+import "../../orders/Style.scss";
 
-import { Empty } from "antd"
-import { Col, Row } from "react-bootstrap";
-import { DeleteOutlined } from '@ant-design/icons';
-
-import "../../orders/Style.scss"
-
-interface items {
-    _id: number;
-    name: string;
-    image: string;
-    description: string;
+interface SubstituteItem {
+  _id: number;
+  name: string;
+  image: string;
+  price?: string;
+  description?: string;
+  [key: string]: unknown;
 }
 
-const SelectedProductsSubstitution = ({ select, changeData, handleSubmit }: any) => {
-
-    return (
-        <div style={{ position: "sticky", top: "21px", overflow: "hidden" }}>
-            <h5>Selected Products ({select.length})</h5>
-            <Row md={1} className="px-4 subProductsList" >
-                {select.length == 0 ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} /> :
-                    select?.map((Item: items) => (
-                        <Col key={Item._id} className="border-bottom p-2">
-                            <Row className="py-2">
-                                <Col md={2} className="d-flex justify-center align-items-center">
-                                    <img src={Item.image} width='100%' />
-                                </Col>
-                                <Col md={9} className="d-flex justify-center align-items-center">
-                                    <div>
-                                        <h6>{Item.name}</h6>
-                                        <p className="disc">{Item.description}</p>
-                                    </div>
-                                </Col>
-                                <Col md={1} className="d-flex justify-center align-items-center">
-                                    <DeleteOutlined className="closeBtn" onClick={() => {
-                                        const deletedArray = select.filter((data: items) => Item._id != data._id)
-                                        changeData(deletedArray)
-                                    }} />
-                                </Col>
-                            </Row>
-                        </Col>
-                    ))}
-            </Row>
-            <button className="my-4 reqSubmitBtn" type="submit" onClick={handleSubmit} >Request Substitution</button>
-        </div>
-    )
+interface Props {
+  select: SubstituteItem[];
+  changeData: (newSelect: SubstituteItem[]) => void;
+  handleSubmit: () => void;
+  submitting?: boolean;
 }
 
-export default SelectedProductsSubstitution     
+const SelectedProductsSubstitution = ({ select, changeData, handleSubmit, submitting }: Props) => {
+  const removeItem = (id: number) => {
+    changeData(select.filter((item) => item._id !== id));
+  };
+
+  return (
+    <div className="sub-selected-panel">
+      {/* Header */}
+      <div className="sub-selected-header">
+        <span className="sub-selected-title">
+          <CheckCircleFilled style={{ color: "#22c55e", marginRight: 8 }} />
+          Selected Replacements
+        </span>
+        {select.length > 0 && (
+          <Badge
+            count={select.length}
+            style={{ backgroundColor: "#FF5F15" }}
+          />
+        )}
+      </div>
+
+      <Divider style={{ margin: "12px 0" }} />
+
+      {/* Product list */}
+      <div className="sub-selected-list">
+        {select.length === 0 ? (
+          <div className="sub-selected-empty">
+            <InboxOutlined style={{ fontSize: 36, color: "#d1d5db" }} />
+            <p>No replacements added yet</p>
+            <span>Browse products on the left and click <strong>Add</strong></span>
+          </div>
+        ) : (
+          select.map((item) => (
+            <div key={item._id} className="sub-selected-item">
+              <Avatar
+                src={item.image}
+                size={48}
+                shape="square"
+                style={{ borderRadius: 8, flexShrink: 0, border: "1px solid #f0f0f0" }}
+              />
+              <div className="sub-selected-item-info">
+                <div className="sub-selected-item-name">{item.name}</div>
+                {item.price && (
+                  <div className="sub-selected-item-price">{item.price}</div>
+                )}
+              </div>
+              <button
+                className="sub-selected-item-remove"
+                onClick={() => removeItem(item._id)}
+                title="Remove"
+              >
+                <DeleteOutlined />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Submit */}
+      <div className="sub-selected-footer">
+        <Button
+          type="primary"
+          size="large"
+          block
+          loading={submitting}
+          disabled={select.length === 0}
+          onClick={handleSubmit}
+          style={{
+            background: select.length > 0 ? "#FF5F15" : undefined,
+            borderColor: select.length > 0 ? "#FF5F15" : undefined,
+            borderRadius: 8,
+            height: 48,
+            fontWeight: 600,
+            fontSize: 15,
+          }}
+        >
+          {submitting ? "Submitting…" : `Submit Substitution${select.length > 0 ? ` (${select.length})` : ""}`}
+        </Button>
+        {select.length === 0 && (
+          <p className="sub-selected-hint">Add at least one replacement product to submit</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default SelectedProductsSubstitution;

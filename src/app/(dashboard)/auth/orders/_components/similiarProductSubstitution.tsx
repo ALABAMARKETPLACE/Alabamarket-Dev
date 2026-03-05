@@ -52,9 +52,12 @@ const SimiliarProductSubstitution = ({ select, changeData }: props) => {
   };
 
   useEffect(() => {
+    if (!session?.user?.store_id) return;
     const categories = async () => {
       try {
-        const response: unknown = await GET(API.STORE_SEARCH_GETINFO);
+        const response: unknown = await GET(
+          API.STORE_SEARCH_GETINFO + session.user.store_id,
+        );
         const data = response as { data: { category: CategoryItem[] } };
         setCategory(data.data.category);
       } catch {
@@ -62,7 +65,7 @@ const SimiliarProductSubstitution = ({ select, changeData }: props) => {
       }
     };
     categories();
-  }, [notificationApi]);
+  }, [notificationApi, session?.user?.store_id]);
 
   useEffect(() => {
     const getData = async () => {
