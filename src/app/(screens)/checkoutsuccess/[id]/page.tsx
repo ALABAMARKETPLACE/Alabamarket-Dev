@@ -76,6 +76,7 @@ interface GuestOrderPayload {
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./styles.scss";
+import PostOrderReviewModal from "./_components/PostOrderReviewModal";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
@@ -147,6 +148,26 @@ function Checkout() {
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
   const [paymentRef, setPaymentRef] = useState<string | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [reviewProducts, setReviewProducts] = useState<any[]>([]);
+
+  const triggerReviewModal = useCallback((data: unknown[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const items: any[] = [];
+    data.forEach((order) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const o = order as any;
+      if (Array.isArray(o?.orderItems)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        o.orderItems.forEach((item: unknown) => items.push(item));
+      }
+    });
+    if (items.length > 0) {
+      setReviewProducts(items);
+      setTimeout(() => setShowReviewModal(true), 1800);
+    }
+  }, []);
 
   // Get route parameter to determine payment method
   const routeId = params?.id;
@@ -899,6 +920,7 @@ function Checkout() {
         localStorage.setItem("order_creation_completed", "true");
 
         setOrderStatus(true);
+        triggerReviewModal(Array.isArray(response?.data) ? response.data : []);
 
         // Track Purchase
         if (response?.data && Array.isArray(response.data)) {
@@ -996,6 +1018,7 @@ function Checkout() {
     isPaystack,
     searchParams,
     paymentRef,
+    triggerReviewModal,
   ]);
 
   useEffect(() => {
@@ -1016,6 +1039,7 @@ function Checkout() {
           setOrderStatus(true);
           setPaymentStatus(true);
           setIsLoading(false);
+          triggerReviewModal(Array.isArray(orderData) ? orderData : []);
           return;
         } catch (e) {
           console.error("Error parsing existing order data", e);
@@ -1438,6 +1462,12 @@ function Checkout() {
 
       <br />
       <br />
+
+      <PostOrderReviewModal
+        open={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        products={reviewProducts}
+      />
     </div>
   );
 }
