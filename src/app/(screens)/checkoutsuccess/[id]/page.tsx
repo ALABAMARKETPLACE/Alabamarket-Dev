@@ -1131,7 +1131,7 @@ function Checkout() {
                     <Button
                       type="primary"
                       size="large"
-                      onClick={() => router.replace("/user/orders")}
+                      onClick={() => router.push("/user/orders")}
                       style={{ borderRadius: 10, minWidth: 150 }}
                     >
                       Track My Order
