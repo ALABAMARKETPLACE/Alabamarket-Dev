@@ -74,7 +74,6 @@ interface GuestOrderPayload {
 }
 
 import { useCallback, useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import "./styles.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
@@ -153,14 +152,15 @@ function Checkout() {
   const isCOD = routeId === "1";
   const isPaystack = routeId === "2";
 
-  // Always generate a new payment reference for each order attempt
+  // Read the actual Paystack reference from URL or localStorage (do NOT generate a new one)
   useEffect(() => {
     if (isPaystack) {
-      const newRef = `ps_${uuidv4()}`;
-      setPaymentRef(newRef);
-      localStorage.setItem("paystack_payment_reference", newRef);
+      const urlRef = searchParams.get("reference") || searchParams.get("ref");
+      const storedRef = localStorage.getItem("paystack_payment_reference");
+      const ref = urlRef || storedRef || null;
+      setPaymentRef(ref);
     }
-  }, [isPaystack]);
+  }, [isPaystack, searchParams]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getOrderItems = useCallback((response: any[]) => {
@@ -180,16 +180,34 @@ function Checkout() {
   }, []);
 
   const PlaceOrder = useCallback(async () => {
-    try {
-      setOrderCreated(true); // Prevent multiple executions
+    // Synchronous lock to prevent React Strict Mode double-mount duplicate orders
+    // Must be checked BEFORE setOrderCreated (state is not shared across double-mounts)
+    const globalLockKey = "order_creation_in_progress";
+    if (localStorage.getItem(globalLockKey)) {
+      // Another invocation is already running. Wait briefly then load from cache.
+      setTimeout(() => {
+        const existingOrderData = localStorage.getItem("last_order_response");
+        if (existingOrderData) {
+          try {
+            const orderData = JSON.parse(existingOrderData);
+            getOrderItems(orderData);
+            setResponseData(orderData);
+            setOrderStatus(true);
+            setPaymentStatus(true);
+            setIsLoading(false);
+            triggerReviewModal(Array.isArray(orderData) ? orderData : []);
+          } catch (e) {
+            console.error("Error loading cached order data", e);
+            setIsLoading(false);
+          }
+        }
+      }, 2000);
+      return;
+    }
+    localStorage.setItem(globalLockKey, "1");
 
-      // Always use a fresh payment reference for each attempt
-      let currentPaymentRef = paymentRef;
-      if (isPaystack && !currentPaymentRef) {
-        currentPaymentRef = `ps_${uuidv4()}`;
-        setPaymentRef(currentPaymentRef);
-        localStorage.setItem("paystack_payment_reference", currentPaymentRef);
-      }
+    try {
+      setOrderCreated(true); // Prevent multiple executions within same instance
 
       let finalOrderData;
 
@@ -954,6 +972,7 @@ function Checkout() {
         dispatch(clearCheckout());
 
         setPaymentStatus(true);
+        localStorage.removeItem(globalLockKey); // Release lock on success
       } else {
         Notifications["error"]({
           message: response?.message ?? "Order creation failed",
@@ -961,6 +980,7 @@ function Checkout() {
         });
         setPaymentStatus(true);
         setOrderStatus(false);
+        localStorage.removeItem(globalLockKey); // Release lock so user can retry
       }
 
       setIsLoading(false);
@@ -969,8 +989,7 @@ function Checkout() {
       setPaymentStatus(true);
       setOrderStatus(false);
       setIsLoading(false);
-      // Don't reset orderCreated to false - it causes infinite re-render loop
-      // User can manually retry by clicking a button or refreshing
+      localStorage.removeItem(globalLockKey); // Release lock so user can retry
 
       console.error("Order creation error:", err);
       Notifications["error"]({
