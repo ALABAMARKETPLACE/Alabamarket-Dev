@@ -290,3 +290,259 @@ $text-color-secondary: #718096;
     gap: 6px;
   }
 }
+
+// =============================================================================
+// ORDER SUBSTITUTION PAGE
+// =============================================================================
+
+.sub-page-wrapper {
+  padding: 0 0 48px;
+  max-width: 1200px;
+}
+
+// Steps card at the top
+.sub-steps-card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+
+  .ant-steps-item-title {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .ant-steps-item-description {
+    font-size: 12px;
+  }
+}
+
+// Section cards (Step 1 form, Step 2 browser)
+.sub-section-card {
+  border-radius: 12px;
+  border: 1.5px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+
+  .ant-card-head {
+    border-bottom: 1px solid #f3f4f6;
+    padding: 0 20px;
+    min-height: 52px;
+  }
+
+  .ant-card-body {
+    padding: 20px;
+  }
+}
+
+.sub-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+
+.sub-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #FF5F15;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// ── Quantity side-by-side row (Substitute Qty | Available Qty)
+.sub-form-qty-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Product preview after selecting an item to substitute
+.sub-form-product-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-top: -8px;
+  margin-bottom: 16px;
+}
+
+.sub-form-product-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.sub-form-product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a202c;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+// Ordered → Available qty summary row
+.sub-form-qty-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: #6b7280;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+
+  strong {
+    color: #111;
+  }
+}
+
+.sub-form-qty-arrow {
+  color: #FF5F15;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+// ── Selected products panel (right sticky sidebar)
+.sub-selected-panel {
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sub-selected-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 0;
+}
+
+.sub-selected-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  display: flex;
+  align-items: center;
+}
+
+.sub-selected-list {
+  padding: 0 16px;
+  max-height: 420px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #e5e7eb;
+    border-radius: 4px;
+  }
+}
+
+.sub-selected-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+  text-align: center;
+  color: #9ca3af;
+
+  p {
+    margin: 10px 0 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+  }
+
+  span {
+    font-size: 12px;
+    color: #9ca3af;
+    line-height: 1.5;
+  }
+}
+
+.sub-selected-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f3f4f6;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.sub-selected-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sub-selected-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a202c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sub-selected-item-price {
+  font-size: 12px;
+  color: #FF5F15;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.sub-selected-item-remove {
+  background: none;
+  border: 1px solid #fee2e2;
+  border-radius: 6px;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 14px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #fee2e2;
+    border-color: #ef4444;
+  }
+}
+
+.sub-selected-footer {
+  padding: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.sub-selected-hint {
+  font-size: 11px;
+  color: #9ca3af;
+  text-align: center;
+  margin: 8px 0 0;
+}
