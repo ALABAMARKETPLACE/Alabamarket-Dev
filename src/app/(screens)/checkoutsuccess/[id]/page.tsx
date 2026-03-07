@@ -1131,7 +1131,11 @@ function Checkout() {
                     <Button
                       type="primary"
                       size="large"
-                      onClick={() => router.push("/user/orders")}
+                      onClick={() =>
+                        router.push(
+                          `/user/orders/${responseData?.[0]?.orderId || responseData?.[0]?._id}`,
+                        )
+                      }
                       style={{ borderRadius: 10, minWidth: 150 }}
                     >
                       Track My Order
