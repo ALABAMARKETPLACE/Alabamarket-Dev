@@ -75,6 +75,7 @@ interface GuestOrderPayload {
 
 import { useCallback, useEffect, useState } from "react";
 import "./styles.scss";
+import PostOrderReviewModal from "./_components/PostOrderReviewModal";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
@@ -146,6 +147,53 @@ function Checkout() {
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
   const [paymentRef, setPaymentRef] = useState<string | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [reviewProducts, setReviewProducts] = useState<any[]>([]);
+
+  const triggerReviewModal = useCallback((data: unknown[]) => {
+    const isUUID = (v: unknown): v is string =>
+      typeof v === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cartItems: any[] = Array.isArray(Checkout?.cart) ? Checkout.cart : [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const items: any[] = [];
+    data.forEach((order) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const o = order as any;
+      if (Array.isArray(o?.orderItems)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        o.orderItems.forEach((item: any) => {
+          const directUUID =
+            (isUUID(item?.product?._id) ? item.product._id : null) ??
+            (isUUID(item?.product?.pid) ? item.product.pid : null) ??
+            (isUUID(item?._id) ? item._id : null);
+          if (!directUUID) {
+            const numericPid = item?.product_id ?? item?.productId;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const cartMatch = cartItems.find((c: any) => {
+              const cPid =
+                c?.productId ?? c?.product_id ?? c?.product?.id ?? c?.product?.pid;
+              // eslint-disable-next-line eqeqeq
+              return cPid != null && cPid == numericPid;
+            });
+            const cartUUID =
+              (isUUID(cartMatch?.product?._id) ? cartMatch.product._id : null) ??
+              (isUUID(cartMatch?.product?.pid) ? cartMatch.product.pid : null) ??
+              (isUUID(cartMatch?._id) ? cartMatch._id : null);
+            items.push({ ...item, _id: cartUUID ?? item?._id });
+          } else {
+            items.push({ ...item, _id: directUUID });
+          }
+        });
+      }
+    });
+    if (items.length > 0) {
+      setReviewProducts(items);
+      setTimeout(() => setShowReviewModal(true), 1800);
+    }
+  }, [Checkout]);
 
   // Get route parameter to determine payment method
   const routeId = params?.id;
@@ -917,6 +965,7 @@ function Checkout() {
         localStorage.setItem("order_creation_completed", "true");
 
         setOrderStatus(true);
+        triggerReviewModal(Array.isArray(response?.data) ? response.data : []);
 
         // Track Purchase
         if (response?.data && Array.isArray(response.data)) {
@@ -1015,6 +1064,7 @@ function Checkout() {
     isPaystack,
     searchParams,
     paymentRef,
+    triggerReviewModal,
   ]);
 
   useEffect(() => {
@@ -1035,6 +1085,7 @@ function Checkout() {
           setOrderStatus(true);
           setPaymentStatus(true);
           setIsLoading(false);
+          triggerReviewModal(Array.isArray(orderData) ? orderData : []);
           return;
         } catch (e) {
           console.error("Error parsing existing order data", e);
@@ -1457,6 +1508,11 @@ function Checkout() {
 
       <br />
       <br />
+      <PostOrderReviewModal
+        open={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        products={reviewProducts}
+      />
     </div>
   );
 }
