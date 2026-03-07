@@ -65,6 +65,7 @@ const SelectedProductsSubstitution = ({ select, changeData, handleSubmit, submit
                 )}
               </div>
               <button
+                type="button"
                 className="sub-selected-item-remove"
                 onClick={() => removeItem(item._id)}
                 title="Remove"

@@ -10,10 +10,11 @@ import { useState } from "react";
 import { ArrowLeftOutlined, SwapOutlined, SearchOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import API from "@/config/API";
 import { POST } from "@/util/apicall";
+import { useSession } from "next-auth/react";
 
 interface formType {
   availableQuantity: number;
-  substituteQuantity: number;
+  substitueQuantity: number;
   orderId: number;
   orderItemId: number;
   remark: string;
@@ -32,11 +33,16 @@ interface SubstituteItem {
 export default function OrderSubstitution() {
   const router = useRouter();
   const { substitute } = useParams();
+  const { data: sessionData } = useSession();
+  const session = sessionData as { role?: string; type?: string; user?: { role?: string; type?: string } } | null;
+  const userRole = session?.role || session?.user?.role;
+  const userType = session?.type || session?.user?.type;
+  const isAdmin = userRole === "admin" || userType === "admin";
+
   const [selectSubstitute, setSelectSubstitute] = useState<SubstituteItem[]>([]);
   const [form] = Form.useForm();
   const [notificationApi, contextHolder] = notification.useNotification();
   const [submitting, setSubmitting] = useState(false);
-  // Real DB primary key from the fetched order (may differ from URL order_id reference)
   const [realOrderId, setRealOrderId] = useState<number | null>(null);
 
   const orderId = substitute?.[1] || "";
@@ -48,13 +54,12 @@ export default function OrderSubstitution() {
   const handleSubmit = async () => {
     if (submitting) return;
 
-    // Step 1 — validate form fields (separate catch so API errors don't look like form errors)
+    // Step 1 — validate form fields
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let values: any;
     try {
       values = await form.validateFields();
-    } catch (validationErr: unknown) {
-      console.log("Form validation failed:", validationErr);
+    } catch {
       notificationApi.error({
         message: "Incomplete Form",
         description: "Please fill in all required fields before submitting.",
@@ -62,7 +67,16 @@ export default function OrderSubstitution() {
       return;
     }
 
-    // Step 2 — must have at least one replacement product
+    // Step 2 — order must be loaded
+    if (!realOrderId) {
+      notificationApi.error({
+        message: "Order Not Loaded",
+        description: "Please wait for the order details to finish loading.",
+      });
+      return;
+    }
+
+    // Step 3 — must have at least one replacement product
     if (selectSubstitute.length === 0) {
       notificationApi.error({
         message: "No Replacement Selected",
@@ -73,14 +87,13 @@ export default function OrderSubstitution() {
 
     const formValues: formType = {
       ...values,
-      orderId: realOrderId ?? Number(orderId),
+      orderId: realOrderId!,
       orderItemId: Number(values.orderItemId),
-      substituteQuantity: Number(values.substituteQuantity),
+      substitueQuantity: Number(values.substituteQuantity),
       availableQuantity: Number(values.availableQuantity),
-      substitute: selectSubstitute.map((item: SubstituteItem) => item._id),
+      substitute: selectSubstitute.map((item: SubstituteItem) => item._id).filter((id) => id > 0),
     };
 
-    // Step 3 — submit to API
     setSubmitting(true);
     try {
       await POST(API.ORDER_SUBSTITUTION, formValues);
@@ -90,7 +103,6 @@ export default function OrderSubstitution() {
       });
       router.push(`/auth/orders/${orderId}`);
     } catch (apiErr: unknown) {
-      console.log("Substitution API error:", apiErr);
       notificationApi.error({
         message: "Submission Failed",
         description: "Could not submit the substitution request. Please try again.",
@@ -100,7 +112,6 @@ export default function OrderSubstitution() {
     }
   };
 
-  // Derive current step from form state for the progress indicator
   const currentStep = selectSubstitute.length > 0 ? 1 : 0;
 
   return (
@@ -167,10 +178,11 @@ export default function OrderSubstitution() {
                 layout="vertical"
               >
                 <OrderSubstitutionForm
-                orderId={orderId}
-                form={form}
-                onOrderLoaded={(id) => setRealOrderId(id)}
-              />
+                  orderId={orderId}
+                  form={form}
+                  isAdmin={isAdmin}
+                  onOrderLoaded={(id) => setRealOrderId(id)}
+                />
               </Form>
             </Card>
 
@@ -188,6 +200,7 @@ export default function OrderSubstitution() {
               <SimiliarProductSubstitution
                 select={selectSubstitute}
                 changeData={functionCall}
+                isAdmin={isAdmin}
               />
             </Card>
           </Col>

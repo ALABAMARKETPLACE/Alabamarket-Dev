@@ -8,6 +8,7 @@ interface OrderSubstitutionFormProps {
   orderId: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   form: any;
+  isAdmin?: boolean;
   /** Called once the order is fetched — passes the real DB id back to the parent */
   onOrderLoaded?: (realId: number) => void;
 }
@@ -15,6 +16,7 @@ interface OrderSubstitutionFormProps {
 const OrderSubstitutionForm: React.FC<OrderSubstitutionFormProps> = ({
   orderId,
   form,
+  isAdmin,
   onOrderLoaded,
 }) => {
   const [notificationApi, contextHolder] = notification.useNotification();
@@ -30,11 +32,15 @@ const OrderSubstitutionForm: React.FC<OrderSubstitutionFormProps> = ({
         setLoading(false);
         return;
       }
-      const response: any = await GET(API_ADMIN.ORDER_DETAILS + `${orderId}`);
+      const endpoint = isAdmin
+        ? API_ADMIN.ORDER_DETAILS + `${orderId}`
+        : API_ADMIN.ORDER_GETONE_SELLER + `${orderId}`;
+      const response: any = await GET(endpoint);
       if (response.data && response.data.orderItems) {
         setOrderProduct(response.data.orderItems);
-        if (onOrderLoaded && response.data.id) {
-          onOrderLoaded(Number(response.data.id));
+        const realId = response.data.order_id ?? response.data.id ?? response.data._id;
+        if (onOrderLoaded && realId) {
+          onOrderLoaded(Number(realId));
         }
       } else {
         notificationApi.warning({
@@ -42,8 +48,7 @@ const OrderSubstitutionForm: React.FC<OrderSubstitutionFormProps> = ({
           description: "There are no products in this order to substitute",
         });
       }
-    } catch (error) {
-      console.error("Error fetching order data:", error);
+    } catch {
       notificationApi.error({
         message: "Error fetching order data",
         description: "Oops! Something went wrong while fetching order details.",
