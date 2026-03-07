@@ -811,10 +811,9 @@ function Home() {
         combined.push(...fillers);
       }
 
-      // Boosted products are shuffled among themselves so their display order
-      // rotates on every tick, then filler follows.
+      // Boosted products lead the section, filler shuffled behind them
       return [
-        ...shuffleCandidates(pinned, rotationSeed + position * 100),
+        ...pinned,
         ...shuffleCandidates(combined, rotationSeed + position * 1000),
       ];
     };

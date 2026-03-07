@@ -20,8 +20,6 @@ interface SellerData {
 
 type Props = {
   data: SellerData;
-  /** Card header label — defaults to "Seller Details" */
-  label?: string;
 };
 
 /**
@@ -40,42 +38,12 @@ function pick(
   return undefined;
 }
 
-/**
- * Like pick() but also accepts numbers — needed for ID fields
- * which the backend commonly returns as numbers, not strings.
- */
-function pickId(
-  obj: Record<string, unknown> | null | undefined,
-  ...keys: string[]
-): string | number | undefined {
-  if (!obj) return undefined;
-  for (const k of keys) {
-    const v = obj[k];
-    if ((typeof v === "string" && v.trim().length > 0) || (typeof v === "number" && v > 0)) {
-      return v as string | number;
-    }
-  }
-  return undefined;
-}
-
-/** Pull a nested plain-object sub-key, or null */
-function sub(
-  obj: Record<string, unknown> | null | undefined,
-  key: string,
-): Record<string, unknown> | null {
-  if (!obj) return null;
-  const v = obj[key];
-  if (v && typeof v === "object" && !Array.isArray(v)) return v as Record<string, unknown>;
-  return null;
-}
-
 export default function SellerDetailsCard(props: Props) {
-  const cardTitle = props.label ?? "Seller Details";
   const storeId = props.data?.storeId || props.data?.seller_id;
   const inline = props.data as Record<string, unknown>;
 
   // ── 1. Fetch store registration details (coorporate_store/sellerdetails/:id)
-  //    Response shape: { status, data: { name, email, phone, code, business_address, store_name, user_id, … } }
+  //    Response shape: { status, data: { name, email, phone, code, business_address, store_name, … } }
   const { data: storeDetails, isLoading: isStoreLoading } = useQuery({
     queryFn: async () => {
       const res = (await GET(API_ADMIN.STORE_INFO_ADMIN + storeId)) as Record<
@@ -93,13 +61,13 @@ export default function SellerDetailsCard(props: Props) {
     enabled: !!storeId,
   });
 
-  // ── 2. Discover seller user ID from store details.
-  //    NOTE: user_id is commonly a number — pickId() handles both string and number.
+  // ── 2. Discover seller user ID from store details
   const sellerUserId =
-    pickId(inline, "seller_user_id", "userId", "user_id", "sellerId") ??
-    pickId(storeDetails, "user_id", "userId", "seller_user_id", "sellerId");
+    pick(inline, "seller_user_id", "sellerId") ||
+    pick(storeDetails, "user_id", "userId", "seller_user_id", "sellerId");
 
   // ── 3. Fetch seller auth profile (auth/sellers/:userId)
+  //    Often carries phone, email, address that the store record may lack.
   const { data: sellerAuth } = useQuery({
     queryFn: async () => {
       const res = (await GET(
@@ -114,7 +82,7 @@ export default function SellerDetailsCard(props: Props) {
     enabled: !!sellerUserId,
   });
 
-  // ── 4. Fetch general user profile (user/details/:userId)
+  // ── 4. Fetch general user profile (user/details/:userId) — last resort
   const { data: userProfile } = useQuery({
     queryFn: async () => {
       const res = (await GET(
@@ -129,29 +97,33 @@ export default function SellerDetailsCard(props: Props) {
     enabled: !!sellerUserId,
   });
 
-  // Sub-objects that the backend sometimes nests contact info inside
-  const storeUser = sub(storeDetails, "user") ?? sub(storeDetails, "seller") ?? sub(storeDetails, "User");
-  const authUser  = sub(sellerAuth, "user") ?? sub(sellerAuth, "User");
-
   // ── Helper: build a phone string including country code when available
   const buildPhone = (
     src: Record<string, unknown> | null | undefined,
   ): string | undefined => {
     if (!src) return undefined;
+    const cc = pick(src, "code", "countrycode", "country_code");
     const ph = pick(src, "phone", "phone_no", "phone_number");
-    if (!ph) return undefined;
-    // If the number already starts with '+', it includes the country code
-    if (ph.startsWith("+")) return ph;
-    const cc = pick(src, "code", "countrycode", "country_code", "dial_code");
-    return cc ? `${cc}${ph}`.replace(/\s+/g, "") : ph;
+    if (ph && cc) return `${cc}${ph}`.replace(/\s+/g, "");
+    return ph;
   };
 
   // ── Derived display values ──
 
   const getSellerName = (): string => {
     return (
-      pick(storeDetails, "seller_name", "sellerName", "business_name", "businessName", "store_name", "storeName", "user_name", "userName", "name") ||
-      pick(storeUser, "name", "seller_name", "user_name") ||
+      pick(
+        storeDetails,
+        "seller_name",
+        "sellerName",
+        "business_name",
+        "businessName",
+        "store_name",
+        "storeName",
+        "user_name",
+        "userName",
+        "name",
+      ) ||
       pick(sellerAuth, "seller_name", "business_name", "store_name", "name") ||
       pick(inline, "store_name", "seller_name") ||
       (storeId ? `Store #${storeId}` : "N/A")
@@ -161,9 +133,7 @@ export default function SellerDetailsCard(props: Props) {
   const getPhoneNumber = (): string => {
     return (
       buildPhone(storeDetails) ||
-      buildPhone(storeUser) ||
       buildPhone(sellerAuth) ||
-      buildPhone(authUser) ||
       buildPhone(userProfile) ||
       pick(inline, "store_phone", "seller_phone") ||
       "N/A"
@@ -173,9 +143,7 @@ export default function SellerDetailsCard(props: Props) {
   const getEmail = (): string => {
     return (
       pick(storeDetails, "email", "store_email", "storeEmail", "seller_email") ||
-      pick(storeUser, "email") ||
       pick(sellerAuth, "email") ||
-      pick(authUser, "email") ||
       pick(userProfile, "email") ||
       pick(inline, "store_email", "seller_email") ||
       "N/A"
@@ -184,11 +152,16 @@ export default function SellerDetailsCard(props: Props) {
 
   const getAddress = (): string => {
     return (
-      pick(storeDetails, "business_address", "businessAddress", "address", "store_address", "storeAddress") ||
-      pick(storeUser, "address", "business_address") ||
+      pick(
+        storeDetails,
+        "business_address",
+        "businessAddress",
+        "address",
+        "store_address",
+        "storeAddress",
+      ) ||
       pick(sellerAuth, "business_address", "address") ||
-      pick(authUser, "address", "business_address") ||
-      pick(userProfile, "address", "business_address") ||
+      pick(userProfile, "address") ||
       pick(inline, "store_address", "seller_address") ||
       "N/A"
     );
@@ -206,7 +179,6 @@ export default function SellerDetailsCard(props: Props) {
     if (hasInline) {
       return (
         <StoreInfoCard
-          title={cardTitle}
           store_name={inline.store_name as string | undefined}
           store_email={inline.store_email as string | undefined}
           store_phone={inline.store_phone as string | undefined}
@@ -220,7 +192,7 @@ export default function SellerDetailsCard(props: Props) {
         title={
           <span>
             <ShopOutlined style={{ marginRight: 8 }} />
-            {cardTitle}
+            Seller Details
           </span>
         }
         className="h-100"
@@ -235,7 +207,7 @@ export default function SellerDetailsCard(props: Props) {
       title={
         <span>
           <ShopOutlined style={{ marginRight: 8 }} />
-          {cardTitle}
+          Seller Details
         </span>
       }
       loading={isStoreLoading}
