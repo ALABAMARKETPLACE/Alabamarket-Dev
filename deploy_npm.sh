@@ -12,6 +12,10 @@ echo "🏷️ App Name: $APP_NAME"
 echo "📦 Running npm install..."
 npm install --legacy-peer-deps
 
+echo "🧹 Clearing build cache..."
+rm -f tsconfig.tsbuildinfo
+rm -rf .next
+
 echo "🏗️ Running npm build..."
 npm run build
 
