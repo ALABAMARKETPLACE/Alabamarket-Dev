@@ -15,7 +15,6 @@ import { Button, Tag } from "antd";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useMemo } from "react";
 
 
 import { Order } from "../_components/dataTable";
@@ -101,27 +100,15 @@ export default function OrderDetails() {
   // Order status history
   const orderStatus = order.orderStatus || [];
 
-  // Collect all unique seller store IDs from the order:
-  // 1. order.stores[]  — present on multi-seller orders
-  // 2. order.storeId / order.store_id — single-seller / fallback
-  // 3. each orderItem.storeId / store_id — per-product store reference
-  const sellerStoreIds = useMemo(() => {
-    const seen = new Set<string | number>();
-    const add = (v: unknown) => {
-      if (v != null && v !== "") seen.add(v as string | number);
-    };
-    if (Array.isArray(order.stores)) {
-      (order.stores as unknown[]).forEach(add);
-    }
-    add(order.storeId);
-    add(order.store_id);
-    if (Array.isArray(order.orderItems)) {
-      (order.orderItems as Record<string, unknown>[]).forEach((item) => {
-        add(item.storeId ?? item.store_id ?? item.sellerId ?? item.seller_id);
-      });
-    }
-    return [...seen];
-  }, [order]);
+  // Seller/store details — include storeId so SellerDetailsCard can fetch full store info
+  const sellerData = {
+    storeId: order.storeId || order.store_id,
+    store_name: order.store_name,
+    store_email: order.store_email,
+    store_phone: order.store_phone,
+    store_address: order.store_address,
+    store_logo: order.store_logo,
+  };
 
   // Helper: format date
   const formatDateRelative = (date: string) => {
@@ -163,12 +150,14 @@ export default function OrderDetails() {
             <Tag color={getOrderStatusColor(order.status || "")}>
               {order.status}
             </Tag>
-            <Button
-              type="primary"
-              onClick={() => route.push("/auth/orders/substitute/" + orderId)}
-            >
-              Substitute Order
-            </Button>
+            {!isSeller && (
+              <Button
+                type="primary"
+                onClick={() => route.push("/auth/orders/substitute/" + orderId)}
+              >
+                Substitute Order
+              </Button>
+            )}
           </>
         )}
       </PageHeader>
@@ -186,39 +175,9 @@ export default function OrderDetails() {
             </Col>
             <Col lg={4} md={12}>
               <div className="d-flex flex-column gap-4">
-                {!isSeller && sellerStoreIds.length > 0 ? (
-                  sellerStoreIds.map((storeId, index) => (
-                    <SellerDetailsCard
-                      key={storeId}
-                      data={{
-                        storeId,
-                        ...(index === 0 && {
-                          store_name: order.store_name as string | undefined,
-                          store_email: order.store_email as string | undefined,
-                          store_phone: order.store_phone as string | undefined,
-                          store_address: order.store_address as string | undefined,
-                          store_logo: order.store_logo as string | undefined,
-                        }),
-                      }}
-                      label={
-                        sellerStoreIds.length > 1
-                          ? `Seller ${index + 1} Details`
-                          : "Seller Details"
-                      }
-                    />
-                  ))
-                ) : !isSeller ? (
-                  <SellerDetailsCard
-                    data={{
-                      store_name: order.store_name as string | undefined,
-                      store_email: order.store_email as string | undefined,
-                      store_phone: order.store_phone as string | undefined,
-                      store_address: order.store_address as string | undefined,
-                      store_logo: order.store_logo as string | undefined,
-                    }}
-                    label="Seller Details"
-                  />
-                ) : null}
+                {!isSeller && (
+                  <SellerDetailsCard data={sellerData} />
+                )}
                 <OrderStatusTab data={{ id: order.id }} />
               </div>
             </Col>

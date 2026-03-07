@@ -76,7 +76,6 @@ interface GuestOrderPayload {
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import "./styles.scss";
-import PostOrderReviewModal from "./_components/PostOrderReviewModal";
 import { useSelector, useDispatch } from "react-redux";
 import { VscError } from "react-icons/vsc";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
@@ -148,59 +147,6 @@ function Checkout() {
   const [responseData, setResponseData] = useState<any>({});
   const [orderCreated, setOrderCreated] = useState(false);
   const [paymentRef, setPaymentRef] = useState<string | null>(null);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [reviewProducts, setReviewProducts] = useState<any[]>([]);
-
-  const triggerReviewModal = useCallback((data: unknown[]) => {
-    const isUUID = (v: unknown): v is string =>
-      typeof v === "string" &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const cartItems: any[] = Array.isArray(Checkout?.cart) ? Checkout.cart : [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const items: any[] = [];
-    data.forEach((order) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const o = order as any;
-      if (Array.isArray(o?.orderItems)) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        o.orderItems.forEach((item: any) => {
-          // First check if the orderItem itself already carries the product UUID
-          const directUUID =
-            (isUUID(item?.product?._id) ? item.product._id : null) ??
-            (isUUID(item?.product?.pid) ? item.product.pid : null) ??
-            (isUUID(item?._id) ? item._id : null);
-
-          if (!directUUID) {
-            // Fall back to cross-referencing the cart for the product UUID
-            const numericPid = item?.product_id ?? item?.productId;
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const cartMatch = cartItems.find((c: any) => {
-              const cPid =
-                c?.productId ??
-                c?.product_id ??
-                c?.product?.id ??
-                c?.product?.pid;
-              // eslint-disable-next-line eqeqeq
-              return cPid != null && cPid == numericPid;
-            });
-            const cartUUID =
-              (isUUID(cartMatch?.product?._id) ? cartMatch.product._id : null) ??
-              (isUUID(cartMatch?.product?.pid) ? cartMatch.product.pid : null) ??
-              (isUUID(cartMatch?._id) ? cartMatch._id : null);
-            items.push({ ...item, _id: cartUUID ?? item?._id });
-          } else {
-            items.push({ ...item, _id: directUUID });
-          }
-        });
-      }
-    });
-    if (items.length > 0) {
-      setReviewProducts(items);
-      setTimeout(() => setShowReviewModal(true), 1800);
-    }
-  }, [Checkout]);
 
   // Get route parameter to determine payment method
   const routeId = params?.id;
@@ -953,7 +899,6 @@ function Checkout() {
         localStorage.setItem("order_creation_completed", "true");
 
         setOrderStatus(true);
-        triggerReviewModal(Array.isArray(response?.data) ? response.data : []);
 
         // Track Purchase
         if (response?.data && Array.isArray(response.data)) {
@@ -1051,7 +996,6 @@ function Checkout() {
     isPaystack,
     searchParams,
     paymentRef,
-    triggerReviewModal,
   ]);
 
   useEffect(() => {
@@ -1072,7 +1016,6 @@ function Checkout() {
           setOrderStatus(true);
           setPaymentStatus(true);
           setIsLoading(false);
-          triggerReviewModal(Array.isArray(orderData) ? orderData : []);
           return;
         } catch (e) {
           console.error("Error parsing existing order data", e);
@@ -1097,149 +1040,126 @@ function Checkout() {
   return (
     <div className="Screen-box">
       {contextHolder}
-      <Container fluid style={{ minHeight: "80vh", padding: "32px 16px" }}>
+      <br />
+      <Container fluid style={{ minHeight: "80vh" }}>
         {isLoading ? (
-          /* ── LOADING ── */
-          <div className="cs-center-box">
-            <div className="cs-icon-ring cs-icon-ring--green">
-              <Spin indicator={antIcon} />
-            </div>
-            <div style={{ fontSize: 22, fontWeight: 700, color: "#1a1a1a", marginBottom: 8 }}>
-              Processing Your Order
-            </div>
-            <div style={{ fontSize: 14, color: "#888" }}>
-              Please do not press the back button or close this tab.
-            </div>
+          <div className="checkout-box">
+            <div className="checkout-txt1">Your Order Processing</div>
+            <div className="checkout-txt2">Please do not click back button</div>
+            <br />
+            <Spin indicator={antIcon} />
           </div>
         ) : paymentStatus ? (
           orderStatus ? (
-            /* ── SUCCESS ── */
-            <Row className="g-3">
-              {/* Left hero */}
-              <Col sm={7} xs={12}>
-                <div className="cs-success-hero">
-                  <div className="cs-icon-ring cs-icon-ring--solid">
-                    <IoIosCheckmarkCircleOutline size={48} color="#fff" />
-                  </div>
-                  <div className="cs-label-green">Order Confirmed</div>
-                  <div className="cs-title">Thank You!</div>
-                  <div className="cs-subtitle">
-                    Your order has been placed successfully. We&apos;ll send a
-                    confirmation to your registered email shortly.
-                  </div>
-                  <div className="cs-action-row">
+            <Row>
+              <Col sm={8} xs={12}>
+                <div className="checkout-box2">
+                  <div>
+                    <div>
+                      <IoIosCheckmarkCircleOutline size={60} color="#15ad4c" />
+                    </div>
+                    <div className="checkout-txt2" style={{ color: "#15ad4c" }}>
+                      Thank You
+                    </div>
+                    <div className="checkout-txt1">
+                      Your Order is Placed Successfully
+                    </div>
+                    <div className="checkout-txt2">
+                      We will be send you an email confirmation to your
+                      registered email shortly
+                    </div>
+                    <br />
+                    <br />
                     <Button
-                      type="primary"
-                      size="large"
-                      onClick={() =>
-                        router.push(
-                          `/user/orders/${responseData?.[0]?.orderId || responseData?.[0]?._id}`,
-                        )
-                      }
-                      style={{ borderRadius: 10, minWidth: 150 }}
+                      type="link"
+                      onClick={() => router.replace("/user/orders")}
                     >
-                      Track My Order
-                    </Button>
-                    <Button
-                      size="large"
-                      onClick={() => router.replace("/")}
-                      style={{ borderRadius: 10, minWidth: 150 }}
-                    >
-                      Continue Shopping
+                      View my Orders.
                     </Button>
                   </div>
                 </div>
+                <br />
               </Col>
-
-              {/* Right order card */}
-              <Col sm={5} xs={12}>
-                <div className="cs-order-card">
-                  {/* Card header */}
-                  <div className="cs-card-header">
-                    <span className="cs-card-header__title">Order Summary</span>
-                    <span className="cs-status-badge">
-                      {Array.isArray(responseData) &&
-                      responseData.some(
-                        (o: Order) =>
-                          o?.newOrder?.status === "Confirmed" ||
-                          o?.status === "Confirmed",
-                      )
-                        ? "Confirmed"
-                        : responseData?.[0]?.newOrder?.status || "Confirmed"}
-                    </span>
-                  </div>
-
-                  {/* Delivery address */}
-                  <div className="cs-card-section">
-                    <div className="cs-section-label">Delivery Address</div>
-                    <div className="cs-section-body">
-                      {responseData?.[0]?.address?.fullAddress ?? ""}
-                      {responseData?.[0]?.address?.street
-                        ? `, ${responseData[0].address.street}`
-                        : ""}
-                      {responseData?.[0]?.address?.state
-                        ? `, ${responseData[0].address.state}`
-                        : ""}
-                      {responseData?.[0]?.address?.pin_code
-                        ? ` - ${responseData[0].address.pin_code}`
-                        : ""}
-                    </div>
-                    {responseData?.[0]?.address?.alt_phone && (
-                      <div className="cs-section-body" style={{ marginTop: 4 }}>
-                        {responseData[0].address.alt_phone}
+              <Col sm={4} xs={12}>
+                <div className="checkout-box3">
+                  <div>
+                    <div>
+                      <div className="checkout-txt3">
+                        <div>Order Status : </div>
+                        <div style={{ color: "green" }}>
+                          {Array.isArray(responseData) &&
+                          responseData.some(
+                            (o: Order) =>
+                              o?.newOrder?.status === "Confirmed" ||
+                              o?.status === "Confirmed",
+                          )
+                            ? "Confirmed"
+                            : responseData?.[0]?.newOrder?.status ||
+                              "Confirmed"}
+                        </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Payment */}
-                  <div className="cs-card-section">
-                    <div className="cs-section-label">Payment</div>
-                    <div className="cs-row-between">
-                      <span className="cs-section-body">
-                        {(() => {
-                          const paymentType =
-                            responseData?.[0]?.orderPayment?.paymentType;
-                          if (
-                            paymentType &&
-                            paymentType.toLowerCase().includes("cash")
-                          ) {
-                            const promo = getActiveDeliveryPromo();
-                            if (promo) return "Online Payment";
-                            return "Cash On Delivery";
-                          }
-                          if (
-                            paymentType &&
-                            paymentType.toLowerCase().includes("online")
-                          ) {
-                            return "Online Payment";
-                          }
-                          return "Online Payment";
-                        })()}
-                      </span>
-                      <span style={{ fontWeight: 700, color: "#1a1a1a", fontSize: 14 }}>
-                        {getCurrencySymbol(Settings?.currency)}{" "}
-                        {(() => {
-                          const promo = getActiveDeliveryPromo();
-                          let amount = Number(
-                            responseData?.[0]?.orderPayment?.amount || 0,
-                          );
-                          if (promo) {
-                            const delivery = Number(
-                              responseData?.[0]?.newOrder?.deliveryCharge ||
-                                responseData?.[0]?.deliveryCharge ||
-                                0,
-                            );
-                            amount = amount - delivery;
-                          }
-                          return amount.toFixed(2);
-                        })()}
-                      </span>
                     </div>
                   </div>
+                  <div>
+                    <div className="checkout-txt3">DELIVERY ADDRESS</div>
 
-                  {/* Items by store */}
-                  <div className="cs-card-section cs-items-scroll">
-                    <div className="cs-section-label">Items Ordered</div>
+                    <div className="checkout-txt4">
+                      {responseData?.[0]?.address?.fullAddress ?? ""},
+                      {responseData?.[0]?.address?.pin_code ?? ""},
+                      {responseData?.[0]?.address?.state ?? ""},
+                      {responseData?.[0]?.address?.street ?? ""},<br />
+                      {responseData?.[0]?.address?.alt_phone ?? ""}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="checkout-txt3">PAYMENT DETAILS</div>
+                    <div className="checkout-txt4">
+                      Payment Type:{" "}
+                      {(() => {
+                        // Prefer explicit payment type, fallback to logic
+                        const paymentType =
+                          responseData?.[0]?.orderPayment?.paymentType;
+                        if (
+                          paymentType &&
+                          paymentType.toLowerCase().includes("cash")
+                        ) {
+                          // If promo disables COD, show Online Payment
+                          const promo = getActiveDeliveryPromo();
+                          if (promo) return "Online Payment";
+                          return "Cash On Delivery";
+                        }
+                        if (
+                          paymentType &&
+                          paymentType.toLowerCase().includes("online")
+                        ) {
+                          return "Online Payment";
+                        }
+                        // Fallback: if not COD, show Online Payment
+                        return "Online Payment";
+                      })()}{" "}
+                      Amount: {getCurrencySymbol(Settings?.currency)}{" "}
+                      {(() => {
+                        // Exclude delivery price from amount if promo is active
+                        const promo = getActiveDeliveryPromo();
+                        let amount = Number(
+                          responseData?.[0]?.orderPayment?.amount || 0,
+                        );
+                        if (promo) {
+                          // Subtract delivery charge if present
+                          const delivery = Number(
+                            responseData?.[0]?.newOrder?.deliveryCharge ||
+                              responseData?.[0]?.deliveryCharge ||
+                              0,
+                          );
+                          amount = amount - delivery;
+                        }
+                        return amount.toFixed(2);
+                      })()}
+                    </div>
+                  </div>
+                  <div className="checkout-txt3">ORDER SUMMARY</div>
+                  <div style={{ margin: 10 }}>
+                    {/* Group by each order in responseData (each is a seller/store) */}
                     {Array.isArray(responseData) && responseData.length > 0
                       ? responseData.map((order, idx) => {
                           const storeName =
@@ -1258,14 +1178,27 @@ function Checkout() {
                             0,
                           );
                           return (
-                            <div key={idx} style={{ marginBottom: 14 }}>
-                              <div className="cs-store-label">
+                            <div
+                              key={idx}
+                              style={{
+                                marginBottom: 18,
+                                borderBottom: "1px solid #eee",
+                                paddingBottom: 10,
+                              }}
+                            >
+                              <div
+                                style={{
+                                  fontWeight: 600,
+                                  fontSize: 15,
+                                  marginBottom: 6,
+                                  color: "#1a237e",
+                                }}
+                              >
                                 🏪 {storeName}
                               </div>
                               <List
                                 itemLayout="horizontal"
                                 dataSource={items}
-                                split={false}
                                 renderItem={(
                                   item: {
                                     image?: string;
@@ -1274,57 +1207,42 @@ function Checkout() {
                                   },
                                   index: number,
                                 ) => (
-                                  <List.Item
-                                    key={index}
-                                    style={{ padding: "5px 0" }}
-                                  >
+                                  <List.Item key={index}>
                                     <List.Item.Meta
                                       avatar={
                                         <Avatar
                                           src={item?.image}
-                                          size={36}
+                                          size={40}
                                           shape="square"
-                                          style={{
-                                            borderRadius: 6,
-                                            border: "1px solid #f0f0f0",
-                                          }}
                                         />
                                       }
-                                      title={
-                                        <span style={{ fontSize: 13, color: "#1a1a1a" }}>
-                                          {item?.name ?? ""}
-                                        </span>
-                                      }
+                                      title={item?.name ?? ""}
                                       description={
-                                        <span style={{ fontSize: 12, color: "#888" }}>
-                                          {getCurrencySymbol(Settings?.currency)}{" "}
-                                          {item?.totalPrice}
-                                        </span>
+                                        <div>Total: {item?.totalPrice}</div>
                                       }
                                     />
                                   </List.Item>
                                 )}
                               />
-                              {responseData.length > 1 && (
-                                <div className="cs-row-between cs-store-subtotal">
-                                  <span>Subtotal for this seller</span>
-                                  <span>
-                                    {getCurrencySymbol(Settings?.currency)}{" "}
-                                    {storeSubtotal.toFixed(2)}
-                                  </span>
+                              <div
+                                className="checkout-row"
+                                style={{ marginTop: 6 }}
+                              >
+                                <div>Subtotal for this seller</div>
+                                <div style={{ flex: 1 }} />
+                                <div>
+                                  {getCurrencySymbol(Settings?.currency)}{" "}
+                                  {storeSubtotal.toFixed(2)}
                                 </div>
-                              )}
+                              </div>
                             </div>
                           );
                         })
                       : null}
-                  </div>
-
-                  {/* Totals */}
-                  <div className="cs-card-section cs-totals">
-                    <div className="cs-row-between cs-totals__line">
-                      <span>Product Total</span>
-                      <span>
+                    <br />
+                    <div className="checkout-row">
+                      <div>Total Product Price</div>
+                      <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
                           Array.isArray(responseData)
@@ -1335,12 +1253,12 @@ function Checkout() {
                               )
                             : responseData?.[0]?.newOrder?.total || 0,
                         ).toFixed(2)}
-                      </span>
+                      </div>
                     </div>
-                    <div className="cs-row-between cs-totals__line">
-                      <span>Discount</span>
-                      <span>
-                        -{getCurrencySymbol(Settings?.currency)}{" "}
+                    <div className="checkout-row">
+                      <div>Discount</div>
+                      <div>
+                        {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
                           Array.isArray(responseData)
                             ? responseData.reduce(
@@ -1351,11 +1269,11 @@ function Checkout() {
                               )
                             : responseData?.[0]?.newOrder?.discount || 0,
                         ).toFixed(2)}
-                      </span>
+                      </div>
                     </div>
-                    <div className="cs-row-between cs-totals__line">
-                      <span>Tax</span>
-                      <span>
+                    <div className="checkout-row">
+                      <div>Tax</div>
+                      <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {Number(
                           Array.isArray(responseData)
@@ -1366,19 +1284,33 @@ function Checkout() {
                               )
                             : responseData?.[0]?.newOrder?.tax || 0,
                         ).toFixed(2)}
-                      </span>
+                      </div>
                     </div>
-                    <div className="cs-row-between cs-totals__line">
-                      <span>
-                        Delivery
+                    <div className="checkout-row">
+                      <div>
+                        Delivery Charges
                         {getActiveDeliveryPromo() && (
-                          <span className="cs-promo-tag">(FREE - Promo)</span>
+                          <span
+                            style={{
+                              color: "#15ad4c",
+                              fontSize: "12px",
+                              marginLeft: "8px",
+                            }}
+                          >
+                            (FREE - Promo Applied)
+                          </span>
                         )}
-                      </span>
-                      <span>
+                      </div>
+                      <div>
                         {getActiveDeliveryPromo() ? (
                           <>
-                            <span className="cs-strikethrough">
+                            <span
+                              style={{
+                                textDecoration: "line-through",
+                                color: "#999",
+                                marginRight: "8px",
+                              }}
+                            >
                               {getCurrencySymbol(Settings?.currency)}{" "}
                               {Number(
                                 Array.isArray(responseData)
@@ -1398,7 +1330,9 @@ function Checkout() {
                                       0,
                               ).toFixed(2)}
                             </span>
-                            <span className="cs-free-tag">FREE</span>
+                            <span style={{ color: "#15ad4c", fontWeight: 600 }}>
+                              FREE
+                            </span>
                           </>
                         ) : (
                           <>
@@ -1421,11 +1355,12 @@ function Checkout() {
                             ).toFixed(2)}
                           </>
                         )}
-                      </span>
+                      </div>
                     </div>
-                    <div className="cs-row-between cs-totals__grand">
-                      <span>Total</span>
-                      <span>
+                    <hr />
+                    <div className="checkout-row">
+                      <div>Total</div>
+                      <div>
                         {getCurrencySymbol(Settings?.currency)}{" "}
                         {(() => {
                           const grandTotal = Number(
@@ -1438,6 +1373,7 @@ function Checkout() {
                                 )
                               : responseData?.[0]?.newOrder?.grandTotal || 0,
                           );
+                          // If promo is active, subtract delivery charges from total
                           if (getActiveDeliveryPromo()) {
                             const deliveryCharges = Number(
                               Array.isArray(responseData)
@@ -1459,67 +1395,49 @@ function Checkout() {
                           }
                           return grandTotal.toFixed(2);
                         })()}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </Col>
             </Row>
           ) : (
-            /* ── ORDER FAILED ── */
-            <div className="cs-center-box">
-              <div className="cs-icon-ring cs-icon-ring--red">
-                <VscError size={36} color="#ff4d4f" />
+            <div className="checkout-box4">
+              <div className="checkout-txt1">Order Failed.</div>
+              <div className="checkout-txt2">
+                We are unable to complete your order. Please try again
               </div>
-              <div style={{ fontSize: 24, fontWeight: 800, color: "#1a1a1a" }}>
-                Order Failed
+              <div className="checkout-txt2" style={{ color: "red" }}>
+                Any Amount debited from your account will be refunded within 24
+                hours
               </div>
-              <div style={{ fontSize: 14, color: "#666", maxWidth: 360, lineHeight: 1.7, textAlign: "center" }}>
-                We were unable to complete your order. Please try again.
-              </div>
-              <div className="cs-error-notice">
-                Any amount debited from your account will be refunded within 24 hours.
-              </div>
-              <Button
-                size="large"
-                onClick={() => router.replace("/cart")}
-                style={{ marginTop: 8, borderRadius: 10, minWidth: 140 }}
-              >
-                Go Back to Cart
-              </Button>
+              <br />
+              <VscError size={50} color="red" />
+              <br />
+              <Button onClick={() => router.replace("/cart")}>GO BACK</Button>
             </div>
           )
         ) : (
-          /* ── PAYMENT FAILED ── */
-          <div className="cs-center-box">
-            <div className="cs-icon-ring cs-icon-ring--red">
-              <VscError size={36} color="#ff4d4f" />
+          <div className="checkout-box4">
+            <div className="checkout-txt1">Payment Faild.</div>
+            <div className="checkout-txt2">
+              We are unable to complete your order due to payment failure.
+              Please try again
             </div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: "#1a1a1a" }}>
-              Payment Failed
+            <div className="checkout-txt2" style={{ color: "red" }}>
+              Any Amount debited from your account will be refunded within 24
+              hours
             </div>
-            <div style={{ fontSize: 14, color: "#666", maxWidth: 360, lineHeight: 1.7, textAlign: "center" }}>
-              We were unable to process your payment. Please try again.
-            </div>
-            <div className="cs-error-notice">
-              Any amount debited from your account will be refunded within 24 hours.
-            </div>
-            <Button
-              size="large"
-              onClick={() => router.replace("/cart")}
-              style={{ marginTop: 8, borderRadius: 10, minWidth: 140 }}
-            >
-              Go Back to Cart
-            </Button>
+            <br />
+            <VscError size={50} color="red" />
+            <br />
+            <Button onClick={() => router.replace("/cart")}>GO BACK</Button>
           </div>
         )}
       </Container>
 
-      <PostOrderReviewModal
-        open={showReviewModal}
-        onClose={() => setShowReviewModal(false)}
-        products={reviewProducts}
-      />
+      <br />
+      <br />
     </div>
   );
 }

@@ -2,7 +2,6 @@ import { Card } from "antd";
 import { Descriptions, Image } from "antd";
 
 type Props = {
-  title?: string;
   store_name?: string;
   store_email?: string;
   store_phone?: string;
@@ -16,7 +15,7 @@ export default function StoreInfoCard(props: Props) {
     props.store_logo.trim().length > 0 &&
     !props.store_logo.includes("`");
   return (
-    <Card title={props.title ?? "Seller Details"} className="h-100">
+    <Card title={"Store Info"} className="h-100">
       {hasLogo && (
         <div className="mb-3">
           <Image
