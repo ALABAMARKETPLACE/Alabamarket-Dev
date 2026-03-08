@@ -614,9 +614,14 @@ function Checkout() {
       // Validate charges data (guest tokens start with "GUEST_DELIVERY_")
       const isGuestToken =
         finalOrderData?.charges?.token?.startsWith("GUEST_DELIVERY_");
+      // Allow empty token when delivery charge is 0 — this happens when no
+      // delivery configuration exists for the user's state (backend returns
+      // status: false and checkout sets token="" with totalCharge=0).
+      const isZeroDelivery =
+        Number(finalOrderData?.charges?.totalCharge ?? -1) === 0;
       if (
         !finalOrderData?.charges ||
-        (!finalOrderData.charges.token && !isGuestToken)
+        (!finalOrderData.charges.token && !isGuestToken && !isZeroDelivery)
       ) {
         console.error("Invalid charges data:", finalOrderData?.charges);
         throw new Error(
