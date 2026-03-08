@@ -35,8 +35,9 @@ interface ProductResponse {
 interface props {
   select: producttype[];
   changeData: (newSelect: producttype[]) => void;
+  isAdmin?: boolean;
 }
-const SimiliarProductSubstitution = ({ select, changeData }: props) => {
+const SimiliarProductSubstitution = ({ select, changeData, isAdmin: _isAdmin }: props) => {
   const [notificationApi, contextHolder] = notification.useNotification();
   const [allProduct, setAllProduct] = useState<ProductResponse | []>([]);
   const [page, setPage] = useState<number>(1);
