@@ -57,7 +57,7 @@ function Reviews(props: Props) {
       ),
     queryKey: [
       "product_review",
-      { productId: props?.data?.pid, page, take, order: "DESC" },
+      { productId: pid, page, take, order: "DESC" },
     ],
   });
   const deleteReview = useMutation({
