@@ -254,6 +254,14 @@ function Checkout() {
             console.error("Error loading cached order data", e);
             setIsLoading(false);
           }
+        } else {
+          // Stale lock — page crashed or navigated away mid-processing with no cached result.
+          // Clear it so the spinner doesn't run forever.
+          localStorage.removeItem(globalLockKey);
+          const wasCompleted = localStorage.getItem("order_creation_completed");
+          setPaymentStatus(true);
+          setOrderStatus(wasCompleted ? true : false);
+          setIsLoading(false);
         }
       }, 2000);
       return;
