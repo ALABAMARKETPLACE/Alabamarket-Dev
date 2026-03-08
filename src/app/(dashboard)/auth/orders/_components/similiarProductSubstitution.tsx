@@ -9,7 +9,7 @@ import "../../orders/Style.scss";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin, Image } from "antd";
 
-type producttype = { _id: number; image: string; name: string; price: string };
+type producttype = { _id: number; image: string; name: string; price?: string };
 interface storeProduct {
   storeId: number;
   subCategory?: number;
@@ -35,8 +35,9 @@ interface ProductResponse {
 interface props {
   select: producttype[];
   changeData: (newSelect: producttype[]) => void;
+  isAdmin?: boolean;
 }
-const SimiliarProductSubstitution = ({ select, changeData }: props) => {
+const SimiliarProductSubstitution = ({ select, changeData, isAdmin: _isAdmin }: props) => {
   const [notificationApi, contextHolder] = notification.useNotification();
   const [allProduct, setAllProduct] = useState<ProductResponse | []>([]);
   const [page, setPage] = useState<number>(1);

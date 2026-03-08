@@ -7,10 +7,13 @@ import { GET } from "@/util/apicall";
 
 interface OrderSubstitutionFormProps {
     orderId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     form: any;
+    isAdmin?: boolean;
+    onOrderLoaded?: (realId: number) => void;
 }
 
-const OrderSubstitutionForm: React.FC<OrderSubstitutionFormProps> = ({ orderId, form }) => {
+const OrderSubstitutionForm: React.FC<OrderSubstitutionFormProps> = ({ orderId, form, isAdmin, onOrderLoaded }) => {
     const [notificationApi, contextHolder] = notification.useNotification();
     const [orderProduct, setOrderProduct] = useState<any[]>([]);
     const [quantity, setQuantity] = useState<number>(0);
@@ -23,10 +26,17 @@ const OrderSubstitutionForm: React.FC<OrderSubstitutionFormProps> = ({ orderId, 
                 setLoading(false);
                 return;
             }
-            const response: any = await GET(API.ORDER_GETONE_SELLER + `${orderId}`)
+            const endpoint = isAdmin
+                ? API.ORDER_GETONE_ADMIN + `${orderId}`
+                : API.ORDER_GETONE_SELLER + `${orderId}`;
+            const response: any = await GET(endpoint)
 
             if (response.data && response.data.orderItems) {
                 setOrderProduct(response.data.orderItems);
+                const realId = response.data.order_id ?? response.data.id ?? response.data._id;
+                if (onOrderLoaded && realId) {
+                    onOrderLoaded(Number(realId));
+                }
             } else {
                 notificationApi.warning({
                     message: 'No order items found',
