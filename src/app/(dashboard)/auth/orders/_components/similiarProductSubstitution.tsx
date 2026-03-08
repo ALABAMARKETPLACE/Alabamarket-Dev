@@ -9,7 +9,7 @@ import "../../orders/Style.scss";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin, Image } from "antd";
 
-type producttype = { _id: number; image: string; name: string; price: string };
+type producttype = { _id: number; image: string; name: string; price?: string };
 interface storeProduct {
   storeId: number;
   subCategory?: number;
