@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Modal, Select } from "antd";
 import { Button, Form, Input, notification } from "antd";
 import { POST, PUT, GET } from "../../../../../util/apicall";
+import { parseApiMessage } from "../../../../../util/parseApiError";
 import API from "../../../../../config/API";
 import TextArea from "antd/es/input/TextArea";
 import { Col, Row } from "react-bootstrap";
@@ -187,16 +188,14 @@ const NewAddressModal = (props: NewAddressModalProps) => {
         props.fetchAddress();
       } else {
         Notifications["error"]({
-          message: `Failed to ${
-            type === update ? "Update" : "Add New Address"
-          }`,
-          description: response.message,
+          message: `Failed to ${type === update ? "Update" : "Add New Address"}`,
+          description: parseApiMessage(response.message, "Please check your details and try again."),
         });
       }
     } catch (err: any) {
       Notifications["error"]({
         message: `Failed to ${type === update ? "Update" : "Add New Address"}`,
-        description: err.message,
+        description: parseApiMessage(err.message, "An unexpected error occurred. Please try again."),
       });
     }
     setIsLoading(false);

@@ -12,6 +12,7 @@ import {
 import { Auth } from "@/util/firebaseProvider";
 import API from "@/config/API";
 import { POST, PUT } from "@/util/apicall";
+import { parseApiMessage } from "@/util/parseApiError";
 import listItems from "./listItems.json"
 import { signOut, useSession } from "next-auth/react";
 const listItems2 = [
@@ -114,7 +115,7 @@ function DeactivateModal(props: any) {
         props?.cancelModal();
         signOut()
       } else {
-        notificationApi.error({ message: response.message ?? "" });
+        notificationApi.error({ message: parseApiMessage(response.message, "Failed to deactivate account. Please try again.") });
       }
     } catch (err) {
       notificationApi.error({

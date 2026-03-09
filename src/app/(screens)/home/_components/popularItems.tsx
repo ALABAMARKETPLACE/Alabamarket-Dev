@@ -7,13 +7,13 @@ import { useRouter } from "next/navigation";
 import "../style.scss"; // Import to ensure styles are available
 
 function PopularItems(props: any) {
-  const [Recent, setRecent] = useState([]);
   const [hasScrollBar, setHasScrollBar] = useState(false);
   const [rightButtonClicked, setRightButtonClicked] = useState(false);
   const navigation = useRouter();
-  const ref: any = useRef(null);
-  const scroll = (ratio: any) => {
-    const currentScrollLeft = ref.current.scrollLeft;
+  const ref = useRef<HTMLDivElement>(null);
+
+  const scroll = (ratio: number) => {
+    if (!ref.current) return;
     ref.current.scrollLeft += ratio;
 
     if (ratio > 0 && !rightButtonClicked) {
@@ -28,18 +28,14 @@ function PopularItems(props: any) {
   useEffect(() => {
     function updateState() {
       const el = ref.current;
-      el &&
+      if (el) {
         setHasScrollBar(el.scrollWidth > el.getBoundingClientRect().width + 50);
+      }
     }
     updateState();
     window.addEventListener("resize", updateState);
     return () => window.removeEventListener("resize", updateState);
-  }, [Recent]);
-
-  function updateState() {
-    const el = ref.current;
-    el && setHasScrollBar(el.scrollWidth > el.getBoundingClientRect().width);
-  }
+  }, [props.data]); // re-check scroll state whenever data changes
 
   return (
     <div className="container-fluid home-full-width">

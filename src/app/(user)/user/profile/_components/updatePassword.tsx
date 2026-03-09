@@ -6,6 +6,7 @@ import Image from "next/image";
 import passwordImge from "../../../../../assets/images/passwordchange.png";
 import API from "@/config/API";
 import { PUT } from "@/util/apicall";
+import { parseApiMessage } from "@/util/parseApiError";
 const EditPassword = (props: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [notificationApi, contextHolder] = notification.useNotification();
@@ -26,7 +27,7 @@ const EditPassword = (props: any) => {
         form.resetFields();
         props?.close();
       } else {
-        notificationApi.error({ message: response.message });
+        notificationApi.error({ message: parseApiMessage(response.message, "Failed to update password. Please try again.") });
       }
     } catch (error: any) {
       notificationApi.error({

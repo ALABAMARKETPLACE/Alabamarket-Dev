@@ -1,0 +1,257 @@
+@use "../../../../config/styleVariable.scss" as global;
+
+// ─── Page wrapper ───────────────────────────────────────────────
+.search-page {
+  min-height: 80vh;
+  padding-bottom: 48px;
+  animation: searchPageEnter 0.5s ease-out both;
+}
+
+@keyframes searchPageEnter {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Header bar ─────────────────────────────────────────────────
+.search-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 95, 21, 0.1);
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(255, 95, 21, 0.06);
+
+  @media (max-width: 576px) {
+    padding: 14px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+// ─── Title block ────────────────────────────────────────────────
+.search-page__title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.search-page__title {
+  font-family: global.$Bold;
+  font-size: 20px;
+  color: global.$grey1;
+  margin: 0;
+
+  span {
+    color: global.$primary;
+  }
+
+  @media (max-width: 576px) {
+    font-size: 17px;
+  }
+}
+
+.search-page__count {
+  font-family: global.$Regular;
+  font-size: 13px;
+  color: global.$grey2;
+  margin-top: 2px;
+}
+
+// ─── Sort chips ─────────────────────────────────────────────────
+.search-page__filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.search-page__filter-label {
+  font-family: global.$Medium;
+  font-size: 13px;
+  color: global.$grey2;
+  white-space: nowrap;
+}
+
+.search-page__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid global.$grey5;
+  background: #fff;
+  font-family: global.$Medium;
+  font-size: 13px;
+  color: global.$grey1;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: global.$primary;
+    color: global.$primary;
+    background: rgba(255, 95, 21, 0.04);
+  }
+
+  &--active {
+    background: global.$primary;
+    border-color: global.$primary;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 95, 21, 0.3);
+
+    &:hover {
+      background: darken(#FF5F15, 6%);
+      color: #fff;
+    }
+  }
+}
+
+// ─── Product grid (single mode) ──────────────────────────────────
+.search-page__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+
+  @media (max-width: 1200px) { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 992px)  { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 768px)  { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 480px)  { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+}
+
+// ─── Card entry animation ────────────────────────────────────────
+.search-page__card {
+  opacity: 0;
+  animation: cardReveal 0.45s ease-out forwards;
+
+  @for $i from 1 through 30 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.03}s;
+    }
+  }
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ─── Skeleton loading ────────────────────────────────────────────
+.search-page__skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+
+  @media (max-width: 1200px) { grid-template-columns: repeat(5, 1fr); }
+  @media (max-width: 992px)  { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 768px)  { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 480px)  { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+}
+
+.search-page__skeleton-card {
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f5f5f5;
+
+  .search-page__skeleton-img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(90deg, #ececec 25%, #f8f8f8 50%, #ececec 75%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.4s ease-in-out infinite;
+  }
+
+  .search-page__skeleton-line {
+    height: 10px;
+    margin: 10px 10px 6px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #ececec 25%, #f8f8f8 50%, #ececec 75%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.4s ease-in-out infinite;
+
+    &--short {
+      width: 55%;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+  }
+}
+
+@keyframes skeletonShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// ─── Pagination wrapper ───────────────────────────────────────────
+.search-page__pagination {
+  display: flex;
+  justify-content: center;
+  padding-top: 32px;
+
+  .ant-pagination-item-active {
+    border-color: global.$primary !important;
+    a { color: global.$primary !important; }
+  }
+}
+
+// ─── Multi-mode section divider ───────────────────────────────────
+.search-page__multi-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+// ─── Empty state ─────────────────────────────────────────────────
+.search-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  gap: 12px;
+  padding: 40px 20px;
+  text-align: center;
+
+  .search-page__empty-icon {
+    font-size: 72px;
+    color: #e0e0e0;
+    line-height: 1;
+  }
+
+  .search-page__empty-title {
+    font-family: global.$SemiBold;
+    font-size: 20px;
+    color: global.$grey1;
+    margin: 0;
+  }
+
+  .search-page__empty-sub {
+    font-family: global.$Regular;
+    font-size: 14px;
+    color: global.$grey2;
+    max-width: 320px;
+    margin: 0;
+  }
+
+  .search-page__empty-tips {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    span {
+      font-family: global.$Regular;
+      font-size: 13px;
+      color: global.$grey4;
+
+      &::before {
+        content: "• ";
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button, Form, Input, notification } from "antd";
 import { POST } from "@/util/apicall";
+import { parseApiMessage } from "@/util/parseApiError";
 import { useRouter } from "next/navigation";
 import API from "@/config/API_ADMIN";
 import "./style.scss";
@@ -27,7 +28,7 @@ function ForgotPassword() {
           router.push("/");
         }, 2000);
       } else {
-        notificationApi.error({ message: response.message ?? "" });
+        notificationApi.error({ message: parseApiMessage(response.message, "Password reset failed. Please try again.") });
       }
     } catch (err) {
       notificationApi.error({ message: `Ooops something went wrong...!` });

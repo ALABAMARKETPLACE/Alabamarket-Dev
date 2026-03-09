@@ -5,6 +5,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import { Form, Input, Button, notification, Select, Checkbox } from "antd";
 import API from "../../../../config/API";
 import { GET, POST } from "../../../../util/apicall";
+import { parseApiMessage } from "../../../../util/parseApiError";
 import PrefixSelector from "../../../../components/prefixSelector/page";
 
 function DriverRegistration() {
@@ -59,7 +60,7 @@ function DriverRegistration() {
       } else {
         notification.error({
           message: "Registration Failed",
-          description: response.message || "Please try again.",
+          description: parseApiMessage(response.message, "Please check your details and try again."),
         });
       }
     } catch (err: any) {

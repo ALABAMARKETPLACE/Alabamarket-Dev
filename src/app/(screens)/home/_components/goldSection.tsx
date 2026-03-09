@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import ProductItem from "../../../../components/productItem/page";
-import positionImage from "@/assets/images/position2.jpg";
 import { TbArrowRight } from "react-icons/tb";
 import SectionBadge from "../../../../components/sectionBadge";
 
@@ -21,7 +19,6 @@ interface GoldSectionProps {
 
 const PRIMARY_COUNT = 12;
 const SECONDARY_COUNT = 12;
-const SHOW_POSITION_IMAGE = false;
 
 function GoldSection({ products = [] }: GoldSectionProps) {
   const router = useRouter();
@@ -36,7 +33,7 @@ function GoldSection({ products = [] }: GoldSectionProps) {
     PRIMARY_COUNT + SECONDARY_COUNT,
   );
 
-  if (!primaryProducts.length && !secondaryProducts.length) {
+  if (!primaryProducts.length) {
     return null;
   }
 
@@ -94,26 +91,12 @@ function GoldSection({ products = [] }: GoldSectionProps) {
             <div className="gold-section__empty">No products available</div>
           )}
         </div>
-        <div className="gold-section__panel">
-          {renderHeader("Golden Picks")}
-          {secondaryProducts.length ? (
-            renderGrid(secondaryProducts, "gold-secondary")
-          ) : (
-            <div className="gold-section__empty">No products available</div>
-          )}
-        </div>
-        {SHOW_POSITION_IMAGE ? (
-          <div className="gold-section__panel gold-section__panel--media">
-            <Image
-              src={positionImage}
-              alt="Gold highlights"
-              fill
-              sizes="(max-width: 991px) 100vw, 320px"
-              priority={false}
-              style={{ objectFit: "cover" }}
-            />
+        {secondaryProducts.length > 0 && (
+          <div className="gold-section__panel">
+            {renderHeader("Golden Picks")}
+            {renderGrid(secondaryProducts, "gold-secondary")}
           </div>
-        ) : null}
+        )}
       </div>
     </section>
   );

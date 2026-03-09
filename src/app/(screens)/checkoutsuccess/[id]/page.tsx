@@ -1042,9 +1042,21 @@ function Checkout() {
         setPaymentStatus(true);
         localStorage.removeItem(globalLockKey); // Release lock on success
       } else {
+        const extractStr = (val: unknown): string | undefined => {
+          if (typeof val === "string" && val.trim()) return val.trim();
+          if (val && typeof val === "object") {
+            const obj = val as Record<string, unknown>;
+            const inner = obj["message"] ?? obj["error"] ?? obj["detail"];
+            if (typeof inner === "string" && inner.trim()) return inner.trim();
+          }
+          return undefined;
+        };
         Notifications["error"]({
-          message: response?.message ?? "Order creation failed",
-          description: response?.description || "Please try again",
+          message: extractStr(response?.message) ?? "Order Could Not Be Completed",
+          description:
+            extractStr(response?.description) ??
+            extractStr(response?.error) ??
+            "We were unable to place your order at this time. Your payment is safe — please contact support if the issue persists.",
         });
         setPaymentStatus(true);
         setOrderStatus(false);

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Form, Input, Button, Select, notification } from "antd";
 import { POST, GET } from "@/util/apicall";
+import { parseApiMessage } from "@/util/parseApiError";
 import API from "@/config/API";
 import PrefixSelector from "@/components/prefixSelector/page";
 import { useQuery } from "@tanstack/react-query";
@@ -134,7 +135,7 @@ function NewAddressForm(props: any) {
       } else {
         Notifications["error"]({
           message: `Failed to add address`,
-          description: response.message,
+          description: parseApiMessage(response.message, "Please check your details and try again."),
         });
       }
       setIsLoading(false);

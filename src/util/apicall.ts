@@ -1,6 +1,7 @@
 import API from "@/config/API";
 import { store } from "@/redux/store/store";
 import { message } from "antd";
+import { parseApiMessage } from "@/util/parseApiError";
 
 const getFullUrl = (url: string): string => {
   if (!url) return "";
@@ -68,7 +69,7 @@ const GET = async (
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
-            messageText = parsed?.message || messageText;
+            messageText = parseApiMessage(parsed?.message, messageText);
           } catch {
             messageText = raw;
           }
@@ -113,7 +114,7 @@ const POST = async (
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
-            messageText = (parsed as { message?: string })?.message || raw;
+            messageText = parseApiMessage(parsed?.message, messageText);
           } catch {
             messageText = raw;
           }
@@ -148,8 +149,19 @@ const PUBLIC_POST = async (
       body: JSON.stringify(body),
     });
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      let messageText = "Something went wrong";
+      try {
+        const raw = await response.text();
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            messageText = parseApiMessage(parsed?.message, messageText);
+          } catch {
+            messageText = raw;
+          }
+        }
+      } catch {}
+      const error = new Error(messageText);
       (error as Error & { status?: number }).status = response.status;
       throw error;
     }
@@ -188,7 +200,7 @@ const PUT = async (
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
-            messageText = (parsed as { message?: string })?.message || raw;
+            messageText = parseApiMessage(parsed?.message, messageText);
           } catch {
             messageText = raw;
           }
@@ -233,7 +245,7 @@ const PATCH = async (
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
-            messageText = (parsed as { message?: string })?.message || raw;
+            messageText = parseApiMessage(parsed?.message, messageText);
           } catch {
             messageText = raw;
           }
@@ -318,7 +330,7 @@ const DELETE = async (
         if (raw) {
           try {
             const parsed = JSON.parse(raw);
-            messageText = (parsed as { message?: string })?.message || raw;
+            messageText = parseApiMessage(parsed?.message, messageText);
           } catch {
             messageText = raw;
           }
@@ -352,7 +364,7 @@ const COMPRESS_IMAGE = async (file: File) => {
     const data = await response.json();
     if (!response?.ok)
       return Promise.reject(
-        new Error(data?.message ?? "Something went wrong.."),
+        new Error(parseApiMessage(data?.message, "Something went wrong..")),
       );
     return { ...data, url: data.Location, status: true };
   } catch (err: unknown) {
@@ -488,7 +500,7 @@ const VIDEO_UPLOAD = async (file: File) => {
       let errorMessage = "Failed to upload video";
       try {
         const errorData = JSON.parse(errorText);
-        errorMessage = errorData?.message || errorMessage;
+        errorMessage = parseApiMessage(errorData?.message, errorMessage);
       } catch {
         errorMessage = errorText || errorMessage;
       }

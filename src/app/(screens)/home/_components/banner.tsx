@@ -27,7 +27,6 @@ function Banners(props: any) {
               return (
                 <div key={bann.id}>
                   <div
-                    key={bann.id}
                     className="HomeScreen-Banners"
                     style={{
                       backgroundImage: `url(${

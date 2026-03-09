@@ -18,6 +18,7 @@ import EditMobilenumberChange from "./_components/editMobilenumberChange";
 import EditPasswordChange from "./_components/editPasswordChange";
 import API from "@/config/API";
 import { GET, PUT } from "@/util/apicall";
+import { parseApiMessage } from "@/util/parseApiError";
 import { signOut, useSession } from "next-auth/react";
 import Loading from "@/app/(dashboard)/_components/loading";
 import { Collapse } from "antd";
@@ -106,7 +107,7 @@ const ProfileDashboard = () => {
         notificationApi.success({ message: "Email Updated Successfully" });
         setEmailopen(false);
       } else {
-        notificationApi.error({ message: Response.message });
+        notificationApi.error({ message: parseApiMessage(Response.message, "Failed to update email. Please try again.") });
       }
     } catch (error) {
       notificationApi.error({ message: "Something went wrong." });
@@ -136,7 +137,7 @@ const ProfileDashboard = () => {
         notificationApi.success({ message: "Successfully Updated your Name" });
         setOpen(false);
       } else {
-        notificationApi.error({ message: Response.message ?? "" });
+        notificationApi.error({ message: parseApiMessage(Response.message, "Failed to update name. Please try again.") });
       }
     } catch (error) {
       notificationApi.error({ message: "Something went wrong." });
@@ -160,7 +161,7 @@ const ProfileDashboard = () => {
         notificationApi.success({ message: `Password updated successfully.` });
         setPasswordopen(false);
       } else {
-        notificationApi.error({ message: response.message });
+        notificationApi.error({ message: parseApiMessage(response.message, "Failed to update password. Please try again.") });
       }
     } catch (error: any) {
       notificationApi.error({
@@ -176,7 +177,7 @@ const ProfileDashboard = () => {
       const response: any = await GET(API.USER_LOGOUTALL);
       if (response?.status) {
         notificationApi.success({
-          message: response?.message,
+          message: parseApiMessage(response?.message, "Signed out from all devices successfully."),
         });
         setTimeout(() => {
           signOut();

@@ -5,6 +5,7 @@ import { IoSearch } from "react-icons/io5";
 import { LoadingOutlined } from "@ant-design/icons";
 import useDebounce from "@/shared/hook/useDebounce";
 import { GET } from "@/util/apicall";
+import { parseApiMessage } from "@/util/parseApiError";
 import API from "@/config/API";
 import Country from "@/shared/helpers/countryCode.json";
 
@@ -63,7 +64,7 @@ function AutoCompleteLocation(props: any) {
         (error: any) => {
           setIsLoading(false);
           notificationApi.error({
-            message: `Unable to get your Location. reason: ${error.message}`,
+            message: `Unable to get your location: ${parseApiMessage(error.message, "Permission denied or unavailable.")}`,
           });
         }
       );
@@ -115,7 +116,7 @@ function AutoCompleteLocation(props: any) {
         setIsLoading(false);
       } else {
         setIsLoading(false);
-        notificationApi.error({ message: response?.message });
+        notificationApi.error({ message: parseApiMessage(response?.message, "Unable to retrieve location details. Please try again.") });
       }
     } catch (err) {
       setIsLoading(false);
