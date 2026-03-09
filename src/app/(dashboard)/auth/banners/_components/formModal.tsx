@@ -95,16 +95,19 @@ function FormModal(props: Props) {
       const mobileUpload =
         (await resolveImageUpload(mobileImage, props?.data?.img_mob)) ??
         desktopUpload;
-      const obj = {
-        description: body?.description,
+      const recordId = props?.data?.id ?? props?.data?._id;
+      const storeId = Number(session?.user?.store_id) || undefined;
+      const obj: Record<string, unknown> = {
+        description: body?.description ?? "",
         img_desk: desktopUpload.url,
         img_mob: mobileUpload.url,
         status:
-          session?.role === "admin" && props?.data?.id ? body?.status : true,
-        title: body?.title,
+          session?.role === "admin" && recordId ? body?.status : true,
+        title: body?.title ?? "",
+        ...(storeId ? { storeId } : {}),
       };
-      if (props?.data?.id) {
-        return PUT(API.BANNER_EDIT + props?.data?.id, obj);
+      if (recordId) {
+        return PUT(API.BANNER_EDIT + recordId, obj);
       }
       return POST(API.BANNER_ADD, obj);
     },
@@ -116,7 +119,7 @@ function FormModal(props: Props) {
     onSuccess: (data, variables, context) => {
       onClose();
       Notifications["success"]({
-        message: `Successfully ${props?.data?.id ? "updated" : "Added"} Banner`,
+        message: `Successfully ${props?.data?.id ?? props?.data?._id ? "updated" : "Added"} Banner`,
       });
       queryClient.invalidateQueries({ queryKey: ["admin_banners"] });
     },
@@ -156,7 +159,7 @@ function FormModal(props: Props) {
   return (
     <Modal
       open={props?.visible}
-      title={`${props?.data?._id ? "Edit" : "New"} Banner`}
+      title={`${props?.data?.id ?? props?.data?._id ? "Edit" : "New"} Banner`}
       onCancel={onClose}
       footer={false}
       centered

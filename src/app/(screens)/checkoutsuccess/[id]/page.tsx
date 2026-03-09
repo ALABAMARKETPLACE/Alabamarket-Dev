@@ -614,9 +614,14 @@ function Checkout() {
       // Validate charges data (guest tokens start with "GUEST_DELIVERY_")
       const isGuestToken =
         finalOrderData?.charges?.token?.startsWith("GUEST_DELIVERY_");
+      // Allow empty token when delivery charge is 0 — this happens when no
+      // delivery configuration exists for the user's state (backend returns
+      // status: false and checkout sets token="" with totalCharge=0).
+      const isZeroDelivery =
+        Number(finalOrderData?.charges?.totalCharge ?? -1) === 0;
       if (
         !finalOrderData?.charges ||
-        (!finalOrderData.charges.token && !isGuestToken)
+        (!finalOrderData.charges.token && !isGuestToken && !isZeroDelivery)
       ) {
         console.error("Invalid charges data:", finalOrderData?.charges);
         throw new Error(
@@ -1037,9 +1042,21 @@ function Checkout() {
         setPaymentStatus(true);
         localStorage.removeItem(globalLockKey); // Release lock on success
       } else {
+        const extractStr = (val: unknown): string | undefined => {
+          if (typeof val === "string" && val.trim()) return val.trim();
+          if (val && typeof val === "object") {
+            const obj = val as Record<string, unknown>;
+            const inner = obj["message"] ?? obj["error"] ?? obj["detail"];
+            if (typeof inner === "string" && inner.trim()) return inner.trim();
+          }
+          return undefined;
+        };
         Notifications["error"]({
-          message: response?.message ?? "Order creation failed",
-          description: response?.description || "Please try again",
+          message: extractStr(response?.message) ?? "Order Could Not Be Completed",
+          description:
+            extractStr(response?.description) ??
+            extractStr(response?.error) ??
+            "We were unable to place your order at this time. Your payment is safe — please contact support if the issue persists.",
         });
         setPaymentStatus(true);
         setOrderStatus(false);

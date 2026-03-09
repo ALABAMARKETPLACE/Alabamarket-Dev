@@ -5,6 +5,7 @@ import { Container } from "react-bootstrap";
 import { SlInfo } from "react-icons/sl";
 import API from "../../../../config/API";
 import { GET, POST } from "../../../../util/apicall";
+import { parseApiMessage } from "../../../../util/parseApiError";
 import { notification } from "antd";
 import Step1 from "./_components/step1";
 import Step2 from "./_components/step2";
@@ -60,7 +61,7 @@ function Page() {
       console.error("API Error:", err);
       notification.error({
         message: "Something went wrong!",
-        description: err.message,
+        description: parseApiMessage(err.message, "An unexpected error occurred. Please try again."),
       });
     } finally {
       setLoading(false);

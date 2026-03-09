@@ -44,34 +44,34 @@ function SilverSection({ products = [] }: SilverSectionProps) {
   return (
     <section className="silver-section container-fluid home-full-width">
       <div className="silver-section__wrapper">
-        {columns.map((items, index) => (
-          <div className="silver-section__panel" key={`silver-panel-${index}`}>
-            <div className="silver-section__panel-header">
-              <div className="silver-section__panel-title">
-                <SectionBadge
-                  type="silver"
-                  text="Silver"
-                  className="homeSectionBadge"
-                />
-                <span className="homeSectionTitleText">
-                  {PANEL_TITLES[index] ?? `Silver Picks ${index + 1}`}
+        {columns.map((items, index) =>
+          items.length === 0 ? null : (
+            <div className="silver-section__panel" key={`silver-panel-${index}`}>
+              <div className="silver-section__panel-header">
+                <div className="silver-section__panel-title">
+                  <SectionBadge
+                    type="silver"
+                    text="Silver"
+                    className="homeSectionBadge"
+                  />
+                  <span className="homeSectionTitleText">
+                    {PANEL_TITLES[index] ?? `Silver Picks ${index + 1}`}
+                  </span>
+                </div>
+                <span
+                  role="button"
+                  tabIndex={0}
+                  className="silver-section__see-more"
+                  onClick={handleSeeMore}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      handleSeeMore();
+                    }
+                  }}
+                >
+                  See More <TbArrowRight />
                 </span>
               </div>
-              <span
-                role="button"
-                tabIndex={0}
-                className="silver-section__see-more"
-                onClick={handleSeeMore}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    handleSeeMore();
-                  }
-                }}
-              >
-                See More <TbArrowRight />
-              </span>
-            </div>
-            {items.length ? (
               <div className="silver-section__grid">
                 {items.map((product, innerIndex) => (
                   <div
@@ -87,11 +87,9 @@ function SilverSection({ products = [] }: SilverSectionProps) {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="silver-section__empty">No silver items</div>
-            )}
-          </div>
-        ))}
+            </div>
+          )
+        )}
       </div>
     </section>
   );
