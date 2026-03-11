@@ -25,7 +25,7 @@ const nextConfig = {
           {
             source: "/api-proxy/:path*",
             destination:
-              "https://development.alabamarketplace.ng/backend/:path*",
+              "https://dev-backend.alabamarketplace.ng/:path*",
           },
         ]
       : [];
