@@ -277,14 +277,14 @@ function Checkout() {
 
       const addr = Checkout.address;
 
-      // Top-level cart_items: simple camelCase format for Paystack initialization
+      // Top-level cart_items: snake_case format required by paystack/initialize-guest
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const topLevelCartItems = (Checkout?.Checkout ?? []).map((item: any) => ({
-        id: Number(item?.id ?? 0),
-        productId: Number(item?.productId) || Number(item?.product_id) || Number(item?.product?.id) || 0,
-        variantId: item?.variantId ? Number(item.variantId) : item?.variant_id ? Number(item.variant_id) : null,
-        storeId: Number(item?.storeId ?? item?.store_id ?? 0),
+        product_id: Number(item?.productId) || Number(item?.product_id) || Number(item?.product?.id) || 0,
+        store_id: Number(item?.storeId ?? item?.store_id ?? 0),
+        variant_id: item?.variantId ? Number(item.variantId) : item?.variant_id ? Number(item.variant_id) : null,
         quantity: Number(item?.quantity ?? 0),
+        unit_price: Number(item?.buyPrice ?? item?.price ?? 0),
       }));
 
       // order_payload cart_items: detailed snake_case format for webhook order creation
