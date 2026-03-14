@@ -1,5 +1,4 @@
 import { RiDeleteBinLine } from "react-icons/ri";
-import { Row, Col } from "react-bootstrap";
 import { Popconfirm } from "antd";
 
 import { useRouter } from "next/navigation";
@@ -35,124 +34,113 @@ interface CartItemProps {
 
 const CartItem = (props: CartItemProps) => {
   const router = useRouter();
-  let stock = "In Stock";
-  if (Number(props?.data?.unit) == 0 || props?.data?.status == false) {
-    stock = "Out of Stock";
-  } else if (Number(props?.data?.unit) < props?.data?.quantity) {
-    stock = `Only ${props?.data?.unit} left`;
+
+  const isOutOfStock =
+    Number(props.data.unit) === 0 || props.data.status === false;
+  const isLowStock =
+    !isOutOfStock && Number(props.data.unit) < props.data.quantity;
+
+  let stockLabel = "In Stock";
+  let stockClass = "green";
+  if (isOutOfStock) {
+    stockLabel = "Out of Stock";
+    stockClass = "red";
+  } else if (isLowStock) {
+    stockLabel = `Only ${props.data.unit} left`;
+    stockClass = "orange";
   }
 
-  const getCurrencySymbol = () => {
-    if (props?.Settings?.currency === "NGN") {
-      return "₦";
-    }
-    return props?.Settings?.currency || "₦";
+  const currencySymbol =
+    props.Settings?.currency === "NGN" ? "₦" : props.Settings?.currency || "₦";
+
+  const variantInfo = Array.isArray(props.data.combination)
+    ? props.data.combination
+        .map((c) => c.value.charAt(0).toUpperCase() + c.value.slice(1))
+        .join(" · ")
+    : "";
+
+  const handleNavigate = () => {
+    router.push(`/${props.data.slug}/?pid=${props.data.pid}`);
   };
 
-  function capitalizeFirstLetter(text: string) {
-    return text.charAt(0).toUpperCase() + text.slice(1);
-  }
-  const getActiveVariant = (data: CartItemData): string => {
-    let variantInfo = "";
-    if (Array.isArray(data?.combination) == true) {
-      data?.combination?.forEach((item) => {
-        variantInfo += ` ${capitalizeFirstLetter(item.value)}`;
-      });
-    }
-
-    return variantInfo;
-  };
   return (
-    <div className="Cart-CartItem">
-      <div
-        onClick={() => {
-          router.push(
-            `/${props?.data?.slug}/?pid=${props?.data?.pid}`,
-          );
-        }}
-      >
+    <div className="cart-item">
+      {/* Image */}
+      <div className="cart-item__image-wrap" onClick={handleNavigate}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={props?.data?.image}
-          className="Cart-CartItem-img"
-          alt={props?.data?.name || "Product Image"}
+          src={props.data.image}
+          className="cart-item__image"
+          alt={props.data.name || "Product Image"}
         />
       </div>
-      <div style={{ flex: 1 }}>
-        <Row>
-          <Col sm={6} xs={12}>
-            <div className="Cart-CartItem-txt1">
-              {props?.data?.name} {getActiveVariant(props?.data)}
-            </div>
-            <div className="Cart-CartItem-txt55">
-              Seller : <span>{props?.data?.storeName}</span>
-            </div>
-            <div className="Cart-CartItem-txt2">
-              Unit Price :{" "}
-              <span style={{ color: "#000" }}>
-                {getCurrencySymbol()} {formatCurrency(props?.data?.price)}
-              </span>
-            </div>
-            <div
-              className={`Cart-CartItem-txt4 ${
-                stock === "In Stock" ? "green" : "red"
-              }`}
+
+      {/* Details */}
+      <div className="cart-item__details">
+        {/* Top: name + delete */}
+        <div className="cart-item__top-row">
+          <div
+            className="cart-item__name"
+            onClick={handleNavigate}
+            role="button"
+          >
+            {props.data.name}
+            {variantInfo && (
+              <span className="cart-item__variant"> — {variantInfo}</span>
+            )}
+          </div>
+          <Popconfirm
+            placement="bottomRight"
+            title="Remove this item from cart?"
+            okText="Remove"
+            cancelText="Cancel"
+            onConfirm={() => props.removeItem(props.data.id, props.data)}
+          >
+            <button className="cart-item__delete-btn" aria-label="Remove item">
+              <RiDeleteBinLine size={17} />
+            </button>
+          </Popconfirm>
+        </div>
+
+        {/* Seller */}
+        <div className="cart-item__seller">
+          Sold by <span>{props.data.storeName}</span>
+        </div>
+
+        {/* Unit price + stock */}
+        <div className="cart-item__meta-row">
+          <span className="cart-item__unit-price">
+            {currencySymbol} {formatCurrency(props.data.price)} / unit
+          </span>
+          <span className={`cart-item__stock ${stockClass}`}>{stockLabel}</span>
+        </div>
+
+        {/* Bottom: qty controls + total */}
+        <div className="cart-item__bottom-row">
+          <div className="qty-controls">
+            <button
+              className="qty-btn"
+              disabled={props.data.quantity === 1 || props.loading}
+              onClick={() => props.updateQuantity("reduce", props.data)}
+              aria-label="Decrease quantity"
             >
-              {stock}
-            </div>
-          </Col>
-          <Col sm={6} xs={12}>
-            <div
-              className="Cart-row"
-              style={{ alignItems: "center", height: "100%" }}
+              −
+            </button>
+            <span className="qty-count">{props.data.quantity}</span>
+            <button
+              className="qty-btn"
+              disabled={props.loading}
+              onClick={() => props.updateQuantity("add", props.data)}
+              aria-label="Increase quantity"
             >
-              <div className="qty-controls">
-                <button
-                  className="qty-btn"
-                  disabled={props.data.quantity === 1}
-                  onClick={() => {
-                    if (props?.loading == false) {
-                      props?.updateQuantity("reduce", props?.data);
-                    }
-                  }}
-                >
-                  −
-                </button>
-                <span className="qty-count">{props?.data?.quantity}</span>
-                <button
-                  className="qty-btn"
-                  onClick={() => {
-                    if (props?.loading == false) {
-                      props?.updateQuantity("add", props?.data);
-                    }
-                  }}
-                >
-                  +
-                </button>
-              </div>
-              <div style={{ flex: 1 }}></div>
-              <div className="Cart-CartItem-txt3">
-                <span style={{ color: "grey", fontSize: 14 }}>
-                  {getCurrencySymbol()}{" "}
-                </span>
-                {formatCurrency(props?.data?.totalPrice)}
-              </div>
-              <Popconfirm
-                placement="bottomRight"
-                title={"Are you sure to remove item from cart?"}
-                okText="Yes"
-                cancelText="No"
-                onConfirm={() =>
-                  props?.removeItem(props?.data?.id, props?.data)
-                }
-              >
-                <button className="cart-item__delete-btn" aria-label="Remove item">
-                  <RiDeleteBinLine size={18} />
-                </button>
-              </Popconfirm>
-            </div>
-          </Col>
-        </Row>
+              +
+            </button>
+          </div>
+          <div className="cart-item__total">
+            <span className="cart-item__total-label">{currencySymbol}</span>
+            {formatCurrency(props.data.totalPrice)}
+          </div>
+        </div>
       </div>
     </div>
   );

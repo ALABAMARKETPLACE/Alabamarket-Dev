@@ -9,12 +9,13 @@ import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
 import SummaryCard from "./_components/summaryCard";
 
-import { POST } from "@/util/apicall";
+import { POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
+import { getGuestInfo } from "./_components/guestAddressForm";
 
 enum PaymentTypeEnum {
   Paystack = "paystack",
@@ -51,6 +52,7 @@ function Checkout() {
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
     localStorage.removeItem("order_payload");
+    localStorage.removeItem("guest_order_payload");
 
     // Guest checkout disabled
     // if (!isAuthenticated) {
@@ -145,22 +147,14 @@ function Checkout() {
         // Build payloads per auth state
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let response: any;
+        const deliveryObj = {
+          cart: calculationCart,
+          address: addressData,
+        };
         if (isAuthenticated) {
-          const obj = {
-            cart: calculationCart,
-            address: addressData,
-          };
-          response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, obj);
+          response = await POST(API.NEW_CALCULATE_DELIVERY_CHARGE, deliveryObj);
         } else {
-          notificationApi.error({
-            message: "Guest checkout is currently disabled. Please log in.",
-          });
-          setDeliveryToken("");
-          setDelivery_charge(0);
-          setGrand_total(totals);
-          setDiscount(0);
-          setIsDeliveryCalculating(false);
-          return;
+          response = await PUBLIC_POST(API.PUBLIC_CALCULATE_DELIVERY_CHARGE, deliveryObj);
         }
 
         console.log("Delivery response:", response);
@@ -229,51 +223,185 @@ function Checkout() {
       });
       return;
     }
-    if (!isAuthenticated) {
-      notificationApi.error({ message: "Please log in to continue" });
-      return;
-    }
+
     try {
       setIsLoading(true);
+
+      // ── AUTHENTICATED FLOW ──
+      if (isAuthenticated) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cart = (Checkout?.Checkout ?? []).map((item: any) => ({
+          id: Number(item?.id ?? 0),
+          productId: Number(item?.productId ?? item?.product_id ?? 0),
+          variantId: item?.variantId ? Number(item.variantId) : null,
+          storeId: Number(item?.storeId ?? item?.store_id ?? 0),
+          quantity: Number(item?.quantity ?? 0),
+        }));
+
+        const payload = {
+          cart,
+          payment: {
+            type: PaymentTypeEnum.Paystack,
+            callback_url: `${window.location.origin}/checkoutsuccess/2`,
+          },
+          address: { id: Number(Checkout.address.id) },
+          charges: { token: deliveryToken ?? "" },
+        };
+
+        const response = await POST(API.ORDER, payload);
+        const authUrl =
+          response?.data?.authorization_url ||
+          response?.authorization_url ||
+          null;
+
+        if (authUrl) {
+          localStorage.setItem("order_payload", JSON.stringify({
+            cart,
+            address: { id: Number(Checkout.address.id) },
+            charges: { token: deliveryToken ?? "" },
+          }));
+          window.location.href = authUrl;
+        } else {
+          throw new Error("Payment initialization failed. Please try again or contact support.");
+        }
+        return;
+      }
+
+      // ── GUEST FLOW ──
+      const guestInfo = getGuestInfo();
+      if (!guestInfo?.email) {
+        notificationApi.error({ message: "Please complete your delivery details to continue." });
+        setIsLoading(false);
+        return;
+      }
+
+      const addr = Checkout.address;
+
+      // Top-level cart_items: simple camelCase format for Paystack initialization
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cart = (Checkout?.Checkout ?? []).map((item: any) => ({
+      const topLevelCartItems = (Checkout?.Checkout ?? []).map((item: any) => ({
         id: Number(item?.id ?? 0),
-        productId: Number(item?.productId ?? item?.product_id ?? 0),
-        variantId: item?.variantId ? Number(item.variantId) : null,
+        productId: Number(item?.productId) || Number(item?.product_id) || Number(item?.product?.id) || 0,
+        variantId: item?.variantId ? Number(item.variantId) : item?.variant_id ? Number(item.variant_id) : null,
         storeId: Number(item?.storeId ?? item?.store_id ?? 0),
         quantity: Number(item?.quantity ?? 0),
       }));
 
-      const payload = {
-        cart,
-        payment: {
-          type: PaymentTypeEnum.Paystack,
-          callback_url: "https://dev-backend.alabamarketplace.ng/paystack/success",
-        },
-        address: { id: Number(Checkout.address.id) },
-        charges: { token: deliveryToken ?? "" },
+      // order_payload cart_items: detailed snake_case format for webhook order creation
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const orderPayloadCartItems = (Checkout?.Checkout ?? []).map((item: any) => {
+        const productId =
+          Number(item?.productId) ||
+          Number(item?.product_id) ||
+          Number(item?.product?.id) ||
+          0;
+        const variantId =
+          item?.variantId ? Number(item.variantId) :
+          item?.variant_id ? Number(item.variant_id) : null;
+        return {
+          product_id: productId,
+          variant_id: variantId,
+          store_id: Number(item?.storeId ?? item?.store_id ?? 0),
+          product_name: item?.name ?? "",
+          variant_name: Array.isArray(item?.combination)
+            ? item.combination.map((c: { value: string }) => c.value).join(", ")
+            : "",
+          quantity: Number(item?.quantity ?? 0),
+          unit_price: Number(item?.buyPrice ?? item?.price ?? 0),
+          total_price: Number(item?.totalPrice ?? 0),
+          weight: Number(item?.weight ?? 1),
+          image: item?.image ?? "",
+        };
+      });
+
+      const totalWeight = orderPayloadCartItems.reduce(
+        (sum: number, it: { weight: number; quantity: number }) => sum + it.weight * it.quantity,
+        0,
+      );
+
+      const guestInfoPayload = {
+        email: guestInfo.email,
+        first_name: guestInfo.first_name,
+        last_name: guestInfo.last_name,
+        phone: guestInfo.phone,
+        country_code: guestInfo.country_code || "+234",
       };
 
-      const response = await POST(API.ORDER, payload);
+      const deliveryAddress = {
+        id: String(addr?.id ?? ""),
+        full_name: addr?.full_name ?? "",
+        phone_no: addr?.phone_no ?? "",
+        country_code: addr?.country_code ?? "+234",
+        full_address: addr?.full_address ?? addr?.address ?? "",
+        city: addr?.lagos_city ?? addr?.city ?? "",
+        state: addr?.stateDetails?.name ?? addr?.state ?? "",
+        state_id: Number(addr?.state_id ?? addr?.stateDetails?.id ?? 0),
+        country: addr?.countryDetails?.country_name ?? addr?.country ?? "Nigeria",
+        country_id: Number(addr?.country_id ?? addr?.countryDetails?.id ?? 0),
+        landmark: addr?.landmark ?? "",
+        address_type: addr?.address_type ?? "Home",
+      };
 
-      // Backend initializes Paystack hosted checkout when ref is omitted
+      const guestPayload = {
+        guest_info: guestInfoPayload,
+        cart_items: topLevelCartItems,
+        amount: Number(grand_total ?? 0),
+        delivery_charge: Number(delivery_charge ?? 0),
+        currency: "NGN",
+        callback_url: `${window.location.origin}/checkoutsuccess/2`,
+        metadata: {
+          order_notes: "",
+          preferred_delivery_time: "",
+          source: "web",
+          device_id: "",
+        },
+        order_payload: {
+          guest_info: guestInfoPayload,
+          delivery_address: deliveryAddress,
+          cart_items: orderPayloadCartItems,
+          payment: {
+            payment_reference: "",
+            payment_method: "paystack",
+            transaction_reference: "",
+            amount_paid: Number(grand_total ?? 0),
+            payment_status: "pending",
+            paid_at: "",
+          },
+          delivery: {
+            delivery_token: deliveryToken ?? "",
+            delivery_charge: Number(delivery_charge ?? 0),
+            total_weight: totalWeight,
+            estimated_delivery_days: 0,
+          },
+          order_summary: {
+            subtotal: Number(total ?? 0),
+            delivery_fee: Number(delivery_charge ?? 0),
+            tax: 0,
+            discount: Number(discount ?? 0),
+            total: Number(grand_total ?? 0),
+          },
+          metadata: {
+            order_notes: "",
+            preferred_delivery_time: "",
+            source: "web",
+            device_id: "",
+          },
+        },
+      };
+
+      // Store for fallback to /order/guest if webhook fails
+      localStorage.setItem("guest_order_payload", JSON.stringify(guestPayload));
+
+      const response = await PUBLIC_POST(API.PAYSTACK_INITIALIZE_GUEST, guestPayload as unknown as Record<string, unknown>);
       const authUrl =
         response?.data?.authorization_url ||
         response?.authorization_url ||
         null;
 
       if (authUrl) {
-        localStorage.setItem(
-          "order_payload",
-          JSON.stringify({
-            cart,
-            address: { id: Number(Checkout.address.id) },
-            charges: { token: deliveryToken ?? "" },
-          }),
-        );
         window.location.href = authUrl;
       } else {
-        throw new Error(response?.message || "Payment initialization failed");
+        throw new Error(response?.message || "Payment initialization failed. Please try again.");
       }
     } catch (err: unknown) {
       setIsLoading(false);

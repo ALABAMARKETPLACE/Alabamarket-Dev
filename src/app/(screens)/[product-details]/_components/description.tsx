@@ -4,11 +4,10 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { notification, Form, Input, Select } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { AiOutlineMinus, AiOutlinePlus, AiOutlineMessage, AiOutlinePhone, AiOutlineMail, AiOutlineUser, AiOutlineTags } from "react-icons/ai";
+import { AiOutlineMinus, AiOutlinePlus, AiOutlineMessage, AiOutlinePhone, AiOutlineMail, AiOutlineUser, AiOutlineTags, AiOutlineShoppingCart } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import API from "../../../../config/API";
-import { storeCheckout } from "../../../../redux/slice/checkoutSlice";
 import { GET, POST } from "../../../../util/apicall";
 import { useSession } from "next-auth/react";
 import { formatGAItem, trackAddToCart } from "@/utils/analytics";
@@ -201,27 +200,6 @@ function Description(props: Props) {
       api.error({ message: `Failed to share link` });
     }
   };
-  const buyNow = () => {
-    if (props?.data?.status != true) {
-      notification.error({ message: `Product is Temporarily not Available` });
-      return;
-    } else if (availableQuantity === 0) {
-      notification.error({ message: `Product is Out of Stock!!` });
-      return;
-    } else if (quantity > props?.data?.unit) {
-      notification.error({ message: `Selected Quantity is Not Available.` });
-      return;
-    }
-
-    // Show modal for guest users (commented out for now)
-    // if (!user?.user) {
-    //   setPendingAction("buy");
-    //   setShowGuestModal(true);
-    //   return;
-    // }
-
-    executeBuyNow();
-  };
 
   const onFinishSendMessage = async (values: EnquiryFormValues) => {
     try {
@@ -251,24 +229,6 @@ function Description(props: Props) {
     }
   };
 
-  const executeBuyNow = () => {
-    const obj = {
-      name: props?.data?.name,
-      buyPrice: props?.currentVariant?.price ?? props?.data?.retail_rate,
-      productId: props?.data?._id,
-      quantity: quantity,
-      storeId: props?.data?.store_id,
-      totalPrice: totalPrice,
-      variantId: props?.currentVariant?.id ?? null,
-      image: props?.currentVariant?.id
-        ? props?.currentVariant?.image
-        : props?.data?.image,
-      combination: props?.currentVariant?.combination,
-      storeName: props?.data?.storeDetails?.store_name,
-    };
-    dispatch(storeCheckout([obj]));
-    router.push("/checkout");
-  };
 
   const addToCart = async () => {
     if (props?.data?.status != true) {
@@ -443,49 +403,48 @@ function Description(props: Props) {
       </div>
 
       {/* Quantity + action buttons */}
-      <div className="pd-purchase-row">
-        <div className="pd-qty-control">
-          <button
-            className="pd-qty-btn"
-            disabled={quantity === 1}
-            onClick={() => updateQuantity("decrement")}
-          >
-            <AiOutlineMinus />
-          </button>
-          <span className="pd-qty-value">{quantity}</span>
-          <button
-            className="pd-qty-btn"
-            disabled={availableQuantity <= quantity}
-            onClick={() => updateQuantity("increment")}
-          >
-            <AiOutlinePlus />
-          </button>
-        </div>
-        <div className="pd-actions">
-          {availableQuantity > 0 && (
+      <div className="pd-purchase-section">
+        <div className="pd-qty-row">
+          <span className="pd-qty-label">Quantity</span>
+          <div className="pd-qty-control">
             <button
-              className="pd-btn pd-btn--primary"
-              onClick={() => {
-                props?.handleBuyNow(quantity);
-                buyNow();
-              }}
+              className="pd-qty-btn"
+              disabled={quantity === 1}
+              onClick={() => updateQuantity("decrement")}
             >
-              Buy Now
+              <AiOutlineMinus />
             </button>
+            <span className="pd-qty-value">{quantity}</span>
+            <button
+              className="pd-qty-btn"
+              disabled={availableQuantity <= quantity}
+              onClick={() => updateQuantity("increment")}
+            >
+              <AiOutlinePlus />
+            </button>
+          </div>
+          {availableQuantity > 0 && availableQuantity <= 10 && (
+            <span className="pd-qty-hint">Only {availableQuantity} left</span>
           )}
-          <button
-            className="pd-btn pd-btn--outline"
-            onClick={() => {
-              if (isProductInCart) {
-                router.push("/cart");
-              } else {
-                addToCart();
-              }
-            }}
-          >
-            {isProductInCart ? "View Cart" : "Add to Cart"}
-          </button>
         </div>
+        <button
+          className={`pd-cart-cta${isProductInCart ? " pd-cart-cta--in-cart" : ""}`}
+          disabled={availableQuantity === 0}
+          onClick={() => {
+            if (isProductInCart) {
+              router.push("/cart");
+            } else {
+              addToCart();
+            }
+          }}
+        >
+          <AiOutlineShoppingCart size={20} />
+          {isProductInCart
+            ? "Go to Cart →"
+            : availableQuantity === 0
+              ? "Out of Stock"
+              : "Add to Cart"}
+        </button>
       </div>
 
       {/* PROMOTIONS + ENQUIRY Section */}

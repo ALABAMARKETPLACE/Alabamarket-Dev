@@ -23,6 +23,7 @@ function Checkout() {
     // Order was already created by the backend at /paystack/success callback.
     // Just clear local state and cart.
     localStorage.removeItem("order_payload");
+    localStorage.removeItem("guest_order_payload");
     localStorage.removeItem("order_creation_completed");
     localStorage.removeItem("last_order_response");
 

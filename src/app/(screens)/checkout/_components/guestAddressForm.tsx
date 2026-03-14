@@ -10,9 +10,10 @@ import TextArea from "antd/es/input/TextArea";
 import { useDispatch } from "react-redux";
 import { storeAddress } from "@/redux/slice/checkoutSlice";
 
-// Guest address storage key
+// Guest address storage keys
 const GUEST_ADDRESS_KEY = "guest_checkout_address";
 const GUEST_EMAIL_KEY = "guest_checkout_email";
+const GUEST_INFO_KEY = "guest_checkout_info";
 
 // Helper to save guest address to localStorage
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,12 +43,30 @@ export const getGuestAddress = (): { address: any; email: string } | null => {
   }
 };
 
+// Helper to get guest info (name/email/phone) from localStorage
+export const getGuestInfo = (): {
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  country_code: string;
+} | null => {
+  if (typeof window === "undefined") return null;
+  try {
+    const info = localStorage.getItem(GUEST_INFO_KEY);
+    return info ? JSON.parse(info) : null;
+  } catch {
+    return null;
+  }
+};
+
 // Helper to clear guest address from localStorage
 export const clearGuestAddress = () => {
   if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(GUEST_ADDRESS_KEY);
     localStorage.removeItem(GUEST_EMAIL_KEY);
+    localStorage.removeItem(GUEST_INFO_KEY);
   } catch {
     console.error("Failed to clear guest address from localStorage");
   }
@@ -56,9 +75,10 @@ export const clearGuestAddress = () => {
 interface GuestAddressFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onAddressSubmit?: (address: any, email: string) => void;
+  onContinue?: () => void;
 }
 
-function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
+function GuestAddressForm({ onAddressSubmit, onContinue }: GuestAddressFormProps) {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [Notifications, contextHolder] = notification.useNotification();
@@ -233,6 +253,21 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
         is_guest: true,
       };
 
+      // Split full name into first/last
+      const nameParts = (values.full_name as string).trim().split(/\s+/);
+      const first_name = nameParts[0] ?? "";
+      const last_name = nameParts.slice(1).join(" ") || first_name;
+
+      // Save guest info for payment initialization
+      const guestInfo = {
+        email: values.email,
+        first_name,
+        last_name,
+        phone: values.phone_no,
+        country_code: values.code ?? "+234",
+      };
+      localStorage.setItem(GUEST_INFO_KEY, JSON.stringify(guestInfo));
+
       // Save to localStorage for persistence
       saveGuestAddress(guestAddress, values.email);
 
@@ -245,11 +280,15 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
       }
 
       Notifications["success"]({
-        message: "Success",
-        description: "Delivery address saved successfully.",
+        message: "Address Saved",
+        description: "Proceeding to payment...",
       });
 
       setIsLoading(false);
+
+      if (onContinue) {
+        onContinue();
+      }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setIsLoading(false);
@@ -489,7 +528,7 @@ function GuestAddressForm({ onAddressSubmit }: GuestAddressFormProps) {
               loading={isLoading}
               style={{ height: 50 }}
             >
-              Save Delivery Address
+              {onContinue ? "Save & Continue to Payment →" : "Save Delivery Address"}
             </Button>
           </Col>
         </Row>
