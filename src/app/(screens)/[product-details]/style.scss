@@ -904,18 +904,35 @@
   letter-spacing: 0.8px;
 }
 
-// Quantity + actions row
-.pd-purchase-row {
+// Purchase section — quantity row + CTA button
+.pd-purchase-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pd-qty-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
+}
 
-  @media (max-width: 576px) {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
+.pd-qty-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.pd-qty-hint {
+  font-size: 12px;
+  font-weight: 600;
+  color: #d97706;
+  background: #fef3c7;
+  padding: 3px 10px;
+  border-radius: 20px;
 }
 
 .pd-qty-control {
@@ -926,16 +943,11 @@
   border-radius: 10px;
   overflow: hidden;
   background: #fff;
-
-  @media (max-width: 576px) {
-    width: 100%;
-    justify-content: space-between;
-  }
 }
 
 .pd-qty-btn {
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -947,7 +959,7 @@
   transition: background 0.15s;
 
   &:hover:not(:disabled) {
-    background: #f9fafb;
+    background: #fff4ee;
     color: #ff5f15;
   }
 
@@ -958,68 +970,67 @@
 }
 
 .pd-qty-value {
-  min-width: 36px;
+  min-width: 44px;
   text-align: center;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: #1a1a2e;
   font-family: "DM Sans", sans-serif;
   border-left: 1.5px solid #e5e7eb;
   border-right: 1.5px solid #e5e7eb;
   padding: 0 4px;
-  line-height: 38px;
+  line-height: 40px;
 }
 
-// Action buttons
-.pd-actions {
-  display: flex;
-  gap: 10px;
-  flex: 1;
-
-  @media (max-width: 576px) {
-    flex: none;
-    width: 100%;
-  }
-}
-
-.pd-btn {
-  flex: 1;
-  height: 44px;
-  padding: 0 24px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
+// Primary cart CTA — full-width, bold
+.pd-cart-cta {
+  width: 100%;
+  height: 54px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   border: none;
   font-family: "DM Sans", sans-serif;
-  transition: all 0.22s ease;
-  white-space: nowrap;
+  background: linear-gradient(135deg, #ff5f15 0%, #ff8c42 100%);
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(255, 95, 21, 0.38);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  letter-spacing: 0.3px;
+  transition: all 0.25s ease;
 
-  &--primary {
-    background: linear-gradient(135deg, #ff5f15 0%, #ff8c42 100%);
-    color: #fff;
-    box-shadow: 0 4px 14px rgba(255, 95, 21, 0.28);
+  &:hover:not(:disabled) {
+    box-shadow: 0 12px 32px rgba(255, 95, 21, 0.52);
+    transform: translateY(-2px);
+  }
 
-    &:hover {
-      box-shadow: 0 6px 20px rgba(255, 95, 21, 0.4);
-      transform: translateY(-1px);
-    }
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 6px 16px rgba(255, 95, 21, 0.35);
+  }
 
-    &:active {
-      transform: translateY(0);
+  &:disabled {
+    background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  &.pd-cart-cta--in-cart {
+    background: linear-gradient(135deg, #1a1a2e 0%, #374151 100%);
+    box-shadow: 0 8px 24px rgba(26, 26, 46, 0.3);
+
+    &:hover:not(:disabled) {
+      box-shadow: 0 12px 32px rgba(26, 26, 46, 0.45);
     }
   }
 
-  &--outline {
-    background: #fff;
-    color: #1a1a2e;
-    border: 1.5px solid #e5e7eb;
-
-    &:hover {
-      border-color: #ff5f15;
-      color: #ff5f15;
-      background: #fff4ee;
-    }
+  @media (max-width: 768px) {
+    height: 50px;
+    font-size: 15px;
+    border-radius: 12px;
   }
 }
 

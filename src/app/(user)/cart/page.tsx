@@ -1,5 +1,5 @@
 "use client";
-import { notification, Popconfirm } from "antd";
+import { notification, Popconfirm, Skeleton } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { IoCartOutline, IoCloseCircleOutline } from "react-icons/io5";
@@ -12,7 +12,6 @@ import {
   clearCart,
   updateGuestCartQuantity,
   removeFromGuestCart,
-  clearGuestCartFromStorage,
 } from "../../../redux/slice/cartSlice";
 import { useSession } from "next-auth/react";
 import "./styles.scss";
@@ -25,7 +24,6 @@ import { storeCheckout } from "../../../redux/slice/checkoutSlice";
 import { checkoutCartItems } from "./_components/checkoutFunction";
 
 function CartPage() {
-  // const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: session, status } = useSession();
   const isAuthenticated = status === "authenticated" && !!session?.user;
@@ -39,6 +37,7 @@ function CartPage() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [error, setError] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const navigate = useRouter();
 
   const loadData = useCallback(async () => {
@@ -46,7 +45,6 @@ function CartPage() {
       setLoading(true);
 
       if (isAuthenticated) {
-        // Authenticated user - fetch from backend
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cartItems: any = await GET(API.CART_GET_ALL);
         if (cartItems.status) {
@@ -55,16 +53,12 @@ function CartPage() {
           notificationApi.error({ message: cartItems.message ?? "" });
         }
       } else {
-        // Guest user - load from localStorage
         dispatch(loadGuestCart());
       }
     } catch {
       if (isAuthenticated) {
-        notificationApi.error({
-          message: `Something went wrong. please try again`,
-        });
+        notificationApi.error({ message: "Something went wrong. Please try again." });
       } else {
-        // For guests, just load from localStorage
         dispatch(loadGuestCart());
       }
     } finally {
@@ -74,14 +68,13 @@ function CartPage() {
 
   const getRecommendations = useCallback(async () => {
     try {
-      const url = API.USER_HISTORY;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response: any = await GET(url);
+      const response: any = await GET(API.USER_HISTORY);
       if (response.status) {
         setProducts(response.data);
       }
-    } catch (err) {
-      console.log("no recommandations", err);
+    } catch {
+      // recommendations are non-critical
     }
   }, []);
 
@@ -91,17 +84,14 @@ function CartPage() {
     if (isAuthenticated) {
       getRecommendations();
     }
-    // dispatch(clearCheckout());
   }, [loadData, getRecommendations, isAuthenticated]);
 
   const clear = async () => {
     if (!isAuthenticated) {
-      // Guest user - clear local cart
       dispatch(clearCart());
-      notificationApi.success({ message: "Cart cleared successfully" });
+      notificationApi.success({ message: "Cart cleared" });
       return;
     }
-
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const response: any = await DELETE(API.CART_CLEAR_ALL);
@@ -112,25 +102,24 @@ function CartPage() {
         notificationApi.error({ message: response?.message });
       }
     } catch {
-      notificationApi.error({ message: `Something went wrong.` });
+      notificationApi.error({ message: "Something went wrong." });
     }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateQuantity = async (action: string, item: any) => {
     try {
-      if (item?.unit <= item?.quantity && action == "add") {
+      if (item?.unit <= item?.quantity && action === "add") {
         notificationApi.error({
           message:
-            item?.unit == 0
-              ? "Product is Out of Stock"
-              : `Only ${item?.unit} unit Left`,
+            item?.unit === 0
+              ? "Product is out of stock"
+              : `Only ${item?.unit} unit left`,
         });
         return;
       }
 
       if (!isAuthenticated || Cart.isGuestCart) {
-        // Guest user - update local cart
         const newQuantity =
           action === "add" ? item.quantity + 1 : item.quantity - 1;
         if (newQuantity > 0) {
@@ -141,7 +130,6 @@ function CartPage() {
               quantity: newQuantity,
             }),
           );
-          notificationApi.success({ message: "Cart updated" });
         }
         return;
       }
@@ -153,109 +141,101 @@ function CartPage() {
         {},
       );
       if (cartItems.status) {
-        // Optimistically update or fetch fresh data
         loadData();
-        notificationApi.success({
-          message: cartItems?.message,
-        });
       } else {
         notificationApi.error({ message: cartItems?.message ?? "" });
       }
     } catch {
-      notificationApi.error({ message: "Failed to Update cart" });
+      notificationApi.error({ message: "Failed to update cart" });
     } finally {
       setLoading(false);
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const removeItem = async (id: string, item: any) => {
     if (!isAuthenticated || Cart.isGuestCart) {
-      // Guest user - remove from local cart
-      dispatch(
-        removeFromGuestCart({
-          productId: item.productId,
-          variantId: item.variantId,
-        }),
-      );
-      notificationApi.success({ message: "Product removed from cart" });
+      dispatch(removeFromGuestCart({ productId: item.productId, variantId: item.variantId }));
+      notificationApi.success({ message: "Item removed from cart" });
       return;
     }
-
     try {
-      const url = API.CART + id;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const cartItems: any = await DELETE(url);
+      const cartItems: any = await DELETE(API.CART + id);
       if (cartItems.status) {
         loadData();
-        notificationApi.success({
-          message: `You have removed Product from cart`,
-        });
+        notificationApi.success({ message: "Item removed from cart" });
       }
     } catch {
-      notificationApi.error({ message: "Failed to Update cart" });
+      notificationApi.error({ message: "Failed to remove item" });
     }
   };
 
   const goCheckout = async () => {
-    // Allow both authenticated and guest users to proceed to checkout
     try {
       setError(null);
+      setCheckoutLoading(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data: any = await checkoutCartItems(Cart.items);
       if (data?.eligibleItems?.length) {
         dispatch(storeCheckout(data?.eligibleItems));
         navigate.push("/checkout");
       } else {
-        setError(
-          "Out of stock: Your cart contains items that are currently unavailable.",
-        );
+        setError("Your cart contains items that are currently out of stock.");
       }
     } catch (err) {
-      console.log("err", err);
+      console.log("checkout error", err);
+    } finally {
+      setCheckoutLoading(false);
     }
   };
+
   return (
-    <div className="Screen-box">
+    <div className="Screen-box" style={{ background: "#f8f9fb" }}>
       {contextHolder}
       <br />
       <Container fluid style={{ minHeight: "80vh" }}>
-        {Cart.items.length ? (
+        {loading ? (
+          <div className="Cart-box">
+            <Row className="g-3 g-md-4">
+              <Col lg={7} md={12}>
+                <Skeleton active paragraph={{ rows: 4 }} />
+                <br />
+                <Skeleton active paragraph={{ rows: 4 }} />
+                <br />
+                <Skeleton active paragraph={{ rows: 4 }} />
+              </Col>
+              <Col lg={5} md={12}>
+                <Skeleton active paragraph={{ rows: 6 }} />
+              </Col>
+            </Row>
+          </div>
+        ) : Cart.items.length ? (
           <div className="Cart-box">
             <Row className="g-3 g-md-4">
               <Col lg={7} md={12} className="cart-items-col">
-                <div
-                  className="Cart-row"
-                  style={{
-                    padding: 10,
-                    paddingBottom: 0,
-                    paddingRight: 0,
-                    paddingLeft: 0,
-                  }}
-                >
+                <div className="Cart-row" style={{ padding: "10px 0", paddingBottom: 0 }}>
                   <div className="Cart-txt1">
                     <span className="Cart-txt1Icon">
                       <IoCartOutline />
                     </span>
-                    CART - ( {Cart.items.length} )
+                    MY CART ({Cart.items.length})
                   </div>
                   <div style={{ flex: 1 }} />
-                  <div>
-                    <Popconfirm
-                      placement="bottomRight"
-                      title={"Are you sure to clear all items in your cart?"}
-                      okText="Yes"
-                      cancelText="No"
-                      onConfirm={async () => clear()}
-                    >
-                      <div className="Cart-txt2" style={{ cursor: "pointer" }}>
-                        Remove All Products <IoCloseCircleOutline />
-                      </div>
-                    </Popconfirm>
-                  </div>
+                  <Popconfirm
+                    placement="bottomRight"
+                    title="Clear all items from your cart?"
+                    okText="Clear"
+                    cancelText="Cancel"
+                    onConfirm={async () => clear()}
+                  >
+                    <div className="Cart-txt2">
+                      Clear Cart <IoCloseCircleOutline />
+                    </div>
+                  </Popconfirm>
                 </div>
                 <div className="Cart-line" />
-                <div>
+                <div style={{ marginTop: 16 }}>
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {Cart.items.map((item: any, index: number) => (
                     <CartItem
@@ -268,51 +248,13 @@ function CartPage() {
                     />
                   ))}
                 </div>
-                <br />
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    marginTop: 16,
-                  }}
-                >
+                <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
                   <button
-                    style={{
-                      minWidth: 200,
-                      fontWeight: 500,
-                      background: "#ff8800",
-                      color: "#fff",
-                      border: "2px solid #ff8800",
-                      borderRadius: 6,
-                      padding: "10px 20px",
-                      transition: "background 0.2s, color 0.2s",
-                      cursor: "pointer",
-                    }}
-                    onMouseOver={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background =
-                        "#fff";
-                      (e.currentTarget as HTMLButtonElement).style.color =
-                        "#ff8800";
-                    }}
-                    onMouseOut={(e) => {
-                      (e.currentTarget as HTMLButtonElement).style.background =
-                        "#ff8800";
-                      (e.currentTarget as HTMLButtonElement).style.color =
-                        "#fff";
-                    }}
+                    className="cart-continue-btn"
                     onClick={() => navigate.push("/")}
                   >
-                    ← Select More Products
+                    ← Continue Shopping
                   </button>
-                </div>
-                <br />
-                <div className="Cart-txt8">
-                  The price and availability of items at Alaba Marketplace are
-                  subject to change. The Cart is a temporary place to store a
-                  list of your items and reflects each item&apos;s most recent
-                  price. Shopping Cart Learn more. Do you have a gift card or
-                  promotional code? We&apos;ll ask you to enter your claim code
-                  when it&apos;s time to pay.
                 </div>
                 <br />
               </Col>
@@ -322,6 +264,7 @@ function CartPage() {
                     Cart={Cart}
                     checkout={() => goCheckout()}
                     error={error}
+                    checkoutLoading={checkoutLoading}
                   />
                 </div>
                 <br />
@@ -331,17 +274,15 @@ function CartPage() {
         ) : (
           <NoData
             icon={<IoCartOutline size={70} color="#e6e6e6" />}
-            header="Cart is empty"
-            text1={`Your Cart is empty. Please start shopping at ${API.NAME} and place orders`}
-            button={"START SHOPPING NOW"}
-            onclick={() => {
-              navigate.push("/");
-            }}
+            header="Your cart is empty"
+            text1={`Browse ${API.NAME} and add items you love to your cart`}
+            button="START SHOPPING"
+            onclick={() => navigate.push("/")}
           />
         )}
         {products?.length ? (
           <RecomendedItems
-            title={"Products You've Recently Visited"}
+            title="Products You've Recently Visited"
             data={products}
             type="visited"
           />

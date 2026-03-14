@@ -77,12 +77,6 @@ function NewAddressBox({ onGuestEmailChange, onContinue }: NewAddressBoxProps) {
     }
   };
 
-  const handleGuestAddressSubmit = (address: any, email: string) => {
-    if (onGuestEmailChange) {
-      onGuestEmailChange(email);
-    }
-  };
-
   // Guest checkout UI
   if (!isAuthenticated) {
     return (
@@ -97,7 +91,12 @@ function NewAddressBox({ onGuestEmailChange, onContinue }: NewAddressBoxProps) {
         </div>
         <div className="Cart-line" />
         <div style={{ margin: 20 }} />
-        <GuestAddressForm onAddressSubmit={handleGuestAddressSubmit} />
+        <GuestAddressForm
+          onAddressSubmit={(address, email) => {
+            if (onGuestEmailChange) onGuestEmailChange(email);
+          }}
+          onContinue={onContinue}
+        />
       </div>
     );
   }
