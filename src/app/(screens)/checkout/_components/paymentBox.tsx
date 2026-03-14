@@ -37,34 +37,41 @@ function PaymentBox({ onContinue }: { onContinue?: () => void }) {
         boxShadow: "0 4px 16px rgba(255, 95, 21, 0.1)",
         cursor: "pointer",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <IoMdRadioButtonOn size={22} color="#ff5f15" />
-
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 3 }}>
+        {/* Top row: radio + label */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+          <IoMdRadioButtonOn size={22} color="#ff5f15" style={{ flexShrink: 0 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 2 }}>
               Pay Online
             </div>
             <div style={{ fontSize: 12, color: "#6b7280" }}>
               Secured by Paystack · Cards, Bank Transfer, USSD
             </div>
           </div>
+        </div>
 
-          {/* Card logos */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
-            <Image src={Visa} height={22} alt="Visa" style={{ objectFit: "contain" }} />
-            <Image src={Mster} height={22} alt="Mastercard" style={{ objectFit: "contain" }} />
-            <Image src={Paystack} height={22} alt="Paystack" style={{ objectFit: "contain" }} />
-            <div style={{
-              background: "#00C9A7",
-              color: "#fff",
-              padding: "3px 7px",
-              borderRadius: 5,
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: "0.3px",
-            }}>
-              Verve
-            </div>
+        {/* Card logos row — wraps on small screens */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          flexWrap: "wrap",
+          paddingTop: 10,
+          borderTop: "1px solid rgba(255,95,21,0.12)",
+        }}>
+          <Image src={Visa} height={24} alt="Visa" style={{ objectFit: "contain" }} />
+          <Image src={Mster} height={24} alt="Mastercard" style={{ objectFit: "contain" }} />
+          <Image src={Paystack} height={24} alt="Paystack" style={{ objectFit: "contain" }} />
+          <div style={{
+            background: "#00C9A7",
+            color: "#fff",
+            padding: "4px 8px",
+            borderRadius: 5,
+            fontSize: 11,
+            fontWeight: 700,
+            letterSpacing: "0.3px",
+          }}>
+            Verve
           </div>
         </div>
       </div>
