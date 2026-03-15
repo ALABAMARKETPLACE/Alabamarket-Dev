@@ -24,10 +24,14 @@ async function fetchData(id: string) {
 }
 
 export const generateMetadata = async ({
+  params,
   searchParams,
 }: any): Promise<Metadata> => {
-  const params = await searchParams;
-  const data = await fetchData(params?.pid);
+  const routeParams = await params;
+  const queryParams = await searchParams;
+  const id = queryParams?.pid || routeParams?.["product-details"];
+  const data = await fetchData(id);
+  const slug = routeParams?.["product-details"] || "";
   return {
     title: data?.name || "",
     description: data?.description || "",
@@ -37,7 +41,7 @@ export const generateMetadata = async ({
       type: "website",
       locale: "en_US",
       siteName: CONFIG.NAME,
-      url: `${CONFIG.WEBSITE}/${params.slug}/?pid=${params?.pid}&review=${params?.review}`,
+      url: `${CONFIG.WEBSITE}/${slug}`,
       images: {
         url: data?.image,
         alt: data?.name,
@@ -48,10 +52,13 @@ export const generateMetadata = async ({
   };
 };
 
-async function ProductScreen({ searchParams }: any) {
-  const params = await searchParams;
-  const data = await fetchData(params?.pid);
-  return <DetailsCard data={data} params={params} />;
+async function ProductScreen({ params, searchParams }: any) {
+  const routeParams = await params;
+  const queryParams = await searchParams;
+  // Use pid from query string first; fall back to the slug route segment
+  const id = queryParams?.pid || routeParams?.["product-details"];
+  const data = await fetchData(id);
+  return <DetailsCard data={data} params={{ ...queryParams, pid: id }} />;
 }
 
 export default ProductScreen;
