@@ -35,17 +35,6 @@ function DetailsCard(props: any) {
   const [defaultImage, setDefaultImage] = useState<string>(props?.data?.image);
   //functions
   useEffect(() => {
-    // Clean pid and review from the URL bar without affecting functionality
-    const currentParams = new URLSearchParams(window.location.search);
-    currentParams.delete("pid");
-    currentParams.delete("review");
-    const newSearch = currentParams.toString();
-    const cleanUrl =
-      window.location.pathname + (newSearch ? "?" + newSearch : "");
-    window.history.replaceState(null, "", cleanUrl);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  useEffect(() => {
     if (props?.data && props?.data?.productVariant?.length) {
       const variantData = findVariantWithId(props?.data?.productVariant, vid);
       if (!variantData) {
