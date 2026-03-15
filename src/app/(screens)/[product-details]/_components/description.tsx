@@ -188,13 +188,19 @@ function Description(props: Props) {
   };
   const shareLink = async () => {
     try {
+      // Rebuild the URL with pid since it's stripped from the address bar for cosmetic reasons
+      const productId = props?.data?._id;
+      const shareUrl = productId
+        ? `${window.location.origin}${window.location.pathname}?pid=${productId}`
+        : window?.location?.href;
       if (navigator?.share) {
         await navigator.share({
           title: document?.title,
-          url: window?.location?.href,
+          url: shareUrl,
         });
       } else {
-        api.error({ message: `Failed to share link` });
+        await navigator.clipboard.writeText(shareUrl);
+        api.success({ message: "Link copied to clipboard" });
       }
     } catch {
       api.error({ message: `Failed to share link` });

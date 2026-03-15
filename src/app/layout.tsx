@@ -51,6 +51,12 @@ export default function RootLayout({
         <script
           suppressHydrationWarning
           dangerouslySetInnerHTML={{
+            __html: `(function(){var u=new URL(location.href);var dirty=false;['srsltid','gclid','fbclid','ttclid','msclkid'].forEach(function(p){if(u.searchParams.has(p)){u.searchParams.delete(p);dirty=true;}});if(dirty)history.replaceState(null,'',u.toString());})();`,
+          }}
+        />
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=

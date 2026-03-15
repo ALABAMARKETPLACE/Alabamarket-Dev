@@ -345,7 +345,7 @@ function Checkout() {
       const guestPayload = {
         guest_info: guestInfoPayload,
         cart_items: topLevelCartItems,
-        amount: Number(grand_total ?? 0),
+        amount: Number(grand_total ?? 0) * 100, // Paystack expects kobo (1 NGN = 100 kobo)
         delivery_charge: Number(delivery_charge ?? 0),
         currency: "NGN",
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
