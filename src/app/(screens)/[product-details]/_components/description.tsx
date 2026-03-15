@@ -72,6 +72,7 @@ type Props = {
   data: ProductData;
   currentVariant: VariantData | null;
   handleBuyNow: (val: number) => void;
+  pid?: string;
 };
 
 function Description(props: Props) {
@@ -188,11 +189,10 @@ function Description(props: Props) {
   };
   const shareLink = async () => {
     try {
-      // Rebuild the URL with pid since it's stripped from the address bar for cosmetic reasons
-      const productId = props?.data?._id;
-      const shareUrl = productId
-        ? `${window.location.origin}${window.location.pathname}?pid=${productId}`
-        : window?.location?.href;
+      // Use the pid passed from page.tsx (the exact value used to fetch the product)
+      const shareUrl = props?.pid
+        ? `${window.location.origin}${window.location.pathname}?pid=${props.pid}`
+        : `${window.location.origin}${window.location.pathname}`;
       if (navigator?.share) {
         await navigator.share({
           title: document?.title,

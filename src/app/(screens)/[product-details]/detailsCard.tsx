@@ -75,6 +75,7 @@ function DetailsCard(props: any) {
           data={props?.data}
           currentVariant={currentVariant}
           handleBuyNow={handleBuyNow}
+          pid={props?.params?.pid}
         />
       ),
     },
