@@ -166,11 +166,11 @@ const OrderCard = ({
             <FaCalendarAlt size={12} />
             {moment(order?.createdAt).format("MMM DD, YYYY")}
           </span>
+        </div>
+        <div className="order-card__header-right">
           <span className="items-badge">
             {itemCount} {itemCount === 1 ? "item" : "items"}
           </span>
-        </div>
-        <div className="order-card__header-right">
           <span
             className={`order-card__status ${getStatusClass(order?.status)}`}
           >
@@ -253,8 +253,6 @@ function UserOrders() {
   const Settings = useAppSelector(reduxSettings);
   const [orderStatus, setOrderStatus] = useState("");
   const { data: session, status } = useSession();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const userId = (session?.user as any)?.id || (session?.user as any)?._id || null;
   const sessionToken = (session as any)?.token as string | undefined;
 
   const {
@@ -272,10 +270,10 @@ function UserOrders() {
       if (orderStatus) params.status = orderStatus;
       if (dateFilter) params.sort = dateFilter;
       if (search) params.name = search;
-      return await GET(`${API.ORDER_GET_USER}${userId}`, params, null, { token: sessionToken });
+      return await GET(API.ORDER_ALL, params, null, { token: sessionToken });
     },
-    queryKey: ["order_items", userId, sessionToken, page, search, orderStatus, dateFilter],
-    enabled: Boolean(userId) && Boolean(sessionToken) && status === "authenticated",
+    queryKey: ["order_items", sessionToken, page, search, orderStatus, dateFilter],
+    enabled: Boolean(sessionToken) && status === "authenticated",
     retry: 1,
   });
 
