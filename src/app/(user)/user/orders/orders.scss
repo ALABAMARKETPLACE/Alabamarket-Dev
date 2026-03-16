@@ -1,66 +1,64 @@
 @use "../../../../config/styleVariable.scss" as global;
 
-// Orders Page Styles
+// Orders Page
 .orders-page {
   padding: 0;
+  width: 100%;
 
-  @media (max-width: 768px) {
-    padding: 0;
+  @media (min-width: 900px) {
+    max-width: 900px;
+    margin: 0 auto;
   }
 }
 
 // Page Header
 .orders-header {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
 
   &__title {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 
     h1 {
       font-family: global.$Bold;
-      font-size: 24px;
+      font-size: 22px;
       margin: 0;
       color: #1a1a1a;
 
-      @media (max-width: 768px) {
-        font-size: 20px;
+      @media (max-width: 480px) {
+        font-size: 18px;
       }
     }
 
     .orders-count {
-      background: linear-gradient(
-        135deg,
-        global.$primary,
-        darken(global.$primary, 10%)
-      );
+      background: linear-gradient(135deg, global.$primary, darken(global.$primary, 10%));
       color: white;
-      padding: 4px 12px;
+      padding: 3px 10px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12px;
       font-family: global.$SemiBold;
     }
   }
 
   &__icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #fff4ee, #ffe8d9);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: global.$primary;
+    flex-shrink: 0;
+
+    @media (max-width: 480px) {
+      width: 36px;
+      height: 36px;
+    }
   }
 }
 
@@ -68,75 +66,89 @@
 .orders-filters {
   background: #fff;
   border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 24px;
+  padding: 14px 0;
+  margin-bottom: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid #f0f0f0;
-
-  @media (max-width: 768px) {
-    padding: 12px;
-  }
+  overflow: visible;
 
   &__row {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
 
     @media (min-width: 768px) {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
+      padding: 0 16px;
     }
   }
 
+  // Status chips: scroll edge-to-edge, bleed past padding
   &__status-tags {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
+    overflow-x: auto;
+    padding: 0 16px 4px;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      flex-wrap: wrap;
+      overflow-x: visible;
+      padding: 0;
+    }
   }
 
   &__controls {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    padding: 0 16px;
 
     @media (min-width: 768px) {
-      flex-direction: row;
-      width: auto;
+      padding: 0;
     }
 
     .ant-select {
-      min-width: 140px;
+      flex: 0 0 auto;
+      width: 140px;
 
-      @media (max-width: 768px) {
-        width: 100%;
+      @media (min-width: 768px) {
+        width: 150px;
       }
     }
 
     .ant-input-search {
-      @media (max-width: 768px) {
-        width: 100%;
-      }
+      flex: 1;
 
       @media (min-width: 768px) {
-        width: 250px;
+        width: 220px;
+        flex: 0 0 220px;
       }
     }
   }
 }
 
-// Status Tag Styling
+// Status Tag
 .status-tag {
-  padding: 6px 16px;
+  padding: 5px 14px;
   border-radius: 20px;
-  font-size: 13px;
+  font-size: 12px;
   font-family: global.$Medium;
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid #e0e0e0;
   background: #fff;
   color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
 
   &:hover {
     border-color: global.$primary;
@@ -154,25 +166,19 @@
     }
   }
 
-  &--delivered {
-    &.status-tag--active {
-      background: #52c41a;
-      border-color: #52c41a;
-    }
+  &--delivered.status-tag--active {
+    background: #52c41a;
+    border-color: #52c41a;
   }
 
-  &--cancelled {
-    &.status-tag--active {
-      background: #ff4d4f;
-      border-color: #ff4d4f;
-    }
+  &--cancelled.status-tag--active {
+    background: #ff4d4f;
+    border-color: #ff4d4f;
   }
 
-  &--pending {
-    &.status-tag--active {
-      background: #faad14;
-      border-color: #faad14;
-    }
+  &--pending.status-tag--active {
+    background: #faad14;
+    border-color: #faad14;
   }
 }
 
@@ -180,7 +186,7 @@
 .orders-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 // Order Card
@@ -188,53 +194,68 @@
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid #f0f0f0;
-  transition: all 0.3s ease;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
   cursor: pointer;
 
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.09);
     border-color: global.$primary;
     transform: translateY(-2px);
   }
 
+  // ── HEADER ──────────────────────────────────────────────────────────
   &__header {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 16px;
+    padding: 12px 16px;
     background: linear-gradient(135deg, #fafafa, #f5f5f5);
     border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 
-    @media (min-width: 768px) {
+    @media (min-width: 640px) {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
+      gap: 12px;
     }
 
+    // Row 1 on mobile: order ID + date
     &-left {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
+      min-width: 0;
     }
 
+    // Row 2 on mobile: items badge + status + total (space-between)
     &-right {
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
 
-      @media (max-width: 768px) {
-        justify-content: space-between;
+      @media (min-width: 640px) {
+        justify-content: flex-end;
       }
     }
   }
 
   &__order-id {
     font-family: global.$SemiBold;
-    font-size: 14px;
+    font-size: 13px;
     color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+
+    @media (min-width: 640px) {
+      max-width: none;
+    }
 
     span {
       color: global.$primary;
@@ -242,23 +263,26 @@
   }
 
   &__date {
-    font-size: 13px;
-    color: #666;
+    font-size: 12px;
+    color: #888;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
+    white-space: nowrap;
 
     svg {
-      color: #999;
+      color: #bbb;
+      flex-shrink: 0;
     }
   }
 
   &__status {
-    padding: 4px 12px;
+    padding: 3px 10px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: 11px;
     font-family: global.$Medium;
     text-transform: capitalize;
+    white-space: nowrap;
 
     &--delivered {
       background: #f6ffed;
@@ -289,44 +313,44 @@
 
   &__total {
     font-family: global.$Bold;
-    font-size: 16px;
+    font-size: 15px;
     color: #1a1a1a;
-
-    @media (max-width: 768px) {
-      font-size: 15px;
-    }
+    white-space: nowrap;
   }
 
+  // ── BODY ────────────────────────────────────────────────────────────
   &__body {
-    padding: 16px;
+    padding: 14px 16px;
   }
 
   &__items {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
   }
 
+  // ── FOOTER ──────────────────────────────────────────────────────────
   &__footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 10px 16px;
     background: #fafafa;
     border-top: 1px solid #f0f0f0;
 
     &-info {
-      font-size: 13px;
-      color: #666;
+      font-size: 12px;
+      color: #999;
     }
 
     &-action {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       color: global.$primary;
       font-family: global.$Medium;
       font-size: 13px;
+      white-space: nowrap;
 
       svg {
         transition: transform 0.2s ease;
@@ -339,26 +363,34 @@
   }
 }
 
+// Items count badge
+.items-badge {
+  display: inline-flex;
+  align-items: center;
+  background: #f0f0f0;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: #666;
+  white-space: nowrap;
+}
+
 // Order Item
 .order-item {
   display: flex;
-  gap: 16px;
-
-  @media (max-width: 576px) {
-    gap: 12px;
-  }
+  gap: 12px;
 
   &__image {
     flex-shrink: 0;
-    width: 80px;
-    height: 80px;
+    width: 72px;
+    height: 72px;
     border-radius: 8px;
     overflow: hidden;
     background: #f5f5f5;
 
-    @media (max-width: 576px) {
-      width: 64px;
-      height: 64px;
+    @media (max-width: 480px) {
+      width: 56px;
+      height: 56px;
     }
 
     img {
@@ -375,9 +407,9 @@
 
   &__name {
     font-family: global.$SemiBold;
-    font-size: 14px;
+    font-size: 13px;
     color: #1a1a1a;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
     text-transform: capitalize;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -385,35 +417,35 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 
-    @media (max-width: 576px) {
-      font-size: 13px;
+    @media (max-width: 480px) {
+      font-size: 12px;
     }
   }
 
   &__variant {
-    font-size: 12px;
-    color: #888;
+    font-size: 11px;
+    color: #aaa;
     margin-bottom: 4px;
   }
 
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 8px;
+    gap: 8px;
+    margin-top: 6px;
   }
 
   &__quantity {
-    font-size: 13px;
+    font-size: 12px;
     color: #666;
     background: #f5f5f5;
-    padding: 2px 8px;
+    padding: 2px 7px;
     border-radius: 4px;
   }
 
   &__price {
     font-family: global.$SemiBold;
-    font-size: 14px;
+    font-size: 13px;
     color: global.$primary;
   }
 }
@@ -422,79 +454,74 @@
 .orders-loading {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 
   &__card {
     background: #fff;
     border-radius: 12px;
-    padding: 20px;
-    animation: pulse 1.5s ease-in-out infinite;
+    padding: 16px;
+    animation: orders-pulse 1.5s ease-in-out infinite;
   }
 
   &__header {
-    height: 20px;
+    height: 18px;
     background: #f0f0f0;
     border-radius: 4px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     width: 40%;
   }
 
   &__item {
     display: flex;
-    gap: 16px;
+    gap: 12px;
 
     &-image {
-      width: 80px;
-      height: 80px;
+      width: 72px;
+      height: 72px;
       background: #f0f0f0;
       border-radius: 8px;
+      flex-shrink: 0;
+
+      @media (max-width: 480px) {
+        width: 56px;
+        height: 56px;
+      }
     }
 
     &-content {
       flex: 1;
 
       &-line {
-        height: 14px;
+        height: 13px;
         background: #f0f0f0;
         border-radius: 4px;
         margin-bottom: 8px;
 
-        &:nth-child(1) {
-          width: 70%;
-        }
-        &:nth-child(2) {
-          width: 50%;
-        }
-        &:nth-child(3) {
-          width: 30%;
-        }
+        &:nth-child(1) { width: 70%; }
+        &:nth-child(2) { width: 50%; }
+        &:nth-child(3) { width: 30%; }
       }
     }
   }
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+@keyframes orders-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
 }
 
 // Empty State
 .orders-empty {
   text-align: center;
-  padding: 60px 20px;
+  padding: 48px 20px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 
   &__icon {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 24px;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
     background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     border-radius: 50%;
     display: flex;
@@ -502,49 +529,39 @@
     justify-content: center;
 
     svg {
-      font-size: 48px;
+      font-size: 40px;
       color: #ccc;
     }
   }
 
   &__title {
     font-family: global.$Bold;
-    font-size: 20px;
+    font-size: 18px;
     color: #1a1a1a;
     margin-bottom: 8px;
   }
 
   &__text {
     font-size: 14px;
-    color: #666;
+    color: #888;
     margin-bottom: 24px;
     line-height: 1.6;
   }
 
   &__button {
-    background: linear-gradient(
-      135deg,
-      global.$primary,
-      darken(global.$primary, 10%)
-    );
+    background: linear-gradient(135deg, global.$primary, darken(global.$primary, 10%));
     border: none;
     color: #fff;
-    padding: 12px 32px;
+    padding: 11px 28px;
     border-radius: 8px;
     font-family: global.$SemiBold;
     font-size: 14px;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
 
     &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(global.$primary, 0.3);
-      color: #fff;
-      background: linear-gradient(
-        135deg,
-        darken(global.$primary, 5%),
-        darken(global.$primary, 15%)
-      );
     }
   }
 }
@@ -558,20 +575,20 @@
   border: 1px solid #ffccc7;
 
   &__icon {
-    font-size: 48px;
+    font-size: 44px;
     color: #ff4d4f;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   &__title {
     font-family: global.$SemiBold;
-    font-size: 16px;
+    font-size: 15px;
     color: #ff4d4f;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
   }
 
   &__text {
-    font-size: 14px;
+    font-size: 13px;
     color: #666;
   }
 }
@@ -580,7 +597,7 @@
 .orders-pagination {
   display: flex;
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 20px;
   padding-bottom: 24px;
 
   .ant-pagination-item {
@@ -600,16 +617,4 @@
   .ant-pagination-next {
     border-radius: 8px;
   }
-}
-
-// Items count badge in header
-.items-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #f5f5f5;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  color: #666;
 }

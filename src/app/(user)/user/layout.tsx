@@ -47,7 +47,7 @@ function Layout({ children }: { children: React.ReactNode }) {
             <Sidebar />
           </div>
         </div>
-        <div className="col-10">{children}</div>
+        <div className="col-12 col-md-10">{children}</div>
         <EditProfilePhoto
           open={profileModal}
           close={() => setProfileModal(false)}

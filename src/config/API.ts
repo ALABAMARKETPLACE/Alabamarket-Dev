@@ -152,6 +152,7 @@ const API = {
   ORDER: "order/", //post
   ORDER_GUEST: "order/guest", //POST - guest order (no auth required)
   ORDER_GET: "order/getall", //get all orders for a user and admin
+  ORDER_ALL: "order/all", //get all orders for authenticated user
   // ORDER_GETONE: "order/get_one/", //get one
   ORDER_GET_BYSTORE: "order/store/",
   ORDER_GET_USER: "order/user/", //to get all orders for a user only for admin
