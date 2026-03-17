@@ -38,9 +38,11 @@ const ProductByCategory = () => {
 
   // Snapshot all URL params on first render — replaceState clears useSearchParams()
   // so we freeze the original values here before the useEffect fires.
+  // On back/forward navigation the URL is bare "/category" (no params), so we
+  // fall back to the values we saved in sessionStorage on the original visit.
   const snap = useRef<Record<string, string | null> | null>(null);
   if (!snap.current) {
-    snap.current = {
+    const fromUrl = {
       id: searchParams.get("id"),
       ogCategory: searchParams.get("ogCategory"),
       categoryId: searchParams.get("categoryId"),
@@ -50,6 +52,21 @@ const ProductByCategory = () => {
       page: searchParams.get("page"),
       query: searchParams.get("query"),
     };
+    if (fromUrl.type) {
+      // Fresh navigation — persist to sessionStorage so back/forward can recover
+      try {
+        sessionStorage.setItem("category_snap", JSON.stringify(fromUrl));
+      } catch (_) { /* ignore */ }
+      snap.current = fromUrl;
+    } else {
+      // Back/forward navigation — URL params were erased by replaceState; restore
+      try {
+        const stored = sessionStorage.getItem("category_snap");
+        snap.current = stored ? JSON.parse(stored) : fromUrl;
+      } catch (_) {
+        snap.current = fromUrl;
+      }
+    }
   }
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
