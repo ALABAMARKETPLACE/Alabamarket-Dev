@@ -17,6 +17,7 @@ import Reviews from "./_components/reviews";
 import RelatedProducts from "./_components/relatedProducts";
 import "./style.scss";
 import { formatGAItem, trackViewItem } from "@/utils/analytics";
+import { getRatingInfo } from "@/util/ratingUtils";
 
 function DetailsCard(props: any) {
   //to-do
@@ -45,6 +46,14 @@ function DetailsCard(props: any) {
       }
     }
   }, [props?.data, vid]);
+  const productId = props?.data?.pid || props?.params?.pid || "";
+  const ratingInfo = (() => {
+    const apiRating = props?.data?.averageRating;
+    const apiReviews = props?.data?.totalReviews;
+    if (apiRating) return { rating: Number(apiRating), reviews: Number(apiReviews ?? 0) };
+    return getRatingInfo(productId);
+  })();
+
   const onChange = (key: string) => {};
   const handleBuyNow = (val: any) => {
     if (session?.token) {
@@ -127,22 +136,9 @@ function DetailsCard(props: any) {
               <p className="pd-short-desc">{props?.data?.description}</p>
             )}
             <div className="pd-rating-row">
-              {props?.data?.averageRating ? (
-                <span className="pd-rating-score">
-                  {Number(props?.data?.averageRating).toFixed(1)}
-                </span>
-              ) : null}
-              <Rate
-                disabled
-                allowHalf
-                value={Number(props?.data?.averageRating)}
-                style={{ fontSize: 14 }}
-              />
-              <span className="pd-rating-count">
-                {props?.data?.averageRating
-                  ? `${props?.data?.averageRating} Ratings`
-                  : "No Ratings"}
-              </span>
+              <span className="pd-rating-score">{ratingInfo.rating.toFixed(1)}</span>
+              <Rate disabled allowHalf value={ratingInfo.rating} style={{ fontSize: 14 }} />
+              <span className="pd-rating-count">{ratingInfo.reviews} Ratings</span>
             </div>
             {props?.data?.storeDetails?.store_name && (
               <div className="pd-seller">
