@@ -177,7 +177,7 @@ function Reviews(props: Props) {
   const apiReviews: ReviewItem[] = Array.isArray(reviews?.data) ? reviews.data : [];
   const usingGenerated = apiReviews.length === 0;
 
-  const displayReviews: ReviewItem[] = usingGenerated ? generated.data : apiReviews;
+  const displayReviews: ReviewItem[] = usingGenerated ? (generated.data as ReviewItem[]) : apiReviews;
   const totalReviews = usingGenerated
     ? generated.total
     : (reviews?.meta?.itemCount ?? 0);
