@@ -41,14 +41,14 @@ const PieChart = ({ data }: PieChartProps) => {
             label: "Order Count",
             data: labels?.data as number[],
             backgroundColor: [
-              "#FF5F15", // Brand Orange
-              "#FF8C42", // Light Orange
-              "#2C3E50", // Dark Blue
-              "#34495E", // Medium Blue
-              "#95A5A6", // Grey
-              "#E74C3C", // Red
-              "#2ECC71", // Green
-              "#F1C40F", // Yellow
+              "#F59E0B", // Pending       — amber
+              "#3B82F6", // Processing    — blue
+              "#8B5CF6", // Shipped       — purple
+              "#06B6D4", // Out for delivery — cyan
+              "#10B981", // Delivered     — green
+              "#EF4444", // Cancelled     — red
+              "#95A5A6", // fallback grey
+              "#FF5F15", // fallback brand orange
             ],
             borderColor: "#ffffff",
             borderWidth: 2,
@@ -119,7 +119,7 @@ const PieChart = ({ data }: PieChartProps) => {
   }, [labels]);
 
   return (
-    <div style={{ height: "300px", width: "100%", position: "relative" }}>
+    <div style={{ height: "220px", width: "100%", position: "relative" }}>
       <canvas ref={chartRef} />
     </div>
   );

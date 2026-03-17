@@ -48,6 +48,15 @@ interface ApiResponse<T> {
   data: T;
 }
 
+const STATUS_COLORS = [
+  { key: "pending",          color: "#F59E0B", label: "Pending" },
+  { key: "processing",       color: "#3B82F6", label: "Processing" },
+  { key: "shipped",          color: "#8B5CF6", label: "Shipped" },
+  { key: "out_for_delivery", color: "#06B6D4", label: "Out for Delivery" },
+  { key: "delivered",        color: "#10B981", label: "Delivered" },
+  { key: "cancelled",        color: "#EF4444", label: "Cancelled" },
+];
+
 const getGreeting = () => {
   const hour = new Date().getHours();
   if (hour < 12) return { text: "Good Morning", icon: <FiSun /> };
@@ -222,11 +231,11 @@ function DashboardAdmin() {
                 <div className="dashboard-card-title">
                   <span>
                     {date
-                      ? `Orders - ${dayjs(date).format("MMM D, YYYY")}`
+                      ? `Orders — ${dayjs(date).format("MMM D, YYYY")}`
                       : "Today's Orders"}
                   </span>
                   <span className="dashboard-card-subtitle">
-                    Order breakdown by status
+                    Breakdown by status
                   </span>
                 </div>
               }
@@ -234,42 +243,112 @@ function DashboardAdmin() {
               className="dashboard-chart-card"
             >
               {(orderStatistics?.totalOrders ?? 0) > 0 ? (
-                <div className="dashboard-pie-chart-wrapper">
-                  <PieChart data={orderStatistics?.orderStatistics} />
-                </div>
+                <>
+                  <div className="dashboard-pie-chart-wrapper">
+                    <PieChart data={orderStatistics?.orderStatistics} />
+                  </div>
+
+                  {/* Status breakdown rows */}
+                  <div className="order-status-breakdown">
+                    {STATUS_COLORS.map(({ key, color, label }) => {
+                      const count =
+                        orderStatistics?.orderStatistics?.[key] ?? 0;
+                      if (count === 0) return null;
+                      const pct = orderStatistics?.totalOrders
+                        ? Math.round(
+                            (count / orderStatistics.totalOrders) * 100,
+                          )
+                        : 0;
+                      return (
+                        <div key={key} className="order-status-row">
+                          <div className="order-status-row__left">
+                            <span
+                              className="order-status-row__dot"
+                              style={{ background: color }}
+                            />
+                            <span className="order-status-row__label">
+                              {label}
+                            </span>
+                          </div>
+                          <div className="order-status-row__right">
+                            <div className="order-status-row__bar-wrap">
+                              <div
+                                className="order-status-row__bar"
+                                style={{
+                                  width: `${pct}%`,
+                                  background: color,
+                                }}
+                              />
+                            </div>
+                            <span className="order-status-row__pct">
+                              {pct}%
+                            </span>
+                            <span className="order-status-row__count">
+                              {count}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+
+                    {/* Any statuses not in the predefined map */}
+                    {typeof orderStatistics?.orderStatistics === "object" &&
+                      Object.keys(orderStatistics.orderStatistics)
+                        .filter(
+                          (k) => !STATUS_COLORS.find((s) => s.key === k),
+                        )
+                        .map((key) => {
+                          const count =
+                            orderStatistics.orderStatistics[key] ?? 0;
+                          const pct = orderStatistics.totalOrders
+                            ? Math.round(
+                                (count / orderStatistics.totalOrders) * 100,
+                              )
+                            : 0;
+                          return (
+                            <div key={key} className="order-status-row">
+                              <div className="order-status-row__left">
+                                <span
+                                  className="order-status-row__dot"
+                                  style={{ background: "#95A5A6" }}
+                                />
+                                <span className="order-status-row__label">
+                                  {key.replace(/_/g, " ")}
+                                </span>
+                              </div>
+                              <div className="order-status-row__right">
+                                <div className="order-status-row__bar-wrap">
+                                  <div
+                                    className="order-status-row__bar"
+                                    style={{
+                                      width: `${pct}%`,
+                                      background: "#95A5A6",
+                                    }}
+                                  />
+                                </div>
+                                <span className="order-status-row__pct">
+                                  {pct}%
+                                </span>
+                                <span className="order-status-row__count">
+                                  {count}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })}
+
+                    <div className="order-status-total">
+                      <span>Total</span>
+                      <span>{orderStatistics?.totalOrders ?? 0} orders</span>
+                    </div>
+                  </div>
+                </>
               ) : (
                 <div className="dashboard-empty-chart">
                   <FiPackage className="dashboard-empty-chart__icon" />
                   <p>No orders for this date</p>
                 </div>
               )}
-
-              {/* Order Statistics Table */}
-              <div className="dashboard-stats-table">
-                <div className="dashboard-stats-table__row dashboard-stats-table__row--header">
-                  <span>Status</span>
-                  <span>Count</span>
-                </div>
-                <div className="dashboard-stats-table__row dashboard-stats-table__row--total">
-                  <span>Total Orders</span>
-                  <span className="dashboard-stats-table__value">
-                    {orderStatistics?.totalOrders || 0}
-                  </span>
-                </div>
-                {typeof orderStatistics?.orderStatistics === "object" &&
-                  Object.keys(orderStatistics?.orderStatistics || {})?.map(
-                    (item, key) => (
-                      <div key={key} className="dashboard-stats-table__row">
-                        <span className="dashboard-stats-table__label">
-                          {item}
-                        </span>
-                        <span className="dashboard-stats-table__value">
-                          {orderStatistics?.orderStatistics[item]}
-                        </span>
-                      </div>
-                    ),
-                  )}
-              </div>
             </Card>
           )}
         </Col>
