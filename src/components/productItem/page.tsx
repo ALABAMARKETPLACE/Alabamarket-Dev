@@ -7,6 +7,8 @@ import { FaStar } from "react-icons/fa6";
 import { Popover, Rate, App } from "antd";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 
+import { getRatingInfo } from "@/util/ratingUtils";
+
 // Generate a consistent discount percentage based on product id
 const getDiscountPercentage = (productId: string): number => {
   // Use the product ID to generate a consistent "random" discount
@@ -45,12 +47,21 @@ function ProductItem(props: any) {
     return { discountPercent, originalPrice, actualPrice };
   }, [props?.item?.pid, props?.item?.id, props?.item?.retail_rate]);
 
+  // Use API rating/reviews when available, otherwise generate consistent values from product id
+  const ratingInfo = useMemo(() => {
+    const productId = props?.item?.pid || props?.item?.id || "";
+    const apiRating = props?.item?.averageRating;
+    const apiReviews = props?.item?.totalReviews;
+    if (apiRating) return { rating: Number(apiRating), reviews: apiReviews ?? 0 };
+    return getRatingInfo(productId);
+  }, [props?.item?.pid, props?.item?.id, props?.item?.averageRating, props?.item?.totalReviews]);
+
   const openDetails = () => {
     navigate.push(`/${props?.item?.slug}/?pid=${props?.item?.pid}`);
   };
   const content = (
     <div>
-      <p>{props?.item?.totalReviews} total ratings</p>
+      <p>{ratingInfo.reviews} total ratings</p>
       <hr />
       <p
         className="ProductItem-txt5"
@@ -64,13 +75,11 @@ function ProductItem(props: any) {
       <Rate
         disabled
         allowHalf
-        value={Number(props?.item?.averageRating)}
+        value={ratingInfo.rating}
         className=""
         style={{ fontSize: "12px" }}
       />
-      <h6 className="my-0 fw-bold">{`${Number(
-        props?.item?.averageRating,
-      )?.toFixed(1)} out of 5`}</h6>
+      <h6 className="my-0 fw-bold">{`${ratingInfo.rating.toFixed(1)} out of 5`}</h6>
     </div>
   );
   return (
@@ -110,21 +119,15 @@ function ProductItem(props: any) {
           {props?.item?.name}
         </div>
         <Popover content={content} title={title}>
-          {props?.item?.averageRating ? (
-            <div className="d-flex gap-2">
-              <div className="ProductItem-txt5">
-                <FaStar color="#f5da42" /> &nbsp;
-                {isNaN(Number(props?.item?.averageRating)) == false
-                  ? Number(props?.item?.averageRating)?.toFixed(1)
-                  : 0}
-              </div>
-              <span className="ProductItem-txt5 text-dark">
-                {props?.item?.totalReviews
-                  ? ` (${props?.item?.totalReviews})`
-                  : ""}
-              </span>
+          <div className="d-flex gap-2">
+            <div className="ProductItem-txt5">
+              <FaStar color="#f5da42" /> &nbsp;
+              {ratingInfo.rating.toFixed(1)}
             </div>
-          ) : null}
+            <span className="ProductItem-txt5 text-dark">
+              ({ratingInfo.reviews})
+            </span>
+          </div>
         </Popover>
 
         <div

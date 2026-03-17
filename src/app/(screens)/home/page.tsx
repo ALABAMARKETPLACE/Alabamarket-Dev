@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Banners from "./_components/banner";
 import API from "../../../config/API";
 import { useSelector } from "react-redux";
@@ -10,7 +10,7 @@ import PopularItems from "./_components/popularItems";
 import FeaturedItems from "./_components/featured_items";
 import { reduxAccessToken } from "../../../redux/slice/authSlice";
 import { jwtDecode } from "jwt-decode";
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
 import PlatinumSection from "./_components/platinumSection";
 import DiscountedDealsSection from "./_components/discountedDealsSection";
 import GoldSection from "./_components/goldSection";
@@ -76,6 +76,18 @@ function getCategoryKey(item: Product) {
   const key = String(raw).trim();
   return key.length > 0 ? key : null;
 }
+
+// The 6 key categories that must always be represented on the home page.
+// Each entry carries search terms used for the dedicated API fetch, plus the
+// tokens used later to match products when building per-category pools.
+const TARGET_CATEGORIES = [
+  { key: "television",   searchTerm: "television",   tokens: ["television", "tv", "led tv", "smart tv", "plasma"] },
+  { key: "refrigerator", searchTerm: "refrigerator", tokens: ["refrigerator", "fridge", "freezer"] },
+  { key: "solar",        searchTerm: "solar",         tokens: ["solar", "solar panel", "solar inverter", "solar energy", "solar light", "inverter"] },
+  { key: "handset",      searchTerm: "phone",         tokens: ["phone", "smartphone", "mobile", "handset", "iphone", "tecno", "infinix", "itel", "samsung", "xiaomi"] },
+  { key: "generator",    searchTerm: "generator",     tokens: ["generator"] },
+  { key: "laptop",       searchTerm: "laptop",        tokens: ["laptop", "computer", "desktop", "pc"] },
+] as const;
 
 // Prioritize electronics categories (TVs, refrigerators, washing machines, pressing irons, home theatres, etc.)
 const PREFERRED_CATEGORY_TOKENS = [
@@ -591,51 +603,26 @@ function Home() {
     gcTime: 10 * 60 * 1000,
   });
 
+  // Section-filler pool. All 4 sections combined need up to ~121 filler slots
+  // (36 + 25 + 24 + 36) in the worst case where featured APIs return nothing.
+  // Fetching 3 pages × 50 = 150 items covers that with headroom, while still
+  // being a 94% reduction from the previous 2,500-item fetch.
   const { data: allProductsPool = [] } = useQuery<Product[]>({
     queryKey: ["home-products-pool"],
     queryFn: async () => {
       const pageSize = 50;
-      const maxPages = 50;
-
       const collected: Product[] = [];
-      let page = 1;
-
-      while (page <= maxPages) {
+      for (let page = 1; page <= 3; page++) {
         const response = (await GET(API.FEATURED_ALL_PRODUCTS, {
           page,
           take: pageSize,
           order: "DESC",
-        })) as unknown;
-
-        if (!response || typeof response !== "object") break;
-        const res = response as {
-          status?: boolean;
-          data?: unknown;
-          meta?: { hasNextPage?: boolean };
-        };
-
-        if (res.status !== true) break;
-
-        const pageItems = Array.isArray(res.data)
-          ? res.data
-          : res.data &&
-              typeof res.data === "object" &&
-              "data" in (res.data as Record<string, unknown>) &&
-              Array.isArray((res.data as { data?: unknown }).data)
-            ? ((res.data as { data?: unknown }).data as unknown[])
-            : [];
-
-        collected.push(...filterDisplayableProducts(pageItems));
-
-        const hasNext =
-          typeof res.meta?.hasNextPage === "boolean"
-            ? res.meta.hasNextPage
-            : pageItems.length >= pageSize;
-
-        if (!hasNext) break;
-        page += 1;
+        })) as { status?: boolean; data?: unknown; meta?: { hasNextPage?: boolean } } | null;
+        if (!response || response.status !== true) break;
+        const items = Array.isArray(response.data) ? response.data : [];
+        collected.push(...filterDisplayableProducts(items));
+        if (!response.meta?.hasNextPage) break;
       }
-
       return dedupeProducts(collected);
     },
     staleTime: 5 * 60 * 1000,
@@ -643,6 +630,93 @@ function Home() {
     refetchOnWindowFocus: false,
     gcTime: 10 * 60 * 1000,
   });
+
+  // Fetch products from each of the 6 target categories in parallel.
+  // This guarantees diverse representation regardless of what the general pool returns.
+  const categoryQueries = useQueries({
+    queries: TARGET_CATEGORIES.map(({ key, searchTerm }) => ({
+      queryKey: ["home-category-pool", key],
+      queryFn: async () => {
+        const params = new URLSearchParams({
+          search: searchTerm,
+          take: "15",
+          page: "1",
+          order: "DESC",
+        });
+        const response = await GET(
+          `${API.PRODUCT_SEARCH_BOOSTED_CATEGORY}?${params.toString()}`,
+        );
+        return filterDisplayableProducts(getSuccessfulArrayData(response));
+      },
+      staleTime: 5 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      gcTime: 10 * 60 * 1000,
+    })),
+  });
+
+  // Flat deduplicated pool of all category-specific products
+  const categoryPool = useMemo(() => {
+    const all: Product[] = [];
+    for (const q of categoryQueries) {
+      if (Array.isArray(q.data)) all.push(...q.data);
+    }
+    return dedupeProducts(all);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryQueries]);
+
+  // Separate infinite query for the "All Products" display section.
+  // Starts with 20 items; loads the next page when the sentinel div scrolls into view.
+  const {
+    data: allProductsInfiniteData,
+    fetchNextPage: fetchMoreProducts,
+    hasNextPage: hasMoreProducts,
+    isFetchingNextPage: isFetchingMoreProducts,
+  } = useInfiniteQuery({
+    queryKey: ["home-all-products-infinite"],
+    queryFn: async ({ pageParam }) => {
+      const response = (await GET(API.FEATURED_ALL_PRODUCTS, {
+        page: pageParam,
+        take: 20,
+        order: "DESC",
+      })) as { status?: boolean; data?: unknown; meta?: { hasNextPage?: boolean } } | null;
+      const items = filterDisplayableProducts(
+        Array.isArray(response?.data) ? response.data : [],
+      );
+      return {
+        items,
+        nextPage: response?.meta?.hasNextPage ? (pageParam as number) + 1 : undefined,
+      };
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => lastPage.nextPage,
+    staleTime: 5 * 60 * 1000,
+    refetchOnWindowFocus: false,
+    gcTime: 10 * 60 * 1000,
+  });
+
+  const allProductsInfinite = useMemo(() => {
+    if (!allProductsInfiniteData) return [];
+    return dedupeProducts(
+      allProductsInfiniteData.pages.flatMap((p) => p.items),
+    );
+  }, [allProductsInfiniteData]);
+
+  // Sentinel ref — when this div enters the viewport, load the next page
+  const allProductsSentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = allProductsSentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreProducts && !isFetchingMoreProducts) {
+          fetchMoreProducts();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMoreProducts, isFetchingMoreProducts, fetchMoreProducts]);
 
   useEffect(() => {
     const rotationInterval = setInterval(() => {
@@ -671,14 +745,28 @@ function Home() {
       }
     }
 
-    // General pool excludes boosted products (they are pinned to their sections)
+    // General pool: category-fetched products come first so they dominate the
+    // tier-based allocation; the general pool acts as additional filler.
     const globalPool = dedupeProducts([
+      ...categoryPool,
       ...allProductsPool,
       ...recent,
     ]).filter((item) => {
       const id = getProductIdentifier(item);
       return id ? !boostedIds.has(id) : true;
     });
+
+    // Pre-build a shuffled pool per target category so buildMixedSection can
+    // guarantee at least one slot from each key category.
+    const shuffledByCategory: Record<string, Product[]> = {};
+    for (const { key, tokens } of TARGET_CATEGORIES) {
+      const matching = globalPool.filter((item) =>
+        tokens.some((token) => productMatchesCategoryToken(item, token)),
+      );
+      // Use a deterministic seed per category + rotation so picks rotate over time
+      const catSeed = key.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+      shuffledByCategory[key] = shuffleCandidates(matching, rotationSeed + catSeed);
+    }
 
     // Split into 3 priority tiers
     const { highPriority, normalElectronics, others } =
@@ -724,7 +812,15 @@ function Home() {
         if (id) used.add(id);
       }
 
-      const remainingSlots = Math.max(0, desired - pinned.length);
+      // Guarantee at least 1 product from each of the 6 target categories.
+      // This runs before the tier allocation so every section has variety.
+      const guaranteed: Product[] = [];
+      for (const { key } of TARGET_CATEGORIES) {
+        const picked = takeUniqueProducts(shuffledByCategory[key], used, 1, []);
+        guaranteed.push(...picked);
+      }
+
+      const remainingSlots = Math.max(0, desired - pinned.length - guaranteed.length);
 
       // ~45% TVs/phones/fridges, ~35% other electronics, ~15% everything else
       const desiredHigh = Math.round(remainingSlots * 0.45);
@@ -767,6 +863,7 @@ function Home() {
       );
 
       const combined = [
+        ...guaranteed,
         ...pickedHighOld,
         ...pickedHighNew,
         ...pickedNormalOld,
@@ -824,7 +921,7 @@ function Home() {
     }
 
     return results;
-  }, [featuredProducts, recentFallback, rotationSeed, allProductsPool]);
+  }, [featuredProducts, recentFallback, rotationSeed, allProductsPool, categoryPool]);
 
   const position1Items = positionItems[1];
   const position2Items = positionItems[2];
@@ -841,10 +938,7 @@ function Home() {
   const showPosition2 = position2Items.length > 0;
   const showPosition3 = position3Items.length > 0;
   const showPosition4 = position4Items.length > 0;
-  const allProductsPreview = useMemo(
-    () => shuffleCandidates(allProductsPool, rotationSeed + 777).slice(0, 20),
-    [allProductsPool, rotationSeed],
-  );
+  const allProductsPreview = allProductsInfinite;
 
   return (
     <div className="page-Box">
@@ -901,12 +995,13 @@ function Home() {
       <FeaturedItems />
       {allProductsPreview.length > 0 && (
         <>
-          {/* <div className="HomeSCreen-space" /> */}
           <PopularItems
             data={allProductsPreview}
             title="All Products"
             type="all"
           />
+          {/* Sentinel: entering viewport triggers the next page fetch */}
+          <div ref={allProductsSentinelRef} style={{ height: 1 }} />
         </>
       )}
       {history.length > 0 && token ? (
