@@ -186,7 +186,7 @@ function Reviews(props: Props) {
   const summaryReviews = useMemo(() => {
     if (!usingGenerated) return apiReviews;
     // Sample first 30 for the breakdown bars (enough to look realistic)
-    return generateReviews(pid, 1, Math.min(30, generated.total)).data;
+    return generateReviews(pid, 1, Math.min(30, generated.total)).data as ReviewItem[];
   }, [pid, usingGenerated, apiReviews]);
 
   const handlePageChange = (p: number, ps: number) => {
