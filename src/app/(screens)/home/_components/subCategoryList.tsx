@@ -64,7 +64,7 @@ function SubCategoryList(props: any) {
               }}
             >
               <div className="category-strip-thumb">
-                <img src={item.image} alt={item.name} />
+                <img src={item.image} alt={item.name} loading="lazy" decoding="async" />
               </div>
               <div className="category-strip-label" title={item.name}>
                 {item.name}

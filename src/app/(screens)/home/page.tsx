@@ -637,15 +637,12 @@ function Home() {
     queries: TARGET_CATEGORIES.map(({ key, searchTerm }) => ({
       queryKey: ["home-category-pool", key],
       queryFn: async () => {
-        const params = new URLSearchParams({
+        const response = await GET(API.PRODUCT_SEARCH_NEW_SINGLE, {
           search: searchTerm,
-          take: "15",
-          page: "1",
+          take: 15,
+          page: 1,
           order: "DESC",
         });
-        const response = await GET(
-          `${API.PRODUCT_SEARCH_BOOSTED_CATEGORY}?${params.toString()}`,
-        );
         return filterDisplayableProducts(getSuccessfulArrayData(response));
       },
       staleTime: 5 * 60 * 1000,

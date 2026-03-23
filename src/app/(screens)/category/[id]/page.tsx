@@ -237,6 +237,7 @@ const ProductByCategory = () => {
           const mergedMeta = {
             hasNextPage: metas.some((m) => m?.hasNextPage === true),
             page: currentPage,
+            itemCount: metas.reduce((sum, m) => sum + (Number(m?.itemCount) || 0), 0),
           };
 
           setProducts(dedupeList(collected));
@@ -358,7 +359,7 @@ const ProductByCategory = () => {
               pageSize={pageSize}
               meta={meta}
               initial={initial}
-              type={Settings?.type}
+              type="single"
               count={visibleProductCount}
             >
               <Space wrap>
