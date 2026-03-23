@@ -58,6 +58,7 @@ async function ProductScreen({ params, searchParams }: any) {
   // Use pid from query string first; fall back to the slug route segment
   const id = queryParams?.pid || routeParams?.["product-details"];
   const data = await fetchData(id);
+  console.log(`[ProductScreen] id=${id}`, JSON.stringify(data, null, 2));
   return <DetailsCard data={data} params={{ ...queryParams, pid: id }} />;
 }
 

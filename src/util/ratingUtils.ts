@@ -175,9 +175,11 @@ function generateOneReview(
   const hourSeed = hashStr(`${productId}_h_${idx}`);
   const minSeed  = hashStr(`${productId}_m_${idx}`);
   const jitter   = (hashStr(`${productId}_j_${idx}`) % 7) - 3;
+  // Anchor: most recent review = late October 2025; oldest = ~12 months before that
+  const anchor   = new Date("2025-10-31T23:59:59Z");
   const base     = total > 1 ? Math.floor((idx / (total - 1)) * 360) : 0;
-  const daysAgo  = Math.max(1, 2 + base + jitter);
-  const date = new Date();
+  const daysAgo  = Math.max(0, base + jitter);
+  const date = new Date(anchor);
   date.setDate(date.getDate() - daysAgo);
   date.setHours(hourSeed % 24, minSeed % 60, 0, 0);
 

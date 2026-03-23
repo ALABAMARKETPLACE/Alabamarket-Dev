@@ -89,6 +89,8 @@ function ProductItem(props: any) {
           src={props?.item?.image}
           className="ProductItem-img"
           alt="ProductItem-img"
+          loading="lazy"
+          decoding="async"
           onClick={() => openDetails()}
         />
         {props?.item?.unit <= 0 ? (
