@@ -10,23 +10,17 @@ import "./style.scss";
 function ForgotPassword() {
   const [notificationApi, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [sentEmail, setSentEmail] = useState("");
   const router = useRouter();
 
-  const ForgotPassword = async (val: any) => {
+  const handleSubmit = async (val: any) => {
     try {
       setIsLoading(true);
-      let url = API.USER_FORGOT_PASSWORD;
-      const obj = {
-        email: val?.email,
-      };
-      const response: any = await POST(url, obj);
+      const response: any = await POST(API.USER_FORGOT_PASSWORD, { email: val?.email });
       if (response.status) {
-        notificationApi.success({
-          message: `Password Reset link has been sent to your mail id. Please check`,
-        });
-        setTimeout(() => {
-          router.push("/");
-        }, 2000);
+        setSentEmail(val?.email);
+        setSent(true);
       } else {
         notificationApi.error({ message: parseApiMessage(response.message, "Password reset failed. Please try again.") });
       }
@@ -42,42 +36,56 @@ function ForgotPassword() {
       {contextHolder}
       <div className="auth-container">
         <div className="auth-form-side">
-          <h2 className="LoginScreen-txt1">Forgot Password</h2>
-          <div className="LoginScreen-txt2">
-            Enter your email address to retrieve your password
-          </div>
-          
-          <Form onFinish={ForgotPassword} layout="vertical">
-            <Form.Item
-              name={"email"}
-              rules={[
-                { required: true, message: "Please enter your email" },
-                {
-                  type: "email",
-                  message: "The input is not valid E-mail!",
-                },
-              ]}
-            >
-              <Input size="large" placeholder="Enter Email" />
-            </Form.Item>
+          {sent ? (
+            <>
+              <h2 className="LoginScreen-txt1">Check your email</h2>
+              <div className="LoginScreen-txt2" style={{ marginBottom: 24 }}>
+                A password reset link has been sent to <strong>{sentEmail}</strong>. Please check your inbox and spam folder.
+              </div>
+              <div
+                className="LoginScreen-txt4"
+                onClick={() => router.push("/login")}
+              >
+                Back to Login
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="LoginScreen-txt1">Forgot Password</h2>
+              <div className="LoginScreen-txt2">
+                Enter your email address to retrieve your password
+              </div>
 
-            <Button
-              block
-              size="large"
-              className="btn-clr"
-              htmlType="submit"
-              loading={isLoading}
-            >
-              Send Request
-            </Button>
-            
-            <div 
-              className="LoginScreen-txt4"
-              onClick={() => router.push("/login")}
-            >
-              Back to Login
-            </div>
-          </Form>
+              <Form onFinish={handleSubmit} layout="vertical">
+                <Form.Item
+                  name={"email"}
+                  rules={[
+                    { required: true, message: "Please enter your email" },
+                    { type: "email", message: "The input is not valid E-mail!" },
+                  ]}
+                >
+                  <Input size="large" placeholder="Enter Email" />
+                </Form.Item>
+
+                <Button
+                  block
+                  size="large"
+                  className="btn-clr"
+                  htmlType="submit"
+                  loading={isLoading}
+                >
+                  Send Request
+                </Button>
+
+                <div
+                  className="LoginScreen-txt4"
+                  onClick={() => router.push("/login")}
+                >
+                  Back to Login
+                </div>
+              </Form>
+            </>
+          )}
         </div>
       </div>
     </div>
