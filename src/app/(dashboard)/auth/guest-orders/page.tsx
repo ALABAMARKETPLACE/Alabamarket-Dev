@@ -7,7 +7,6 @@ import { Input, Pagination, Select, Button, Tag } from "antd";
 import { useMutation } from "@tanstack/react-query";
 import { POST } from "@/util/apicall";
 import API from "@/config/API";
-import { useSession } from "next-auth/react";
 import dayjs from "dayjs";
 
 interface GuestOrderItem {
@@ -60,9 +59,6 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function Page() {
-  const { data: sessionData, status } = useSession();
-  const session = sessionData as { token?: string } | null;
-
   const [email, setEmail]           = useState("");
   const [orderId, setOrderId]       = useState("");
   const [name, setName]             = useState("");
@@ -81,7 +77,7 @@ function Page() {
     mutate: fetchOrders,
   } = useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      POST(API.ORDER_GUEST_ORDERS, body, null, { token: session?.token }),
+      POST(API.ORDER_GUEST_ORDERS, body),
   });
 
   const orders = ordersRaw as GuestOrdersResponse | undefined;
