@@ -3,7 +3,7 @@ import React, { useMemo, useState } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
-import { Input, Pagination, Select, Button } from "antd";
+import { Input, Pagination, Select, Button, Tag } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
@@ -29,6 +29,7 @@ interface GuestOrderItem {
     paymentType?: string;
     status?: string;
     ref?: string;
+    transaction_reference?: string;
     amount?: number;
   };
   delivery_date?: string;
@@ -49,25 +50,40 @@ interface GuestOrdersResponse {
   };
 }
 
+const STATUS_COLORS: Record<string, string> = {
+  pending: "orange",
+  processing: "blue",
+  shipped: "purple",
+  out_for_delivery: "cyan",
+  delivered: "green",
+  cancelled: "red",
+};
+
 function Page() {
   const { data: sessionData, status } = useSession();
   const session = sessionData as { token?: string } | null;
 
-  const [email, setEmail] = useState<string>("");
-  const [orderId, setOrderId] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
-  const [take, setTake] = useState<number>(10);
+  const [email, setEmail]           = useState("");
+  const [orderId, setOrderId]       = useState("");
+  const [name, setName]             = useState("");
+  const [statusFilter, setStatus]   = useState("");
+  const [sortField, setSortField]   = useState("createdAt");
+  const [orderDir, setOrderDir]     = useState("DESC");
+  const [page, setPage]             = useState(1);
+  const [take, setTake]             = useState(10);
+  const [committed, setCommitted]   = useState<Record<string, unknown> | null>(null);
 
-  const params = useMemo(
-    () => ({
-      email,
-      ...(orderId ? { order_id: orderId } : {}),
-      ...(statusFilter ? { status: statusFilter } : {}),
-      page,
-      take,
-    }),
-    [email, orderId, statusFilter, page, take],
+  // Only fire query when user explicitly clicks Search
+  const queryParams = useMemo(
+    () =>
+      committed
+        ? {
+            ...committed,
+            page,
+            take,
+          }
+        : null,
+    [committed, page, take],
   );
 
   const {
@@ -76,137 +92,186 @@ function Page() {
     isFetching,
     isError,
     error,
-    refetch,
   } = useQuery({
-    queryFn: ({ queryKey }) =>
-      GET(queryKey[0] as string, queryKey[1] as Record<string, unknown>, null, {
+    queryKey: ["guest-orders", queryParams],
+    queryFn: () =>
+      GET(API.ORDER_GUEST_ORDERS, queryParams as Record<string, unknown>, null, {
         token: session?.token,
       }),
-    queryKey: [API.ORDER_GUEST_ORDERS, params],
-    enabled: status === "authenticated" && !!session?.token && !!email,
+    enabled: status === "authenticated" && !!session?.token && !!queryParams,
     retry: false,
   });
 
   const orders = ordersRaw as GuestOrdersResponse | undefined;
   const totalCount = orders?.meta?.itemCount ?? 0;
-  const rows = Array.isArray(orders?.data) ? orders?.data : [];
+  const rows: GuestOrderItem[] = Array.isArray(orders?.data) ? orders.data : [];
 
   const handleSearch = () => {
+    if (!email.trim()) return;
     setPage(1);
-    refetch();
+    setCommitted({
+      email: email.trim(),
+      ...(orderId.trim()     ? { order_id: orderId.trim() } : {}),
+      ...(name.trim()        ? { name: name.trim() }        : {}),
+      ...(statusFilter       ? { status: statusFilter }     : {}),
+      sort:  sortField,
+      order: orderDir,
+    });
   };
 
-  const renderTable = () => {
-    if (!email) {
-      return (
-        <div style={{ padding: 16 }}>
-          Enter a guest email and click Search to load orders.
-        </div>
-      );
-    }
-    if (isLoading) return <Loading />;
-    if (isError) return <Error description={(error as Error)?.message} />;
-    if (!rows.length) {
-      return (
-        <div style={{ padding: 16 }}>
-          No guest orders found for the provided filters.
-        </div>
-      );
-    }
-    return (
-      <div className="table-responsive" style={{ padding: 16 }}>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Status</th>
-              <th>Guest Email</th>
-              <th>Total Items</th>
-              <th>Grand Total (₦)</th>
-              <th>Payment Ref</th>
-              <th>Payment Status</th>
-              <th>Created</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((o) => (
-              <tr key={String(o.id ?? o.order_id)}>
-                <td>{o.order_id}</td>
-                <td>{o.status}</td>
-                <td>{o.guest_email}</td>
-                <td>{o.totalItems ?? o.items?.length ?? 0}</td>
-                <td>{(o.grandTotal ?? 0).toLocaleString()}</td>
-                <td>{o.payment?.ref}</td>
-                <td>{o.payment?.status}</td>
-                <td>
-                  {o.createdAt
-                    ? dayjs(o.createdAt).format("YYYY-MM-DD HH:mm")
-                    : "-"}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Pagination
-            current={page}
-            pageSize={take}
-            total={totalCount}
-            onChange={(p, t) => {
-              setPage(p);
-              setTake(t);
-            }}
-            showSizeChanger
-            responsive
-          />
-        </div>
-      </div>
-    );
+  const handleReset = () => {
+    setEmail(""); setOrderId(""); setName("");
+    setStatus(""); setSortField("createdAt"); setOrderDir("DESC");
+    setPage(1); setTake(10); setCommitted(null);
   };
 
   return (
     <>
       <PageHeader title="Guest Orders" bredcume="Dashboard / Guest Orders">
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
+        {/* ── Filter bar ── */}
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
           <Input
-            placeholder="Guest email"
+            placeholder="Guest email *"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            style={{ width: 260 }}
+            onPressEnter={handleSearch}
+            style={{ width: 240 }}
           />
           <Input
-            placeholder="Order ID (optional)"
+            placeholder="Order ID"
             value={orderId}
             onChange={(e) => setOrderId(e.target.value)}
-            style={{ width: 200 }}
+            onPressEnter={handleSearch}
+            style={{ width: 180 }}
+          />
+          <Input
+            placeholder="Guest name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onPressEnter={handleSearch}
+            style={{ width: 160 }}
           />
           <Select
             allowClear
             placeholder="Status"
             value={statusFilter || undefined}
-            onChange={(v) => setStatusFilter(v || "")}
-            style={{ width: 160 }}
+            onChange={(v) => setStatus(v ?? "")}
+            style={{ width: 150 }}
             options={[
-              { value: "", label: "All" },
-              { value: "pending", label: "Pending" },
-              { value: "processing", label: "Processing" },
-              { value: "delivered", label: "Delivered" },
-              { value: "cancelled", label: "Cancelled" },
+              { value: "pending",          label: "Pending" },
+              { value: "processing",       label: "Processing" },
+              { value: "shipped",          label: "Shipped" },
+              { value: "out_for_delivery", label: "Out for Delivery" },
+              { value: "delivered",        label: "Delivered" },
+              { value: "cancelled",        label: "Cancelled" },
+            ]}
+          />
+          <Select
+            value={sortField}
+            onChange={setSortField}
+            style={{ width: 150 }}
+            options={[
+              { value: "createdAt", label: "Date Created" },
+              { value: "grandTotal", label: "Grand Total" },
+              { value: "status",    label: "Status" },
+            ]}
+          />
+          <Select
+            value={orderDir}
+            onChange={setOrderDir}
+            style={{ width: 100 }}
+            options={[
+              { value: "DESC", label: "DESC" },
+              { value: "ASC",  label: "ASC" },
             ]}
           />
           <Button type="primary" loading={isFetching} onClick={handleSearch}>
             Search
           </Button>
+          <Button onClick={handleReset}>Reset</Button>
         </div>
       </PageHeader>
-      {renderTable()}
+
+      {/* ── Body ── */}
+      {!committed ? (
+        <div style={{ padding: "32px 16px", color: "#888" }}>
+          Enter a guest email address and click Search to load orders.
+        </div>
+      ) : isLoading ? (
+        <Loading />
+      ) : isError ? (
+        <Error description={(error as Error)?.message} />
+      ) : rows.length === 0 ? (
+        <div style={{ padding: "32px 16px", color: "#888" }}>
+          No guest orders found for the provided filters.
+        </div>
+      ) : (
+        <div style={{ padding: 16 }}>
+          <div className="table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Guest</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Items</th>
+                  <th>Grand Total (₦)</th>
+                  <th>Payment Ref</th>
+                  <th>Payment Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((o) => (
+                  <tr key={String(o.id ?? o.order_id)}>
+                    <td style={{ fontFamily: "monospace", fontSize: 12 }}>
+                      {o.order_id ?? "-"}
+                    </td>
+                    <td>
+                      <div>{[o.guest_first_name, o.guest_last_name].filter(Boolean).join(" ") || "-"}</div>
+                      <div style={{ fontSize: 11, color: "#888" }}>{o.guest_email}</div>
+                    </td>
+                    <td>{o.guest_phone ?? "-"}</td>
+                    <td>
+                      <Tag color={STATUS_COLORS[o.status ?? ""] ?? "default"}>
+                        {o.status ?? "-"}
+                      </Tag>
+                    </td>
+                    <td style={{ textAlign: "center" }}>
+                      {o.totalItems ?? o.items?.length ?? 0}
+                    </td>
+                    <td>₦{(o.grandTotal ?? 0).toLocaleString()}</td>
+                    <td style={{ fontFamily: "monospace", fontSize: 11 }}>
+                      {o.payment?.transaction_reference ?? o.payment?.ref ?? "-"}
+                    </td>
+                    <td>
+                      <Tag color={o.payment?.status === "success" ? "green" : "orange"}>
+                        {o.payment?.status ?? "-"}
+                      </Tag>
+                    </td>
+                    <td style={{ fontSize: 12, whiteSpace: "nowrap" }}>
+                      {o.createdAt ? dayjs(o.createdAt).format("DD MMM YYYY HH:mm") : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
+            <Pagination
+              current={page}
+              pageSize={take}
+              total={totalCount}
+              onChange={(p, t) => { setPage(p); setTake(t); }}
+              showSizeChanger
+              showTotal={(total) => `${total} orders`}
+              responsive
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }
