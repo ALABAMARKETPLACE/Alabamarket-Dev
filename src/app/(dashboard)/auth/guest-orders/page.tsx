@@ -1,11 +1,11 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
 import { Input, Pagination, Select, Button, Tag } from "antd";
-import { useQuery } from "@tanstack/react-query";
-import { GET } from "@/util/apicall";
+import { useMutation } from "@tanstack/react-query";
+import { POST } from "@/util/apicall";
 import API from "@/config/API";
 import { useSession } from "next-auth/react";
 import dayjs from "dayjs";
@@ -73,50 +73,38 @@ function Page() {
   const [take, setTake]             = useState(10);
   const [committed, setCommitted]   = useState<Record<string, unknown> | null>(null);
 
-  // Only fire query when user explicitly clicks Search
-  const queryParams = useMemo(
-    () =>
-      committed
-        ? {
-            ...committed,
-            page,
-            take,
-          }
-        : null,
-    [committed, page, take],
-  );
 
   const {
     data: ordersRaw,
-    isLoading,
-    isFetching,
-    isError,
+    isPending: isLoading,
     error,
-  } = useQuery({
-    queryKey: ["guest-orders", queryParams],
-    queryFn: () =>
-      GET(API.ORDER_GUEST_ORDERS, queryParams as Record<string, unknown>, null, {
-        token: session?.token,
-      }),
-    enabled: status === "authenticated" && !!session?.token && !!queryParams,
-    retry: false,
+    mutate: fetchOrders,
+  } = useMutation({
+    mutationFn: (body: Record<string, unknown>) =>
+      POST(API.ORDER_GUEST_ORDERS, body, null, { token: session?.token }),
   });
 
   const orders = ordersRaw as GuestOrdersResponse | undefined;
   const totalCount = orders?.meta?.itemCount ?? 0;
   const rows: GuestOrderItem[] = Array.isArray(orders?.data) ? orders.data : [];
+  const isError = !!error;
+  const isFetching = isLoading;
 
   const handleSearch = () => {
     if (!email.trim()) return;
     setPage(1);
-    setCommitted({
+    const body = {
       email: email.trim(),
-      ...(orderId.trim()     ? { order_id: orderId.trim() } : {}),
-      ...(name.trim()        ? { name: name.trim() }        : {}),
-      ...(statusFilter       ? { status: statusFilter }     : {}),
+      ...(orderId.trim() ? { order_id: orderId.trim() } : {}),
+      ...(name.trim()    ? { name: name.trim() }        : {}),
+      ...(statusFilter   ? { status: statusFilter }     : {}),
       sort:  sortField,
       order: orderDir,
-    });
+      page: 1,
+      take,
+    };
+    setCommitted(body);
+    fetchOrders(body);
   };
 
   const handleReset = () => {
@@ -264,7 +252,13 @@ function Page() {
               current={page}
               pageSize={take}
               total={totalCount}
-              onChange={(p, t) => { setPage(p); setTake(t); }}
+              onChange={(p, t) => {
+                setPage(p);
+                setTake(t);
+                if (committed) {
+                  fetchOrders({ ...committed, page: p, take: t });
+                }
+              }}
               showSizeChanger
               showTotal={(total) => `${total} orders`}
               responsive
