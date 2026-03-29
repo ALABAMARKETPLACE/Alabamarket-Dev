@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
-import { Input, Pagination, Select, Button, Tag } from "antd";
+import { Input, Pagination, Select, Button, Tag, notification } from "antd";
 import { useMutation } from "@tanstack/react-query";
 import { POST } from "@/util/apicall";
 import API from "@/config/API";
@@ -59,6 +59,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function Page() {
+  const [notificationApi, contextHolder] = notification.useNotification();
   const [email, setEmail]           = useState("");
   const [orderId, setOrderId]       = useState("");
   const [name, setName]             = useState("");
@@ -78,6 +79,20 @@ function Page() {
   } = useMutation({
     mutationFn: (body: Record<string, unknown>) =>
       POST(API.ORDER_GUEST_ORDERS, body),
+    onSuccess: (res: any) => {
+      const count = res?.meta?.itemCount ?? (Array.isArray(res?.data) ? res.data.length : 0);
+      if (count === 0) {
+        notificationApi.info({ message: "No orders found for this email." });
+      } else {
+        notificationApi.success({ message: `${count} order${count !== 1 ? "s" : ""} found.` });
+      }
+    },
+    onError: (err: any) => {
+      notificationApi.error({
+        message: "Failed to fetch guest orders",
+        description: err?.message ?? "Something went wrong. Please try again.",
+      });
+    },
   });
 
   const orders = ordersRaw as GuestOrdersResponse | undefined;
@@ -87,7 +102,10 @@ function Page() {
   const isFetching = isLoading;
 
   const handleSearch = () => {
-    if (!email.trim()) return;
+    if (!email.trim()) {
+      notificationApi.warning({ message: "Please enter a guest email address to search." });
+      return;
+    }
     setPage(1);
     const body = {
       email: email.trim(),
@@ -111,6 +129,7 @@ function Page() {
 
   return (
     <>
+      {contextHolder}
       <PageHeader title="Guest Orders" bredcume="Dashboard / Guest Orders">
         {/* ── Filter bar ── */}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
