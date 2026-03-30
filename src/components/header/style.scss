@@ -366,17 +366,25 @@
 
 // ─── Responsive ──────────────────────────────────────────────────────────────
 
-// Tablet (577 – 991px): single row, no location, compact
-@media (min-width: 577px) and (max-width: 991px) {
+// Tablet (768 – 991px): full single row with search inline
+@media (min-width: 768px) and (max-width: 991px) {
   .Header-top {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .Header-left {
     flex: 0 0 auto;
+  }
+
+  .Header_brandTagline {
+    display: none;
+  }
+
+  .Header_brandText {
+    font-size: 14px;
   }
 
   .Header-location {
@@ -391,13 +399,68 @@
 
   .Header-right {
     flex: 0 0 auto;
-    gap: 6px;
+    gap: 4px;
   }
 
   .Header-sellerBtn {
-    padding: 0 14px !important;
-    height: 36px !important;
+    padding: 0 12px !important;
+    height: 34px !important;
     font-size: 12px !important;
+  }
+
+  .Header-action-item {
+    padding: 6px 7px;
+  }
+}
+
+// Small tablet / large mobile (577 – 767px): logo + icons, search inline
+@media (min-width: 577px) and (max-width: 767px) {
+  .Header-top {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .Header-left {
+    flex: 0 0 auto;
+  }
+
+  .Header_brandTagline {
+    display: none;
+  }
+
+  .Header_brandText {
+    font-size: 13px;
+  }
+
+  .Header-location {
+    display: none;
+  }
+
+  .Header-center {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .Header-right {
+    flex: 0 0 auto;
+    gap: 2px;
+  }
+
+  .Header-sellerBtn {
+    padding: 0 10px !important;
+    height: 32px !important;
+    font-size: 11px !important;
+  }
+
+  .Header-sellerBtn-text {
+    display: none; // Show icon only on small tablet
+  }
+
+  .Header-action-item {
+    padding: 5px 6px;
   }
 }
 
