@@ -29,6 +29,8 @@ const API_ADMIN = {
   ORDER_GETONE_SELLER: "order/get_one/seller/", //get details of an order for seller.
   COMPLETE_PAYMENT: "order/update_payment/", //get update payment for seller only
   ORDER_BY_USER: "order/user/", //to get all orders for a user only for admin
+  ORDER_GUEST_ALL: "order/guest/all", //GET all guest orders - admin only
+  ORDER_GUEST_STORE: "order/guest/store", //GET guest orders for a seller's store
 
   ENQUIRY_GET: "Enquiry/get",
   ENQUIRY_DELETE: "Enquiry/delete/",

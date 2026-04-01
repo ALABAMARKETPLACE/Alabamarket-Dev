@@ -115,8 +115,8 @@ function Header() {
                 </div>
               </div>
 
-              {/* Center Section: Search (Desktop) */}
-              <div className="Header-center d-none d-lg-block">
+              {/* Center Section: Search (Tablet + Desktop) */}
+              <div className="Header-center d-none d-md-block">
                 <Search type={"input"} />
               </div>
 
@@ -198,8 +198,8 @@ function Header() {
               </div>
             </div>
 
-            {/* Mobile/Tablet Search Row */}
-            <div className="Header-bottom d-lg-none py-2">
+            {/* Mobile-only Search Row */}
+            <div className="Header-bottom d-md-none py-2">
               <Search type={"box"} />
             </div>
           </header>

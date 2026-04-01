@@ -430,6 +430,29 @@ function takeUniqueProductsByCategory(
   return result;
 }
 
+function SkeletonCard() {
+  return (
+    <div className="home-skeleton-card">
+      <div className="home-skeleton-img" />
+      <div className="home-skeleton-info">
+        <span className="home-skeleton-name" />
+        <span className="home-skeleton-price" />
+      </div>
+    </div>
+  );
+}
+
+function SkeletonSection({ count = 6, title = "" }: { count?: number; title?: string }) {
+  return (
+    <div className="home-skeleton-section">
+      <div className="home-skeleton-title" style={title ? { width: `${title.length * 9}px` } : undefined} />
+      <div className="home-skeleton-grid">
+        {Array.from({ length: count }).map((_, i) => <SkeletonCard key={i} />)}
+      </div>
+    </div>
+  );
+}
+
 function Home() {
   const [rotationSeed, setRotationSeed] = useState(0);
   const data = useSelector(reduxLatLong);
@@ -949,37 +972,41 @@ function Home() {
         </>
       ) : null}
 
-      {showPosition4 && (
+      {showPosition4 ? (
         <>
           <DiscountedDealsSection products={position4Items} />
           <div className="HomeSCreen-space" />
         </>
-      )}
+      ) : featuredLoading ? (
+        <><SkeletonSection count={8} /><div className="HomeSCreen-space" /></>
+      ) : null}
 
-      {showPosition1 && (
+      {showPosition1 ? (
         <>
           <PlatinumSection products={position1Items} />
           <div className="HomeSCreen-space" />
         </>
-      )}
+      ) : featuredLoading ? (
+        <><SkeletonSection count={8} /><div className="HomeSCreen-space" /></>
+      ) : null}
 
-      {showPosition2 && (
+      {showPosition2 ? (
         <>
           <GoldSection products={position2Items} />
           <div className="HomeSCreen-space" />
         </>
-      )}
+      ) : featuredLoading ? (
+        <><SkeletonSection count={6} /><div className="HomeSCreen-space" /></>
+      ) : null}
 
-      {/* TopSellingStore - Commented out as requested */}
-      {/* <TopSellingStore /> */}
-      {/* <div className="HomeSCreen-space" /> */}
-
-      {showPosition3 && (
+      {showPosition3 ? (
         <>
           <SilverSection products={position3Items} />
           <div className="HomeSCreen-space" />
         </>
-      )}
+      ) : featuredLoading ? (
+        <><SkeletonSection count={6} /><div className="HomeSCreen-space" /></>
+      ) : null}
 
       {/* Category Featured Products Section - Removed as requested */}
       {/* {subCategories?.length > 0 && (

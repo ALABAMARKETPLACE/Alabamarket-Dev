@@ -46,6 +46,17 @@ function DetailsCard(props: any) {
       }
     }
   }, [props?.data, vid]);
+  // Replace the address bar URL with the slug path + pid so the URL is
+  // human-readable AND still works when copied and opened in another browser.
+  useEffect(() => {
+    const slug = props?.data?.slug;
+    const pid  = props?.params?.pid;
+    if (!slug || !pid) return;
+    const params = new URLSearchParams({ pid });
+    if (vid) params.set("vid", vid);
+    window.history.replaceState(null, "", `/${slug}?${params.toString()}`);
+  }, [props?.data?.slug, props?.params?.pid, vid]);
+
   const productId = props?.data?.pid || props?.params?.pid || "";
   const ratingInfo = (() => {
     const apiRating = props?.data?.averageRating;

@@ -43,6 +43,7 @@ type EnquiryFormValues = {
 interface ProductData {
   _id: string;
   pid: string;
+  slug?: string;
   name: string;
   retail_rate: number;
   unit: number;
@@ -189,9 +190,14 @@ function Description(props: Props) {
   };
   const shareLink = async () => {
     try {
-      // Use the pid passed from page.tsx (the exact value used to fetch the product)
-      const shareUrl = props?.pid
-        ? `${window.location.origin}${window.location.pathname}?pid=${props.pid}`
+      // Slug in the path for a clean URL; pid as query param so the backend
+      // can still look up the product when the link is opened in a new tab.
+      const slug = props?.data?.slug;
+      const pid  = props?.pid;
+      const shareUrl = slug && pid
+        ? `${window.location.origin}/${slug}?pid=${pid}`
+        : slug
+        ? `${window.location.origin}/${slug}`
         : `${window.location.origin}${window.location.pathname}`;
       if (navigator?.share) {
         await navigator.share({
