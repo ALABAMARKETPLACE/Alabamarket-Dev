@@ -166,6 +166,8 @@ const API = {
   ORDER_GETCOUNT: "order/getall/", //get all orders count for a store only for seller
   ORDER_TRACK_GUEST: "order/track/", //GET track order by reference (no auth required)
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
+  ORDER_GUEST_ALL: "order/guest/all", //GET all guest orders - admin only
+  ORDER_GUEST_STORE: "order/guest/store", //GET guest orders for a seller's store
 
   // STORE STATISTICS
   STORE_STATS: "store/stats",

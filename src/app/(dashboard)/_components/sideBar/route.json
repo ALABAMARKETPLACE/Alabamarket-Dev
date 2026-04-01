@@ -62,7 +62,7 @@
         "menu": "Guest Orders",
         "icon": "TbShoppingCartSearch",
         "route": "/auth/guest-orders",
-        "role": ["admin"]
+        "role": ["admin", "seller"]
       },
       {
         "id": 16,
