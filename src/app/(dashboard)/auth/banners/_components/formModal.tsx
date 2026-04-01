@@ -164,6 +164,8 @@ function FormModal(props: Props) {
       footer={false}
       centered
       width={900}
+      style={{ maxWidth: "calc(100vw - 32px)" }}
+      styles={{ body: { overflowY: "auto", maxHeight: "calc(100vh - 140px)" } }}
     >
       {contextHolder}
       <Form form={form} onFinish={onFinish} layout="vertical">

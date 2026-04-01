@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useMemo, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   Button,
   Table,
@@ -21,7 +21,6 @@ import {
   FiMonitor,
   FiSmartphone,
   FiCalendar,
-  FiCheckCircle,
 } from "react-icons/fi";
 import { CgReorder } from "react-icons/cg";
 import moment from "moment";
@@ -197,11 +196,11 @@ function DataTable({
       width: 500,
     },
     {
-      title: "Desktop Size",
-      dataIndex: "age",
-      key: "age",
+      title: "Desktop Image",
+      dataIndex: "img_desk",
+      key: "desktop_status",
       width: 100,
-      render: (text: any, record: any) => {
+      render: (_: any, record: any) => {
         return record?.img_desk ? (
           <span className="dashboard-badge dashboard-badge--success">
             Available
@@ -214,11 +213,11 @@ function DataTable({
       },
     },
     {
-      title: "Mobile Size",
-      dataIndex: "age",
-      key: "age",
+      title: "Mobile Image",
+      dataIndex: "img_mob",
+      key: "mobile_status",
       width: 100,
-      render: (text: any, record: any) => {
+      render: (_: any, record: any) => {
         return record?.img_mob ? (
           <span className="dashboard-badge dashboard-badge--success">
             Available
@@ -260,11 +259,11 @@ function DataTable({
     {
       title: "Action",
       width: 100,
-      render: (item: any, record: any) => renderActions(record),
+      render: (_: any, record: any) => renderActions(record),
     },
   ];
 
-  const renderMobileContent = useMemo(() => {
+  const renderMobileContent = () => {
     if (!Array.isArray(data) || data.length === 0) {
       return (
         <div className="dashboard-mobile-card__empty">
@@ -295,7 +294,10 @@ function DataTable({
               <h4 className="dashboard-mobile-card__title">
                 {record?.title ?? "Untitled Banner"}
               </h4>
-              <span className="dashboard-mobile-card__subtitle">
+              <span
+                className="dashboard-mobile-card__subtitle"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+              >
                 <FiCalendar size={12} />
                 {record?.createdAt
                   ? moment(record?.createdAt).format("MMM Do YYYY")
@@ -314,7 +316,10 @@ function DataTable({
           </div>
           <div className="dashboard-mobile-card__body">
             <div className="dashboard-mobile-card__row">
-              <span className="dashboard-mobile-card__label">
+              <span
+                className="dashboard-mobile-card__label"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+              >
                 <FiMonitor size={14} /> Desktop
               </span>
               <span className="dashboard-mobile-card__value">
@@ -330,7 +335,10 @@ function DataTable({
               </span>
             </div>
             <div className="dashboard-mobile-card__row">
-              <span className="dashboard-mobile-card__label">
+              <span
+                className="dashboard-mobile-card__label"
+                style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+              >
                 <FiSmartphone size={14} /> Mobile
               </span>
               <span className="dashboard-mobile-card__value">
@@ -379,7 +387,7 @@ function DataTable({
         </div>
       );
     });
-  }, [data, edit, mutationDelete]);
+  };
 
   return (
     <div className="dashboard-table-container">
@@ -401,13 +409,13 @@ function DataTable({
           }}
         />
       ) : (
-        <div className="dashboard-mobile-cards">{renderMobileContent}</div>
+        <div className="dashboard-mobile-cards">{renderMobileContent()}</div>
       )}
       <div className="table__pagination-container">
         <Pagination
           showSizeChanger
           pageSize={pageSize}
-          showTotal={(total: any) => `Total ${count ?? 0} Banners`}
+          showTotal={() => `Total ${count ?? 0} Banners`}
           onChange={(page, pageSize) => {
             setPage(page);
             setTake(pageSize);
