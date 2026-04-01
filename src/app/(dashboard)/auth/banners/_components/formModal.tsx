@@ -58,9 +58,13 @@ function FormModal(props: Props) {
       setDesktopImage(
         props?.data?.img_desk ? { url: props?.data?.img_desk } : undefined,
       );
-      setMobileImage(
-        props?.data?.img_mob ? { url: props?.data?.img_mob } : undefined,
-      );
+      // Only pre-fill mobile if it has its own distinct image.
+      // If img_mob === img_desk it was auto-filled by a previous save fallback
+      // (never explicitly uploaded), so treat it as empty.
+      const hasDistinctMobile =
+        props?.data?.img_mob &&
+        props?.data?.img_mob !== props?.data?.img_desk;
+      setMobileImage(hasDistinctMobile ? { url: props?.data?.img_mob } : undefined);
     } else {
       form.resetFields();
       setDesktopImage(undefined);
@@ -92,15 +96,21 @@ function FormModal(props: Props) {
       if (!desktopUpload?.url) {
         throw new Error("Desktop banner image is required");
       }
-      const mobileUpload =
-        (await resolveImageUpload(mobileImage, props?.data?.img_mob)) ??
-        desktopUpload;
+      // Resolve mobile independently — no silent fallback to desktop.
+      // If the user didn't upload a mobile image, pass null so the two slots
+      // stay independent. The storefront already falls back to img_desk when
+      // img_mob is absent.
+      const existingMobile =
+        props?.data?.img_mob !== props?.data?.img_desk
+          ? props?.data?.img_mob
+          : undefined;
+      const mobileUpload = await resolveImageUpload(mobileImage, existingMobile);
       const recordId = props?.data?.id ?? props?.data?._id;
       const storeId = Number(session?.user?.store_id) || undefined;
       const obj: Record<string, unknown> = {
         description: body?.description ?? "",
         img_desk: desktopUpload.url,
-        img_mob: mobileUpload.url,
+        img_mob: mobileUpload?.url ?? null,
         status:
           session?.role === "admin" && recordId ? body?.status : true,
         title: body?.title ?? "",
@@ -146,12 +156,6 @@ function FormModal(props: Props) {
         message: `Your desktop banner is missing. Please upload it again.`,
       });
       return;
-    }
-    if (!mobileImage?.file && !mobileImage?.url) {
-      Notifications["info"]({
-        message:
-          "Mobile banner image not provided. The desktop banner will be reused on mobile.",
-      });
     }
     mutationCreate.mutate({ ...val });
   };

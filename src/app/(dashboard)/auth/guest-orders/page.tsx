@@ -1,9 +1,9 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
-import { Pagination, Tag, Button } from "antd";
+import { Tag, Button } from "antd";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
@@ -65,22 +65,18 @@ function Page() {
   const userType = session?.user?.type || session?.type;
   const isSeller = userRole === "seller" || userType === "seller";
 
-  const [page, setPage] = useState(1);
-  const [take, setTake] = useState(10);
-
   const endpoint = isSeller ? API.ORDER_GUEST_STORE : API.ORDER_GUEST_ALL;
 
   const { data: ordersRaw, isLoading, isFetching, isError, error, refetch } = useQuery({
-    queryKey: [endpoint, { page, take }],
+    queryKey: [endpoint],
     queryFn: () =>
-      GET(endpoint, { page, take, order: "DESC" }, null, { token: session?.token }),
+      GET(endpoint, {}, null, { token: session?.token }),
     enabled: authStatus === "authenticated" && !!session?.token,
     retry: false,
   });
 
   const orders = ordersRaw as GuestOrdersResponse | undefined;
   const rows: GuestOrderItem[] = Array.isArray(orders?.data) ? orders.data : [];
-  const totalCount = orders?.meta?.itemCount ?? 0;
 
   return (
     <>
@@ -155,17 +151,6 @@ function Page() {
             </table>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}>
-            <Pagination
-              current={page}
-              pageSize={take}
-              total={totalCount}
-              onChange={(p, t) => { setPage(p); setTake(t); }}
-              showSizeChanger
-              showTotal={(total) => `${total} guest orders`}
-              responsive
-            />
-          </div>
         </div>
       )}
     </>
