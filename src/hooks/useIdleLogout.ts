@@ -4,7 +4,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useAppDispatch } from "@/redux/hooks";
 import { clearReduxData } from "@/lib/clear_redux";
 
-const IDLE_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 
 const ACTIVITY_EVENTS = [
   "mousemove",
@@ -17,7 +17,7 @@ const ACTIVITY_EVENTS = [
 ] as const;
 
 /**
- * Logs out the authenticated user after 5 minutes of inactivity.
+ * Logs out the authenticated user after 30 minutes of inactivity.
  * Resets the countdown on any mouse, keyboard, scroll, or touch event.
  * Has no effect for unauthenticated (guest) users.
  */
