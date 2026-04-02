@@ -113,31 +113,29 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 .dashboard-HeaderBox5 {
   display: flex;
   align-items: center;
-  gap: $space-md;
-  font-size: 18px;
-  font-family: vars.$Bold;
-  color: $text-color-primary;
+  gap: 10px;
   min-width: 220px;
   white-space: nowrap;
-
-  img {
-    height: 40px;
-    width: auto;
-    object-fit: contain;
-  }
+  text-decoration: none;
 
   @media (max-width: 1024px) {
     min-width: 200px;
-    font-size: 16px;
   }
 
   @media (max-width: 768px) {
     min-width: auto;
-    font-size: 14px;
+  }
+}
 
-    img {
-      height: 32px;
-    }
+.dashboard-HeaderLogo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  border-radius: 8px;
+
+  @media (max-width: 768px) {
+    width: 34px;
+    height: 34px;
   }
 }
 
@@ -145,22 +143,26 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 .dashboard-HeaderPanelText {
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
-  margin-left: $space-sm;
-
-  @media (max-width: 600px) {
-    display: none;
-  }
+  line-height: 1.15;
 
   @media (max-width: 1024px) {
     display: none;
   }
 }
 
+.dashboard-HeaderBrandText {
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  font-size: 16px;
+  color: #1a1a2e;
+  white-space: nowrap;
+}
+
 .dashboard-Headertext3 {
-  font-size: 10px;
-  color: $text-color-tertiary;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3af;
+  white-space: nowrap;
 }
 
 // Navigation Links

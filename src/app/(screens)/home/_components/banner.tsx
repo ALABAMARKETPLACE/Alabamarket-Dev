@@ -26,16 +26,12 @@ function Banners(props: any) {
             {props.data.map((bann: any) => {
               return (
                 <div key={bann.id}>
-                  <div
-                    className="HomeScreen-Banners"
-                    style={{
-                      backgroundImage: `url(${
-                        isSmaller
-                          ? bann.img_mob || bann.img_desk
-                          : bann.img_desk
-                      })`,
-                    }}
-                  >
+                  <div className="HomeScreen-Banners">
+                    <img
+                      src={isSmaller ? bann.img_mob || bann.img_desk : bann.img_desk}
+                      alt={bann.title || "Banner"}
+                      className="HomeScreen-BannerImg"
+                    />
                     <div className="HomeScreen-BannersBox">
                       <div className="HomeScreen-Bannertxt2">{bann.title}</div>
                       <div className="HomeScreen-Bannertxt3">

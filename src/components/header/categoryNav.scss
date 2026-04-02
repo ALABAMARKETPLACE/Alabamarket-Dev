@@ -1,129 +1,264 @@
 @use "../../config/styleVariable.scss" as vars;
 
-.category-nav-wrapper {
+// ─── Wrapper ─────────────────────────────────────────────────────────────────
+.catnav-wrapper {
   width: 100%;
-  min-height: 56px;
-  display: flex;
-  align-items: center;
-  background-color: #fff;
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-
-  @media (max-width: 768px) {
-    min-height: 50px;
-  }
+  background: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-.category-nav-container {
+.catnav-inner {
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 16px;
-  padding: 0;
   max-width: 1400px;
   margin: 0 auto;
+  padding: 0 8px;
+  height: 52px;
+  gap: 0;
+  position: relative;
 
   @media (max-width: 768px) {
-    gap: 12px;
+    height: 46px;
+    padding: 0 4px;
   }
 }
 
-.category-lines-scroll {
-  position: relative;
-  overflow: hidden;
-  flex: 1;
-  height: 100%;
-  
-  // Mask for fade effect on sides
-  mask-image: linear-gradient(to right, transparent, black 20px, black 95%, transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 20px, black 95%, transparent);
-
-  .category-lines-container {
-    display: flex;
-    gap: 12px;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    padding: 10px 20px;
-    align-items: center;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-
-    .category-line-item {
-      flex-shrink: 0;
-      cursor: pointer;
-      padding: 8px 18px;
-      border-radius: 100px;
-      transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
-      background: #f8f9fa;
-      border: 1px solid transparent;
-      color: #4b5563;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-      position: relative;
-
-      &:hover {
-        background: #fff0e6; // Light orange background
-        color: vars.$primary;
-        transform: translateY(-1px);
-        border-color: rgba(255, 95, 21, 0.15);
-      }
-
-      &.active {
-        background: vars.$primary;
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(255, 95, 21, 0.25);
-      }
-
-      .category-line-label {
-        font-family: vars.$Medium;
-        font-size: 14px;
-        font-weight: 500;
-        text-transform: capitalize;
-        letter-spacing: 0.2px;
-
-        @media (max-width: 768px) {
-          font-size: 13px;
-        }
-      }
-
-      // Hide the old decor line
-      .category-line-decor {
-        display: none;
-      }
-    }
-  }
-}
-
-.category-nav-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  left: 0;
-  min-width: 220px;
-  max-width: 320px;
-  max-height: 360px;
-  overflow: auto;
-  padding: 10px;
-  border-radius: 12px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-  z-index: 50;
-}
-
-.category-nav-dropdown-item {
-  padding: 10px 12px;
-  border-radius: 10px;
-  font-family: vars.$Medium;
-  font-size: 14px;
-  color: #111827;
-  white-space: normal;
+// ─── All Categories Button ────────────────────────────────────────────────────
+.catnav-all-btn {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 4px 6px 0;
+  flex-shrink: 0;
+  border-radius: 8px;
+  transition: background 0.15s ease;
 
   &:hover {
-    background: #fff0e6;
+    background: #fff4ef;
+  }
+}
+
+.catnav-all-label {
+  font-family: vars.$SemiBold;
+  font-size: 13px;
+  font-weight: 600;
+  color: vars.$primary;
+  white-space: nowrap;
+  padding-right: 6px;
+
+  @media (max-width: 480px) {
+    display: none;
+  }
+}
+
+// ─── Divider ─────────────────────────────────────────────────────────────────
+.catnav-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  margin: 0 8px;
+
+  @media (max-width: 480px) {
+    margin: 0 6px;
+  }
+}
+
+// ─── Scroll Arrows ───────────────────────────────────────────────────────────
+.catnav-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, background 0.15s ease, color 0.15s ease;
+  z-index: 2;
+
+  &--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &:hover {
+    background: vars.$primary;
+    color: #fff;
+    border-color: vars.$primary;
+  }
+
+  &--left {
+    margin-right: 4px;
+  }
+
+  &--right {
+    margin-left: 4px;
+  }
+
+  @media (max-width: 768px) {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+// ─── Scrollable Track ────────────────────────────────────────────────────────
+.catnav-scroll-track {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding: 6px 4px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ─── Category Item ────────────────────────────────────────────────────────────
+.catnav-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 6px 14px;
+  border-radius: 100px;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+  font-family: vars.$Medium;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #374151;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  user-select: none;
+
+  &:hover {
+    background: #fff4ef;
+    color: vars.$primary;
+    border-color: rgba(255, 95, 21, 0.18);
+    transform: translateY(-1px);
+  }
+
+  &--active {
+    background: vars.$primary;
+    color: #fff;
+    border-color: vars.$primary;
+    box-shadow: 0 3px 10px rgba(255, 95, 21, 0.28);
+
+    .catnav-item-chevron {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    &:hover {
+      background: darken(#FF5F15, 6%);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+    padding: 5px 12px;
+  }
+}
+
+.catnav-item-label {
+  line-height: 1;
+}
+
+.catnav-item-chevron {
+  font-size: 15px;
+  color: #9ca3af;
+  line-height: 1;
+  margin-left: 1px;
+  transition: color 0.15s ease;
+}
+
+// ─── Subcategory Dropdown ─────────────────────────────────────────────────────
+.catnav-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 200px;
+  max-width: 280px;
+  max-height: 340px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+  padding: 8px;
+  animation: catnav-dropdown-in 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+  }
+}
+
+@keyframes catnav-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.catnav-dropdown-heading {
+  font-family: vars.$SemiBold;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  padding: 4px 10px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 4px;
+}
+
+.catnav-dropdown-item {
+  padding: 9px 10px;
+  border-radius: 9px;
+  font-family: vars.$Regular;
+  font-size: 13.5px;
+  color: #1f2937;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  white-space: normal;
+  line-height: 1.35;
+
+  &:hover {
+    background: #fff4ef;
     color: vars.$primary;
   }
 }

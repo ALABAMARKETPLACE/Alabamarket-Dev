@@ -439,11 +439,7 @@
 .HomeScreen-BannerBox {
   width: 100%;
   overflow: hidden;
-  padding: 0 20px;
-
-  @media (max-width: 576px) {
-    padding: 0 12px;
-  }
+  padding: 0 8px;
 
   // Slick dot indicators
   .slick-dots {
@@ -466,14 +462,10 @@
 
 .HomeScreen-Banners {
   width: 100%;
-  height: 270px;
-  background-color: #e8e8e8;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
   position: relative;
   overflow: hidden;
-  border-radius: 14px;
+  border-radius: 8px;
+  background-color: #e8e8e8;
   animation: bannerSlide 0.8s ease-out;
 
   // Dark gradient overlay for text legibility
@@ -491,19 +483,7 @@
     z-index: 1;
   }
 
-  @media (max-width: 1200px) {
-    height: 230px;
-    border-radius: 12px;
-  }
-
-  @media (max-width: 1024px) {
-    height: 210px;
-  }
-
   @media (max-width: 768px) {
-    height: 175px;
-    border-radius: 10px;
-
     &::after {
       background: linear-gradient(
         to top,
@@ -513,11 +493,13 @@
       );
     }
   }
+}
 
-  @media (max-width: 480px) {
-    height: 155px;
-    border-radius: 8px;
-  }
+.HomeScreen-BannerImg {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 @keyframes bannerSlide {

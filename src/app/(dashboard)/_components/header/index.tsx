@@ -10,7 +10,7 @@ import { MdOutlineErrorOutline } from "react-icons/md";
 import { LuShieldCheck } from "react-icons/lu";
 import { HiMenu, HiX } from "react-icons/hi";
 
-import LogoBox from "@/config/logoBox.png";
+import Logo from "@/assets/images/new-logo.jpeg";
 import ProfilePopover from "./profilePopover";
 import NotificationPopover from "./notificationPopover";
 import { useRouter } from "next/navigation";
@@ -70,19 +70,23 @@ function Header(props: any) {
         {props?.sidebarOpen ? <HiX size={24} /> : <HiMenu size={24} />}
       </div>
       <div className="dashboard-HeaderBox5">
-        <div>
-          <Image src={LogoBox} alt="logo" />
-        </div>
+        <Image
+          src={Logo}
+          alt="Alaba Marketplace"
+          className="dashboard-HeaderLogo"
+          priority
+        />
         <div className="dashboard-HeaderPanelText">
-          {props?.data?.role === "admin"
-            ? "Admin"
-            : props?.data?.role === "delivery_company" || props?.data?.type === "delivery_company"
-            ? "Delivery Company"
-            : props?.data?.role === "driver" || props?.data?.type === "driver"
-            ? "Driver"
-            : "Seller"} Panel
-          <br />
-          <div className="dashboard-Headertext3">V 1.0.0</div>
+          <div className="dashboard-HeaderBrandText">Alaba Marketplace</div>
+          <div className="dashboard-Headertext3">
+            {props?.data?.role === "admin"
+              ? "Admin Panel"
+              : props?.data?.role === "delivery_company" || props?.data?.type === "delivery_company"
+              ? "Delivery Company Panel"
+              : props?.data?.role === "driver" || props?.data?.type === "driver"
+              ? "Driver Panel"
+              : "Seller Panel"}
+          </div>
         </div>
       </div>
       <div className="dashboard-HeaderBox3 dashboard-HeaderWebsite">
