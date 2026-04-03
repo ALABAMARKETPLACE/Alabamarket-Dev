@@ -148,7 +148,12 @@ export default function GuestOrderDetail() {
 
   const guestName = [order?.guest_first_name, order?.guest_last_name].filter(Boolean).join(" ") || "Guest";
   const deliveryAddr = order?.delivery_address ?? order?.shipping_address ?? order?.address;
-  const storeData: StoreInfo | undefined = order?.store ?? order?.sellers?.[0];
+  const sellers: StoreInfo[] =
+    Array.isArray(order?.sellers) && order.sellers.length > 0
+      ? order.sellers
+      : order?.store
+      ? [order.store]
+      : [];
 
   if (isLoading) return <Loading />;
   if (isError) return <Error description={(error as Error)?.message} />;
@@ -255,25 +260,31 @@ export default function GuestOrderDetail() {
         {/* Right column */}
         <div className="god-layout__side">
           {/* Store / Seller Details */}
-          {storeData ? (
-            <SectionCard title="Store Details" icon={<FiShoppingBag size={16} />}>
-              {storeData.logo_upload && (
-                <div style={{ padding: "12px 0 4px" }}>
-                  <Image
-                    src={storeData.logo_upload}
-                    alt={storeData.store_name ?? "store"}
-                    width={56}
-                    height={56}
-                    style={{ objectFit: "cover", borderRadius: 8, border: "1px solid #e5e7eb" }}
-                  />
-                </div>
-              )}
-              <InfoRow label="Store Name" value={storeData.store_name ?? "-"} />
-              <InfoRow label="Owner" value={storeData.name ?? "-"} />
-              <InfoRow label="Email" value={storeData.email ?? "-"} />
-              <InfoRow label="Phone" value={storeData.phone ?? "-"} />
-              <InfoRow label="Address" value={storeData.business_address ?? "-"} />
-            </SectionCard>
+          {sellers.length > 0 ? (
+            sellers.map((s, idx) => (
+              <SectionCard
+                key={s.id ?? idx}
+                title={sellers.length > 1 ? `Store ${idx + 1} of ${sellers.length}` : "Store Details"}
+                icon={<FiShoppingBag size={16} />}
+              >
+                {s.logo_upload && (
+                  <div style={{ padding: "12px 0 4px" }}>
+                    <Image
+                      src={s.logo_upload}
+                      alt={s.store_name ?? "store"}
+                      width={56}
+                      height={56}
+                      style={{ objectFit: "cover", borderRadius: 8, border: "1px solid #e5e7eb" }}
+                    />
+                  </div>
+                )}
+                <InfoRow label="Store Name" value={s.store_name ?? "-"} />
+                <InfoRow label="Owner" value={s.name ?? "-"} />
+                <InfoRow label="Email" value={s.email ?? "-"} />
+                <InfoRow label="Phone" value={s.phone ?? "-"} />
+                <InfoRow label="Address" value={s.business_address ?? "-"} />
+              </SectionCard>
+            ))
           ) : (
             <SectionCard title="Store Details" icon={<FiShoppingBag size={16} />}>
               <div className="god-empty">No store information available.</div>
