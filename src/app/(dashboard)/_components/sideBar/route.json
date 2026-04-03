@@ -29,6 +29,13 @@
         "role": ["seller", "admin"]
       },
       {
+        "id": 34,
+        "menu": "Guest Orders",
+        "icon": "TbShoppingCartSearch",
+        "route": "/auth/guest-orders",
+        "role": ["admin", "seller"]
+      },
+      {
         "id": 9,
         "menu": "Products",
         "icon": "AiOutlineProduct",
@@ -42,7 +49,6 @@
         "route": "/auth/banners",
         "role": ["seller", "admin"]
       },
-
       {
         "id": 7,
         "menu": "Categories",
@@ -56,13 +62,6 @@
         "icon": "TbCategory2",
         "route": "/auth/sub-categories",
         "role": ["admin"]
-      },
-      {
-        "id": 34,
-        "menu": "Guest Orders",
-        "icon": "TbShoppingCartSearch",
-        "route": "/auth/guest-orders",
-        "role": ["admin", "seller"]
       },
       {
         "id": 16,

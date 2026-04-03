@@ -75,9 +75,9 @@ const GET = async (
           }
         }
       } catch {}
-      const error = new Error(messageText);
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
+      const apiError = new Error(messageText);
+      (apiError as Error & { status?: number }).status = response.status;
+      throw apiError;
     }
     return await response.json();
   } catch (error) {
@@ -120,9 +120,9 @@ const POST = async (
           }
         }
       } catch {}
-      const error = new Error(messageText);
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
+      const apiError = new Error(messageText);
+      (apiError as Error & { status?: number }).status = response.status;
+      throw apiError;
     }
     return await response.json();
   } catch (error) {
@@ -161,9 +161,9 @@ const PUBLIC_POST = async (
           }
         }
       } catch {}
-      const error = new Error(messageText);
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
+      const apiError = new Error(messageText);
+      (apiError as Error & { status?: number }).status = response.status;
+      throw apiError;
     }
     return await response.json();
   } catch (error) {
@@ -206,9 +206,9 @@ const PUT = async (
           }
         }
       } catch {}
-      const error = new Error(messageText);
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
+      const apiError = new Error(messageText);
+      (apiError as Error & { status?: number }).status = response.status;
+      throw apiError;
     }
     return await response.json();
   } catch (error) {
@@ -251,9 +251,9 @@ const PATCH = async (
           }
         }
       } catch {}
-      const error = new Error(messageText);
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
+      const apiError = new Error(messageText);
+      (apiError as Error & { status?: number }).status = response.status;
+      throw apiError;
     }
     return await response.json();
   } catch (error) {
@@ -336,9 +336,9 @@ const DELETE = async (
           }
         }
       } catch {}
-      const error = new Error(messageText);
-      (error as Error & { status?: number }).status = response.status;
-      throw error;
+      const apiError = new Error(messageText);
+      (apiError as Error & { status?: number }).status = response.status;
+      throw apiError;
     }
     return await response.json();
   } catch (error) {

@@ -108,7 +108,7 @@ function DeliveryPartnerDetails() {
       ) : (
         <div className="row gy-4">
             <div className="col-md-12">
-                 <Card bordered={false}>
+                 <Card variant="borderless">
                     <div className="d-flex justify-content-between align-items-center">
                         <h4>{company?.business_name}</h4>
                         <Tag color={statusColor(company?.status)}>{company?.status?.toUpperCase()}</Tag>
@@ -116,7 +116,7 @@ function DeliveryPartnerDetails() {
                  </Card>
             </div>
           <div className="col-md-6">
-            <Card title="Contact Information" bordered={false}>
+            <Card title="Contact Information" variant="borderless">
               <Descriptions column={1}>
                 <Descriptions.Item label="Contact Name">{company?.user?.name}</Descriptions.Item>
                 <Descriptions.Item label="Email">{company?.user?.email}</Descriptions.Item>
@@ -126,7 +126,7 @@ function DeliveryPartnerDetails() {
             </Card>
           </div>
           <div className="col-md-6">
-            <Card title="Business Details" bordered={false}>
+            <Card title="Business Details" variant="borderless">
               <Descriptions column={1}>
                 <Descriptions.Item label="Business Name">{company?.business_name}</Descriptions.Item>
                 <Descriptions.Item label="State">{company?.state}</Descriptions.Item>

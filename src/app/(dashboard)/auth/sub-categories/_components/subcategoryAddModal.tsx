@@ -150,7 +150,7 @@ function AddSubcategoryModal({ close, type, open, data }: props) {
               ]}
             >
               <Select
-                bordered={false}
+                variant="borderless"
                 style={{ width: "100%" }}
                 className="border rounded"
                 size="large"

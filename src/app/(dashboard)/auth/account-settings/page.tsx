@@ -145,7 +145,7 @@ function AccountSettingsPage() {
                 </Descriptions.Item>
               </Descriptions>
 
-              <Card title="Update payout account" size="small" bordered={false}>
+              <Card title="Update payout account" size="small" variant="borderless">
                 <Typography.Paragraph type="secondary">
                   Use the fields below to keep your payout information current.
                   These details must match your bank or settlement account.

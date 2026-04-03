@@ -115,7 +115,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
 
   return (
     <>
-      <Card className="shadow-sm" bordered={false}>
+      <Card className="shadow-sm" variant="borderless">
         <Table
           dataSource={data}
           columns={columns as any}

@@ -52,8 +52,8 @@ const ProfileMenu = (props: any) => {
   useEffect(() => {
     let ignore = false;
     const refreshProfileStats = async () => {
-      // Only refresh once per menu open, and only if user is logged in
-      if (!props?.isVisible || !User?.user?.id || hasRefreshedRef.current) {
+      // Only refresh once per menu open, and only if user is logged in with a token
+      if (!props?.isVisible || !User?.user?.id || !User?.token || hasRefreshedRef.current) {
         return;
       }
 

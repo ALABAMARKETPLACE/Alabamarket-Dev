@@ -155,7 +155,7 @@ function CorporateSeller() {
                 Contact Details <Button type="dashed">Call</Button>
               </div>
             }
-            bordered={false}
+            variant="borderless"
           >
             <span className="fw-bold">{seller?.name}</span> <br />
             <span className="">{seller?.email}</span> <br />
@@ -167,7 +167,7 @@ function CorporateSeller() {
             <div className="col-md-6">
               <Card
                 title={"Business Details"}
-                bordered={false}
+                variant="borderless"
                 className="h-100"
               >
                 {Object.keys(business_details).map((item, key) => (
@@ -193,7 +193,7 @@ function CorporateSeller() {
               </Card>
             </div>
             <div className="col-md-6">
-              <Card title={"Seller Details"} bordered={false} className="h-100">
+              <Card title={"Seller Details"} variant="borderless" className="h-100">
                 {Object.keys(seller_details).map((item, key) => (
                   <div
                     className="d-flex justify-content-between pb-2"
@@ -217,7 +217,7 @@ function CorporateSeller() {
               </Card>
             </div>
             <div className="col-md-6">
-              <Card title={"Store Details"} bordered={false} className="h-100">
+              <Card title={"Store Details"} variant="borderless" className="h-100">
                 {Object.keys(store_details).map((item, key) => (
                   <div
                     className="d-flex justify-content-between pb-2"
@@ -232,7 +232,7 @@ function CorporateSeller() {
             <div className="col-md-6">
               <Card
                 title={"Subscription Plan"}
-                bordered={false}
+                variant="borderless"
                 className="h-100"
               >
                 {Object.keys(subscription_details).map((item, key) => (
@@ -255,7 +255,7 @@ function CorporateSeller() {
               </Card>
             </div>
             <div className="col-md-6">
-              <Card title={"Date"} bordered={false} className="h-100">
+              <Card title={"Date"} variant="borderless" className="h-100">
                 {Object.keys(dates).map((item, key) => (
                   <div
                     className="d-flex justify-content-between pb-2"

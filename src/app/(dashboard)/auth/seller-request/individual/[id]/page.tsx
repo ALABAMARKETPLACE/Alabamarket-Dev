@@ -148,7 +148,7 @@ function IndividualSeller() {
               <div className="col-md-6">
                 <Card
                   title={"Subscription Plan"}
-                  bordered={false}
+                  variant="borderless"
                   className="h-100"
                 >
                   <div className="d-flex justify-content-between pb-2">
@@ -189,7 +189,7 @@ function IndividualSeller() {
                 </Card>
               </div>
               <div className="col-md-6">
-                <Card title="Bank Details" bordered={false} className="h-100">
+                <Card title="Bank Details" variant="borderless" className="h-100">
                   {Object.keys(paymentDetails).map((key) => (
                     <div
                       className="d-flex justify-content-between pb-2"

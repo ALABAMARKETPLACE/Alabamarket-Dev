@@ -70,7 +70,7 @@ function Details({ error, seller, isLoading, isError }: props) {
                 Contact Details <Button type="dashed">Call</Button>
               </div>
             }
-            bordered={false}
+            variant="borderless"
           >
             <div className="d-flex gap-3">
               <Avatar size={64} src={seller?.logo_upload} shape="square" />
@@ -87,7 +87,7 @@ function Details({ error, seller, isLoading, isError }: props) {
             <div className="col-md-6">
               <Card
                 title={"Business Details"}
-                bordered={false}
+                variant="borderless"
                 className="h-100"
               >
                 {Object.keys(business_details).map((item, key) => (
@@ -112,7 +112,7 @@ function Details({ error, seller, isLoading, isError }: props) {
               </Card>
             </div> 
             <div className="col-md-6">
-              <Card title={"Seller Details"} bordered={false} className="h-100">
+              <Card title={"Seller Details"} variant="borderless" className="h-100">
                 {Object.keys(seller_details).map((item, key) => (
                   <div
                     className="d-flex justify-content-between pb-2"
@@ -135,7 +135,7 @@ function Details({ error, seller, isLoading, isError }: props) {
               </Card>
             </div>
             <div className="col-md-6">
-              <Card title={"Store Details"} bordered={false} className="h-100">
+              <Card title={"Store Details"} variant="borderless" className="h-100">
                 {Object.keys(store_details).map((item, key) => (
                   <div
                     className="d-flex justify-content-between pb-2"
@@ -148,7 +148,7 @@ function Details({ error, seller, isLoading, isError }: props) {
               </Card>
             </div>
             <div className="col-md-6">
-              <Card title={"Date"} bordered={false} className="h-100">
+              <Card title={"Date"} variant="borderless" className="h-100">
                 {Object.keys(dates).map((item, key) => (
                   <div
                     className="d-flex justify-content-between pb-2"

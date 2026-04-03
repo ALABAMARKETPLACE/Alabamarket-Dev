@@ -6,10 +6,6 @@ import "./categoryNav.scss";
 import { reduxCategoryItems } from "@/redux/slice/categorySlice";
 import { setSideMenuOpen } from "@/redux/slice/layoutSlice";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
-import dynamic from "next/dynamic";
-
-const HamburgerIcon = dynamic(() => import("./HamburgerIcon"), { ssr: false });
-
 type SubCategory = {
   id?: string | number;
   _id?: string | number;
@@ -129,7 +125,13 @@ function CategoryNav({ onOpenMenu }: { onOpenMenu?: () => void }) {
           onClick={onOpenMenu || (() => dispatch(setSideMenuOpen(true)))}
           aria-label="All categories"
         >
-          <HamburgerIcon onClick={() => {}} />
+          <span className="catnav-all-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect y="5" width="28" height="3" rx="1.5" fill="currentColor" />
+              <rect y="12.5" width="28" height="3" rx="1.5" fill="currentColor" />
+              <rect y="20" width="28" height="3" rx="1.5" fill="currentColor" />
+            </svg>
+          </span>
           <span className="catnav-all-label">All</span>
         </button>
 
