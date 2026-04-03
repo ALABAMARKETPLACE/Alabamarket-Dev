@@ -1,26 +1,252 @@
-@use "../../../../config/styleVariable.scss" as global;
+@use "../../../../config/styleVariable.scss" as vars;
 
-.productsOverView-Boxsettlement {
-    width: 100%;
-    background: rgb(239, 239, 239);
-    border-radius: 10px;
+$border: #e5e7eb;
+$bg-main: #f8fafc;
+$text-primary: #1a202c;
+$text-secondary: #718096;
+$primary: vars.$primary;
+
+// =============================================================================
+// SETTLEMENT SUMMARY CARDS
+// =============================================================================
+.settlement-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+}
+
+.settlement-stat-card {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: $primary;
+    border-radius: 12px 12px 0 0;
+  }
+
+  &--success::before { background: #10b981; }
+  &--warning::before { background: #f59e0b; }
+  &--info::before    { background: #3b82f6; }
+  &--danger::before  { background: #ef4444; }
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 480px) {
     padding: 16px;
-    display: flex;
-    justify-content: space-between;
-    min-height: 150px;
+  }
+}
+
+.settlement-stat-card__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+}
+
+.settlement-stat-card__value {
+  font-size: 28px;
+  font-family: vars.$Bold;
+  color: $text-primary;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 22px;
+  }
+}
+
+.settlement-stat-card__sub {
+  font-size: 12px;
+  color: $text-secondary;
+}
+
+// =============================================================================
+// OLD LEGACY CLASSES (kept for backward compat)
+// =============================================================================
+.productsOverView-Boxsettlement {
+  width: 100%;
+  background: $bg-main;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: auto;
+
+  @media (max-width: 768px) {
+    padding: 16px;
+  }
+}
+
+.productsOverView-Txt1settlement {
+  font-family: vars.$SemiBold;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $text-secondary;
+}
+
+.productsOverView-Txt2settlement {
+  font-family: vars.$Bold;
+  font-size: 28px;
+  color: $text-primary;
+  letter-spacing: -0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 22px;
   }
 
-  .productsOverView-Txt1settlement {
-    font-family: global.$Bold;
-    font-size: 18px;
-    @media screen and (min-width: 768px) and (max-width: 968px) {
-      font-size: 15px;
-    }
+  @media (max-width: 480px) {
+    font-size: 20px;
   }
-  .productsOverView-Txt2settlement {
-    font-family: global.$Bold;
-    font-size: 30px;
-    @media screen and (min-width: 768px) and (max-width: 968px) {
-      font-size: 19px;
-    }
+}
+
+// =============================================================================
+// SETTLEMENT TABLE / LIST
+// =============================================================================
+.settlement-table-section {
+  background: #fff;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.settlement-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid $border;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
   }
+}
+
+.settlement-table-title {
+  font-size: 15px;
+  font-family: vars.$SemiBold;
+  color: $text-primary;
+}
+
+// =============================================================================
+// SETTLEMENT DETAIL ROW (for history items)
+// =============================================================================
+.settlement-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid $border;
+  gap: 16px;
+  flex-wrap: wrap;
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f9fafb;
+  }
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+.settlement-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.settlement-item__id {
+  font-size: 13px;
+  font-family: vars.$Medium;
+  color: $text-primary;
+}
+
+.settlement-item__date {
+  font-size: 12px;
+  color: $text-secondary;
+}
+
+.settlement-item__amount {
+  font-size: 16px;
+  font-family: vars.$Bold;
+  color: $text-primary;
+  white-space: nowrap;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+  }
+}
+
+// =============================================================================
+// SUMMARY BOXES (used in Summary component)
+// =============================================================================
+.settlement-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+.settlement-summary-box {
+  background: $bg-main;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 16px 20px;
+
+  @media (max-width: 480px) {
+    padding: 14px 16px;
+  }
+}

@@ -144,23 +144,24 @@ export default function OrderDetails() {
         title={"Order Details"}
         bredcume={"Dashboard / Orders / Details"}
       >
-        {!isLoading && (
-          <>
-            <Tag>{formatDateRelative(order.createdAt || "")}</Tag>
-            <Tag color={getOrderStatusColor(order.status || "")}>
-              {order.status}
-            </Tag>
-            {!isSeller && (
-              <Button
-                type="primary"
-                onClick={() => route.push("/auth/orders/substitute/" + orderId)}
-              >
-                Substitute Order
-              </Button>
-            )}
-          </>
+        {!isLoading && !isSeller && (
+          <Button
+            type="primary"
+            onClick={() => route.push("/auth/orders/substitute/" + orderId)}
+          >
+            Substitute Order
+          </Button>
         )}
       </PageHeader>
+
+      {!isLoading && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+          <Tag style={{ margin: 0 }}>{formatDateRelative(order.createdAt || "")}</Tag>
+          <Tag color={getOrderStatusColor(order.status || "")} style={{ margin: 0, textTransform: "capitalize" }}>
+            {(order.status || "").replace(/_/g, " ")}
+          </Tag>
+        </div>
+      )}
       {isLoading ? (
         <Loading />
       ) : (

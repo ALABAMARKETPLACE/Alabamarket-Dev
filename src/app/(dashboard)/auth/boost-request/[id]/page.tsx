@@ -127,7 +127,7 @@ function ViewBoostRequest({ params }: Props) {
         <div className="boostRequests-detailGrid">
           {/* Seller Information */}
           <div className="boostRequests-detailGridItem">
-            <Card title="Seller Information" bordered={false}>
+            <Card title="Seller Information" variant="borderless">
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Seller Name">
                   <strong>{request?.seller?.name || "-"}</strong>
@@ -144,7 +144,7 @@ function ViewBoostRequest({ params }: Props) {
 
           {/* Plan Details */}
           <div className="boostRequests-detailGridItem">
-            <Card title="Subscription Plan" bordered={false}>
+            <Card title="Subscription Plan" variant="borderless">
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Plan Name">
                   <strong style={{ color: "#1890ff" }}>
@@ -169,7 +169,7 @@ function ViewBoostRequest({ params }: Props) {
 
           {/* Boost Period */}
           <div className="boostRequests-detailGridItem">
-            <Card title="Boost Period" bordered={false}>
+            <Card title="Boost Period" variant="borderless">
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Start Date">
                   {request?.start_date
@@ -190,7 +190,7 @@ function ViewBoostRequest({ params }: Props) {
 
           {/* Payment Summary */}
           <div className="boostRequests-detailGridItem">
-            <Card title="Payment Summary" bordered={false}>
+            <Card title="Payment Summary" variant="borderless">
               <div className="boostRequests-paymentSummary">
                 <div className="boostRequests-paymentSummaryLabel">
                   Summary:
@@ -213,7 +213,7 @@ function ViewBoostRequest({ params }: Props) {
           <div className="boostRequests-detailGridItem boostRequests-detailGridItem--full">
             <Card
               title={`Products to Boost (${request?.products?.length || 0})`}
-              bordered={false}
+              variant="borderless"
             >
               {request?.products && request.products.length > 0 ? (
                 <div className="boostRequests-productsGrid">
@@ -258,7 +258,7 @@ function ViewBoostRequest({ params }: Props) {
 
           {/* Request Timestamps */}
           <div className="boostRequests-detailGridItem">
-            <Card title="Request Timeline" bordered={false}>
+            <Card title="Request Timeline" variant="borderless">
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Requested At">
                   {request?.requested_at
@@ -289,7 +289,7 @@ function ViewBoostRequest({ params }: Props) {
           {/* Remarks */}
           {request?.remarks && (
             <div className="boostRequests-detailGridItem">
-              <Card title="Remarks" bordered={false}>
+              <Card title="Remarks" variant="borderless">
                 <div className="boostRequests-remarks">{request.remarks}</div>
               </Card>
             </div>

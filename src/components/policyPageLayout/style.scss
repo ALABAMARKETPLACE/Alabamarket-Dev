@@ -1,0 +1,390 @@
+@use "../../config/styleVariable.scss" as vars;
+
+// =============================================================================
+// PAGE WRAPPER
+// =============================================================================
+.page-Box {
+  min-height: 70vh;
+  background: #f8f9fb;
+  padding-bottom: 64px;
+}
+
+// =============================================================================
+// HERO BANNER
+// =============================================================================
+.policy-hero {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  padding: 40px 0 36px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: vars.$primary;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: rgba(255, 95, 21, 0.07);
+    pointer-events: none;
+  }
+
+  .policy-hero__breadcrumb {
+    margin-bottom: 16px;
+    font-size: 13px;
+
+    .ant-breadcrumb-link,
+    .ant-breadcrumb-separator {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    a {
+      color: rgba(255, 255, 255, 0.6) !important;
+      text-decoration: none;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: vars.$primary !important;
+      }
+    }
+
+    li:last-child .ant-breadcrumb-link {
+      color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  .policy-hero__title {
+    font-size: 32px;
+    font-family: vars.$Bold;
+    font-weight: 800;
+    color: #fff;
+    margin: 0 0 10px;
+    line-height: 1.2;
+
+    @media (max-width: 768px) {
+      font-size: 24px;
+    }
+  }
+
+  .policy-hero__meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .policy-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 95, 21, 0.15);
+    border: 1px solid rgba(255, 95, 21, 0.3);
+    color: vars.$primary;
+    font-size: 12px;
+    font-family: vars.$Medium;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+}
+
+// =============================================================================
+// MAIN LAYOUT
+// =============================================================================
+.policy-layout {
+  padding-top: 36px;
+}
+
+// =============================================================================
+// CONTENT AREA
+// =============================================================================
+.policy-content {
+  background: #fff;
+  border-radius: 14px;
+  padding: 36px 40px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+
+  @media (max-width: 768px) {
+    padding: 24px 20px;
+    border-radius: 10px;
+  }
+}
+
+// =============================================================================
+// TYPOGRAPHY — shared across all policy page content
+// =============================================================================
+
+// Main section heading (h4 level)
+.page-text1 {
+  font-size: 22px;
+  font-family: vars.$Bold;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 24px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #f0f0f0;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 48px;
+    height: 2px;
+    background: vars.$primary;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 18px;
+  }
+}
+
+// Sub-section heading (h4/h5 level)
+.page-text2 {
+  font-size: 15.5px;
+  font-family: vars.$SemiBold;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin: 24px 0 8px;
+  padding-left: 12px;
+  border-left: 3px solid vars.$primary;
+  line-height: 1.4;
+
+  @media (max-width: 768px) {
+    font-size: 14.5px;
+  }
+}
+
+// Body text
+.page-text3 {
+  font-size: 14.5px;
+  font-family: vars.$Regular;
+  color: #4b5563;
+  line-height: 1.85;
+  margin-bottom: 12px;
+
+  a {
+    color: vars.$primary;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  strong {
+    color: #1f2937;
+    font-family: vars.$SemiBold;
+  }
+
+  // Lists
+  &.page-text3 ul,
+  ul#{&},
+  ul.page-text3 {
+    padding-left: 20px;
+    margin-bottom: 12px;
+
+    li {
+      margin-bottom: 8px;
+      padding-left: 4px;
+      color: #4b5563;
+      line-height: 1.75;
+    }
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+}
+
+// List that directly has page-text3 class
+ul.page-text3 {
+  padding-left: 20px;
+  margin-bottom: 12px;
+
+  li {
+    margin-bottom: 8px;
+    color: #4b5563;
+    line-height: 1.75;
+    font-size: 14.5px;
+    font-family: vars.$Regular;
+
+    a {
+      color: vars.$primary;
+    }
+  }
+}
+
+// =============================================================================
+// CALLOUT BOX (for important notices like "We do not sell your data")
+// =============================================================================
+.policy-callout {
+  background: #fff8f5;
+  border: 1px solid rgba(255, 95, 21, 0.2);
+  border-left: 4px solid vars.$primary;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: 14px;
+  font-family: vars.$Medium;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+// =============================================================================
+// STICKY SIDEBAR
+// =============================================================================
+.page-stickeyBox {
+  position: sticky;
+  top: 88px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.07);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+
+  @media (max-width: 992px) {
+    position: static;
+    margin-top: 32px;
+  }
+}
+
+.policy-sidebar__heading {
+  font-size: 11px;
+  font-family: vars.$Bold;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.policy-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  text-decoration: none !important;
+  font-size: 13.5px;
+  font-family: vars.$Medium;
+  color: #374151 !important;
+  transition: background 0.15s ease, color 0.15s ease;
+  margin-bottom: 2px;
+
+  &::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #d1d5db;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+
+  &:hover {
+    background: #fff4ef;
+    color: vars.$primary !important;
+
+    &::before {
+      background: vars.$primary;
+    }
+  }
+
+  &--active {
+    background: #fff4ef;
+    color: vars.$primary !important;
+    font-family: vars.$SemiBold;
+
+    &::before {
+      background: vars.$primary;
+    }
+  }
+}
+
+.policy-sidebar__contact {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.policy-sidebar__contact-label {
+  font-size: 11px;
+  font-family: vars.$Bold;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+
+// =============================================================================
+// FAQ COLLAPSE OVERRIDES
+// =============================================================================
+.policy-content .ant-collapse {
+  border: none;
+  background: transparent;
+
+  .ant-collapse-item {
+    border-bottom: 1px solid #f0f0f0;
+    background: transparent;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .ant-collapse-header {
+    font-family: vars.$Medium;
+    font-size: 14.5px;
+    color: #1f2937;
+    padding: 14px 0;
+    padding-right: 24px;
+
+    &:hover {
+      color: vars.$primary;
+    }
+  }
+
+  .ant-collapse-content {
+    border-top: none;
+    background: transparent;
+  }
+
+  .ant-collapse-content-box {
+    padding: 0 0 12px;
+  }
+}
+
+.policy-sidebar__contact-item {
+  font-size: 12.5px;
+  color: #4b5563;
+  font-family: vars.$Regular;
+  margin-bottom: 4px;
+
+  a {
+    color: vars.$primary;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

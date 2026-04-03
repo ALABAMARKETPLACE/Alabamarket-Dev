@@ -132,7 +132,7 @@ export default function OrderSubstitution() {
 
       <div className="sub-page-wrapper">
         {/* Step progress */}
-        <Card className="sub-steps-card" bordered={false}>
+        <Card className="sub-steps-card" variant="borderless">
           <Steps
             size="small"
             current={currentStep}
@@ -168,7 +168,7 @@ export default function OrderSubstitution() {
                   Item to Substitute
                 </span>
               }
-              bordered={false}
+              variant="borderless"
             >
               <Form
                 form={form}
@@ -195,7 +195,7 @@ export default function OrderSubstitution() {
                   Browse Replacement Products
                 </span>
               }
-              bordered={false}
+              variant="borderless"
             >
               <SimiliarProductSubstitution
                 select={selectSubstitute}

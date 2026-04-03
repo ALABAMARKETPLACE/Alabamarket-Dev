@@ -1,4 +1,5 @@
 @use "../../../config/styleVariable.scss" as vars;
+@import "../_utils/dashboard-utilities.scss";
 
 // =============================================================================
 // GLOBAL VARIABLES & MIXINS
@@ -601,15 +602,16 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   @media (max-width: 768px) {
     margin-bottom: $space-xl;
-    gap: $space-md;
+    gap: $space-sm;
     padding: $space-md;
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
   }
 
   @media (max-width: 480px) {
     padding: $space-sm $space-md;
-    gap: $space-sm;
+    gap: $space-xs;
     margin-bottom: $space-lg;
   }
 }
@@ -737,11 +739,14 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @media (max-width: 768px) {
-    font-size: 18px;
+    font-size: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   @media (max-width: 480px) {
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
@@ -823,22 +828,20 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   @media (max-width: 768px) {
     flex-wrap: nowrap;
-    overflow-x: auto;
-    width: 100%;
-    justify-content: flex-start;
-    padding-bottom: 2px;
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
+    flex-shrink: 0;
+    justify-content: flex-end;
+    width: auto;
 
     .header-search-input,
     .header-filter-select {
-      min-width: 140px;
+      min-width: 120px;
       flex-shrink: 0;
     }
 
     .ant-btn {
       flex-shrink: 0;
       white-space: nowrap;
+      padding: 0 10px;
     }
   }
 }
@@ -3099,5 +3102,415 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
       height: 32px;
       font-size: 16px;
     }
+  }
+}
+
+// =============================================================================
+// ANT DESIGN TABS — RESPONSIVE
+// =============================================================================
+.ant-tabs {
+  .ant-tabs-nav {
+    margin-bottom: 0;
+
+    @media (max-width: 768px) {
+      &::before {
+        border-bottom-color: $border-color;
+      }
+    }
+  }
+
+  .ant-tabs-tab {
+    @media (max-width: 768px) {
+      padding: $space-md $space-lg;
+      font-size: 13px;
+    }
+
+    @media (max-width: 480px) {
+      padding: $space-sm $space-md;
+      font-size: 12px;
+    }
+  }
+
+  .ant-tabs-tab-btn {
+    font-family: vars.$Medium;
+  }
+
+  .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: $primary-color;
+    font-family: vars.$SemiBold;
+  }
+
+  .ant-tabs-ink-bar {
+    background: $primary-color;
+  }
+
+  .ant-tabs-content-holder {
+    padding-top: $space-xl;
+
+    @media (max-width: 768px) {
+      padding-top: $space-lg;
+    }
+  }
+
+  // Scrollable tabs on small screens
+  @media (max-width: 640px) {
+    .ant-tabs-nav-list {
+      flex-wrap: nowrap;
+    }
+
+    .ant-tabs-nav-wrap {
+      overflow: hidden;
+    }
+  }
+}
+
+// =============================================================================
+// ANT DESIGN CARDS — RESPONSIVE
+// =============================================================================
+.ant-card {
+  border-radius: $radius-lg;
+  border-color: $border-color;
+  box-shadow: $shadow-xs;
+
+  .ant-card-head {
+    border-bottom-color: $border-color;
+
+    @media (max-width: 768px) {
+      padding: 0 $space-lg;
+      min-height: 48px;
+    }
+  }
+
+  .ant-card-body {
+    @media (max-width: 768px) {
+      padding: $space-lg;
+    }
+
+    @media (max-width: 480px) {
+      padding: $space-md;
+    }
+  }
+}
+
+// =============================================================================
+// ANT DESIGN TABLE — HORIZONTAL SCROLL ON MOBILE
+// =============================================================================
+.ant-table-wrapper {
+  @media (max-width: 768px) {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+// =============================================================================
+// ANT DESIGN FORM — RESPONSIVE LAYOUT
+// =============================================================================
+.ant-form {
+  .ant-form-item-label > label {
+    font-size: 13px;
+    font-family: vars.$Medium;
+    color: $text-color-primary;
+  }
+
+  @media (max-width: 768px) {
+    .ant-form-item {
+      margin-bottom: 12px;
+    }
+
+    .ant-form-item-label {
+      padding-bottom: 4px;
+    }
+  }
+}
+
+// Form inside card - responsive columns
+.dashboard-form-card {
+  background: #fff;
+  border: 1px solid $border-color;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-xs;
+
+  .ant-card-head {
+    padding: $space-xl $space-2xl;
+    border-bottom: 1px solid $border-color;
+
+    @media (max-width: 768px) {
+      padding: $space-lg;
+    }
+  }
+
+  .ant-card-body {
+    padding: $space-2xl;
+
+    @media (max-width: 768px) {
+      padding: $space-lg;
+    }
+
+    @media (max-width: 480px) {
+      padding: $space-md;
+    }
+  }
+}
+
+// Two-column form grid that collapses on mobile
+.dashboard-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 $space-2xl;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  &.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// =============================================================================
+// ANT DESIGN DESCRIPTIONS — RESPONSIVE
+// =============================================================================
+.ant-descriptions {
+  @media (max-width: 640px) {
+    .ant-descriptions-item {
+      display: block;
+      padding-bottom: 8px;
+    }
+
+    .ant-descriptions-item-label,
+    .ant-descriptions-item-content {
+      display: block;
+      width: 100%;
+    }
+  }
+}
+
+// =============================================================================
+// ANT DESIGN MODAL — RESPONSIVE
+// =============================================================================
+.ant-modal {
+  @media (max-width: 640px) {
+    max-width: calc(100vw - 32px) !important;
+    margin: 16px auto;
+
+    .ant-modal-body {
+      padding: 16px;
+      max-height: calc(100vh - 160px);
+      overflow-y: auto;
+    }
+
+    .ant-modal-header {
+      padding: 14px 16px;
+    }
+
+    .ant-modal-footer {
+      padding: 12px 16px;
+
+      .ant-btn + .ant-btn {
+        margin-left: 8px;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// MANAGE STORE PAGE
+// =============================================================================
+.manage-store-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: $space-2xl;
+  align-items: start;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr 280px;
+    gap: $space-xl;
+  }
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.manage-store-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xl;
+
+  @media (max-width: 992px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// =============================================================================
+// ACCOUNT SETTINGS PAGE
+// =============================================================================
+.account-settings-section {
+  max-width: 640px;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+}
+
+// =============================================================================
+// SUBSCRIPTION CARD
+// =============================================================================
+.subscription-plan-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: $radius-xl;
+  padding: $space-2xl;
+  color: #fff;
+  margin-bottom: $space-xl;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255, 149, 0, 0.08);
+    pointer-events: none;
+  }
+
+  @media (max-width: 768px) {
+    padding: $space-xl;
+  }
+
+  @media (max-width: 480px) {
+    padding: $space-lg;
+    border-radius: $radius-lg;
+  }
+}
+
+.subscription-plan-name {
+  font-size: 22px;
+  font-family: vars.$Bold;
+  color: $primary-color;
+  margin-bottom: $space-xs;
+}
+
+.subscription-plan-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: $space-lg;
+}
+
+.subscription-feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: $space-sm;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.85);
+
+    svg {
+      color: $primary-color;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// =============================================================================
+// PAGE-LEVEL ANT DESIGN OVERRIDES
+// =============================================================================
+
+// Better Pagination on mobile
+.ant-pagination {
+  @media (max-width: 640px) {
+    .ant-pagination-options {
+      display: none;
+    }
+
+    .ant-pagination-total-text {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .ant-pagination-jump-next,
+    .ant-pagination-jump-prev {
+      display: none;
+    }
+  }
+}
+
+// Better Select dropdown on mobile
+.ant-select-dropdown {
+  @media (max-width: 480px) {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+// Better DatePicker on mobile
+.ant-picker-dropdown {
+  @media (max-width: 640px) {
+    max-width: calc(100vw - 32px);
+    overflow: hidden;
+  }
+}
+
+// Better notification on mobile
+.ant-notification {
+  @media (max-width: 480px) {
+    width: calc(100vw - 32px);
+    max-width: none;
+    right: 16px;
+    left: 16px;
+    margin: 0;
+  }
+}
+
+// Better message on mobile
+.ant-message {
+  @media (max-width: 480px) {
+    top: 16px;
+  }
+}
+
+// =============================================================================
+// SIDEBAR — BOTTOM SPACING FOR SCROLLABLE CONTENT
+// =============================================================================
+.dashboard-SideBar {
+  padding-bottom: 80px; // prevent overlap on small screens
+}
+
+// =============================================================================
+// SMOOTH TRANSITIONS FOR CONTENT AREA
+// =============================================================================
+.dashboard-Layout > * {
+  animation: fadeInUp 0.25s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

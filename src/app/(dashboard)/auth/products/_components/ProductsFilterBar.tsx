@@ -120,7 +120,7 @@ const ProductsFilterBar = ({
           size="large"
         />
         <TreeSelect
-          dropdownStyle={{ maxHeight: 400, overflow: "auto", width: "200px" }}
+          styles={{ popup: { root: { maxHeight: 400, overflow: "auto", width: "200px" } } }}
           treeData={[
             ...(treeData || []),
             { title: "All Category", value: "" },
@@ -164,7 +164,7 @@ const ProductsFilterBar = ({
       trigger={["click"]}
       open={filtersDropdownOpen}
       onOpenChange={onFiltersDropdownChange}
-      dropdownRender={() => renderControls("dropdown")}
+      popupRender={() => renderControls("dropdown")}
       overlayClassName="products-filterDropdownOverlay"
     >
       <Button

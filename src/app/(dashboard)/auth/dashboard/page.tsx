@@ -214,7 +214,7 @@ function DashboardAdmin() {
                   </span>
                 </div>
               }
-              bordered={false}
+              variant="borderless"
               className="dashboard-chart-card"
             >
               <SalesChart data={statistics?.orderStatistics} />
@@ -239,7 +239,7 @@ function DashboardAdmin() {
                   </span>
                 </div>
               }
-              bordered={false}
+              variant="borderless"
               className="dashboard-chart-card"
             >
               {(orderStatistics?.totalOrders ?? 0) > 0 ? (
