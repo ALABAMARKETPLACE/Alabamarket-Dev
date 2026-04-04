@@ -386,10 +386,6 @@ export default function OrderDetails() {
                 country: order.address?.country,
                 landmark: order.address?.landmark,
               },
-              storeName: sellers[0]?.store_name ?? sellers[0]?.name,
-              storePhone: sellers[0]?.phone,
-              storeAddress: sellers[0]?.business_address,
-              storeLogo: sellers[0]?.logo_upload,
               orderId: order.order_id ?? orderId,
               createdAt: order.createdAt,
               items: orderItems.map((item: Record<string, unknown>) => ({
