@@ -388,10 +388,6 @@ export default function OrderDetails() {
               },
               orderId: order.order_id ?? orderId,
               createdAt: order.createdAt,
-              items: orderItems.map((item: Record<string, unknown>) => ({
-                name: (item.name ?? (item.product as Record<string, unknown>)?.name) as string | undefined,
-                quantity: item.quantity as number | undefined,
-              })),
             }}
           />
         </>

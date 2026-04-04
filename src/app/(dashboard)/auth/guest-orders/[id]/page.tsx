@@ -498,10 +498,6 @@ export default function GuestOrderDetail() {
             : undefined,
           orderId: order.checkout_reference ?? order.id,
           createdAt: order.createdAt,
-          items: order.items?.map((item) => ({
-            name: item.name,
-            quantity: item.quantity,
-          })),
         }}
       />
     </>

@@ -24,7 +24,6 @@ export interface ShippingLabelData {
   orderId?: string | number;
   orderRef?: string;
   createdAt?: string;
-  items?: { name?: string; quantity?: number }[];
 }
 
 interface Props {
@@ -194,56 +193,7 @@ function LabelContent({ data }: { data: ShippingLabelData }) {
 
       <Dash />
 
-      {/* ── ORDER ITEMS ───────────────────────────────────────────────── */}
-      {data.items && data.items.length > 0 && (
-        <div style={{ padding: "10px 18px 12px" }}>
-          <div style={{ fontSize: 9, fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 7 }}>
-            Items ({data.items.length})
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {data.items.map((item, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  fontSize: 11,
-                  color: "#374151",
-                  paddingBottom: i < data.items!.length - 1 ? 4 : 0,
-                  borderBottom: i < data.items!.length - 1 ? "1px dashed #e5e7eb" : "none",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span
-                    style={{
-                      width: 18,
-                      height: 18,
-                      borderRadius: "50%",
-                      background: "#f3f4f6",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 9,
-                      fontWeight: 700,
-                      color: "#6b7280",
-                      flexShrink: 0,
-                    }}
-                  >
-                    {i + 1}
-                  </span>
-                  <span style={{ fontWeight: 500 }}>{item.name ?? "—"}</span>
-                </div>
-                <span style={{ fontWeight: 700, color: "#111827", flexShrink: 0, marginLeft: 8 }}>
-                  ×{item.quantity ?? 1}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── PRINTED TIMESTAMP ─────────────────────────────────────────── */}
+{/* ── PRINTED TIMESTAMP ─────────────────────────────────────────── */}
       <div style={{ padding: "8px 18px 10px", display: "flex", alignItems: "center", justifyContent: "flex-end", background: "#fafafa", borderTop: "1px dashed #d1d5db" }}>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: 9, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em" }}>Printed</div>
