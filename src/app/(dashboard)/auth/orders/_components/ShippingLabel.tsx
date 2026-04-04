@@ -25,7 +25,6 @@ export interface ShippingLabelData {
   orderRef?: string;
   createdAt?: string;
   items?: { name?: string; quantity?: number }[];
-  grandTotal?: number;
 }
 
 interface Props {
@@ -244,14 +243,8 @@ function LabelContent({ data }: { data: ShippingLabelData }) {
         </div>
       )}
 
-      {/* ── ORDER TOTALS ──────────────────────────────────────────────── */}
-      <div style={{ padding: "8px 18px 10px", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fafafa", borderTop: "1px dashed #d1d5db" }}>
-        <div style={{ fontSize: 9, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em" }}>
-          Total Value
-        </div>
-        <div style={{ fontWeight: 800, fontSize: 14, color: "#111827" }}>
-          {data.grandTotal != null ? `₦${data.grandTotal.toLocaleString("en-NG")}` : "—"}
-        </div>
+      {/* ── PRINTED TIMESTAMP ─────────────────────────────────────────── */}
+      <div style={{ padding: "8px 18px 10px", display: "flex", alignItems: "center", justifyContent: "flex-end", background: "#fafafa", borderTop: "1px dashed #d1d5db" }}>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: 9, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em" }}>Printed</div>
           <div style={{ fontWeight: 500, fontSize: 10 }}>{dayjs().format("DD MMM YYYY, HH:mm")}</div>

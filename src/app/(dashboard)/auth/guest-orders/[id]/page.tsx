@@ -502,7 +502,6 @@ export default function GuestOrderDetail() {
             name: item.name,
             quantity: item.quantity,
           })),
-          grandTotal: order.grandTotal ?? order.total,
         }}
       />
     </>

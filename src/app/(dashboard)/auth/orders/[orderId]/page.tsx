@@ -392,7 +392,6 @@ export default function OrderDetails() {
                 name: (item.name ?? (item.product as Record<string, unknown>)?.name) as string | undefined,
                 quantity: item.quantity as number | undefined,
               })),
-              grandTotal: order.grandTotal ?? order.total,
             }}
           />
         </>
