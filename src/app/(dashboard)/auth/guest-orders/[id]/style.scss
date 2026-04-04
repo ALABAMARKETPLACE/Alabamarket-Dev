@@ -1,58 +1,77 @@
 // =============================================================================
-// GUEST ORDER DETAIL (god = guest-order-detail)
+// GUEST ORDER DETAIL  (god = guest-order-detail)
 // =============================================================================
 
-// Summary bar
+// ── Summary bar ───────────────────────────────────────────────────────────────
 .god-summary-bar {
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-
-  // Desktop: single row flex
+  padding: 0 24px;
+  margin-bottom: 24px;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 24px;
+  align-items: stretch;
+  min-height: 72px;
+  overflow: hidden;
 
-  // Mobile: 2x2 grid
+  @media (max-width: 900px) {
+    padding: 0 16px;
+  }
+
+  // Mobile: 2×3 grid (ref spans full width, then 2 cols)
   @media (max-width: 640px) {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0;
     padding: 0;
-    overflow: hidden;
+    min-height: unset;
+  }
+}
+
+.god-summary-bar__divider {
+  width: 1px;
+  background: #f3f4f6;
+  flex-shrink: 0;
+  align-self: stretch;
+
+  @media (max-width: 640px) {
+    display: none;
   }
 }
 
 .god-summary-bar__item {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 5px;
+  padding: 16px 20px;
+  flex: 1;
 
-  &--right {
-    margin-left: auto;
-
+  &--ref {
+    flex: 1.4;
     @media (max-width: 640px) {
-      margin-left: 0;
+      grid-column: 1 / -1;
+      border-bottom: 1px solid #f3f4f6;
     }
   }
 
-  // Mobile: each cell gets a border and padding
+  &--total {
+    @media (max-width: 640px) {
+      border-right: 1px solid #f3f4f6;
+    }
+  }
+
   @media (max-width: 640px) {
     padding: 14px 16px;
-    border-right: 1px solid #f3f4f6;
-    border-bottom: 1px solid #f3f4f6;
-
-    // Remove right border on even cells (right column)
-    &:nth-child(even) {
+    // alternating border-right for right-column cells
+    &:nth-child(even):not(&--ref) {
       border-right: none;
     }
-
-    // Remove bottom border on last two cells
-    &:nth-last-child(-n+2) {
-      border-bottom: none;
+    &:nth-child(odd):not(&--ref) {
+      border-right: 1px solid #f3f4f6;
+    }
+    // bottom border except last row (last 2 items)
+    &:not(:nth-last-child(-n+2)):not(&--ref) {
+      border-bottom: 1px solid #f3f4f6;
     }
   }
 }
@@ -69,11 +88,12 @@
   font-size: 12px;
   color: #374151;
   background: #f3f4f6;
-  padding: 3px 8px;
-  border-radius: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
   word-break: break-all;
   display: inline-block;
   max-width: 100%;
+  font-weight: 600;
 }
 
 .god-summary-bar__tag {
@@ -83,21 +103,37 @@
   width: fit-content;
 }
 
+.god-summary-bar__amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+
+  @media (max-width: 640px) {
+    font-size: 14px;
+  }
+}
+
 .god-summary-bar__date {
   font-size: 13px;
   color: #374151;
   font-weight: 500;
+
+  @media (max-width: 640px) {
+    font-size: 12px;
+  }
 }
 
-// Two-column layout
+// ── Two-column grid ────────────────────────────────────────────────────────────
 .god-layout {
   display: grid;
   grid-template-columns: 1fr 320px;
   gap: 20px;
   align-items: start;
+  margin-bottom: 20px;
 
   @media (max-width: 1024px) {
-    grid-template-columns: 1fr 280px;
+    grid-template-columns: 1fr 290px;
   }
 
   @media (max-width: 768px) {
@@ -105,57 +141,71 @@
   }
 }
 
-.god-layout__main {
-  min-width: 0;
-}
-
+.god-layout__main,
 .god-layout__side {
   min-width: 0;
 }
 
-// Section card
+// ── Section card ───────────────────────────────────────────────────────────────
 .god-card {
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  border-left: 3px solid var(--god-accent, #e5e7eb);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.15s;
+
+  &:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  }
 }
 
 .god-card__header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 20px;
+  padding: 13px 18px;
   border-bottom: 1px solid #f3f4f6;
   background: #fafafa;
 
   @media (max-width: 480px) {
-    padding: 12px 16px;
+    padding: 11px 14px;
   }
 }
 
 .god-card__icon {
-  color: #6b7280;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .god-card__title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   color: #111827;
+  flex: 1;
+}
+
+.god-card__badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 1px 8px;
 }
 
 .god-card__body {
-  padding: 4px 20px 12px;
+  padding: 4px 18px 12px;
 
   @media (max-width: 480px) {
-    padding: 4px 16px 12px;
+    padding: 4px 14px 10px;
   }
 }
 
-// Info row
+// ── Info row ───────────────────────────────────────────────────────────────────
 .god-info-row {
   display: flex;
   justify-content: space-between;
@@ -170,7 +220,7 @@
 
   @media (max-width: 400px) {
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
   }
 }
 
@@ -179,7 +229,7 @@
   color: #6b7280;
   font-weight: 500;
   flex-shrink: 0;
-  min-width: 120px;
+  min-width: 110px;
 
   @media (max-width: 400px) {
     min-width: unset;
@@ -197,7 +247,7 @@
   }
 }
 
-// Order item row
+// ── Order item row ─────────────────────────────────────────────────────────────
 .god-item {
   display: flex;
   align-items: center;
@@ -242,7 +292,7 @@
   font-size: 13px;
   font-weight: 600;
   color: #111827;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -273,11 +323,11 @@
   }
 }
 
-// Totals
+// ── Totals ─────────────────────────────────────────────────────────────────────
 .god-totals-row {
   display: flex;
   justify-content: space-between;
-  padding: 4px 0;
+  padding: 5px 0;
 }
 
 .god-totals-row__label {
@@ -291,19 +341,154 @@
 }
 
 .god-totals-row--grand {
-  padding: 6px 0;
+  background: #f0fdf4;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin: 4px -12px 0;
 
   .god-totals-row__label,
   .god-totals-row__value {
     font-size: 15px;
     font-weight: 700;
-    color: #111827;
+    color: #166534;
   }
 }
 
-// Misc
+// ── Seller card (compact logo + info) ─────────────────────────────────────────
+.god-seller-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 0 6px;
+}
+
+.god-store-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+
+  @media (max-width: 480px) {
+    width: 44px;
+    height: 44px;
+  }
+
+  &--initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    border: none;
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.god-seller-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.god-seller-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
+}
+
+.god-seller-owner {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.god-seller-meta {
+  font-size: 12px;
+  color: #374151;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--address {
+    white-space: normal;
+    color: #6b7280;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
+}
+
+.god-seller-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #6366f1;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 1px 8px;
+  letter-spacing: 0.02em;
+}
+
+// ── Multi-seller strip ─────────────────────────────────────────────────────────
+.god-sellers-strip {
+  margin-top: 4px;
+}
+
+.god-sellers-strip__heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+  padding-left: 2px;
+}
+
+.god-sellers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+
+  // Override card margin when inside grid
+  .god-card {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Misc ───────────────────────────────────────────────────────────────────────
 .god-empty {
-  padding: 20px 0;
+  padding: 24px 0;
   text-align: center;
   color: #9ca3af;
   font-size: 13px;

@@ -1,0 +1,307 @@
+// =============================================================================
+// ORDER DETAIL  (od = order-detail)
+// =============================================================================
+
+// ── Summary bar ───────────────────────────────────────────────────────────────
+.od-summary-bar {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0 24px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: stretch;
+  min-height: 72px;
+  overflow: hidden;
+
+  @media (max-width: 900px) {
+    padding: 0 16px;
+  }
+
+  @media (max-width: 640px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0;
+    min-height: unset;
+  }
+}
+
+.od-summary-bar__divider {
+  width: 1px;
+  background: #f3f4f6;
+  flex-shrink: 0;
+  align-self: stretch;
+
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
+.od-summary-bar__item {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 16px 20px;
+  flex: 1;
+
+  &--ref {
+    flex: 1.4;
+    @media (max-width: 640px) {
+      grid-column: 1 / -1;
+      border-bottom: 1px solid #f3f4f6;
+    }
+  }
+
+  &--total {
+    @media (max-width: 640px) {
+      border-right: 1px solid #f3f4f6;
+    }
+  }
+
+  @media (max-width: 640px) {
+    padding: 14px 16px;
+    &:nth-child(even):not(&--ref) { border-right: none; }
+    &:nth-child(odd):not(&--ref)  { border-right: 1px solid #f3f4f6; }
+    &:not(:nth-last-child(-n+2)):not(&--ref) { border-bottom: 1px solid #f3f4f6; }
+  }
+}
+
+.od-summary-bar__label {
+  font-size: 10px;
+  color: #9ca3af;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.od-summary-bar__id {
+  font-size: 12px;
+  color: #374151;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 6px;
+  word-break: break-all;
+  display: inline-block;
+  max-width: 100%;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.od-summary-bar__tag {
+  text-transform: capitalize;
+  font-size: 12px;
+  display: inline-flex !important;
+  width: fit-content;
+}
+
+.od-summary-bar__amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.02em;
+
+  @media (max-width: 640px) {
+    font-size: 14px;
+  }
+}
+
+.od-summary-bar__date {
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+
+  @media (max-width: 640px) {
+    font-size: 12px;
+  }
+}
+
+// ── Two-column layout ─────────────────────────────────────────────────────────
+.od-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+
+  @media (max-width: 1100px) {
+    grid-template-columns: 1fr 300px;
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.od-layout__main,
+.od-layout__side {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ── Seller card shell ─────────────────────────────────────────────────────────
+.od-card {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+
+  &--seller {
+    border: 1px solid #e5e7eb;
+    border-left: 3px solid #6366f1;
+  }
+}
+
+.od-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 18px;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafafa;
+}
+
+.od-card__icon {
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.od-card__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  flex: 1;
+}
+
+.od-card__body {
+  padding: 12px 18px 14px;
+}
+
+// ── Seller body (logo + info side by side) ────────────────────────────────────
+.od-seller-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-top: 2px;
+}
+
+.od-store-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+
+  @media (max-width: 480px) {
+    width: 44px;
+    height: 44px;
+  }
+
+  &--initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    border: none;
+
+    @media (max-width: 480px) {
+      font-size: 14px;
+    }
+  }
+}
+
+.od-seller-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.od-seller-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 2px;
+}
+
+.od-seller-owner {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  margin-bottom: 4px;
+}
+
+.od-seller-meta {
+  font-size: 12px;
+  color: #374151;
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--address {
+    white-space: normal;
+    color: #6b7280;
+    font-size: 11px;
+    line-height: 1.5;
+  }
+}
+
+.od-seller-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #6366f1;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+// ── Multi-seller strip ────────────────────────────────────────────────────────
+.od-sellers-strip {
+  margin-top: 4px;
+  margin-bottom: 24px;
+}
+
+.od-sellers-strip__heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+  padding-left: 2px;
+}
+
+.od-sellers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.od-empty {
+  padding: 16px 0;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 13px;
+}
