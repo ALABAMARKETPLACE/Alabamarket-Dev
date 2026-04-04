@@ -9,7 +9,7 @@ const API = {
   AUTO_COMPLETE: "google-proxy/autocomplete", //GET
   GOOGLE_PLACEPICKER: "google-proxy/placepicker", //GET
   COLOR: "#a10244",
-  CONTACT_MAIL: "contact@alabamarketplace.com",
+  CONTACT_MAIL: "customerservice@alabamarketplace.com",
   CONTACT_NUMBER: "+91 8848503902",
   LOGO: "https://bairuha-bucket.s3.ap-south-1.amazonaws.com/alabamarketplace/logoBox.png",
   NAME: " Alaba Marketplace",

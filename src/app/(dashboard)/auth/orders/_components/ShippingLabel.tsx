@@ -8,7 +8,6 @@ import Logo from "@/assets/images/new-logo.jpeg";
 
 const SENDER_NAME    = "alabamarketplace.ng";
 const SENDER_PHONE   = "+234 911 735 6897";
-const SENDER_ADDRESS = "Alaba International Market, Lagos, Nigeria";
 
 export interface ShippingLabelData {
   customerName?: string;
@@ -161,7 +160,9 @@ function LabelContent({ data }: { data: ShippingLabelData }) {
         </div>
         <div style={{ fontSize: 11, color: "#4b5563", marginTop: 2, display: "flex", alignItems: "flex-start", gap: 4 }}>
           <FiMapPin size={11} color="#6b7280" style={{ marginTop: 1, flexShrink: 0 }} />
-          {SENDER_ADDRESS}
+          <span>
+            Alaba International Market, Electronics Section B439,<br />Lagos, Nigeria
+          </span>
         </div>
       </div>
 

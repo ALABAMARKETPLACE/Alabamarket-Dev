@@ -13,11 +13,15 @@ import {
   FiCreditCard,
   FiShoppingBag,
   FiPrinter,
+  FiFileText,
+  FiClipboard,
 } from "react-icons/fi";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
 import ShippingLabelModal from "@/app/(dashboard)/auth/orders/_components/ShippingLabel";
+import InvoiceModal from "@/app/(dashboard)/auth/orders/_components/Invoice";
+import DeliveryReceiptModal from "@/app/(dashboard)/auth/orders/_components/DeliveryReceipt";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
 import "./style.scss";
@@ -255,6 +259,8 @@ export default function GuestOrderDetail() {
   const multiSeller = sellers.length > 1;
 
   const [labelOpen, setLabelOpen] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [receiptOpen, setReceiptOpen] = useState(false);
 
   if (isLoading) return <Loading />;
   if (isError) return <Error description={(error as Error)?.message} />;
@@ -267,13 +273,29 @@ export default function GuestOrderDetail() {
         bredcume={`Dashboard / Guest Orders / ${order.checkout_reference ?? id}`}
         icon={<FiPackage />}
       >
-        <Button
-          icon={<FiPrinter size={14} />}
-          onClick={() => setLabelOpen(true)}
-          style={{ display: "flex", alignItems: "center", gap: 6 }}
-        >
-          Print Label
-        </Button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <Button
+            icon={<FiFileText size={14} />}
+            onClick={() => setInvoiceOpen(true)}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}
+          >
+            Invoice
+          </Button>
+          <Button
+            icon={<FiClipboard size={14} />}
+            onClick={() => setReceiptOpen(true)}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}
+          >
+            Receipt
+          </Button>
+          <Button
+            icon={<FiPrinter size={14} />}
+            onClick={() => setLabelOpen(true)}
+            style={{ display: "flex", alignItems: "center", gap: 6 }}
+          >
+            Print Label
+          </Button>
+        </div>
       </PageHeader>
 
       {/* ── Summary bar ────────────────────────────────────────────────── */}
@@ -480,6 +502,65 @@ export default function GuestOrderDetail() {
           </div>
         </div>
       )}
+
+      {/* ── Invoice modal ────────────────────────────────────────────────── */}
+      <InvoiceModal
+        open={invoiceOpen}
+        onClose={() => setInvoiceOpen(false)}
+        data={{
+          orderId:       order.checkout_reference ?? order.id,
+          packageNo:     order.checkout_reference ?? order.id,
+          createdAt:     order.createdAt,
+          payableAmount: order.grandTotal ?? order.total,
+          customerName:  guestName,
+          customerPhone: order.guest_phone,
+          address: deliveryAddr
+            ? {
+                full_address: deliveryAddr.full_address ?? deliveryAddr.address,
+                city:         deliveryAddr.city,
+                state:        deliveryAddr.state,
+                country:      deliveryAddr.country,
+              }
+            : undefined,
+          items: order.items?.map((item, i) => ({
+            itemNo:   i + 1,
+            name:     item.name,
+            quantity: item.quantity,
+            price:    item.price,
+            total:    item.totalPrice,
+          })),
+        }}
+      />
+
+      {/* ── Delivery receipt modal ───────────────────────────────────────── */}
+      <DeliveryReceiptModal
+        open={receiptOpen}
+        onClose={() => setReceiptOpen(false)}
+        data={{
+          orderId:       order.checkout_reference ?? order.id,
+          createdAt:     order.createdAt,
+          payableAmount: order.grandTotal ?? order.total,
+          paymentMethod: order.payment?.paymentType,
+          customerName:  guestName,
+          customerPhone: order.guest_phone,
+          storeName:     sellers[0]?.store_name ?? sellers[0]?.name,
+          address: deliveryAddr
+            ? {
+                full_address: deliveryAddr.full_address ?? deliveryAddr.address,
+                city:         deliveryAddr.city,
+                state:        deliveryAddr.state,
+                country:      deliveryAddr.country,
+              }
+            : undefined,
+          items: order.items?.map((item, i) => ({
+            itemNo:   i + 1,
+            name:     item.name,
+            quantity: item.quantity,
+            price:    item.price,
+            total:    item.totalPrice,
+          })),
+        }}
+      />
 
       {/* ── Shipping label modal ─────────────────────────────────────────── */}
       <ShippingLabelModal

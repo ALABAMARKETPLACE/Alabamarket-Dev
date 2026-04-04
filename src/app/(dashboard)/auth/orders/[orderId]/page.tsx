@@ -6,6 +6,8 @@ import ProductTab from "../_components/productsTab";
 import PaymentStatusTab from "../_components/paymentStatusTab";
 import OrderStatusTab from "../_components/orderStatusTab";
 import ShippingLabelModal from "../_components/ShippingLabel";
+import InvoiceModal from "../_components/Invoice";
+import DeliveryReceiptModal from "../_components/DeliveryReceipt";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
@@ -16,7 +18,7 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { FiShoppingBag, FiPrinter } from "react-icons/fi";
+import { FiShoppingBag, FiPrinter, FiFileText, FiClipboard } from "react-icons/fi";
 import "./style.scss";
 
 import { Order } from "../_components/dataTable";
@@ -203,6 +205,8 @@ export default function OrderDetails() {
 
   // Shipping label state
   const [labelOpen, setLabelOpen] = useState(false);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+  const [receiptOpen, setReceiptOpen] = useState(false);
 
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
@@ -233,6 +237,20 @@ export default function OrderDetails() {
       <PageHeader title="Order Details" bredcume="Dashboard / Orders / Details">
         {!isLoading && (
           <div style={{ display: "flex", gap: 8 }}>
+            <Button
+              icon={<FiFileText size={14} />}
+              onClick={() => setInvoiceOpen(true)}
+              style={{ display: "flex", alignItems: "center", gap: 6 }}
+            >
+              Invoice
+            </Button>
+            <Button
+              icon={<FiClipboard size={14} />}
+              onClick={() => setReceiptOpen(true)}
+              style={{ display: "flex", alignItems: "center", gap: 6 }}
+            >
+              Receipt
+            </Button>
             <Button
               icon={<FiPrinter size={14} />}
               onClick={() => setLabelOpen(true)}
@@ -366,6 +384,70 @@ export default function OrderDetails() {
               </div>
             </div>
           )}
+
+          {/* ── Invoice modal ────────────────────────────────────────── */}
+          <InvoiceModal
+            open={invoiceOpen}
+            onClose={() => setInvoiceOpen(false)}
+            data={{
+              orderId:       order.order_id ?? orderId,
+              packageNo:     order.order_id ?? orderId,
+              createdAt:     order.createdAt,
+              payableAmount: order.grandTotal ?? order.total,
+              customerName:
+                order.customer_name ||
+                order.address?.full_name ||
+                mergedAddress.name,
+              customerPhone: order.customer_phone || order.address?.phone_no,
+              address: {
+                full_address: order.address?.full_address,
+                address:      order.address?.address,
+                city:         order.address?.city,
+                state:        order.address?.state,
+                country:      order.address?.country,
+              },
+              items: orderItems.map((item: Record<string, unknown>, i: number) => ({
+                itemNo:   i + 1,
+                name:     (item.name ?? (item.product as Record<string, unknown>)?.name) as string | undefined,
+                quantity: item.quantity as number | undefined,
+                price:    item.price as number | undefined,
+                total:    item.totalPrice as number | undefined,
+              })),
+            }}
+          />
+
+          {/* ── Delivery receipt modal ───────────────────────────────── */}
+          <DeliveryReceiptModal
+            open={receiptOpen}
+            onClose={() => setReceiptOpen(false)}
+            data={{
+              orderId:       order.order_id ?? orderId,
+              createdAt:     order.createdAt,
+              payableAmount: order.grandTotal ?? order.total,
+              paymentMethod: order.orderPayment?.paymentType,
+              customerName:
+                order.customer_name ||
+                order.address?.full_name ||
+                mergedAddress.name,
+              customerPhone: order.customer_phone || order.address?.phone_no,
+              storeName:     sellers[0]?.store_name ?? sellers[0]?.name,
+              address: {
+                full_address: order.address?.full_address,
+                address:      order.address?.address,
+                city:         order.address?.city,
+                state:        order.address?.state,
+                country:      order.address?.country,
+              },
+              items: orderItems.map((item: Record<string, unknown>, i: number) => ({
+                itemNo:   i + 1,
+                name:     (item.name ?? (item.product as Record<string, unknown>)?.name) as string | undefined,
+                sku:      (item.sku ?? (item.product as Record<string, unknown>)?.sku) as string | undefined,
+                quantity: item.quantity as number | undefined,
+                price:    item.price as number | undefined,
+                total:    item.totalPrice as number | undefined,
+              })),
+            }}
+          />
 
           {/* ── Shipping label modal ─────────────────────────────────── */}
           <ShippingLabelModal
