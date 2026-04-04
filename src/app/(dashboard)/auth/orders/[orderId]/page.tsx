@@ -5,6 +5,7 @@ import AddressTab from "../_components/addressTab";
 import ProductTab from "../_components/productsTab";
 import PaymentStatusTab from "../_components/paymentStatusTab";
 import OrderStatusTab from "../_components/orderStatusTab";
+import ShippingLabelModal from "../_components/ShippingLabel";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
@@ -14,7 +15,8 @@ import Image from "next/image";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { FiShoppingBag } from "react-icons/fi";
+import { useState } from "react";
+import { FiShoppingBag, FiPrinter } from "react-icons/fi";
 import "./style.scss";
 
 import { Order } from "../_components/dataTable";
@@ -199,6 +201,9 @@ export default function OrderDetails() {
 
   const multiSeller = sellers.length > 1;
 
+  // Shipping label state
+  const [labelOpen, setLabelOpen] = useState(false);
+
   const formatDateRelative = (date: string) => {
     const givenDate = moment(date);
     const diffInHours = moment().diff(givenDate, "hours");
@@ -226,13 +231,24 @@ export default function OrderDetails() {
   return (
     <div>
       <PageHeader title="Order Details" bredcume="Dashboard / Orders / Details">
-        {!isLoading && !isSeller && (
-          <Button
-            type="primary"
-            onClick={() => route.push("/auth/orders/substitute/" + orderId)}
-          >
-            Substitute Order
-          </Button>
+        {!isLoading && (
+          <div style={{ display: "flex", gap: 8 }}>
+            <Button
+              icon={<FiPrinter size={14} />}
+              onClick={() => setLabelOpen(true)}
+              style={{ display: "flex", alignItems: "center", gap: 6 }}
+            >
+              Print Label
+            </Button>
+            {!isSeller && (
+              <Button
+                type="primary"
+                onClick={() => route.push("/auth/orders/substitute/" + orderId)}
+              >
+                Substitute Order
+              </Button>
+            )}
+          </div>
         )}
       </PageHeader>
 
@@ -350,6 +366,39 @@ export default function OrderDetails() {
               </div>
             </div>
           )}
+
+          {/* ── Shipping label modal ─────────────────────────────────── */}
+          <ShippingLabelModal
+            open={labelOpen}
+            onClose={() => setLabelOpen(false)}
+            data={{
+              customerName:
+                order.customer_name ||
+                order.address?.full_name ||
+                mergedAddress.name,
+              customerPhone:
+                order.customer_phone || order.address?.phone_no,
+              address: {
+                full_address: order.address?.full_address,
+                address: order.address?.address,
+                city: order.address?.city,
+                state: order.address?.state,
+                country: order.address?.country,
+                landmark: order.address?.landmark,
+              },
+              storeName: sellers[0]?.store_name ?? sellers[0]?.name,
+              storePhone: sellers[0]?.phone,
+              storeAddress: sellers[0]?.business_address,
+              storeLogo: sellers[0]?.logo_upload,
+              orderId: order.order_id ?? orderId,
+              createdAt: order.createdAt,
+              items: orderItems.map((item: Record<string, unknown>) => ({
+                name: (item.name ?? (item.product as Record<string, unknown>)?.name) as string | undefined,
+                quantity: item.quantity as number | undefined,
+              })),
+              grandTotal: order.grandTotal ?? order.total,
+            }}
+          />
         </>
       )}
     </div>

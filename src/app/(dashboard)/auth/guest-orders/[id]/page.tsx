@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useQuery } from "@tanstack/react-query";
-import { Tag, Divider } from "antd";
+import { Tag, Divider, Button } from "antd";
 import Image from "next/image";
 import dayjs from "dayjs";
 import {
@@ -12,10 +12,12 @@ import {
   FiMapPin,
   FiCreditCard,
   FiShoppingBag,
+  FiPrinter,
 } from "react-icons/fi";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
+import ShippingLabelModal from "@/app/(dashboard)/auth/orders/_components/ShippingLabel";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
 import "./style.scss";
@@ -252,6 +254,8 @@ export default function GuestOrderDetail() {
   // Multi-seller: render in full-width strip below main grid
   const multiSeller = sellers.length > 1;
 
+  const [labelOpen, setLabelOpen] = useState(false);
+
   if (isLoading) return <Loading />;
   if (isError) return <Error description={(error as Error)?.message} />;
   if (!order) return <Error description="Order not found." />;
@@ -262,7 +266,15 @@ export default function GuestOrderDetail() {
         title="Guest Order Detail"
         bredcume={`Dashboard / Guest Orders / ${order.checkout_reference ?? id}`}
         icon={<FiPackage />}
-      />
+      >
+        <Button
+          icon={<FiPrinter size={14} />}
+          onClick={() => setLabelOpen(true)}
+          style={{ display: "flex", alignItems: "center", gap: 6 }}
+        >
+          Print Label
+        </Button>
+      </PageHeader>
 
       {/* ── Summary bar ────────────────────────────────────────────────── */}
       <div className="god-summary-bar">
@@ -468,6 +480,31 @@ export default function GuestOrderDetail() {
           </div>
         </div>
       )}
+
+      {/* ── Shipping label modal ─────────────────────────────────────────── */}
+      <ShippingLabelModal
+        open={labelOpen}
+        onClose={() => setLabelOpen(false)}
+        data={{
+          customerName: guestName,
+          customerPhone: order.guest_phone,
+          address: deliveryAddr
+            ? {
+                full_address: deliveryAddr.full_address ?? deliveryAddr.address,
+                city: deliveryAddr.city,
+                state: deliveryAddr.state,
+                country: deliveryAddr.country,
+              }
+            : undefined,
+          orderId: order.checkout_reference ?? order.id,
+          createdAt: order.createdAt,
+          items: order.items?.map((item) => ({
+            name: item.name,
+            quantity: item.quantity,
+          })),
+          grandTotal: order.grandTotal ?? order.total,
+        }}
+      />
     </>
   );
 }
