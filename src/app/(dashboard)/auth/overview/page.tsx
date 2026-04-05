@@ -95,7 +95,9 @@ function DashboardSeller() {
         <div className="dashboard-welcome__content">
           <div className="dashboard-welcome__greeting">
             <span className="dashboard-welcome__icon">{greeting.icon}</span>
-            <h1 className="dashboard-welcome__title">{greeting.text}, Seller</h1>
+            <h1 className="dashboard-welcome__title">
+              {greeting.text}, {session?.user?.first_name || session?.user?.name || "Seller"}
+            </h1>
           </div>
           <p className="dashboard-welcome__subtitle">
             Here&apos;s an overview of your store performance today.
