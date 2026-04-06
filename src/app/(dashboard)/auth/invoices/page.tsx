@@ -121,7 +121,7 @@ function Invoices() {
       
     } catch (err: any) {
       Notifications["error"]({
-        message: "Something went wrong",
+        message: "Unable to load invoices. Please try again.",
       });
     } finally {
       setLoading(false);

@@ -53,7 +53,7 @@ function EditMobilenumberChange(props: any) {
         setotpModal(true);
         setnameInput(false);
       } else {
-        setError("Something went wrong");
+        setError("Unable to send OTP. Please try again.");
       }
       setIsLoading(false);
     } catch (err) {
@@ -61,7 +61,7 @@ function EditMobilenumberChange(props: any) {
       setnameInput(true);
 
       setIsLoading(false);
-      setError("Something went wrong");
+      setError("Unable to send OTP. Please try again.");
     }
   };
   const verifyOtp = async () => {
@@ -76,7 +76,7 @@ function EditMobilenumberChange(props: any) {
       }
     } catch (err) {
       setIsLoading(false);
-      setError("Something went wrong during OTP verification");
+      setError("OTP verification failed. Please check the code and try again.");
       console.log("verifyOtp err", err);
     }
   };

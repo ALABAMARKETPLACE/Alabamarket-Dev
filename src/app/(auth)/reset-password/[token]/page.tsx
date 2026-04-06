@@ -30,7 +30,7 @@ function ResetPassword() {
         });
       }
     } catch (err) {
-      notificationApi.error({ message: "Something went wrong. Please try again." });
+      notificationApi.error({ message: "Unable to reset password. Please try again." });
     } finally {
       setIsLoading(false);
     }

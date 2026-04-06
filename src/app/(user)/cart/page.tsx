@@ -57,7 +57,7 @@ function CartPage() {
       }
     } catch {
       if (isAuthenticated) {
-        notificationApi.error({ message: "Something went wrong. Please try again." });
+        notificationApi.error({ message: "Unable to load your cart. Please refresh the page." });
       } else {
         dispatch(loadGuestCart());
       }
@@ -102,7 +102,7 @@ function CartPage() {
         notificationApi.error({ message: response?.message });
       }
     } catch {
-      notificationApi.error({ message: "Something went wrong." });
+      notificationApi.error({ message: "Unable to update your cart. Please try again." });
     }
   };
 

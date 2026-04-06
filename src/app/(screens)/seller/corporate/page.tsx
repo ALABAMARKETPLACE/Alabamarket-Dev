@@ -116,13 +116,13 @@ function Page() {
         window.scrollTo(0, 0);
       } else {
         notification.error({
-          message: response?.message ?? "Something went wrong",
+          message: response?.message ?? "Registration failed. Please try again.",
           description: "Please connect support team to slove this issue.",
         });
       }
     } catch (err: any) {
       const errorMessage =
-        err?.message || err?.response?.data?.message || "Something went wrong!";
+        err?.message || err?.response?.data?.message || "Registration failed. Please try again.";
       notification.error({
         message: errorMessage,
         description:

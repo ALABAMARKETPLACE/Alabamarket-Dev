@@ -31,7 +31,7 @@ const EditPassword = (props: any) => {
       }
     } catch (error: any) {
       notificationApi.error({
-        message: "Something went wrong. please try again.",
+        message: "Unable to update your password. Please try again.",
       });
     } finally {
       setIsLoading(false);

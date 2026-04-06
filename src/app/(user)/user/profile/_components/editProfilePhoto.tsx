@@ -69,7 +69,7 @@ const EditProfilePhoto = (props: any) => {
       }
     } catch (err: any) {
       notificationApi.error({
-        message: "Something went wrong. please try again",
+        message: "Unable to update profile photo. Please try again.",
       });
     }
     setIsLoading(false);

@@ -110,7 +110,7 @@ const ProfileDashboard = () => {
         notificationApi.error({ message: parseApiMessage(Response.message, "Failed to update email. Please try again.") });
       }
     } catch (error) {
-      notificationApi.error({ message: "Something went wrong." });
+      notificationApi.error({ message: "Unable to update your email. Please try again." });
     } finally {
       setEmailLoading(false);
     }
@@ -140,7 +140,7 @@ const ProfileDashboard = () => {
         notificationApi.error({ message: parseApiMessage(Response.message, "Failed to update name. Please try again.") });
       }
     } catch (error) {
-      notificationApi.error({ message: "Something went wrong." });
+      notificationApi.error({ message: "Unable to update your name. Please try again." });
     } finally {
       setEmailLoading(false);
     }
@@ -165,7 +165,7 @@ const ProfileDashboard = () => {
       }
     } catch (error: any) {
       notificationApi.error({
-        message: "Something went wrong. please try again.",
+        message: "Unable to update your password. Please try again.",
       });
     } finally {
       setPasswordLoading(false);
@@ -185,7 +185,7 @@ const ProfileDashboard = () => {
       }
     } catch (err) {
       notificationApi.error({
-        message: "Something went wrong. please try again.",
+        message: "Unable to sign out from all devices. Please try again.",
       });
     }
   }

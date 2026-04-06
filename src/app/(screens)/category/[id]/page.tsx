@@ -244,7 +244,7 @@ const ProductByCategory = () => {
           setMeta(mergedMeta);
         } catch (err: any) {
           Notifications["error"]({
-            message: "Something went wrong",
+            message: "Unable to load products. Please check your connection and try again.",
             description: err.message,
           });
           setProducts([]);
@@ -291,7 +291,7 @@ const ProductByCategory = () => {
       }
     } catch (err: any) {
       Notifications["error"]({
-        message: "Something went wrong",
+        message: "Unable to load products. Please check your connection and try again.",
         description: err.message,
       });
       setProducts([]);

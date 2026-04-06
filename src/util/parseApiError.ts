@@ -9,7 +9,7 @@
  */
 export function parseApiMessage(
   val: unknown,
-  fallback = "Something went wrong. Please try again.",
+  fallback = "An unexpected error occurred. Please try again.",
 ): string {
   if (val === null || val === undefined) return fallback;
 

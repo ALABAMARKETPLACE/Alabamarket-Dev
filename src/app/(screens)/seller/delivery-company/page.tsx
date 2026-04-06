@@ -67,7 +67,7 @@ function DeliveryCompanyRegistration() {
     } catch (err: any) {
       console.error("API Error:", err);
       notification.error({
-        message: "Something went wrong!",
+        message: "Registration failed. Please try again.",
         description: err.message || "Please try again later.",
       });
     } finally {

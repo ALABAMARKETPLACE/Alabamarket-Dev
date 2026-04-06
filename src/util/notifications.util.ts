@@ -10,7 +10,7 @@ export const navigateNotification = (id: number, type: string) => {
  * Safely extract error message from various error formats
  */
 export const getErrorMessage = (error: any): string => {
-  if (!error) return "Something went wrong";
+  if (!error) return "An unexpected error occurred. Please try again.";
 
   // If it's a string, return it directly
   if (typeof error === "string") return error;
@@ -45,7 +45,7 @@ export const getErrorMessage = (error: any): string => {
       return stringified;
     }
 
-    return "Something went wrong";
+    return "An unexpected error occurred. Please try again.";
   }
 
   return String(error);

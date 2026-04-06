@@ -45,7 +45,7 @@ function GmailLogin(props: any) {
     } catch (err) {
       notificationApi.error({
         message:
-          "Something went wrong.... Unable to complete Gmail login. Please try",
+          "Unable to sign in with Google. Please try again.",
       });
     } finally {
       setLoading(false);

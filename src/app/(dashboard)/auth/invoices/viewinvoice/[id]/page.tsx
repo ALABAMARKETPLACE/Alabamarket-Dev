@@ -244,7 +244,7 @@ export default function ViewInvoice() {
       }
     } catch (err: any) {
       Notifications["error"]({
-        message: "Something went wrong",
+        message: "Unable to load invoice",
         description: err?.message || "Failed to fetch invoice details.",
       });
     } finally {

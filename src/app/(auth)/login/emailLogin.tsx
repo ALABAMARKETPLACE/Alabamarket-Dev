@@ -44,7 +44,7 @@ function EmailLogin() {
       }
     } catch (err) {
       setIsLoading(false);
-      setError("Something went wrong");
+      setError("Unable to sign in. Please try again.");
     }
   };
 

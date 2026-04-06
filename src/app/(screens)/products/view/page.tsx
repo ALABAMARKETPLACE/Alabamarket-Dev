@@ -238,7 +238,7 @@ function Page() {
       }
     } catch (err) {
       Notifications["error"]({
-        message: "Something went wrong.",
+        message: "Unable to load products. Please check your connection and try again.",
         description: "",
       });
     } finally {
@@ -298,7 +298,7 @@ function Page() {
       }
     } catch (err) {
       Notifications["error"]({
-        message: "Something went wrong.",
+        message: "Unable to load products. Please check your connection and try again.",
         description: "",
       });
     } finally {

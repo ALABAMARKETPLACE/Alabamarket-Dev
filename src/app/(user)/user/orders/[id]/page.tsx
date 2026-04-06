@@ -32,7 +32,7 @@ function Page() {
         }
       } catch (err) {
         Notifications["error"]({
-          message: "Something went wrong.",
+          message: "Unable to load order details. Please refresh the page.",
         });
       } finally {
         setLoading(false);

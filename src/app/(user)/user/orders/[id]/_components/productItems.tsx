@@ -49,7 +49,7 @@ function ProductItems(props: any) {
       }
     } catch (err) {
       Notifications["error"]({
-        message: `Something went wrong..`,
+        message: `Unable to submit your review. Please try again.`,
         description: "",
       });
     } finally {

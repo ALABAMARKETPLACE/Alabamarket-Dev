@@ -90,7 +90,7 @@ export default function SignupScreen() {
       }
     } catch (err: any) {
       console.error("Signup error:", err);
-      setError(err?.message || "Something went wrong. Please try again.");
+      setError(err?.message || "Unable to create account. Please try again.");
     } finally {
       setIsLoading(false);
     }
