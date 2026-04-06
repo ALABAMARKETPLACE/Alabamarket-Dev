@@ -43,7 +43,7 @@ const EditProductVariantModal = (props: any) => {
       }
     } catch (err) {
       Notifications["error"]({
-        message: "Something went wrong..",
+        message: "Unable to update variant. Please try again.",
         description: "",
       });
     } finally {

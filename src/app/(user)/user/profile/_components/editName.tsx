@@ -33,7 +33,7 @@ const EditName = (props: any) => {
         notificationApi.error({ message: Response.message ?? "" });
       }
     } catch (error) {
-      notificationApi.error({ message: "Something went wrong." });
+      notificationApi.error({ message: "Unable to update your name. Please try again." });
     } finally {
       setLoading(false);
     }

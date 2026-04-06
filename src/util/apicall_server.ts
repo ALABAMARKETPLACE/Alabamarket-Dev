@@ -20,7 +20,7 @@ const GET_SERVER = async (
     });
     if (!response.ok) {
       const errorData = await response.json();
-      const error = new Error(errorData.message || "Something went wrong");
+      const error = new Error(errorData.message || "An unexpected error occurred. Please try again.");
       (error as any).status = response.status;
       throw error;
     }

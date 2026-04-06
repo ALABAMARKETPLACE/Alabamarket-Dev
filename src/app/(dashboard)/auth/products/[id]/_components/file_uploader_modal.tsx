@@ -101,7 +101,7 @@ import { EXCEL_UPLOAD, GET } from "@/util/apicall";
         }
       } catch (err) {
         Notifications["error"]({
-          message: "Something went wrong..",
+          message: "Unable to upload file. Please try again.",
           description: "",
         });
       } finally {

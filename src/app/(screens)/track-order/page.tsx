@@ -141,9 +141,9 @@ function TrackOrderPage() {
       console.error("Track order error:", error);
       setTrackingData(null);
       Notifications.error({
-        message: "Something went wrong",
+        message: "Unable to Track Order",
         description:
-          "Unable to track your order at the moment. Please try again later.",
+          "We couldn't retrieve your order status at the moment. Please try again later.",
       });
     } finally {
       setLoading(false);

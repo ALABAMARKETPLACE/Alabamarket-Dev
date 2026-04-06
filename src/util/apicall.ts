@@ -63,7 +63,7 @@ const GET = async (
       },
     });
     if (!response.ok) {
-      let messageText = "Something went wrong";
+      let messageText = "An unexpected error occurred. Please try again.";
       try {
         const raw = await response.text();
         if (raw) {
@@ -108,7 +108,7 @@ const POST = async (
       body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
-      let messageText = "Something went wrong";
+      let messageText = "An unexpected error occurred. Please try again.";
       try {
         const raw = await response.text();
         if (raw) {
@@ -149,7 +149,7 @@ const PUBLIC_POST = async (
       body: JSON.stringify(body),
     });
     if (!response.ok) {
-      let messageText = "Something went wrong";
+      let messageText = "An unexpected error occurred. Please try again.";
       try {
         const raw = await response.text();
         if (raw) {
@@ -194,7 +194,7 @@ const PUT = async (
       body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
-      let messageText = "Something went wrong";
+      let messageText = "An unexpected error occurred. Please try again.";
       try {
         const raw = await response.text();
         if (raw) {
@@ -239,7 +239,7 @@ const PATCH = async (
       body: isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (!response.ok) {
-      let messageText = "Something went wrong";
+      let messageText = "An unexpected error occurred. Please try again.";
       try {
         const raw = await response.text();
         if (raw) {
@@ -324,7 +324,7 @@ const DELETE = async (
       ...(body && { body: JSON.stringify(body) }),
     });
     if (!response.ok) {
-      let messageText = "Something went wrong";
+      let messageText = "An unexpected error occurred. Please try again.";
       try {
         const raw = await response.text();
         if (raw) {
@@ -364,7 +364,7 @@ const COMPRESS_IMAGE = async (file: File) => {
     const data = await response.json();
     if (!response?.ok)
       return Promise.reject(
-        new Error(parseApiMessage(data?.message, "Something went wrong..")),
+        new Error(parseApiMessage(data?.message, "Image upload failed. Please try again.")),
       );
     return { ...data, url: data.Location, status: true };
   } catch (err: unknown) {

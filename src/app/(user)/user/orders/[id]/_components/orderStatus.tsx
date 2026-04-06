@@ -39,7 +39,7 @@ function OrderStatusCard(props: any) {
       }
     } catch (err) {
       Notifications["error"]({
-        message: "Something went wrong.",
+        message: "Unable to cancel order. Please try again.",
       });
     } finally {
       setLoading(false);

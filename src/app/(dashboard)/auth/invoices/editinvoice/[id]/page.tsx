@@ -92,7 +92,7 @@ const EditInvoice: React.FC = () => {
       }
     } catch (err: any) {
       Notifications["error"]({
-        message: "Something went wrong",
+        message: "Unable to update invoice. Please try again.",
         description: err.message,
       });
     } finally {

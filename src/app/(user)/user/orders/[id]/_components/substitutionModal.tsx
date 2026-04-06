@@ -28,7 +28,7 @@ function SubstitutionModal({
       }
     } catch (err) {
       Notifications["error"]({
-        message: `Something went wrong.. please try again.`,
+        message: `Unable to load substitution products. Please try again.`,
         description: "",
       });
     } finally {
@@ -65,7 +65,7 @@ function SubstitutionModal({
       }
     } catch (err) {
       Notifications["error"]({
-        message: `Something went wrong..`,
+        message: `Unable to apply substitution. Please try again.`,
         description: "",
       });
     } finally {
@@ -95,7 +95,7 @@ function SubstitutionModal({
     } catch (err) {
       console.log(err);
       Notifications["error"]({
-        message: `Something went wrong..`,
+        message: `Unable to update order. Please try again.`,
         description: "",
       });
     }
@@ -120,7 +120,7 @@ function SubstitutionModal({
       }
     } catch (err) {
       Notifications["error"]({
-        message: "Something went wrong.",
+        message: "Unable to cancel order. Please try again.",
       });
     } finally {
     }

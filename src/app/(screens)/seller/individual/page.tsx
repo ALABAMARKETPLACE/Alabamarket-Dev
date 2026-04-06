@@ -60,7 +60,7 @@ function Page() {
     } catch (err: any) {
       console.error("API Error:", err);
       notification.error({
-        message: "Something went wrong!",
+        message: "Registration failed. Please try again.",
         description: parseApiMessage(err.message, "An unexpected error occurred. Please try again."),
       });
     } finally {

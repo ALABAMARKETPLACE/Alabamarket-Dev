@@ -63,7 +63,7 @@ function ImageUploadModal({ open, close, getProducts }: any) {
       }
     } catch (err) {
       Notifications["error"]({
-        message: "Something went wrong..",
+        message: "Unable to upload image. Please try again.",
         description: "",
       });
     } finally {

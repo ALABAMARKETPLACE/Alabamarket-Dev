@@ -66,7 +66,7 @@ function Step1({ moveToNextStep, formData }: any) {
         }
       } catch (err) {
         Notifications["error"]({
-          message: "Something went wrong",
+          message: "Unable to verify. Please try again.",
         });
       } finally {
         setLoading(false);

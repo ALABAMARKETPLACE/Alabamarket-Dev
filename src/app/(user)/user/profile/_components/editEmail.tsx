@@ -29,7 +29,7 @@ const EditEmail = (props: any) => {
         notificationApi.error({ message: Response.message });
       }
     } catch (error) {
-      notificationApi.error({ message: "Something went wrong." });
+      notificationApi.error({ message: "Unable to update your email. Please try again." });
     } finally {
       setIsLoading(false);
     }

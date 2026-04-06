@@ -362,7 +362,7 @@ const CreateInvoice: React.FC = () => {
       console.log("Response from API:", response);
     } catch (error) {
       Notifications["error"]({
-        message: "Something went wrong",
+        message: "Unable to create invoice. Please try again.",
       });
       console.error("Error:", error);
     }

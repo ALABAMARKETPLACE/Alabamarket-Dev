@@ -318,7 +318,7 @@ function Description(props: Props) {
         api.error({ message: newCart?.message });
       }
     } catch {
-      api.error({ message: "Something went wrong!" });
+      api.error({ message: "Unable to add item to cart. Please try again." });
     }
   };
 
@@ -356,7 +356,7 @@ function Description(props: Props) {
     } catch (error) {
       console.error("Error toggling wishlist:", error);
       api.error({
-        message: "Something went wrong. Please try again later.",
+        message: "Unable to update your wishlist. Please try again.",
       });
     }
   };

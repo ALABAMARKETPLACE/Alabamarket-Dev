@@ -48,7 +48,7 @@ function PhoneVerifyOtp(props: any) {
         props.setAutho(checkPhone);
         setVerification(true);
       } else {
-        setError("Something went wrong during resend");
+        setError("Unable to resend OTP. Please try again.");
       }
       setResendInitiated(false);
     } catch (err) {
@@ -76,14 +76,14 @@ function PhoneVerifyOtp(props: any) {
         props.setAutho(checkPhone);
         setVerification(true);
       } else {
-        setError("Something went wrong");
+        setError("Unable to send OTP. Please try again.");
       }
       setIsLoading(false);
     } catch (err) {
       setVerification(false);
       console.log("LoginPhone error", err);
       setIsLoading(false);
-      setError("Something went wrong");
+      setError("Unable to send OTP. Please try again.");
     }
   };
 
@@ -98,7 +98,7 @@ function PhoneVerifyOtp(props: any) {
       }
     } catch (err) {
       setIsLoading(false);
-      setError("Something went wrong during OTP verification");
+      setError("OTP verification failed. Please check the code and try again.");
       console.log("verifyOtp err", err);
     }
   };
@@ -123,7 +123,7 @@ function PhoneVerifyOtp(props: any) {
         setError(loginRes.message);
       }
     } catch (err) {
-      notificationApi.error({ message: "Something went wrong." });
+      notificationApi.error({ message: "Unable to update phone number. Please try again." });
       console.log("err on PhoneVerifyOtp", err);
     } finally {
       setIsLoading(false);
