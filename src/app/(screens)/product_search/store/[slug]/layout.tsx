@@ -3,11 +3,9 @@ import API from "@/config/API";
 import "./style.scss";
 import useDidUpdateEffect from "@/shared/hook/useDidUpdate";
 import { GET } from "@/util/apicall";
-import { Avatar, Card, Skeleton, Tag } from "antd";
-import Meta from "antd/es/card/Meta";
+import { Avatar, Card, Skeleton } from "antd";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { Col, Row } from "react-bootstrap";
 import { FaStar } from "react-icons/fa6";
 import { IoArrowBack } from "react-icons/io5";
 
@@ -128,50 +126,61 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
     router.push(`/product_search/store/${slug}?${qs.toString()}`);
   };
 
+  const rating = isNaN(Number(store?.averageRating))
+    ? 0
+    : Number(store?.averageRating).toFixed(1);
+
   return (
     <div className="Screen-box py-2">
-      <button
-        onClick={() => router.back()}
-        style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px", color: "#555", fontSize: "14px" }}
-      >
-        <IoArrowBack size={18} /> Back
+      <button className="store-back-btn" onClick={() => router.back()}>
+        <IoArrowBack size={16} /> Back
       </button>
-      <Card bordered={false} className="card-store-full">
-        {loadingStore ? (
-          <Skeleton avatar paragraph={{ rows: 1 }} />
-        ) : (
-          <Row className="mx-0">
-            <Col md="3">
-              <Meta
-                className="mb-md-0 mb-1"
-                avatar={<Avatar src={store?.logo_upload} size={75} />}
-                title={
-                  <div className="StoreItem-txt3 d-flex gap-2">
-                    <h6 className="fw-bold">{store?.store_name}</h6>
-                    <div className="text-success fw-light d-flex align-items-center">
-                      {isNaN(Number(store?.averageRating))
-                        ? 0
-                        : Number(store?.averageRating).toFixed(1)}
-                      <FaStar
-                        color="#f5da42"
-                        className="ms-1"
-                        style={{ verticalAlign: "middle" }}
-                      />
-                    </div>
-                  </div>
-                }
-                description={<div>Everyday Store prices</div>}
-              />
-            </Col>
 
-            <Col md="9" className="px-0 d-flex flex-column">
-              {/* Category tabs */}
-              <div className="d-flex gap-2 search-store-subcategories my-auto">
+      <Card className="store-header-card">
+        {loadingStore ? (
+          <div style={{ padding: "16px 20px" }}>
+            <Skeleton avatar={{ size: 64 }} paragraph={{ rows: 2 }} active />
+          </div>
+        ) : (
+          <>
+            {/* Banner */}
+            <div className="store-banner">
+              {store?.cover_image && (
+                <img className="store-banner-img" src={store.cover_image} alt="" />
+              )}
+            </div>
+
+            {/* Store info row */}
+            <div className="store-info-row">
+              <div className="store-avatar-wrap">
+                <Avatar src={store?.logo_upload} size={66} />
+              </div>
+              <div className="store-meta">
+                <p className="store-name">{store?.store_name ?? storeNameParam}</p>
+                <div className="store-rating">
+                  <FaStar color="#f5a623" size={13} />
+                  <span>{rating}</span>
+                  {store?.ratings ? (
+                    <span style={{ color: "#aaa", fontWeight: 400 }}>
+                      ({store.ratings})
+                    </span>
+                  ) : null}
+                </div>
+                <p className="store-tagline">
+                  {Array.isArray(store?.business_types) && store.business_types.length
+                    ? store.business_types.join(" · ")
+                    : "Official Store"}
+                </p>
+              </div>
+            </div>
+
+            <hr className="store-divider" />
+
+            {/* Toolbar: categories + filters */}
+            <div className="store-toolbar">
+              <div className="store-categories">
                 <div
-                  className={`search-store-tags px-3 align-self-center text-bold ${
-                    !selectedCid ? "active" : ""
-                  }`}
-                  style={{ cursor: "pointer" }}
+                  className={`store-cat-chip${!selectedCid ? " active" : ""}`}
                   onClick={() => handleCategoryClick("")}
                 >
                   All
@@ -179,10 +188,7 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
                 {categories.map((item: any, index: number) => (
                   <div
                     key={index}
-                    style={{ cursor: "pointer", whiteSpace: "nowrap" }}
-                    className={`search-store-tags px-3 align-self-center text-bold ${
-                      String(item._id) === selectedCid ? "active" : ""
-                    }`}
+                    className={`store-cat-chip${String(item._id) === selectedCid ? " active" : ""}`}
                     onClick={() => handleCategoryClick(String(item._id))}
                   >
                     {item?.name}
@@ -190,25 +196,20 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
                 ))}
               </div>
 
-              {/* Sort / filter tags */}
-              <div className="col-12 mt-2 d-flex justify-content-end mt-auto">
-                <div className="pt-2 d-flex gap-2">
-                  Filter:
-                  {selectedTags.map((tag, i) => (
-                    <Tag
-                      key={i}
-                      className="align-self-center me-0"
-                      color={tag.active ? API.COLOR : ""}
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleFilterChange(i)}
-                    >
-                      {tag.title}
-                    </Tag>
-                  ))}
-                </div>
+              <div className="store-filters">
+                <span className="filter-label">Sort:</span>
+                {selectedTags.map((tag, i) => (
+                  <div
+                    key={i}
+                    className={`store-filter-chip${tag.active ? " active" : ""}`}
+                    onClick={() => handleFilterChange(i)}
+                  >
+                    {tag.title}
+                  </div>
+                ))}
               </div>
-            </Col>
-          </Row>
+            </div>
+          </>
         )}
       </Card>
 
