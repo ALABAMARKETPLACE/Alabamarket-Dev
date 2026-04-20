@@ -148,11 +148,13 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 // ─── Update Status Modal (pure UI — no hooks) ────────────────────────────────
+type StatusFormValues = { status: string; remark?: string; delivery_date?: dayjs.Dayjs };
+
 interface UpdateStatusModalProps {
   open: boolean;
   onCancel: () => void;
-  onFinish: (vals: { status: string; remark?: string; delivery_date?: dayjs.Dayjs }) => void;
-  form: ReturnType<typeof useForm>[0];
+  onFinish: (vals: StatusFormValues) => void;
+  form: ReturnType<typeof useForm<StatusFormValues>>[0];
   currentStatus: string;
   isPending: boolean;
 }
@@ -369,7 +371,7 @@ export default function GuestOrderDetail() {
   const [receiptOpen, setReceiptOpen] = useState(false);
   const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
 
-  const [statusForm] = useForm();
+  const [statusForm] = useForm<StatusFormValues>();
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
