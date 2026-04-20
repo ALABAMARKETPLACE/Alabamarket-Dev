@@ -168,6 +168,7 @@ const API = {
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
   ORDER_GUEST_ALL: "order/guest/all", //GET all guest orders - admin only
   ORDER_GUEST_STORE: "order/guest/store", //GET guest orders for a seller's store
+  ORDER_GUEST_UPDATE_STATUS: "order/guest/update_status/", //PUT update guest order status (Seller/Admin)
 
   // STORE STATISTICS
   STORE_STATS: "store/stats",

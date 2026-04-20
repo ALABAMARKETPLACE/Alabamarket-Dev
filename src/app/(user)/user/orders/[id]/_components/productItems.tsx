@@ -13,6 +13,7 @@ import moment from "moment";
 import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import Link from "next/link";
 import API from "../../../../../../config/API";
 import { POST } from "../../../../../../util/apicall";
 import { reduxSettings } from "../../../../../../redux/slice/settingsSlice";
@@ -97,7 +98,19 @@ function ProductItems(props: any) {
                       }
                       description={
                         <div className="text-dark">
-                          <div>Seller: {props?.data?.store_name}</div>
+                          <div>
+                            Seller:{" "}
+                            {(props?.data?.storeDetails?.slug || props?.data?.store_id) ? (
+                              <Link
+                                href={`/product_search/store/${props?.data?.storeDetails?.slug || props?.data?.store_id}`}
+                                style={{ color: "#1677ff", textDecoration: "none" }}
+                              >
+                                {props?.data?.store_name}
+                              </Link>
+                            ) : (
+                              props?.data?.store_name
+                            )}
+                          </div>
 
                           <div>
                             Ordered on:{" "}

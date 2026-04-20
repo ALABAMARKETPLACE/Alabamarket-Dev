@@ -23,7 +23,7 @@ function StoreItem(props: any) {
   return (
     <div
       className="StoreItem"
-      onClick={() => router.push(`store/${props?.item?.slug}`)}
+      onClick={() => router.push(`/product_search/store/${props?.item?.slug}`)}
     >
       <div>
         <img src={props?.item?.logo_upload} className="StoreItem-img" loading="lazy" decoding="async" />

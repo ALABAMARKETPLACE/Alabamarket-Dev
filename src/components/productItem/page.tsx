@@ -2,6 +2,7 @@
 import React, { useMemo } from "react";
 import "./styles.scss";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useSelector } from "react-redux";
 import { FaStar } from "react-icons/fa6";
 import { Popover, Rate, App } from "antd";
@@ -57,8 +58,23 @@ function ProductItem(props: any) {
   }, [props?.item?.pid, props?.item?.id, props?.item?.averageRating, props?.item?.totalReviews]);
 
   const openDetails = () => {
-    navigate.push(`/${props?.item?.slug}/?pid=${props?.item?.pid}`);
+    navigate.push(`/${props?.item?.slug}/`);
   };
+
+  // Resolve store identifier — prefer slug, fall back to store_id
+  const storeIdentifier =
+    props?.item?.storeDetails?.slug ||
+    props?.item?.storeDetails?.store_slug ||
+    props?.item?.storeDetails?.storeSlug ||
+    props?.item?.store_slug ||
+    props?.item?.storeSlug ||
+    props?.item?.store_id ||
+    null;
+
+  const storeName =
+    props?.item?.storeDetails?.store_name ||
+    props?.item?.store_name ||
+    null;
   const content = (
     <div>
       <p>{ratingInfo.reviews} total ratings</p>
@@ -120,6 +136,21 @@ function ProductItem(props: any) {
         <div className="ProductItem-txt1 " onClick={() => openDetails()}>
           {props?.item?.name}
         </div>
+        {storeName && (
+          storeIdentifier ? (
+            <Link
+              href={`/product_search/store/${storeIdentifier}?storeName=${encodeURIComponent(storeName ?? "")}`}
+              className="ProductItem-seller"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {storeName}
+            </Link>
+          ) : (
+            <span className="ProductItem-seller" style={{ color: "#6b7280", cursor: "default" }}>
+              {storeName}
+            </span>
+          )
+        )}
         <Popover content={content} title={title}>
           <div className="d-flex gap-2">
             <div className="ProductItem-txt5">

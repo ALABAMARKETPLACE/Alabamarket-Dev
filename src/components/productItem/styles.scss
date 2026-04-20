@@ -109,6 +109,28 @@
   }
 }
 
+// ─── Seller link ────────────────────────────────────────────────────────────
+.ProductItem-seller {
+  font-family: global.$Regular;
+  font-size: 11px;
+  color: #1677ff;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: global.$primary;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
 // ─── Secondary text ──────────────────────────────────────────────────────────
 .ProductItem-txt2 {
   font-family: global.$Regular;
