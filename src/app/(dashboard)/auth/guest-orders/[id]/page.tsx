@@ -22,7 +22,7 @@ import {
 } from "react-icons/fi";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
-import Error from "@/app/(dashboard)/_components/error";
+import ErrorDisplay from "@/app/(dashboard)/_components/error";
 import ShippingLabelModal from "@/app/(dashboard)/auth/orders/_components/ShippingLabel";
 import InvoiceModal from "@/app/(dashboard)/auth/orders/_components/Invoice";
 import DeliveryReceiptModal from "@/app/(dashboard)/auth/orders/_components/DeliveryReceipt";
@@ -440,8 +440,8 @@ export default function GuestOrderDetail() {
   ];
 
   if (isLoading) return <Loading />;
-  if (isError) return <Error description={(error as Error)?.message} />;
-  if (!order) return <Error description="Order not found." />;
+  if (isError) return <ErrorDisplay description={(error as Error)?.message} />;
+  if (!order) return <ErrorDisplay description="Order not found." />;
 
   return (
     <>
