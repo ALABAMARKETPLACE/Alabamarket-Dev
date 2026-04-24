@@ -199,12 +199,17 @@ function UpdateGuestStatusModal({
           label="Expected Delivery Date"
           name="delivery_date"
           rules={[{ required: true, message: "Please select an expected delivery date" }]}
+          style={{ position: "relative" }}
         >
           <DatePicker
             showTime
             size="large"
             style={{ width: "100%" }}
             placeholder="Select expected delivery date"
+            placement="topLeft"
+            getPopupContainer={(trigger) =>
+              (trigger.closest(".ant-modal-body") as HTMLElement) ?? document.body
+            }
           />
         </Form.Item>
 

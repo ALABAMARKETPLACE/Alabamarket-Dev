@@ -163,6 +163,13 @@
         "icon": "FaFileInvoice",
         "route": "/auth/settlements",
         "role": ["seller", "admin"]
+      },
+      {
+        "id": 35,
+        "menu": "Settlement Audit",
+        "icon": "HiOutlineDocumentReport",
+        "route": "/auth/manual-settlement",
+        "role": ["admin"]
       }
     ]
   },

@@ -221,6 +221,7 @@ const API = {
   PAYSTACK_FAILED: "paystack/failed", //GET payment failure callback
   PAYSTACK_BANKS: "paystack-subaccounts/banks/supported", //GET supported banks list
   PAYSTACK_RESOLVE_ACCOUNT: "paystack-subaccounts/banks/validate", //GET account verification
+  PAYSTACK_MANUAL_SETTLEMENT_AUDIT: "paystack/manual-settlement/audit", //GET admin audit of non-split payments
 
   // GUEST CHECKOUT (Guide-specific)
   GUEST_CALCULATE_DELIVERY_CHARGE: "calculate-delivery-charge", //POST for guest delivery calculation
