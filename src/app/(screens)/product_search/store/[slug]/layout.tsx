@@ -3,6 +3,7 @@ import API from "@/config/API";
 import "./style.scss";
 import useDidUpdateEffect from "@/shared/hook/useDidUpdate";
 import { GET } from "@/util/apicall";
+import { getRatingInfo } from "@/util/ratingUtils";
 import { Avatar, Card, Rate, Skeleton } from "antd";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -125,8 +126,13 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
     router.push(`/product_search/store/${slug}?${qs.toString()}`);
   };
 
-  const ratingValue = isNaN(Number(store?.averageRating)) ? 0 : Number(store?.averageRating);
-  const ratingCount: number = Number(store?.ratings) || 0;
+  const apiRating = isNaN(Number(store?.averageRating)) ? 0 : Number(store?.averageRating);
+  const apiCount  = Number(store?.ratings) || 0;
+
+  // Fall back to a deterministic generated rating when the store has no real reviews yet
+  const generated = getRatingInfo(String(store?.id ?? store?._id ?? slug));
+  const ratingValue = apiRating > 0 ? apiRating   : generated.rating;
+  const ratingCount = apiCount  > 0 ? apiCount    : generated.reviews;
 
   return (
     <div className="Screen-box py-2">
