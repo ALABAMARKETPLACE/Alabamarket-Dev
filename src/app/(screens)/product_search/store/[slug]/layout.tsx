@@ -3,10 +3,9 @@ import API from "@/config/API";
 import "./style.scss";
 import useDidUpdateEffect from "@/shared/hook/useDidUpdate";
 import { GET } from "@/util/apicall";
-import { Avatar, Card, Skeleton } from "antd";
+import { Avatar, Card, Rate, Skeleton } from "antd";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa6";
 import { IoArrowBack } from "react-icons/io5";
 
 function StoreLayout({ children }: { children: React.ReactNode }) {
@@ -126,9 +125,8 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
     router.push(`/product_search/store/${slug}?${qs.toString()}`);
   };
 
-  const rating = isNaN(Number(store?.averageRating))
-    ? 0
-    : Number(store?.averageRating).toFixed(1);
+  const ratingValue = isNaN(Number(store?.averageRating)) ? 0 : Number(store?.averageRating);
+  const ratingCount: number = Number(store?.ratings) || 0;
 
   return (
     <div className="Screen-box py-2">
@@ -158,13 +156,20 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
               <div className="store-meta">
                 <p className="store-name">{store?.store_name ?? storeNameParam}</p>
                 <div className="store-rating">
-                  <FaStar color="#f5a623" size={13} />
-                  <span>{rating}</span>
-                  {store?.ratings ? (
-                    <span style={{ color: "#aaa", fontWeight: 400 }}>
-                      ({store.ratings})
+                  <Rate
+                    disabled
+                    allowHalf
+                    value={ratingValue}
+                    style={{ fontSize: 13, color: "#f5a623" }}
+                  />
+                  <span className="store-rating-score">
+                    {ratingValue > 0 ? ratingValue.toFixed(1) : "No ratings yet"}
+                  </span>
+                  {ratingCount > 0 && (
+                    <span className="store-rating-count">
+                      ({ratingCount} {ratingCount === 1 ? "review" : "reviews"})
                     </span>
-                  ) : null}
+                  )}
                 </div>
                 <p className="store-tagline">
                   {Array.isArray(store?.business_types) && store.business_types.length
