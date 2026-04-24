@@ -168,6 +168,7 @@ const API = {
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
   ORDER_GUEST_ALL: "order/guest/all", //GET all guest orders - admin only
   ORDER_GUEST_STORE: "order/guest/store", //GET guest orders for a seller's store
+  ORDER_GUEST_UPDATE_STATUS: "order/guest/update_status/", //PUT update guest order status (Seller/Admin)
 
   // STORE STATISTICS
   STORE_STATS: "store/stats",
@@ -220,6 +221,7 @@ const API = {
   PAYSTACK_FAILED: "paystack/failed", //GET payment failure callback
   PAYSTACK_BANKS: "paystack-subaccounts/banks/supported", //GET supported banks list
   PAYSTACK_RESOLVE_ACCOUNT: "paystack-subaccounts/banks/validate", //GET account verification
+  PAYSTACK_MANUAL_SETTLEMENT_AUDIT: "paystack/manual-settlement/audit", //GET admin audit of non-split payments
 
   // GUEST CHECKOUT (Guide-specific)
   GUEST_CALCULATE_DELIVERY_CHARGE: "calculate-delivery-charge", //POST for guest delivery calculation

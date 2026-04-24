@@ -52,6 +52,7 @@ interface ProductData {
   image: string;
   storeDetails?: {
     store_name: string;
+    slug?: string;
   };
   categoryName?: {
     name: string;
@@ -193,10 +194,7 @@ function Description(props: Props) {
       // Slug in the path for a clean URL; pid as query param so the backend
       // can still look up the product when the link is opened in a new tab.
       const slug = props?.data?.slug;
-      const pid  = props?.pid;
-      const shareUrl = slug && pid
-        ? `${window.location.origin}/${slug}?pid=${pid}`
-        : slug
+      const shareUrl = slug
         ? `${window.location.origin}/${slug}`
         : `${window.location.origin}${window.location.pathname}`;
       if (navigator?.share) {
@@ -284,6 +282,7 @@ function Description(props: Props) {
           ? props?.currentVariant?.image
           : props?.data?.image,
         storeId: props?.data?.store_id,
+        storeSlug: props?.data?.storeDetails?.slug,
         storeName: props?.data?.storeDetails?.store_name,
         variantId: props?.currentVariant?.id ?? null,
         combination: props?.currentVariant?.combination,

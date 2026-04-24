@@ -2,6 +2,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { Popconfirm } from "antd";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { formatCurrency } from "@/utils/formatNumber";
 
 interface CartItemData {
@@ -14,6 +15,8 @@ interface CartItemData {
   image: string;
   name: string;
   storeName: string;
+  storeSlug?: string;
+  storeId?: string | number;
   price: number;
   totalPrice: number;
   id: string;
@@ -60,7 +63,7 @@ const CartItem = (props: CartItemProps) => {
     : "";
 
   const handleNavigate = () => {
-    router.push(`/${props.data.slug}/?pid=${props.data.pid}`);
+    router.push(`/${props.data.slug}/`);
   };
 
   return (
@@ -104,7 +107,14 @@ const CartItem = (props: CartItemProps) => {
 
         {/* Seller */}
         <div className="cart-item__seller">
-          Sold by <span>{props.data.storeName}</span>
+          Sold by{" "}
+          {(props.data.storeSlug || props.data.storeId) ? (
+            <Link href={`/product_search/store/${props.data.storeSlug || props.data.storeId}?storeName=${encodeURIComponent(props.data.storeName ?? "")}`}>
+              {props.data.storeName}
+            </Link>
+          ) : (
+            <span>{props.data.storeName}</span>
+          )}
         </div>
 
         {/* Unit price + stock */}

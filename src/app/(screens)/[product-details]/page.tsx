@@ -7,6 +7,7 @@ import CONFIG from "@/config/configuration";
 import { getServerSession } from "next-auth/next";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import "./style.scss";
+
 async function fetchData(id: string) {
   try {
     const session: any = await getServerSession(options);
@@ -29,7 +30,8 @@ export const generateMetadata = async ({
 }: any): Promise<Metadata> => {
   const routeParams = await params;
   const queryParams = await searchParams;
-  const id = queryParams?.pid || routeParams?.["product-details"];
+  // Prefer slug from route segment — the endpoint accepts both slug and pid
+  const id = routeParams?.["product-details"] || queryParams?.pid;
   const data = await fetchData(id);
   const slug = routeParams?.["product-details"] || "";
   return {
@@ -55,10 +57,18 @@ export const generateMetadata = async ({
 async function ProductScreen({ params, searchParams }: any) {
   const routeParams = await params;
   const queryParams = await searchParams;
-  // Use pid from query string first; fall back to the slug route segment
-  const id = queryParams?.pid || routeParams?.["product-details"];
+
+  // Prefer slug from the route segment — cleaner and the endpoint supports it.
+  // Fall back to ?pid= query param for backwards-compatibility with old links.
+  const id = routeParams?.["product-details"] || queryParams?.pid;
   const data = await fetchData(id);
-  return <DetailsCard data={data} params={{ ...queryParams, pid: id }} />;
+
+  // Always pass the real UUID pid from the response so DetailsCard can use it
+  // for cart operations, URL history, wishlist, etc. — regardless of what was
+  // used to fetch.
+  const pid = data?.pid || queryParams?.pid || id;
+
+  return <DetailsCard data={data} params={{ ...queryParams, pid }} />;
 }
 
 export default ProductScreen;

@@ -252,6 +252,19 @@ body {
   width: 100%;
 }
 
+/* ensure DatePicker panel OK button is always visible inside modals on mobile */
+.ant-modal-body {
+  overflow: visible !important;
+}
+.ant-picker-dropdown {
+  @media (max-width: 576px) {
+    .ant-picker-panel-container {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+  }
+}
+
 .container {
   @media (min-width: 576px) {
     max-width: 540px;

@@ -11,6 +11,7 @@ import {
   useRouter,
   useSearchParams,
 } from "next/navigation";
+import Link from "next/link";
 import { findVariantWithId } from "./_components/functions";
 import { useSession } from "next-auth/react";
 import Reviews from "./_components/reviews";
@@ -46,16 +47,13 @@ function DetailsCard(props: any) {
       }
     }
   }, [props?.data, vid]);
-  // Replace the address bar URL with the slug path + pid so the URL is
-  // human-readable AND still works when copied and opened in another browser.
+  // Keep the address bar clean — just the slug, with ?vid= only for variants.
   useEffect(() => {
     const slug = props?.data?.slug;
-    const pid  = props?.params?.pid;
-    if (!slug || !pid) return;
-    const params = new URLSearchParams({ pid });
-    if (vid) params.set("vid", vid);
-    window.history.replaceState(null, "", `/${slug}?${params.toString()}`);
-  }, [props?.data?.slug, props?.params?.pid, vid]);
+    if (!slug) return;
+    const url = vid ? `/${slug}?vid=${vid}` : `/${slug}`;
+    window.history.replaceState(null, "", url);
+  }, [props?.data?.slug, vid]);
 
   const productId = props?.data?.pid || props?.params?.pid || "";
   const ratingInfo = (() => {
@@ -125,6 +123,15 @@ function DetailsCard(props: any) {
     return div.textContent || div.innerText || "";
   };
 
+  const storeSlug =
+    props?.data?.storeDetails?.slug ||
+    props?.data?.storeDetails?.store_slug ||
+    props?.data?.storeDetails?.storeSlug ||
+    props?.data?.store_slug ||
+    props?.data?.storeSlug ||
+    props?.data?.store_id ||
+    null;
+
   return (
     <div className="page-Box pt-3 pb-5">
       <Container>
@@ -154,9 +161,18 @@ function DetailsCard(props: any) {
             {props?.data?.storeDetails?.store_name && (
               <div className="pd-seller">
                 Sold by&nbsp;
-                <span className="pd-seller-name">
-                  {props?.data?.storeDetails?.store_name}
-                </span>
+                {storeSlug ? (
+                  <Link
+                    href={`/product_search/store/${storeSlug}?storeName=${encodeURIComponent(props?.data?.storeDetails?.store_name ?? "")}`}
+                    className="pd-seller-name pd-seller-link"
+                  >
+                    {props?.data?.storeDetails?.store_name}
+                  </Link>
+                ) : (
+                  <span className="pd-seller-name">
+                    {props?.data?.storeDetails?.store_name}
+                  </span>
+                )}
               </div>
             )}
             <hr className="pd-divider" />

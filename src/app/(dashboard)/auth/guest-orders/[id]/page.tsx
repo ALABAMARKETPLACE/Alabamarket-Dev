@@ -2,8 +2,10 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
-import { Tag, Divider, Button } from "antd";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "antd/es/form/Form";
+import { Tag, Divider, Button, Modal, Form, Select, DatePicker, Input, notification, Tooltip, Dropdown } from "antd";
+import type { MenuProps } from "antd";
 import Image from "next/image";
 import dayjs from "dayjs";
 import {
@@ -15,10 +17,12 @@ import {
   FiPrinter,
   FiFileText,
   FiClipboard,
+  FiEdit,
+  FiMoreVertical,
 } from "react-icons/fi";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
-import Error from "@/app/(dashboard)/_components/error";
+import ErrorDisplay from "@/app/(dashboard)/_components/error";
 import ShippingLabelModal from "@/app/(dashboard)/auth/orders/_components/ShippingLabel";
 import InvoiceModal from "@/app/(dashboard)/auth/orders/_components/Invoice";
 import DeliveryReceiptModal from "@/app/(dashboard)/auth/orders/_components/DeliveryReceipt";
@@ -26,6 +30,28 @@ import { GET } from "@/util/apicall";
 import API from "@/config/API";
 import "./style.scss";
 
+const { TextArea } = Input;
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+const TERMINAL_STATUSES = ["failed", "delivered", "cancelled", "rejected"];
+
+const GUEST_ORDER_STATUSES = [
+  { value: "pending", label: "Pending" },
+  { value: "processing", label: "Processing" },
+  { value: "packed", label: "Packed" },
+  { value: "dispatched", label: "Dispatched" },
+  { value: "shipped", label: "Shipped" },
+  { value: "out_for_delivery", label: "Out for Delivery" },
+  { value: "picked_up", label: "Picked Up" },
+  { value: "delivered", label: "Delivered" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "rejected", label: "Rejected" },
+  { value: "failed", label: "Failed" },
+  { value: "substitution", label: "Substitution" },
+  { value: "waiting_refund", label: "Waiting Refund" },
+];
+
+// ─── Interfaces ────────────────────────────────────────────────────────────────
 interface GuestOrderAddress {
   full_name?: string;
   phone?: string;
@@ -106,14 +132,99 @@ interface CustomSession {
 const STATUS_COLORS: Record<string, string> = {
   pending: "orange",
   processing: "blue",
+  packed: "geekblue",
+  dispatched: "purple",
   shipped: "purple",
   out_for_delivery: "cyan",
+  picked_up: "cyan",
   delivered: "green",
   cancelled: "red",
+  rejected: "red",
   payment_received: "blue",
   failed: "red",
   success: "green",
+  substitution: "gold",
+  waiting_refund: "volcano",
 };
+
+// ─── Update Status Modal (pure UI — no hooks) ────────────────────────────────
+type StatusFormValues = { status: string; remark?: string; delivery_date?: dayjs.Dayjs };
+
+interface UpdateStatusModalProps {
+  open: boolean;
+  onCancel: () => void;
+  onFinish: (vals: StatusFormValues) => void;
+  form: ReturnType<typeof useForm<StatusFormValues>>[0];
+  currentStatus: string;
+  isPending: boolean;
+}
+
+function UpdateGuestStatusModal({
+  open,
+  onCancel,
+  onFinish,
+  form,
+  currentStatus,
+  isPending,
+}: UpdateStatusModalProps) {
+  return (
+    <Modal
+      title="Update Guest Order Status"
+      open={open}
+      centered
+      onCancel={onCancel}
+      footer={null}
+      destroyOnClose
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ status: currentStatus }}
+        onFinish={onFinish}
+        style={{ marginTop: 8 }}
+      >
+        <Form.Item
+          label="Order Status"
+          name="status"
+          rules={[{ required: true, message: "Please select a status" }]}
+        >
+          <Select options={GUEST_ORDER_STATUSES} size="large" />
+        </Form.Item>
+
+        <Form.Item label="Remark (optional)" name="remark">
+          <TextArea rows={3} placeholder="Enter a note for the customer" size="large" />
+        </Form.Item>
+
+        <Form.Item
+          label="Expected Delivery Date"
+          name="delivery_date"
+          rules={[{ required: true, message: "Please select an expected delivery date" }]}
+          style={{ position: "relative" }}
+        >
+          <DatePicker
+            showTime
+            size="large"
+            style={{ width: "100%" }}
+            placeholder="Select expected delivery date"
+            placement="topLeft"
+            getPopupContainer={(trigger) =>
+              (trigger.closest(".ant-modal-body") as HTMLElement) ?? document.body
+            }
+          />
+        </Form.Item>
+
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+          <Button size="large" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button type="primary" size="large" htmlType="submit" loading={isPending}>
+            Update Status
+          </Button>
+        </div>
+      </Form>
+    </Modal>
+  );
+}
 
 // ─── Helper: store logo with initials fallback ───────────────────────────────
 function StoreLogo({ store }: { store: StoreInfo }) {
@@ -230,9 +341,10 @@ export default function GuestOrderDetail() {
   const userType = session?.user?.type || session?.type;
   const isSeller = userRole === "seller" || userType === "seller";
   const endpoint = isSeller ? API.ORDER_GUEST_STORE : API.ORDER_GUEST_ALL;
+  const queryKey = [endpoint];
 
   const { data: ordersRaw, isLoading, isError, error } = useQuery({
-    queryKey: [endpoint],
+    queryKey,
     queryFn: () => GET(endpoint, {}, null, { token: session?.token }),
     enabled: authStatus === "authenticated" && !!session?.token,
     retry: false,
@@ -242,6 +354,8 @@ export default function GuestOrderDetail() {
   const order: GuestOrder | undefined = Array.isArray(orders?.data)
     ? orders.data.find((o) => String(o.id) === String(id))
     : undefined;
+
+
 
   const guestName =
     [order?.guest_first_name, order?.guest_last_name].filter(Boolean).join(" ") || "Guest";
@@ -255,16 +369,84 @@ export default function GuestOrderDetail() {
       ? [order.store]
       : [];
 
-  // Multi-seller: render in full-width strip below main grid
   const multiSeller = sellers.length > 1;
 
   const [labelOpen, setLabelOpen] = useState(false);
   const [invoiceOpen, setInvoiceOpen] = useState(false);
   const [receiptOpen, setReceiptOpen] = useState(false);
+  const [updateStatusOpen, setUpdateStatusOpen] = useState(false);
+
+  const [statusForm] = useForm<StatusFormValues>();
+  const queryClient = useQueryClient();
+
+  const updateMutation = useMutation({
+    mutationFn: async (values: { status: string; remark?: string; delivery_date?: dayjs.Dayjs }) => {
+      const payload: Record<string, unknown> = { status: values.status };
+      if (values.remark) payload.remark = values.remark;
+      if (values.delivery_date) payload.delivery_date = values.delivery_date.toISOString();
+
+      const baseUrl = API.BASE_URL.endsWith("/") ? API.BASE_URL : `${API.BASE_URL}/`;
+      const orderId = order?.id ?? id;
+      const res = await fetch(`${baseUrl}${API.ORDER_GUEST_UPDATE_STATUS}${orderId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${session?.token ?? ""}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        let msg = "Failed to update status. Please try again.";
+        try {
+          const raw = await res.text();
+          if (raw) {
+            try { msg = JSON.parse(raw)?.message ?? msg; } catch { msg = raw; }
+          }
+        } catch {}
+        throw new Error(msg);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      notification.success({ message: "Order status updated successfully." });
+      queryClient.invalidateQueries({ queryKey });
+      statusForm.resetFields();
+      updateMutation.reset();
+      setUpdateStatusOpen(false);
+    },
+    onError: (err: Error) => {
+      notification.error({ message: err.message });
+    },
+  });
+
+  const isTerminal = TERMINAL_STATUSES.includes(order?.status ?? "");
+
+  const moreMenuItems: MenuProps["items"] = [
+    {
+      key: "invoice",
+      icon: <FiFileText size={14} />,
+      label: "Invoice",
+      onClick: () => setInvoiceOpen(true),
+    },
+    {
+      key: "receipt",
+      icon: <FiClipboard size={14} />,
+      label: "Receipt",
+      onClick: () => setReceiptOpen(true),
+    },
+    {
+      key: "label",
+      icon: <FiPrinter size={14} />,
+      label: "Print Label",
+      onClick: () => setLabelOpen(true),
+    },
+  ];
 
   if (isLoading) return <Loading />;
-  if (isError) return <Error description={(error as Error)?.message} />;
-  if (!order) return <Error description="Order not found." />;
+  if (isError) return <ErrorDisplay description={(error as Error)?.message} />;
+  if (!order) return <ErrorDisplay description="Order not found." />;
 
   return (
     <>
@@ -273,10 +455,26 @@ export default function GuestOrderDetail() {
         bredcume={`Dashboard / Guest Orders / ${order.checkout_reference ?? id}`}
         icon={<FiPackage />}
       >
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <Tooltip
+            title={isTerminal ? `Status "${order.status}" is terminal and cannot be changed.` : ""}
+          >
+            <Button
+              icon={<FiEdit size={14} />}
+              type="primary"
+              onClick={() => setUpdateStatusOpen(true)}
+              disabled={isTerminal}
+              style={{ display: "flex", alignItems: "center", gap: 6 }}
+            >
+              Update Status
+            </Button>
+          </Tooltip>
+
+          {/* Desktop: individual buttons (hidden on tablet/mobile) */}
           <Button
             icon={<FiFileText size={14} />}
             onClick={() => setInvoiceOpen(true)}
+            className="hide-tablet"
             style={{ display: "flex", alignItems: "center", gap: 6 }}
           >
             Invoice
@@ -284,6 +482,7 @@ export default function GuestOrderDetail() {
           <Button
             icon={<FiClipboard size={14} />}
             onClick={() => setReceiptOpen(true)}
+            className="hide-tablet"
             style={{ display: "flex", alignItems: "center", gap: 6 }}
           >
             Receipt
@@ -291,10 +490,19 @@ export default function GuestOrderDetail() {
           <Button
             icon={<FiPrinter size={14} />}
             onClick={() => setLabelOpen(true)}
+            className="hide-tablet"
             style={{ display: "flex", alignItems: "center", gap: 6 }}
           >
             Print Label
           </Button>
+
+          {/* Mobile/tablet: collapsed "More" dropdown (hidden on desktop) */}
+          <Dropdown menu={{ items: moreMenuItems }} placement="bottomRight" trigger={["click"]}>
+            <Button
+              icon={<FiMoreVertical size={16} />}
+              className="show-mobile"
+            />
+          </Dropdown>
         </div>
       </PageHeader>
 
@@ -502,6 +710,20 @@ export default function GuestOrderDetail() {
           </div>
         </div>
       )}
+
+      {/* ── Update status modal ──────────────────────────────────────────── */}
+      <UpdateGuestStatusModal
+        open={updateStatusOpen}
+        onCancel={() => {
+          statusForm.resetFields();
+          updateMutation.reset();
+          setUpdateStatusOpen(false);
+        }}
+        onFinish={(vals) => updateMutation.mutate(vals)}
+        form={statusForm}
+        currentStatus={order.status ?? "pending"}
+        isPending={updateMutation.isPending}
+      />
 
       {/* ── Invoice modal ────────────────────────────────────────────────── */}
       <InvoiceModal
