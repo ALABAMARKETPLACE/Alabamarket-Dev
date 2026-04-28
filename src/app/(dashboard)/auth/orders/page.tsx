@@ -147,21 +147,50 @@ function Page() {
     }
 
     let ordersData = Array.isArray(orders?.data) ? orders?.data : [];
-    // Deduplicate orders:
-    // - Admin view: deduplicate by order_id alone. The backend returns one row per
-    //   (order, store) for multi-seller orders, causing the same order_id to appear
-    //   multiple times in the admin list. Admin should see each order once.
-    // - Seller view: deduplicate by composite key (order_id + storeId) to preserve
-    //   each store's distinct record while removing true backend JOIN duplicates.
-    const seen = new Set<string>();
-    ordersData = ordersData.filter((order) => {
-      const orderId = String(order.order_id ?? order.id ?? order._id ?? "");
-      const storeId = String(order.storeId ?? order.store_id ?? "");
-      const key = isSeller ? `${orderId}::${storeId}` : orderId;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
+
+    // Merge multi-store orders into a single row.
+    // Multi-seller orders share the same payment.transaction_reference across stores
+    // but get a unique order_id per store — so we group by transaction_reference.
+    // Seller view keys on (order_id + storeId) so each seller sees only their row.
+    const orderMap = new Map<string, Order>();
+    ordersData.forEach((order) => {
+      const orderId   = String(order.order_id ?? order.id ?? order._id ?? "");
+      const sid       = String(order.storeId ?? order.store_id ?? "");
+      const txRef     = (order.payment as Record<string, unknown>)?.transaction_reference as string | undefined;
+      const storeName = order.storeDetails?.store_name ?? order.store?.store_name ?? "";
+
+      // Group key: seller uses (orderId::storeId); multi-seller admin uses txRef; else orderId
+      const key = isSeller
+        ? `${orderId}::${sid}`
+        : (order.is_multi_seller && txRef ? `txref::${txRef}` : orderId);
+
+      if (!orderMap.has(key)) {
+        orderMap.set(key, {
+          ...order,
+          _combinedStore: storeName,
+          _storeCount: 1,
+          _orderIds: [orderId],
+        } as Order);
+      } else {
+        const existing = orderMap.get(key)!;
+        const ex = existing as Record<string, unknown>;
+
+        const prev  = String(ex._combinedStore ?? "");
+        const names = prev ? prev.split(" · ") : [];
+        if (storeName && !names.includes(storeName)) {
+          ex._combinedStore = [...names, storeName].join(" · ");
+        }
+
+        existing.totalItems = (existing.totalItems ?? 0) + (order.totalItems ?? 0);
+        existing.grandTotal = (existing.grandTotal ?? 0) + (order.grandTotal ?? 0);
+        ex._storeCount = ((ex._storeCount as number) ?? 1) + 1;
+
+        const ids = (ex._orderIds as string[]) ?? [];
+        if (!ids.includes(orderId)) ids.push(orderId);
+        ex._orderIds = ids;
+      }
     });
+    ordersData = Array.from(orderMap.values());
 
     return (
       <>
