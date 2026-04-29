@@ -468,31 +468,6 @@
   background-color: #e8e8e8;
   animation: bannerSlide 0.8s ease-out;
 
-  // Dark gradient overlay for text legibility
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.55) 0%,
-      rgba(0, 0, 0, 0.2) 55%,
-      rgba(0, 0, 0, 0) 100%
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  @media (max-width: 768px) {
-    &::after {
-      background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.65) 0%,
-        rgba(0, 0, 0, 0.15) 60%,
-        rgba(0, 0, 0, 0) 100%
-      );
-    }
-  }
 }
 
 .HomeScreen-BannerImg {
@@ -1488,7 +1463,6 @@
   overflow: hidden;
   margin-top: 16px;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
-
   @media (max-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
   }
