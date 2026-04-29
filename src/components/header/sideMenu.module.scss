@@ -1,312 +1,457 @@
 @use "../../config/styleVariable.scss" as vars;
 
+// ── Overlay ───────────────────────────────────────────────────────────────────
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(3px);
   z-index: 1999;
-  animation: fadeIn 0.3s ease-out;
+  animation: fadeIn 0.25s ease-out;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
+// ── Drawer ────────────────────────────────────────────────────────────────────
 .sideMenu {
   position: fixed;
   top: 0;
   left: 0;
-  width: 85%;
-  max-width: 360px;
-  height: 100vh;
-  background: #ffffff;
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+  width: 88%;
+  max-width: 340px;
+  height: 100dvh;
+  background: #fff;
+  box-shadow: 6px 0 40px rgba(0, 0, 0, 0.18);
   z-index: 2000;
   display: flex;
   flex-direction: column;
   transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 
   &.open {
     transform: translateX(0);
   }
 }
 
+// ── Header ────────────────────────────────────────────────────────────────────
 .header {
-  padding: 24px 20px;
-  background: linear-gradient(135deg, #fff 0%, #fff8f3 100%);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: relative;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.headerBg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, vars.$primary 0%, #ff8c42 100%);
+  z-index: 0;
+
+  // Decorative circles
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  &::before {
+    width: 180px;
+    height: 180px;
+    top: -60px;
+    right: -40px;
+  }
+
+  &::after {
+    width: 100px;
+    height: 100px;
+    bottom: -30px;
+    right: 60px;
+  }
+}
+
+.headerContent {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
+  padding: 20px 18px 16px;
 }
 
 .userInfo {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 13px;
 }
 
-.avatar {
-  background-color: rgba(255, 95, 21, 0.1);
-  color: vars.$primary;
-  border: 1px solid rgba(255, 95, 21, 0.2);
-}
-
-.avatarPlaceholder {
-  width: 48px;
-  height: 48px;
+.avatarImg {
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.05);
+  object-fit: cover;
+  border: 2.5px solid rgba(255, 255, 255, 0.6);
+}
+
+.avatarInitials {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  color: #666;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  font-family: vars.$Bold;
+}
+
+.avatarGuest {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
 }
 
 .userDetails {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .greeting {
-  font-size: 13px;
-  color: #666;
-  font-family: vars.$Medium;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: vars.$Regular;
 }
 
 .username {
   font-size: 16px;
   font-family: vars.$Bold;
-  color: #111;
+  color: #fff;
   text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.signInLink {
+  font-size: 13px;
+  font-family: vars.$SemiBold;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .closeBtn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  font-size: 24px;
-  color: #666;
+  color: #fff;
   cursor: pointer;
-  padding: 4px;
+  padding: 0;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #000;
+    background: rgba(255, 255, 255, 0.35);
   }
 }
 
+// ── Quick Action Bar ──────────────────────────────────────────────────────────
+.quickActions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.qaItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: vars.$SemiBold;
+  transition: background 0.18s;
+  position: relative;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+  }
+}
+
+.qaBadge {
+  position: absolute;
+  top: 6px;
+  right: calc(50% - 18px);
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  background: #fff;
+  color: vars.$primary;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+}
+
+// ── Scrollable Content ────────────────────────────────────────────────────────
 .content {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 0;
+  overscroll-behavior: contain;
 
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #e0e0e0;
-    border-radius: 4px;
-  }
+  &::-webkit-scrollbar { width: 3px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: #e0e0e0; border-radius: 3px; }
 }
 
+// ── Auth Section ──────────────────────────────────────────────────────────────
 .authSection {
-  padding: 0 20px 24px 20px;
+  padding: 16px 18px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  margin-bottom: 20px;
+  gap: 10px;
+  border-bottom: 1px solid #f3f4f6;
 }
 
-.authBtn {
-  width: 100%;
-  padding: 12px;
-  border-radius: 100px;
+.authBtnPrimary {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
   border: none;
   background: vars.$primary;
-  color: white;
+  color: #fff;
   font-family: vars.$SemiBold;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.88; }
+}
+
+.authBtnOutline {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: transparent;
+  color: #374151;
+  font-family: vars.$SemiBold;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
 
   &:hover {
-    background: darken(#ff5f15, 5%);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 95, 21, 0.2);
-  }
-
-  &.outline {
-    background: transparent;
-    border: 1px solid #e0e0e0;
-    color: #333;
-
-    &:hover {
-      background: #f8f9fa;
-      border-color: #d1d1d1;
-      box-shadow: none;
-    }
+    border-color: vars.$primary;
+    background: rgba(255, 95, 21, 0.03);
   }
 }
 
+// ── Sections ──────────────────────────────────────────────────────────────────
 .section {
-  margin-bottom: 24px;
+  padding: 14px 0 4px;
+  border-bottom: 1px solid #f3f4f6;
+
+  &:last-child { border-bottom: none; }
 }
 
 .sectionTitle {
-  padding: 0 20px;
-  margin-bottom: 12px;
-  font-size: 13px;
+  padding: 0 18px 8px;
+  font-size: 10.5px;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #888;
+  letter-spacing: 1.1px;
+  color: #9ca3af;
   font-family: vars.$Bold;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  .titleIcon {
-    font-size: 16px;
-    color: vars.$primary;
-  }
 }
 
+// ── Menu Items ────────────────────────────────────────────────────────────────
 .menuItem {
-  padding: 12px 20px;
+  padding: 11px 18px;
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #333;
+  color: #1f2937;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.15s;
   font-family: vars.$Medium;
-  font-size: 15px;
-
-  .icon {
-    font-size: 20px;
-    color: #666;
-  }
+  font-size: 14px;
 
   &:hover {
-    background-color: #f8f9fa;
-    color: vars.$primary;
-    padding-left: 24px;
+    background: #f9fafb;
 
-    .icon {
-      color: vars.$primary;
-    }
+    .menuIconWrap { background: rgba(255, 95, 21, 0.1); color: vars.$primary; }
+    .menuChevron { color: vars.$primary; }
   }
 }
 
+.menuIconWrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.menuChevron {
+  margin-left: auto;
+  color: #d1d5db;
+  flex-shrink: 0;
+}
+
+// ── Category List ─────────────────────────────────────────────────────────────
 .categoryList {
   display: flex;
   flex-direction: column;
 }
 
 .categoryItem {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid #f9fafb;
 
-  &:last-child {
-    border-bottom: none;
-  }
+  &:last-child { border-bottom: none; }
 }
 
-.categoryHeader {
-  padding: 14px 20px;
+.categoryRow {
+  padding: 10px 18px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   cursor: pointer;
-  font-family: vars.$Medium;
-  font-size: 15px;
-  color: #333;
-  transition: all 0.2s;
+  transition: background 0.15s;
 
   &:hover {
-    background-color: #f8f9fa;
-    color: vars.$primary;
+    background: #f9fafb;
+    .catName { color: vars.$primary; }
   }
 
-  &.active {
-    background-color: rgba(255, 95, 21, 0.04);
-    color: vars.$primary;
-    font-family: vars.$SemiBold;
+  &.categoryRowOpen {
+    background: rgba(255, 95, 21, 0.04);
+    .catName { color: vars.$primary; font-family: vars.$SemiBold; }
+    .catChevron { color: vars.$primary; }
   }
 }
 
-.expandIcon {
-  font-size: 16px;
-  color: #999;
+.catThumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #f0f0f0;
+  background: #f8f9fa;
+}
+
+.catThumbFallback {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, vars.$primary 0%, #ff8c42 100%);
   display: flex;
   align-items: center;
-  transition: transform 0.2s ease;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
 }
 
-.categoryHeader.active .expandIcon {
-  transform: rotate(180deg);
-  color: vars.$primary;
+.catName {
+  flex: 1;
+  font-size: 13.5px;
+  font-family: vars.$Medium;
+  color: #1f2937;
+  transition: color 0.15s;
+  text-transform: capitalize;
+  line-height: 1.3;
 }
 
-.subCategoryList {
+.catChevron {
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+// ── Subcategory Accordion ─────────────────────────────────────────────────────
+.subList {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background-color: #fafafa;
-
-  &.expanded {
-    max-height: 500px; // Arbitrary large height
-    border-bottom: 1px solid rgba(0, 0, 0, 0.03);
-  }
+  background: #fafafa;
 }
 
-.subCategoryItem {
-  padding: 10px 20px 10px 36px; // Indented
-  font-size: 14px;
-  color: #555;
+.subListOpen {
+  max-height: 600px;
+}
+
+.subItem {
+  padding: 9px 18px 9px 72px;
+  font-size: 13px;
+  color: #4b5563;
   cursor: pointer;
-  transition: all 0.2s;
-  border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.15s, color 0.15s;
 
   &:hover {
+    background: #f3f4f6;
     color: vars.$primary;
-    background-color: #f0f0f0;
-    border-left-color: vars.$primary;
+
+    .subDot { background: vars.$primary; }
   }
 }
 
-.emptyState {
-  padding: 20px;
-  text-align: center;
-  color: #999;
-  font-size: 14px;
+.subDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d1d5db;
+  flex-shrink: 0;
+  transition: background 0.15s;
 }
 
+// ── Empty ─────────────────────────────────────────────────────────────────────
+.emptyState {
+  padding: 20px 18px;
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
 .footer {
-  padding: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  margin-top: auto;
+  flex-shrink: 0;
+  padding: 14px 18px;
+  border-top: 1px solid #f3f4f6;
+  background: #fff;
 }
 
 .logoutBtn {
@@ -315,18 +460,18 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px;
-  background: #f1f1f1;
-  border: none;
+  padding: 11px;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
   border-radius: 8px;
-  color: #666;
+  color: #dc2626;
   font-family: vars.$SemiBold;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s, border-color 0.2s;
 
   &:hover {
-    background: #e0e0e0;
-    color: #333;
+    background: #fee2e2;
+    border-color: #fca5a5;
   }
 }

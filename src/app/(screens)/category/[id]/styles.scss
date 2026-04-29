@@ -1,80 +1,231 @@
 @use "../../../../config/styleVariable.scss" as global;
-.productByCat-PageSider {
-  border-right: 1px solid rgb(231, 231, 231);
-  height: calc(100vh - 74px);
-  overflow-y: auto;
-  position: sticky;
-  ::-webkit-scrollbar {
-    display: none;
-    width: 5x;
-  }
-  scrollbar-width: none;
-  position: -webkit-sticky;
-  top: 0;
-  @media (max-width: 992px) {
-    display: none;
+
+// ── Page shell ────────────────────────────────────────────────────────────────
+.cat-page {
+  min-height: 60vh;
+  padding-bottom: 48px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.cat-page-header {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 24px;
+}
+
+.cat-page-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 18px 24px 14px;
+
+  @media (max-width: 768px) {
+    padding: 14px 16px 12px;
   }
 }
 
-.productByCat-PageHeader {
-  padding-top: 10px;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding-top: 10px;
-  }
-}
-
-.productByCat-PageHeadertxt1 {
-  font-family: global.$Bold;
-  font-size: 27px;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 18px;
-  }
-}
-
-.productByCat-PageHeadertxt2 {
-  font-family: global.$SemiBold;
-  color: gray;
-  font-size: 14px;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding-bottom: 5px;
-  }
-}
-
-.productByCat-PageHeaderBox {
+// ── Breadcrumb ────────────────────────────────────────────────────────────────
+.cat-breadcrumb {
   display: flex;
-  height: 100%;
-  justify-content: flex-end;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    justify-content: flex-start;
-  }
-}
-
-.productByCat-PageSiderItem {
-  display: flex;
-  flex-direction: row;
   align-items: center;
-  padding-bottom: 5px;
-  padding-top: 10px;
-  font-family: global.$Medium;
-  font-size: 14px;
-  padding-left: 2px;
+  gap: 5px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.cat-breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  color: #6b7280;
   cursor: pointer;
-  &:hover {
-    color: #cc0055;
-    background-color: rgb(241, 241, 241);
-    border-radius: 6px;
-  }
-  &.active {
-    background-color: rgb(241, 241, 241);
-    border-radius: 6px;
+  transition: color 0.15s;
+
+  &:hover { color: global.$primary; }
+
+  &.cat-breadcrumb-active {
+    color: #1f2937;
+    font-weight: 600;
+    cursor: default;
+    &:hover { color: #1f2937; }
   }
 }
 
-.productByCat-img {
-  height: 40px;
-  width: 40px;
-  object-fit: cover;
-  margin-right: 10px;
-  border-radius: 100px;
-  background-color: rgb(231, 231, 231);
+.cat-breadcrumb-sep {
+  color: #d1d5db;
+  flex-shrink: 0;
+}
+
+// ── Title row ─────────────────────────────────────────────────────────────────
+.cat-title-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.cat-page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 2px;
+  text-transform: capitalize;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 17px;
+  }
+}
+
+.cat-page-subtitle {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+// ── Sort bar ──────────────────────────────────────────────────────────────────
+.cat-sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cat-sort-label {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cat-sort-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #4b5563;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s;
+
+  &:hover {
+    border-color: global.$primary;
+    color: global.$primary;
+  }
+
+  &.active {
+    background: global.$primary;
+    border-color: global.$primary;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255, 95, 21, 0.28);
+  }
+
+  @media (max-width: 576px) {
+    font-size: 11.5px;
+    padding: 5px 11px;
+  }
+}
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+.cat-page-body {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+
+  @media (max-width: 768px) {
+    padding: 0 12px;
+  }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.cat-empty {
+  padding: 40px 0;
+}
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+.cat-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 36px;
+}
+
+.cat-page-btn {
+  padding: 9px 22px;
+  border-radius: 8px;
+  border: 1.5px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+
+  &:hover:not(:disabled) {
+    border-color: global.$primary;
+    color: global.$primary;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+}
+
+.cat-page-info {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+@keyframes catShimmer {
+  from { background-position: -400px 0; }
+  to   { background-position: 400px 0; }
+}
+
+$shimmer: linear-gradient(90deg, #f3f4f6 25%, #e9eaec 50%, #f3f4f6 75%);
+
+.cat-skeleton-card {
+  border-radius: 10px;
+  border: 1px solid #ebebeb;
+  overflow: hidden;
+  background: #fff;
+}
+
+.cat-skeleton-img {
+  width: 100%;
+  height: 180px;
+  background: $shimmer;
+  background-size: 800px 100%;
+  animation: catShimmer 1.4s infinite linear;
+
+  @media (max-width: 768px) {
+    height: 140px;
+  }
+}
+
+.cat-skeleton-body {
+  padding: 10px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.cat-skeleton-line {
+  display: block;
+  height: 11px;
+  border-radius: 6px;
+  background: $shimmer;
+  background-size: 800px 100%;
+  animation: catShimmer 1.4s infinite linear;
+
+  &.w80 { width: 80%; }
+  &.w55 { width: 55%; }
+  &.w40 { width: 40%; }
 }

@@ -750,6 +750,96 @@
   }
 }
 
+// ─── Product detail page layout ───────────────────────────────────────────────
+.pd-page {
+  padding: 0 0 60px;
+  min-height: 70vh;
+}
+
+// ── Breadcrumb ────────────────────────────────────────────────────────────────
+.pd-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding: 18px 0 12px;
+}
+
+.pd-bc-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover { color: global.$primary; }
+
+  &.pd-bc-active {
+    color: #1f2937;
+    font-weight: 600;
+    cursor: default;
+    &:hover { color: #1f2937; }
+  }
+}
+
+.pd-bc-sep { color: #d1d5db; }
+
+// ── Main two-column row ───────────────────────────────────────────────────────
+.pd-main-row {
+  margin-top: 8px;
+  margin-bottom: 32px;
+  align-items: flex-start;
+}
+
+.pd-images-col {
+  @media (max-width: 767px) { margin-bottom: 24px; }
+}
+
+.pd-images-sticky {
+  @media (min-width: 768px) {
+    position: sticky;
+    top: 80px;
+  }
+}
+
+.pd-info-col {
+  // right-side info panel
+}
+
+// ── Variants wrapper ──────────────────────────────────────────────────────────
+.pd-variants-wrap {
+  margin-top: 20px;
+}
+
+// ── Tabs section (below two-column layout) ────────────────────────────────────
+.pd-tabs-section {
+  margin-top: 8px;
+  margin-bottom: 32px;
+
+  .pd-tabs {
+    .ant-tabs-nav {
+      margin-bottom: 16px;
+    }
+
+    .ant-tabs-tab {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6b7280;
+      padding: 10px 0;
+    }
+
+    .ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: global.$primary !important;
+    }
+
+    .ant-tabs-ink-bar {
+      background: global.$primary;
+    }
+  }
+}
+
 // ─── Product detail info panel ────────────────────────────────────────────────
 .pd-title {
   font-size: 26px;
@@ -805,10 +895,23 @@
   color: #6b7280;
 }
 
+.pd-rating-sep {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
 .pd-seller {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   color: #6b7280;
   margin-bottom: 8px;
+}
+
+.pd-seller-label {
+  color: #9ca3af;
+  font-weight: 500;
 }
 
 .pd-seller-name {

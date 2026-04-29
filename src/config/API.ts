@@ -269,6 +269,8 @@ const API = {
   FEATURED_POSITION_4: "featured-products/position/4", //GET - Discounted section
   FEATURED_POSITION_PRODUCTS: "featured-products/position", //GET - All products for a specific position
   FEATURED_ALL_PRODUCTS: "featured-products/products", //GET - All products with filters
+  MARKETPLACE_FEED_PRODUCTS: "marketplace-feed/products", //GET - Randomised store-balanced product feed
+  MARKETPLACE_FEED_STORE_PRODUCTS: "marketplace-feed/stores", //GET - /{storeId}/products — store-scoped product list
 
   //product image
   PRODUCT_IMAGE_UPDATE: "productimage/update/",

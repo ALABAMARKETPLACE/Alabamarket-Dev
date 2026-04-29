@@ -69,12 +69,12 @@ function StoreBannerSVG({ name, hue }: { name: string; hue: number }) {
         textAnchor="middle" letterSpacing="-6"
       >{initials}</text>
 
-      {/* Vertical accent bar */}
-      <rect x="40" y="68" width="4" height={fs * 1.9} rx="2" fill="rgba(255,255,255,0.75)" />
+      {/* Vertical accent bar — starts at x=160 to clear the avatar overlap area */}
+      <rect x="160" y="68" width="4" height={fs * 1.9} rx="2" fill="rgba(255,255,255,0.75)" />
 
       {/* Store name */}
       <text
-        x="56" y={nameY}
+        x="176" y={nameY}
         fontSize={fs} fontWeight="800"
         fill="white"
         fontFamily="Arial, Helvetica, sans-serif"
@@ -83,7 +83,7 @@ function StoreBannerSVG({ name, hue }: { name: string; hue: number }) {
 
       {/* "OFFICIAL STORE" label */}
       <text
-        x="58" y={nameY + 22}
+        x="178" y={nameY + 22}
         fontSize="11.5"
         fill="rgba(255,255,255,0.62)"
         fontFamily="Arial, sans-serif"
@@ -105,33 +105,18 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
   const [categories, setCategories] = useState<any[]>([]);
 
   const selectedCid = searchParams.get("cid") || "";
-  const price = searchParams.get("price") || "RAND";
-  const order = searchParams.get("order") || "ASC";
+  const sort = searchParams.get("sort") || "newest";
   const storeNameParam = searchParams.get("storeName") || "";
 
   const slug = params?.slug as string;
 
-  const initialTags = [
-    {
-      title: "New",
-      // "New" means order=DESC
-      active: searchParams.get("order") === "DESC",
-    },
-    {
-      title: "Price: High to Low",
-      // price=DESC, order=ASC
-      active:
-        searchParams.get("price") === "DESC" &&
-        searchParams.get("order") !== "DESC",
-    },
-    {
-      title: "Price: Low to High",
-      // price=ASC, order=ASC
-      active:
-        searchParams.get("price") === "ASC" &&
-        searchParams.get("order") !== "DESC",
-    },
-  ];
+  const SORT_VALUES = ["newest", "price_high", "price_low"] as const;
+  const SORT_LABELS = ["New", "Price: High to Low", "Price: Low to High"];
+
+  const initialTags = SORT_VALUES.map((val, i) => ({
+    title: SORT_LABELS[i],
+    active: sort === val,
+  }));
   const [selectedTags, setSelectedTags] = useState(initialTags);
 
   const getStoreDetails = async () => {
@@ -170,18 +155,8 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
 
   // Keep tag active states in sync when URL changes externally
   useDidUpdateEffect(() => {
-    setSelectedTags([
-      { title: "New", active: order === "DESC" },
-      {
-        title: "Price: High to Low",
-        active: price === "DESC" && order !== "DESC",
-      },
-      {
-        title: "Price: Low to High",
-        active: price === "ASC" && order !== "DESC",
-      },
-    ]);
-  }, [price, order]);
+    setSelectedTags(SORT_VALUES.map((val, i) => ({ title: SORT_LABELS[i], active: sort === val })));
+  }, [sort]);
 
   // Navigate to the same page keeping existing params, toggling the clicked filter
   const handleFilterChange = (index: number) => {
@@ -191,13 +166,13 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
     }));
     setSelectedTags(next);
 
-    const newOrder = next[0].active ? "DESC" : "ASC";
-    const newPrice = next[1].active ? "DESC" : next[2].active ? "ASC" : "RAND";
+    const activeIndex = next.findIndex((t) => t.active);
+    const newSort = activeIndex >= 0 ? SORT_VALUES[activeIndex] : "newest";
 
     const qs = new URLSearchParams(searchParams.toString());
-    qs.set("order", newOrder);
-    qs.set("price", newPrice);
-    // preserve cid if one is selected
+    qs.set("sort", newSort);
+    qs.delete("order");
+    qs.delete("price");
     router.push(`/product_search/store/${slug}?${qs.toString()}`);
   };
 

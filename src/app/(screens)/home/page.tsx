@@ -1,435 +1,58 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Banners from "./_components/banner";
 import API from "../../../config/API";
 import { useSelector } from "react-redux";
-import { reduxLatLong } from "../../../redux/slice/locationSlice";
+import { useRouter } from "next/navigation";
 import { GET } from "../../../util/apicall";
 import "./style.scss";
 import PopularItems from "./_components/popularItems";
-import FeaturedItems from "./_components/featured_items";
+import ProductItem from "../../../components/productItem/page";
+import { Col, Container, Row } from "react-bootstrap";
 import { reduxAccessToken } from "../../../redux/slice/authSlice";
 import { jwtDecode } from "jwt-decode";
-import { useInfiniteQuery, useQueries, useQuery } from "@tanstack/react-query";
-import PlatinumSection from "./_components/platinumSection";
-import DiscountedDealsSection from "./_components/discountedDealsSection";
-import GoldSection from "./_components/goldSection";
-import SilverSection from "./_components/silverSection";
-// import CategoryFeaturedProducts from "./_components/categoryFeaturedProducts";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import CategorySidebar from "./_components/categorySidebar";
+import {
+  FiTruck,
+  FiShield,
+  FiRefreshCw,
+  FiHeadphones,
+} from "react-icons/fi";
+import { reduxCategoryItems } from "../../../redux/slice/categorySlice";
 
 type Product = {
   id?: string | number;
   _id?: string | number;
   pid?: string | number;
   slug?: string;
-  name?: string;
-  createdAt?: string | number;
   status?: boolean;
   unit?: number | string;
-  categoryName?: { name?: string };
-  subCategoryName?: { name?: string };
   [key: string]: unknown;
 };
 
-type ApiResponse = {
-  status?: boolean;
-  data?: unknown;
-};
-
-function getSuccessfulArrayData(response: unknown) {
-  if (!response || typeof response !== "object") return [];
-  const res = response as ApiResponse;
-  if (res.status !== true) return [];
-  if (!Array.isArray(res.data)) return [];
-  return res.data;
-}
-
-function isDisplayableProduct(item: unknown): item is Product {
+function isDisplayable(item: unknown): item is Product {
   if (!item || typeof item !== "object") return false;
-  const product = item as Product;
-  if (product.status === false) return false;
-
-  const unitNumber = Number(product.unit);
-  if (Number.isFinite(unitNumber) && unitNumber <= 0) return false;
-
+  const p = item as Product;
+  if (p.status === false) return false;
+  const unit = Number(p.unit);
+  if (Number.isFinite(unit) && unit <= 0) return false;
   return true;
 }
 
-function filterDisplayableProducts(items: unknown): Product[] {
-  if (!Array.isArray(items) || items.length === 0) return [];
-  return items.filter(isDisplayableProduct);
+function filterDisplayable(items: unknown): Product[] {
+  if (!Array.isArray(items)) return [];
+  return items.filter(isDisplayable);
 }
 
-function getProductIdentifier(item: Product) {
-  const raw = item.id ?? item._id ?? item.pid ?? item.slug;
-  if (raw === undefined || raw === null) return null;
-  return String(raw);
+function getArrayData(response: unknown): unknown[] {
+  if (!response || typeof response !== "object") return [];
+  const r = response as { status?: boolean; data?: unknown };
+  if (r.status !== true || !Array.isArray(r.data)) return [];
+  return r.data;
 }
 
-function getCategoryKey(item: Product) {
-  const raw =
-    item.categoryId ??
-    item.category_id ??
-    item.categoryName?.name ??
-    item.subCategoryName?.name;
-  if (raw === undefined || raw === null) return null;
-  const key = String(raw).trim();
-  return key.length > 0 ? key : null;
-}
-
-// The 6 key categories that must always be represented on the home page.
-// Each entry carries search terms used for the dedicated API fetch, plus the
-// tokens used later to match products when building per-category pools.
-const TARGET_CATEGORIES = [
-  { key: "television",   searchTerm: "television",   tokens: ["television", "tv", "led tv", "smart tv", "plasma"] },
-  { key: "refrigerator", searchTerm: "refrigerator", tokens: ["refrigerator", "fridge", "freezer"] },
-  { key: "solar",        searchTerm: "solar",         tokens: ["solar", "solar panel", "solar inverter", "solar energy", "solar light", "inverter"] },
-  { key: "handset",      searchTerm: "phone",         tokens: ["phone", "smartphone", "mobile", "handset", "iphone", "tecno", "infinix", "itel", "samsung", "xiaomi"] },
-  { key: "generator",    searchTerm: "generator",     tokens: ["generator"] },
-  { key: "laptop",       searchTerm: "laptop",        tokens: ["laptop", "computer", "desktop", "pc"] },
-] as const;
-
-// Prioritize electronics categories (TVs, refrigerators, washing machines, pressing irons, home theatres, etc.)
-const PREFERRED_CATEGORY_TOKENS = [
-  // Televisions
-  "television",
-  "tv",
-  "led tv",
-  "smart tv",
-  "plasma",
-  // Refrigerators
-  "refrigerator",
-  "fridge",
-  "freezer",
-  // Air conditioners
-  "air conditioner",
-  "ac",
-  "air cooler",
-  // Kitchen appliances
-  "microwave",
-  "oven",
-  "gas cooker",
-  "electric cooker",
-  "blender",
-  "juicer",
-  "toaster",
-  "kettle",
-  "rice cooker",
-  "dispenser",
-  "water dispenser",
-  // Laundry
-  "washing machine",
-  "washer",
-  "dryer",
-  "dishwasher",
-  // Irons
-  "iron",
-  "pressing iron",
-  "steam iron",
-  "dry iron",
-  // Home theatre & Audio
-  "home theater",
-  "home theatre",
-  "sound system",
-  "sound bar",
-  "soundbar",
-  "speaker",
-  "subwoofer",
-  "amplifier",
-  // Fans & Cooling
-  "fan",
-  "standing fan",
-  "ceiling fan",
-  "table fan",
-  "cooler",
-  "heater",
-  // Power
-  "generator",
-  "inverter",
-  "stabilizer",
-  "ups",
-  // Computers & Laptops
-  "laptop",
-  "computer",
-  "desktop",
-  "monitor",
-  "printer",
-  "pc",
-  // Phones & Tablets
-  "phone",
-  "smartphone",
-  "mobile",
-  "handset",
-  "tablet",
-  "ipad",
-  // Cameras
-  "camera",
-  "dslr",
-  "webcam",
-  "camcorder",
-  // Solar & Power backup
-  "solar",
-  "solar panel",
-  "solar system",
-  "solar inverter",
-  "solar energy",
-  "solar light",
-  "battery",
-  "power bank",
-  "powerbank",
-  "voltage regulator",
-  "charge controller",
-  // Brands
-  "samsung",
-  "tecno",
-  "iphone",
-  "apple",
-  "lg",
-  "hisense",
-  "nexus",
-  "infinix",
-  "itel",
-  "nokia",
-  "xiaomi",
-  "huawei",
-  "oppo",
-  "vivo",
-  "realme",
-  "sony",
-  "panasonic",
-  "haier",
-  "midea",
-  "scanfrost",
-  "thermocool",
-  "polystar",
-  "syinix",
-  "bosch",
-  // Other electronics
-  "vacuum cleaner",
-  "air purifier",
-] as const;
-
-function normalizeCategoryText(value: unknown) {
-  if (value === undefined || value === null) return "";
-  return String(value)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-function productMatchesCategoryToken(item: Product, token: string) {
-  const tokenNorm = normalizeCategoryText(token);
-  if (!tokenNorm) return false;
-
-  const categoryName = normalizeCategoryText(item.categoryName?.name);
-  const subCategoryName = normalizeCategoryText(item.subCategoryName?.name);
-  const categoryKey = normalizeCategoryText(getCategoryKey(item));
-
-  return (
-    (categoryName.length > 0 && categoryName.includes(tokenNorm)) ||
-    (subCategoryName.length > 0 && subCategoryName.includes(tokenNorm)) ||
-    (categoryKey.length > 0 && categoryKey.includes(tokenNorm))
-  );
-}
-
-// Televisions, phones/handsets, and refrigerators get top billing
-const HIGH_PRIORITY_TOKENS = [
-  // Televisions
-  "television",
-  "tv",
-  "led tv",
-  "smart tv",
-  "plasma",
-  // Refrigerators
-  "refrigerator",
-  "fridge",
-  "freezer",
-  // Phones & Handsets
-  "phone",
-  "smartphone",
-  "mobile",
-  "handset",
-  "iphone",
-  "apple",
-  "samsung",
-  "tecno",
-  "infinix",
-  "itel",
-  "nokia",
-  "xiaomi",
-  "huawei",
-  "oppo",
-  "vivo",
-  "realme",
-] as const;
-
-// Check if a product is in electronics category
-function isElectronicsProduct(item: Product): boolean {
-  return PREFERRED_CATEGORY_TOKENS.some((token) =>
-    productMatchesCategoryToken(item, token),
-  );
-}
-
-// Check if a product is in the high-priority tier (TVs, phones, fridges)
-function isHighPriorityProduct(item: Product): boolean {
-  return HIGH_PRIORITY_TOKENS.some((token) =>
-    productMatchesCategoryToken(item, token),
-  );
-}
-
-// Split products into 3 priority tiers
-function splitProductsByPriority(items: Product[]) {
-  const highPriority: Product[] = [];
-  const normalElectronics: Product[] = [];
-  const others: Product[] = [];
-
-  for (const item of items) {
-    if (isHighPriorityProduct(item)) {
-      highPriority.push(item);
-    } else if (isElectronicsProduct(item)) {
-      normalElectronics.push(item);
-    } else {
-      others.push(item);
-    }
-  }
-
-  return { highPriority, normalElectronics, others };
-}
-
-function mulberry32(seed: number) {
-  return () => {
-    let t = (seed += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function dedupeProducts(items: Product[]) {
-  if (!Array.isArray(items) || items.length === 0) return [];
-
-  const seen = new Set<string>();
-  const unique: Product[] = [];
-  for (const item of items) {
-    const id = getProductIdentifier(item);
-    if (!id) continue;
-    if (seen.has(id)) continue;
-    seen.add(id);
-    unique.push(item);
-  }
-
-  return unique;
-}
-
-function shuffleCandidates(items: Product[], seed: number) {
-  const unique = dedupeProducts(items);
-  if (unique.length === 0) return [];
-
-  const rand = mulberry32(seed);
-  return unique
-    .map((item) => ({ item, tiebreak: rand() }))
-    .sort((a, b) => a.tiebreak - b.tiebreak)
-    .map((x) => x.item);
-}
-
-function getCreatedAtMs(item: Product) {
-  if (typeof item.createdAt === "number") return item.createdAt;
-  if (typeof item.createdAt === "string") {
-    const parsed = Date.parse(item.createdAt);
-    return Number.isFinite(parsed) ? parsed : 0;
-  }
-  return 0;
-}
-
-function splitNewOldPools(items: Product[]) {
-  const unique = dedupeProducts(items);
-  if (unique.length === 0) return { newPool: [], oldPool: [] };
-
-  const byCreatedAt = [...unique].sort(
-    (a, b) => getCreatedAtMs(b) - getCreatedAtMs(a),
-  );
-  // 10% new products, 90% old products for display
-  const newSize = Math.ceil(byCreatedAt.length * 0.1);
-  return {
-    newPool: byCreatedAt.slice(0, newSize),
-    oldPool: byCreatedAt.slice(newSize),
-  };
-}
-
-function takeUniqueProducts(
-  candidates: Product[],
-  used: Set<string>,
-  count: number,
-  fallbackCandidates: Product[],
-) {
-  const result: Product[] = [];
-
-  const tryAdd = (item: Product) => {
-    const id = getProductIdentifier(item);
-    if (!id) return false;
-    if (used.has(id)) return false;
-    used.add(id);
-    result.push(item);
-    return true;
-  };
-
-  for (const item of candidates) {
-    if (result.length >= count) break;
-    tryAdd(item);
-  }
-
-  if (result.length < count && Array.isArray(fallbackCandidates)) {
-    for (const item of fallbackCandidates) {
-      if (result.length >= count) break;
-      tryAdd(item);
-    }
-  }
-
-  return result;
-}
-
-function takeUniqueProductsByCategory(
-  candidates: Product[],
-  used: Set<string>,
-  count: number,
-  fallbackCandidates: Product[],
-  categoryCounts: Map<string, number>,
-  maxPerCategory: number,
-) {
-  const result: Product[] = [];
-
-  const tryAdd = (item: Product) => {
-    const id = getProductIdentifier(item);
-    if (!id) return false;
-    if (used.has(id)) return false;
-
-    const categoryKey = getCategoryKey(item);
-    if (categoryKey) {
-      const current = categoryCounts.get(categoryKey) ?? 0;
-      if (current >= maxPerCategory) return false;
-      categoryCounts.set(categoryKey, current + 1);
-    }
-
-    used.add(id);
-    result.push(item);
-    return true;
-  };
-
-  for (const item of candidates) {
-    if (result.length >= count) break;
-    tryAdd(item);
-  }
-
-  if (result.length < count && Array.isArray(fallbackCandidates)) {
-    for (const item of fallbackCandidates) {
-      if (result.length >= count) break;
-      tryAdd(item);
-    }
-  }
-
-  return result;
-}
-
+// ── Skeleton ──────────────────────────────────────────────────────────────────
 function SkeletonCard() {
   return (
     <div className="home-skeleton-card">
@@ -442,603 +65,378 @@ function SkeletonCard() {
   );
 }
 
-function SkeletonSection({ count = 6, title = "" }: { count?: number; title?: string }) {
+function SkeletonGrid({ count = 20 }: { count?: number }) {
   return (
     <div className="home-skeleton-section">
-      <div className="home-skeleton-title" style={title ? { width: `${title.length * 9}px` } : undefined} />
       <div className="home-skeleton-grid">
-        {Array.from({ length: count }).map((_, i) => <SkeletonCard key={i} />)}
+        {Array.from({ length: count }).map((_, i) => (
+          <SkeletonCard key={i} />
+        ))}
       </div>
     </div>
   );
 }
 
-function Home() {
-  const [rotationSeed, setRotationSeed] = useState(0);
-  const data = useSelector(reduxLatLong);
-  const token = useSelector(reduxAccessToken);
+// ── Trust Bar ─────────────────────────────────────────────────────────────────
+const TRUST_ITEMS = [
+  { Icon: FiTruck,      title: "Free Delivery",   sub: "On orders over ₦10,000"  },
+  { Icon: FiShield,     title: "Secure Payment",  sub: "100% protected checkout" },
+  { Icon: FiRefreshCw,  title: "Easy Returns",    sub: "7-day return policy"     },
+  { Icon: FiHeadphones, title: "24/7 Support",    sub: "Always here to help"     },
+];
 
+function TrustBar() {
+  return (
+    <div className="home-trust-bar">
+      {TRUST_ITEMS.map(({ Icon, title, sub }, i) => (
+        <div key={i} className="home-trust-item">
+          <div className="home-trust-icon">
+            <Icon size={20} />
+          </div>
+          <div className="home-trust-text">
+            <div className="home-trust-title">{title}</div>
+            <div className="home-trust-sub">{sub}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Category Grid ─────────────────────────────────────────────────────────────
+
+const PREFERRED_COLS = [7, 8, 6, 9, 5, 4];
+
+function getOptimalCols(n: number): { cols: number; addViewAll: boolean } {
+  // Exact fit — no filler needed
+  for (const c of PREFERRED_COLS) if (n % c === 0) return { cols: c, addViewAll: false };
+  // Adding one "View All" card creates a perfect grid
+  for (const c of PREFERRED_COLS) if ((n + 1) % c === 0) return { cols: c, addViewAll: true };
+  // Fallback: 7 columns, pad with View All regardless
+  return { cols: 7, addViewAll: true };
+}
+
+function CategoryStrip({ categories }: { categories: any[] }) {
+  const router = useRouter();
+
+  const handleCatClick = (cat: any) => {
+    const idRaw = cat?._id ?? cat?.id;
+    if (!idRaw) return;
+    const catId   = String(idRaw);
+    const encoded = typeof window !== "undefined" ? window.btoa(catId) : catId;
+    const name    = (cat?.name ?? "").replace(/\s*line\s*$/i, "");
+    router.push(
+      `/category/${catId}?id=${encoded}&type=${encodeURIComponent(name)}&categoryId=${encodeURIComponent(catId)}`
+    );
+  };
+
+  const { cols, addViewAll } = getOptimalCols(categories.length);
+  const items = addViewAll
+    ? [...categories, { _id: "__view_all__", name: "View All", image: null, isViewAll: true }]
+    : categories;
+
+  return (
+    <div className="home-categories-wrap">
+      <div className="home-section-row">
+        <span className="home-section-label">Shop by Category</span>
+      </div>
+      <div
+        className="home-cat-grid"
+        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+      >
+        {items.map((cat: any, i: number) =>
+          cat.isViewAll ? (
+            <div
+              key="__view_all__"
+              className="home-cat-card home-cat-card--view-all"
+              onClick={() => router.push("/explore-all")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && router.push("/explore-all")}
+            >
+              <div className="home-cat-card-img-wrap home-cat-card-img-wrap--view-all">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="7" height="7" rx="1" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" />
+                </svg>
+              </div>
+              <span className="home-cat-card-label">View All</span>
+            </div>
+          ) : (
+            <div
+              key={cat._id ?? cat.id ?? i}
+              className="home-cat-card"
+              onClick={() => handleCatClick(cat)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleCatClick(cat)}
+            >
+              <div className="home-cat-card-img-wrap">
+                {cat.image ? (
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="home-cat-card-img"
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="home-cat-card-initial">
+                    {(cat.name?.[0] ?? "?").toUpperCase()}
+                  </span>
+                )}
+              </div>
+              <span className="home-cat-card-label">
+                {(cat.name ?? "").replace(/\s*line\s*$/i, "")}
+              </span>
+            </div>
+          )
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Sort Bar ──────────────────────────────────────────────────────────────────
+const SORT_OPTIONS = [
+  { value: "random",     label: "✦ Discover"        },
+  { value: "newest",     label: "New Arrivals"       },
+  { value: "price_low",  label: "Price ↑"            },
+  { value: "price_high", label: "Price ↓"            },
+];
+
+function SortBar({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="home-sort-bar">
+      {SORT_OPTIONS.map((opt) => (
+        <button
+          key={opt.value}
+          className={`home-sort-btn${value === opt.value ? " active" : ""}`}
+          onClick={() => onChange(opt.value)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const QUERY_OPTS = {
+  staleTime: 5 * 60 * 1000,
+  gcTime: 10 * 60 * 1000,
+  refetchInterval: 5 * 60 * 1000,
+  refetchOnWindowFocus: false,
+} as const;
+
+function Home() {
+  const token      = useSelector(reduxAccessToken);
+  const categories = useSelector(reduxCategoryItems) as any[];
+  const [feedSort, setFeedSort] = useState("random");
+
+  // ── Banners ───────────────────────────────────────────────────────────────
   const { data: banners = [] } = useQuery<unknown[]>({
-    queryKey: ["home-banners", data?.latitude ?? null, data?.longitude ?? null],
-    queryFn: async () => {
-      const response = await GET(API.GET_HOMESCREEN, {});
-      return getSuccessfulArrayData(response);
-    },
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    gcTime: 10 * 60 * 1000,
+    queryKey: ["home-banners"],
+    queryFn: () => GET(API.GET_HOMESCREEN, {}).then(getArrayData),
+    ...QUERY_OPTS,
   });
 
+  // ── Recently visited (authenticated only) ─────────────────────────────────
   const { data: history = [] } = useQuery<Product[]>({
     queryKey: ["user-history", token ?? null],
     queryFn: async () => {
       if (!token) return [];
       try {
         const decoded = jwtDecode<{ exp?: number }>(token);
-        if (typeof decoded?.exp === "number") {
-          if (decoded.exp * 1000 + 10000 <= Date.now()) return [];
-        }
+        if (
+          typeof decoded?.exp === "number" &&
+          decoded.exp * 1000 + 10_000 <= Date.now()
+        )
+          return [];
       } catch {
         return [];
       }
-      const response = await GET(API.USER_HISTORY);
-      return filterDisplayableProducts(getSuccessfulArrayData(response));
+      return filterDisplayable(getArrayData(await GET(API.USER_HISTORY)));
     },
     enabled: Boolean(token),
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    gcTime: 10 * 60 * 1000,
+    ...QUERY_OPTS,
   });
 
-  const featuredEndpoints = useMemo(
-    () =>
-      ({
-        1: API.FEATURED_POSITION_1,
-        2: API.FEATURED_POSITION_2,
-        3: API.FEATURED_POSITION_3,
-        4: API.FEATURED_POSITION_4,
-      }) as Record<1 | 2 | 3 | 4, string>,
-    [],
-  );
-
-  const featuredTakeLimits = useMemo(
-    () =>
-      ({
-        1: 25,
-        2: 12,
-        3: 36,
-        4: 36,
-      }) as Record<1 | 2 | 3 | 4, number>,
-    [],
-  );
-
-  const minItemsByPosition = useMemo(
-    () =>
-      ({
-        1: 5,
-        2: 8,
-        3: 24,
-        4: 24,
-      }) as Record<1 | 2 | 3 | 4, number>,
-    [],
-  );
-
-  const featuredPositions = useMemo(() => [1, 2, 3, 4] as const, []);
-
-  const [delayedPositions, setDelayedPositions] = useState<number[]>([1]);
-
-  // Stagger the queries: Position 1 immediately, Position 2 after 200ms, Position 3 after 400ms, Position 4 after 600ms
-  useEffect(() => {
-    const timer2 = setTimeout(
-      () => setDelayedPositions((prev) => [...prev, 2]),
-      200,
-    );
-    const timer3 = setTimeout(
-      () => setDelayedPositions((prev) => [...prev, 3]),
-      400,
-    );
-    const timer4 = setTimeout(
-      () => setDelayedPositions((prev) => [...prev, 4]),
-      600,
-    );
-    return () => {
-      clearTimeout(timer2);
-      clearTimeout(timer3);
-      clearTimeout(timer4);
-    };
-  }, []);
-
-  const featuredQueries = useQueries({
-    queries: featuredPositions.map((position) => ({
-      queryKey: [
-        "featured-position",
-        position,
-        data?.latitude ?? null,
-        data?.longitude ?? null,
-      ],
-      queryFn: async () => {
-        const url = featuredEndpoints[position];
-        try {
-          const response = await GET(url, {
-            take: featuredTakeLimits[position],
-          });
-          return filterDisplayableProducts(getSuccessfulArrayData(response));
-        } catch (err) {
-          void err;
-          if (position === 4) {
-            const fallbackUrl =
-              API.PRODUCT_SEARCH_NEW_SINGLE +
-              `?take=${featuredTakeLimits[position]}&tag=discount`;
-            const fallbackResponse = await GET(fallbackUrl);
-            return filterDisplayableProducts(
-              getSuccessfulArrayData(fallbackResponse),
-            );
-          }
-        }
-        return [];
-      },
-      enabled: delayedPositions.includes(position),
-      refetchInterval: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
-    })),
-  });
-
-  const featuredLoading = featuredQueries.some((query) => query.isLoading);
-
-  const featuredProducts = useMemo<Record<1 | 2 | 3 | 4, Product[]>>(
-    () => ({
-      1: filterDisplayableProducts(featuredQueries[0]?.data),
-      2: filterDisplayableProducts(featuredQueries[1]?.data),
-      3: filterDisplayableProducts(featuredQueries[2]?.data),
-      4: filterDisplayableProducts(featuredQueries[3]?.data),
-    }),
-    [featuredQueries],
-  );
-
-  const needsRecent = useMemo(() => {
-    if (featuredLoading) return false;
-    return featuredPositions.some((position) => {
-      const minRequired = minItemsByPosition[position];
-      return (featuredProducts[position]?.length ?? 0) < minRequired;
-    });
-  }, [
-    featuredLoading,
-    featuredPositions,
-    minItemsByPosition,
-    featuredProducts,
-  ]);
-
-  const { data: recentFallback = [] } = useQuery({
-    queryKey: ["featured-recent-fallback"],
-    queryFn: async () => {
-      const url = API.PRODUCT_SEARCH_NEW_SINGLE + `?take=10&tag=recent`;
-      const response = await GET(url);
-      return filterDisplayableProducts(getSuccessfulArrayData(response));
-    },
-    enabled: needsRecent,
-    refetchInterval: needsRecent ? 5 * 60 * 1000 : false,
-    refetchOnWindowFocus: false,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  });
-
-  // Section-filler pool. All 4 sections combined need up to ~121 filler slots
-  // (36 + 25 + 24 + 36) in the worst case where featured APIs return nothing.
-  // Fetching 3 pages × 50 = 150 items covers that with headroom, while still
-  // being a 94% reduction from the previous 2,500-item fetch.
-  const { data: allProductsPool = [] } = useQuery<Product[]>({
-    queryKey: ["home-products-pool"],
-    queryFn: async () => {
-      const pageSize = 50;
-      const collected: Product[] = [];
-      for (let page = 1; page <= 3; page++) {
-        const response = (await GET(API.FEATURED_ALL_PRODUCTS, {
-          page,
-          take: pageSize,
-          order: "DESC",
-        })) as { status?: boolean; data?: unknown; meta?: { hasNextPage?: boolean } } | null;
-        if (!response || response.status !== true) break;
-        const items = Array.isArray(response.data) ? response.data : [];
-        collected.push(...filterDisplayableProducts(items));
-        if (!response.meta?.hasNextPage) break;
-      }
-      return dedupeProducts(collected);
-    },
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
-    gcTime: 10 * 60 * 1000,
-  });
-
-  // Fetch products from each of the 6 target categories in parallel.
-  // This guarantees diverse representation regardless of what the general pool returns.
-  const categoryQueries = useQueries({
-    queries: TARGET_CATEGORIES.map(({ key, searchTerm }) => ({
-      queryKey: ["home-category-pool", key],
-      queryFn: async () => {
-        const response = await GET(API.PRODUCT_SEARCH_NEW_SINGLE, {
-          search: searchTerm,
-          take: 15,
-          page: 1,
-          order: "DESC",
-        });
-        return filterDisplayableProducts(getSuccessfulArrayData(response));
-      },
-      staleTime: 5 * 60 * 1000,
-      refetchOnWindowFocus: false,
-      gcTime: 10 * 60 * 1000,
-    })),
-  });
-
-  // Flat deduplicated pool of all category-specific products
-  const categoryPool = useMemo(() => {
-    const all: Product[] = [];
-    for (const q of categoryQueries) {
-      if (Array.isArray(q.data)) all.push(...q.data);
-    }
-    return dedupeProducts(all);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryQueries]);
-
-  // Separate infinite query for the "All Products" display section.
-  // Starts with 20 items; loads the next page when the sentinel div scrolls into view.
+  // ── Marketplace feed — infinite scroll ────────────────────────────────────
   const {
-    data: allProductsInfiniteData,
-    fetchNextPage: fetchMoreProducts,
-    hasNextPage: hasMoreProducts,
-    isFetchingNextPage: isFetchingMoreProducts,
+    data: feedData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: feedLoading,
   } = useInfiniteQuery({
-    queryKey: ["home-all-products-infinite"],
+    queryKey: ["marketplace-feed", feedSort],
     queryFn: async ({ pageParam }) => {
-      const response = (await GET(API.FEATURED_ALL_PRODUCTS, {
+      const res = (await GET(API.MARKETPLACE_FEED_PRODUCTS, {
         page: pageParam,
         take: 20,
-        order: "DESC",
-      })) as { status?: boolean; data?: unknown; meta?: { hasNextPage?: boolean } } | null;
-      const items = filterDisplayableProducts(
-        Array.isArray(response?.data) ? response.data : [],
-      );
+        perStoreLimit: 3,
+        sort: feedSort,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      })) as { status?: boolean; data?: unknown[]; meta?: Record<string, any> } | null;
+
+      const items = filterDisplayable(Array.isArray(res?.data) ? res.data : []);
+      const meta = res?.meta ?? {};
+      const hasNext: boolean =
+        meta?.hasNextPage ??
+        (meta?.page != null && meta?.totalPages != null
+          ? Number(meta.page) < Number(meta.totalPages)
+          : false);
+
       return {
         items,
-        nextPage: response?.meta?.hasNextPage ? (pageParam as number) + 1 : undefined,
+        nextPage: hasNext ? (pageParam as number) + 1 : undefined,
+        totalCount: meta?.itemCount as number | undefined,
       };
     },
     initialPageParam: 1,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
+    getNextPageParam: (last) => last.nextPage,
     staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
     gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
-  const allProductsInfinite = useMemo(() => {
-    if (!allProductsInfiniteData) return [];
-    return dedupeProducts(
-      allProductsInfiniteData.pages.flatMap((p) => p.items),
-    );
-  }, [allProductsInfiniteData]);
+  const feedItems = (() => {
+    const all = feedData?.pages.flatMap((p) => p.items) ?? [];
+    const seen = new Set<string>();
+    return all.filter((item) => {
+      const id = String(item._id ?? item.id ?? item.pid ?? "");
+      if (!id || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  })();
 
-  // Sentinel ref — when this div enters the viewport, load the next page
-  const allProductsSentinelRef = useRef<HTMLDivElement>(null);
+  const totalCount = feedData?.pages[0]?.totalCount;
+
+  // Auto-scroll silently until 100 products are visible,
+  // then hand off to a "Load More" button so the footer stays reachable.
+  const shouldAutoLoad = feedItems.length < 80;
+
+  const sentinelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const el = allProductsSentinelRef.current;
+    if (!shouldAutoLoad) return;
+    const el = sentinelRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMoreProducts && !isFetchingMoreProducts) {
-          fetchMoreProducts();
-        }
+      ([entry]) => {
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage)
+          fetchNextPage();
       },
       { rootMargin: "200px" },
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasMoreProducts, isFetchingMoreProducts, fetchMoreProducts]);
-
-  useEffect(() => {
-    const rotationInterval = setInterval(() => {
-      setRotationSeed((prev) => prev + 1);
-    }, 30000);
-    return () => clearInterval(rotationInterval);
-  }, []);
-
-  const positionItems = useMemo(() => {
-    const desiredCounts = { 1: 25, 2: 24, 3: 36, 4: 36 } as const;
-    const recent = filterDisplayableProducts(recentFallback);
-
-    const featuredByPosition = {
-      1: featuredProducts[1],
-      2: featuredProducts[2],
-      3: featuredProducts[3],
-      4: featuredProducts[4],
-    } as const;
-
-    // Track IDs of boosted products so they stay in their correct section
-    const boostedIds = new Set<string>();
-    for (const pos of [1, 2, 3, 4] as const) {
-      for (const item of featuredByPosition[pos]) {
-        const id = getProductIdentifier(item);
-        if (id) boostedIds.add(id);
-      }
-    }
-
-    // General pool: category-fetched products come first so they dominate the
-    // tier-based allocation; the general pool acts as additional filler.
-    const globalPool = dedupeProducts([
-      ...categoryPool,
-      ...allProductsPool,
-      ...recent,
-    ]).filter((item) => {
-      const id = getProductIdentifier(item);
-      return id ? !boostedIds.has(id) : true;
-    });
-
-    // Pre-build a shuffled pool per target category so buildMixedSection can
-    // guarantee at least one slot from each key category.
-    const shuffledByCategory: Record<string, Product[]> = {};
-    for (const { key, tokens } of TARGET_CATEGORIES) {
-      const matching = globalPool.filter((item) =>
-        tokens.some((token) => productMatchesCategoryToken(item, token)),
-      );
-      // Use a deterministic seed per category + rotation so picks rotate over time
-      const catSeed = key.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
-      shuffledByCategory[key] = shuffleCandidates(matching, rotationSeed + catSeed);
-    }
-
-    // Split into 3 priority tiers
-    const { highPriority, normalElectronics, others } =
-      splitProductsByPriority(globalPool);
-
-    // Split each tier into old (90%) and new (10%) pools
-    const { newPool: highPriorityNew, oldPool: highPriorityOld } =
-      splitNewOldPools(highPriority);
-    const { newPool: normalNew, oldPool: normalOld } =
-      splitNewOldPools(normalElectronics);
-    const { newPool: othersNew, oldPool: othersOld } =
-      splitNewOldPools(others);
-
-    // Shuffle all pools
-    const shuffledHighOld = shuffleCandidates(highPriorityOld, rotationSeed + 10);
-    const shuffledHighNew = shuffleCandidates(highPriorityNew, rotationSeed + 20);
-    const shuffledNormalOld = shuffleCandidates(normalOld, rotationSeed + 30);
-    const shuffledNormalNew = shuffleCandidates(normalNew, rotationSeed + 40);
-    const shuffledOthersOld = shuffleCandidates(othersOld, rotationSeed + 50);
-    const shuffledOthersNew = shuffleCandidates(othersNew, rotationSeed + 60);
-    const shuffledAll = shuffleCandidates(globalPool, rotationSeed + 70);
-
-    const used = new Set<string>();
-    const allocationOrder: Array<1 | 2 | 3 | 4> = [4, 1, 2, 3];
-
-    const results: Record<1 | 2 | 3 | 4, Product[]> = {
-      1: [],
-      2: [],
-      3: [],
-      4: [],
-    };
-
-    const buildMixedSection = (position: 1 | 2 | 3 | 4) => {
-      const desired = desiredCounts[position];
-
-      // Pin boosted products for this position first
-      const pinned = featuredByPosition[position].filter((item) => {
-        const id = getProductIdentifier(item);
-        return id ? !used.has(id) : false;
-      });
-      for (const item of pinned) {
-        const id = getProductIdentifier(item);
-        if (id) used.add(id);
-      }
-
-      // Guarantee at least 1 product from each of the 6 target categories.
-      // This runs before the tier allocation so every section has variety.
-      const guaranteed: Product[] = [];
-      for (const { key } of TARGET_CATEGORIES) {
-        const picked = takeUniqueProducts(shuffledByCategory[key], used, 1, []);
-        guaranteed.push(...picked);
-      }
-
-      const remainingSlots = Math.max(0, desired - pinned.length - guaranteed.length);
-
-      // ~45% TVs/phones/fridges, ~35% other electronics, ~15% everything else
-      const desiredHigh = Math.round(remainingSlots * 0.45);
-      const desiredNormal = Math.round(remainingSlots * 0.35);
-      const desiredOthers = remainingSlots - desiredHigh - desiredNormal;
-
-      // Within each tier: 90% old, 10% new
-      const desiredHighOld = Math.round(desiredHigh * 0.9);
-      const desiredHighNew = desiredHigh - desiredHighOld;
-      const desiredNormalOld = Math.round(desiredNormal * 0.9);
-      const desiredNormalNew = desiredNormal - desiredNormalOld;
-      const desiredOthersOld = Math.round(desiredOthers * 0.9);
-      const desiredOthersNew = desiredOthers - desiredOthersOld;
-
-      const maxPerCategory = desired >= 30 ? 5 : 4;
-      const categoryCounts = new Map<string, number>();
-
-      // Tier 1 – TVs, phones, fridges (~45%)
-      const pickedHighOld = takeUniqueProductsByCategory(
-        shuffledHighOld, used, desiredHighOld, [], categoryCounts, maxPerCategory,
-      );
-      const pickedHighNew = takeUniqueProductsByCategory(
-        shuffledHighNew, used, desiredHighNew, [], categoryCounts, maxPerCategory,
-      );
-
-      // Tier 2 – other electronics: generators, washing machines, etc. (~35%)
-      const pickedNormalOld = takeUniqueProductsByCategory(
-        shuffledNormalOld, used, desiredNormalOld, [], categoryCounts, maxPerCategory,
-      );
-      const pickedNormalNew = takeUniqueProductsByCategory(
-        shuffledNormalNew, used, desiredNormalNew, [], categoryCounts, maxPerCategory,
-      );
-
-      // Tier 3 – everything else: furniture, food, etc. (~15%)
-      const pickedOthersOld = takeUniqueProductsByCategory(
-        shuffledOthersOld, used, desiredOthersOld, [], categoryCounts, maxPerCategory,
-      );
-      const pickedOthersNew = takeUniqueProductsByCategory(
-        shuffledOthersNew, used, desiredOthersNew, [], categoryCounts, maxPerCategory,
-      );
-
-      const combined = [
-        ...guaranteed,
-        ...pickedHighOld,
-        ...pickedHighNew,
-        ...pickedNormalOld,
-        ...pickedNormalNew,
-        ...pickedOthersOld,
-        ...pickedOthersNew,
-      ];
-
-      // Fill remaining slots — prefer high-priority, then normal, then any
-      if (combined.length < remainingSlots) {
-        const fillHigh = takeUniqueProductsByCategory(
-          [...shuffledHighOld, ...shuffledHighNew],
-          used,
-          Math.ceil((remainingSlots - combined.length) * 0.7),
-          [],
-          categoryCounts,
-          maxPerCategory,
-        );
-        combined.push(...fillHigh);
-
-        if (combined.length < remainingSlots) {
-          const fillNormal = takeUniqueProductsByCategory(
-            [...shuffledNormalOld, ...shuffledNormalNew],
-            used,
-            remainingSlots - combined.length,
-            [],
-            categoryCounts,
-            maxPerCategory,
-          );
-          combined.push(...fillNormal);
-        }
-      }
-
-      // Final fallback: use any remaining products
-      if (combined.length < remainingSlots) {
-        const fillers = takeUniqueProducts(
-          shuffledAll,
-          used,
-          remainingSlots - combined.length,
-          [],
-        );
-        combined.push(...fillers);
-      }
-
-      // Boosted products are shuffled among themselves so their display order
-      // rotates on every tick, then filler follows.
-      return [
-        ...shuffleCandidates(pinned, rotationSeed + position * 100),
-        ...shuffleCandidates(combined, rotationSeed + position * 1000),
-      ];
-    };
-
-    for (const position of allocationOrder) {
-      results[position] = buildMixedSection(position);
-    }
-
-    return results;
-  }, [featuredProducts, recentFallback, rotationSeed, allProductsPool, categoryPool]);
-
-  const position1Items = positionItems[1];
-  const position2Items = positionItems[2];
-  const position3Items = positionItems[3];
-  const position4Items = positionItems[4];
-  const recentVisitedPreview = useMemo(() => {
-    const items = filterDisplayableProducts(
-      Array.isArray(history) ? history : [],
-    );
-    return items.slice(0, 7);
-  }, [history]);
-
-  const showPosition1 = position1Items.length > 0;
-  const showPosition2 = position2Items.length > 0;
-  const showPosition3 = position3Items.length > 0;
-  const showPosition4 = position4Items.length > 0;
-  const allProductsPreview = allProductsInfinite;
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, shouldAutoLoad]);
 
   return (
-    <div className="page-Box">
-      {/* FEATURED PRODUCTS - POSITION 1 (Top Featured Section - ABOVE Banner) */}
-      {/* CategoryNav is now responsible for all category navigation and scrolling */}
+    <div className="home-page">
 
-      {banners.length ? (
-        <>
+      {/* ── Hero Banner ── */}
+      {banners.length > 0 && (
+        <div className="home-banner-wrap">
           <Banners data={banners} />
-          <div className="HomeSCreen-space" />
-        </>
-      ) : null}
-
-      {showPosition4 ? (
-        <>
-          <DiscountedDealsSection products={position4Items} />
-          <div className="HomeSCreen-space" />
-        </>
-      ) : featuredLoading ? (
-        <><SkeletonSection count={8} /><div className="HomeSCreen-space" /></>
-      ) : null}
-
-      {showPosition1 ? (
-        <>
-          <PlatinumSection products={position1Items} />
-          <div className="HomeSCreen-space" />
-        </>
-      ) : featuredLoading ? (
-        <><SkeletonSection count={8} /><div className="HomeSCreen-space" /></>
-      ) : null}
-
-      {showPosition2 ? (
-        <>
-          <GoldSection products={position2Items} />
-          <div className="HomeSCreen-space" />
-        </>
-      ) : featuredLoading ? (
-        <><SkeletonSection count={6} /><div className="HomeSCreen-space" /></>
-      ) : null}
-
-      {showPosition3 ? (
-        <>
-          <SilverSection products={position3Items} />
-          <div className="HomeSCreen-space" />
-        </>
-      ) : featuredLoading ? (
-        <><SkeletonSection count={6} /><div className="HomeSCreen-space" /></>
-      ) : null}
-
-      {/* Category Featured Products Section - Removed as requested */}
-      {/* {subCategories?.length > 0 && (
-        <>
-          <CategoryFeaturedProducts categories={subCategories} />
-          <div className="HomeSCreen-space" />
-        </>
-      )} */}
-
-      <FeaturedItems />
-      {allProductsPreview.length > 0 && (
-        <>
-          <PopularItems
-            data={allProductsPreview}
-            title="All Products"
-            type="all"
-          />
-          {/* Sentinel: entering viewport triggers the next page fetch */}
-          <div ref={allProductsSentinelRef} style={{ height: 1 }} />
-        </>
+        </div>
       )}
-      {history.length > 0 && token ? (
-        <>
-          <div className="HomeSCreen-space" />
-          <PopularItems
-            data={recentVisitedPreview}
-            title="Recently Visited Products"
-            type="visited"
-          />
-        </>
-      ) : null}
-      <div className="HomeSCreen-space" />
+
+      {/* ── Body: sidebar + main ── */}
+      <div className="home-body">
+        <CategorySidebar />
+
+        <div className="home-main">
+
+          {/* ── Category Grid ── */}
+          {categories.length > 0 && (
+            <div className="home-section-container mt-1">
+              <CategoryStrip categories={categories} />
+            </div>
+          )}
+
+          {/* ── Products Feed ── */}
+          <div className="home-section-container mt-2 mb-5">
+            <div className="home-feed-header">
+              <div className="home-feed-title-group">
+                <div className="home-feed-accent" />
+                <div>
+                  <h2 className="home-feed-title">What&apos;s Hot Right Now 🔥</h2>
+                  <p className="home-feed-subtitle">Thousands of deals. One marketplace. Don&apos;t miss out.</p>
+                </div>
+              </div>
+              <SortBar value={feedSort} onChange={setFeedSort} />
+            </div>
+
+            {feedLoading ? (
+              <SkeletonGrid count={20} />
+            ) : (
+              <>
+                <Row className="gy-3 gx-2 gx-md-3">
+                  {feedItems.map((item, i) => (
+                    <Col
+                      xs={6}
+                      sm={4}
+                      md={3}
+                      lg={3}
+                      key={(item._id ?? item.id ?? item.pid ?? i) as string}
+                    >
+                      <ProductItem item={item} />
+                    </Col>
+                  ))}
+                </Row>
+
+                {/* Sentinel — only active during the first AUTO_LOAD_PAGES pages */}
+                {shouldAutoLoad && <div ref={sentinelRef} style={{ height: 1 }} />}
+
+                {isFetchingNextPage && <SkeletonGrid count={12} />}
+
+                {/* After auto-load limit: show a button so the footer stays reachable */}
+                {hasNextPage && !isFetchingNextPage && !shouldAutoLoad && (
+                  <div className="home-load-more">
+                    <div className="home-load-more-divider">
+                      <span className="home-load-more-divider-line" />
+                      <span className="home-load-more-divider-text">
+                        {totalCount != null && feedItems.length < totalCount
+                          ? `${(totalCount - feedItems.length).toLocaleString()} more products`
+                          : "More products"}
+                      </span>
+                      <span className="home-load-more-divider-line" />
+                    </div>
+                    <button className="home-load-more-btn" onClick={() => fetchNextPage()}>
+                      <span className="home-load-more-btn-icon">↓</span>
+                      Load More Products
+                    </button>
+                  </div>
+                )}
+
+                {!hasNextPage && feedItems.length > 20 && (
+                  <div className="home-feed-end">
+                    <span>✓ You&apos;ve explored {feedItems.length.toLocaleString()} products</span>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* ── Recently Visited ── */}
+          {history.length > 0 && token && (
+            <div className="home-section-container mb-4">
+              <PopularItems data={history.slice(0, 7)} title="Recently Visited" type="visited" />
+            </div>
+          )}
+
+        </div>
+      </div>
+
     </div>
   );
 }
