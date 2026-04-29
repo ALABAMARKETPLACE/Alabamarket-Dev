@@ -21,7 +21,6 @@ import { PiUserCircle } from "react-icons/pi";
 import dynamic from "next/dynamic";
 const SideMenu = dynamic(() => import("./sideMenu"), { ssr: false });
 const Location = dynamic(() => import("./location"), { ssr: false });
-const CategoryNav = dynamic(() => import("./categoryNav"), { ssr: false });
 import { Badge, Button, Popover } from "antd";
 import { reduxSettings } from "../../redux/slice/settingsSlice";
 import { useSession } from "next-auth/react";
@@ -205,14 +204,6 @@ function Header() {
           </header>
         </Container>
 
-        {/* Category Navigation Bar */}
-        {pathname === "/" && (
-          <div className="Header-nav-bar">
-            <Container fluid className="Header-container">
-              <CategoryNav onOpenMenu={() => dispatch(setSideMenuOpen(true))} />
-            </Container>
-          </div>
-        )}
       </div>
     </>
   );

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styles from "./sideMenu.module.scss";
 import { useSelector, useDispatch } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -11,10 +11,15 @@ import {
   IoLogOutOutline,
   IoChevronForward,
   IoChevronDown,
-  IoGridOutline,
   IoBagHandleOutline,
+  IoHomeOutline,
+  IoSearchOutline,
+  IoNewspaperOutline,
+  IoCartOutline,
+  IoHeartOutline,
+  IoCallOutline,
 } from "react-icons/io5";
-import { Avatar } from "antd";
+import { useSelector as useReduxSelector } from "react-redux";
 
 const SideMenu = ({
   open,
@@ -23,11 +28,16 @@ const SideMenu = ({
   open: boolean;
   onClose: () => void;
 }) => {
-  const categories = useSelector(reduxCategoryItems);
+  const categories = useSelector(reduxCategoryItems) as any[];
   const dispatch = useDispatch();
   const router = useRouter();
   const { data: session }: any = useSession();
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const cart = useReduxSelector(
+    (state: { Cart: { items: unknown[] } }) => state.Cart,
+  );
 
   useEffect(() => {
     if (!open) return;
@@ -38,167 +48,198 @@ const SideMenu = ({
     return () => window.removeEventListener("keydown", handleEsc);
   }, [open, onClose]);
 
-  // Reset expanded state when menu closes
   useEffect(() => {
     if (!open) {
-      setExpandedCategories([]);
+      setExpandedId(null);
+      contentRef.current?.scrollTo({ top: 0 });
     }
   }, [open]);
 
-  const toggleCategory = (catId: string) => {
-    setExpandedCategories((prev) => (prev.includes(catId) ? [] : [catId]));
-  };
-
-  const handleNavigation = (path: string) => {
+  const go = (path: string) => {
     onClose();
     router.push(path);
   };
+
+  const toggleCategory = (id: string) =>
+    setExpandedId((prev) => (prev === id ? null : id));
+
+  const user = session?.user;
+  const initials = user
+    ? ((user.first_name?.[0] ?? user.name?.[0] ?? "U") as string).toUpperCase()
+    : null;
 
   return (
     <>
       {open && <div className={styles.overlay} onClick={onClose} />}
       <div className={`${styles.sideMenu} ${open ? styles.open : ""}`}>
+
+        {/* ── Header ── */}
         <div className={styles.header}>
-          <div className={styles.userInfo}>
-            {session?.user ? (
-              <>
-                <Avatar
-                  size={48}
-                  src={session.user.image}
-                  icon={<IoPersonOutline />}
-                  className={styles.avatar}
-                />
-                <div className={styles.userDetails}>
-                  <span className={styles.greeting}>Hello,</span>
-                  <span className={styles.username}>
-                    {session.user.first_name || session.user.name}
-                  </span>
+          <div className={styles.headerBg} />
+          <div className={styles.headerContent}>
+            <div className={styles.userInfo}>
+              {user ? (
+                user.image ? (
+                  <img src={user.image} alt="avatar" className={styles.avatarImg} />
+                ) : (
+                  <div className={styles.avatarInitials}>{initials}</div>
+                )
+              ) : (
+                <div className={styles.avatarGuest}>
+                  <IoPersonOutline size={22} />
                 </div>
-              </>
-            ) : (
-              <>
-                <div className={styles.avatarPlaceholder}>
-                  <IoPersonOutline />
-                </div>
-                <div className={styles.userDetails}>
-                  <span className={styles.greeting}>Welcome,</span>
-                  <span
-                    className={styles.username}
-                    onClick={() => handleNavigation("/login")}
-                    style={{ cursor: "pointer", textDecoration: "underline" }}
-                  >
-                    Sign In / Register
-                  </span>
-                </div>
-              </>
-            )}
+              )}
+              <div className={styles.userDetails}>
+                {user ? (
+                  <>
+                    <span className={styles.greeting}>Hello,</span>
+                    <span className={styles.username}>
+                      {user.first_name ?? user.name ?? "User"}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className={styles.greeting}>Welcome back</span>
+                    <span
+                      className={styles.signInLink}
+                      onClick={() => go("/login")}
+                    >
+                      Sign in or Register →
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+            <button className={styles.closeBtn} onClick={onClose} aria-label="Close menu">
+              <IoClose size={20} />
+            </button>
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>
-            <IoClose />
-          </button>
+
+          {/* Quick action bar */}
+          <div className={styles.quickActions}>
+            <div className={styles.qaItem} onClick={() => go("/")}>
+              <IoHomeOutline size={20} />
+              <span>Home</span>
+            </div>
+            <div className={styles.qaItem} onClick={() => go("/product_search")}>
+              <IoSearchOutline size={20} />
+              <span>Search</span>
+            </div>
+            <div className={styles.qaItem} onClick={() => go("/cart")} style={{ position: "relative" }}>
+              <IoCartOutline size={20} />
+              {cart.items.length > 0 && (
+                <span className={styles.qaBadge}>{cart.items.length}</span>
+              )}
+              <span>Cart</span>
+            </div>
+            <div className={styles.qaItem} onClick={() => go("/news")}>
+              <IoNewspaperOutline size={20} />
+              <span>News</span>
+            </div>
+          </div>
         </div>
 
-        <div className={styles.content}>
-          {/* Auth Actions (if not logged in) */}
-          {!session?.user && (
+        {/* ── Content ── */}
+        <div className={styles.content} ref={contentRef}>
+
+          {/* Auth buttons (guest) */}
+          {!user && (
             <div className={styles.authSection}>
-              <button
-                className={styles.authBtn}
-                onClick={() => handleNavigation("/login")}
-              >
+              <button className={styles.authBtnPrimary} onClick={() => go("/login")}>
                 Sign In
               </button>
-              <button
-                className={`${styles.authBtn} ${styles.outline}`}
-                onClick={() => handleNavigation("/signup")}
-              >
+              <button className={styles.authBtnOutline} onClick={() => go("/signup")}>
                 Create Account
               </button>
             </div>
           )}
 
-          {/* Quick Links */}
-          {session?.user && (
+          {/* My Account links */}
+          {user && (
             <div className={styles.section}>
               <div className={styles.sectionTitle}>My Account</div>
-              <div
-                className={styles.menuItem}
-                onClick={() => handleNavigation("/user/profile")}
-              >
-                <IoPersonOutline className={styles.icon} />
+              <div className={styles.menuItem} onClick={() => go("/user/profile")}>
+                <div className={styles.menuIconWrap}><IoPersonOutline size={18} /></div>
                 <span>Profile</span>
+                <IoChevronForward size={14} className={styles.menuChevron} />
               </div>
-              <div
-                className={styles.menuItem}
-                onClick={() => handleNavigation("/user/orders")}
-              >
-                <IoBagHandleOutline className={styles.icon} />
+              <div className={styles.menuItem} onClick={() => go("/user/orders")}>
+                <div className={styles.menuIconWrap}><IoBagHandleOutline size={18} /></div>
                 <span>My Orders</span>
+                <IoChevronForward size={14} className={styles.menuChevron} />
+              </div>
+              <div className={styles.menuItem} onClick={() => go("/user/wishlist")}>
+                <div className={styles.menuIconWrap}><IoHeartOutline size={18} /></div>
+                <span>Wishlist</span>
+                <IoChevronForward size={14} className={styles.menuChevron} />
               </div>
             </div>
           )}
 
           {/* Categories */}
           <div className={styles.section}>
-            <div className={styles.sectionTitle}>
-              <IoGridOutline className={styles.titleIcon} />
-              Shop by Category
-            </div>
+            <div className={styles.sectionTitle}>Shop by Category</div>
             <div className={styles.categoryList}>
-              {categories && categories.length > 0 ? (
+              {categories?.length > 0 ? (
                 categories.map((cat: any) => {
-                  const catId = cat.id || cat._id;
+                  const catId = String(cat._id ?? cat.id ?? "");
+                  const isOpen = expandedId === catId;
+                  const hasSubs = Array.isArray(cat.sub_categories) && cat.sub_categories.length > 0;
+                  const cleanName = (cat.name ?? "").replace(/\s*line\s*$/i, "");
+
                   return (
                     <div key={catId} className={styles.categoryItem}>
                       <div
-                        className={`${styles.categoryHeader} ${
-                          expandedCategories.includes(catId)
-                            ? styles.active
-                            : ""
-                        }`}
-                        onClick={() => toggleCategory(catId)}
+                        className={`${styles.categoryRow} ${isOpen ? styles.categoryRowOpen : ""}`}
+                        onClick={() => {
+                          if (hasSubs) {
+                            toggleCategory(catId);
+                          } else {
+                            const encoded = typeof window !== "undefined" ? window.btoa(catId) : catId;
+                            go(`/category/${catId}?id=${encoded}&type=${encodeURIComponent(cleanName)}&categoryId=${encodeURIComponent(catId)}`);
+                          }
+                        }}
                       >
-                        <span>{cat.name}</span>
-                        {cat.sub_categories &&
-                          cat.sub_categories.length > 0 && (
-                            <span className={styles.expandIcon}>
-                              {expandedCategories.includes(catId) ? (
-                                <IoChevronDown />
-                              ) : (
-                                <IoChevronForward />
-                              )}
-                            </span>
-                          )}
+                        {cat.image ? (
+                          <img src={cat.image} alt={cleanName} className={styles.catThumb} />
+                        ) : (
+                          <div className={styles.catThumbFallback}>
+                            {cleanName[0]?.toUpperCase() ?? "?"}
+                          </div>
+                        )}
+                        <span className={styles.catName}>{cleanName}</span>
+                        {hasSubs && (
+                          <span className={styles.catChevron}>
+                            {isOpen ? <IoChevronDown size={15} /> : <IoChevronForward size={15} />}
+                          </span>
+                        )}
                       </div>
 
-                      {/* Subcategories Accordion */}
-                      <div
-                        className={`${styles.subCategoryList} ${
-                          expandedCategories.includes(catId)
-                            ? styles.expanded
-                            : ""
-                        }`}
-                      >
-                        {cat.sub_categories &&
-                          cat.sub_categories.map((sub: any) => {
-                            const subId = sub.id || sub._id;
+                      {/* Subcategories */}
+                      {hasSubs && (
+                        <div className={`${styles.subList} ${isOpen ? styles.subListOpen : ""}`}>
+                          {cat.sub_categories.map((sub: any) => {
+                            const subId = String(sub._id ?? sub.id ?? "");
+                            const subName = sub.name ?? "";
                             return (
                               <div
                                 key={subId}
-                                className={styles.subCategoryItem}
+                                className={styles.subItem}
                                 onClick={() =>
-                                  handleNavigation(
-                                    `/category/${sub.slug}?id=${window.btoa(
-                                      subId,
-                                    )}&type=${encodeURIComponent(sub.name)}`,
+                                  go(
+                                    `/category/${sub.slug ?? subId}?id=${
+                                      typeof window !== "undefined" ? window.btoa(subId) : subId
+                                    }&type=${encodeURIComponent(subName)}`,
                                   )
                                 }
                               >
-                                {sub.name}
+                                <span className={styles.subDot} />
+                                {subName}
                               </div>
                             );
                           })}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   );
                 })
@@ -208,23 +249,33 @@ const SideMenu = ({
             </div>
           </div>
 
-          {/* Footer Actions */}
-          {session?.user && (
-            <div className={styles.footer}>
-              <button
-                className={styles.logoutBtn}
-                onClick={() => {
-                  clearReduxData(dispatch);
-                  signOut({ callbackUrl: "/" });
-                  onClose();
-                }}
-              >
-                <IoLogOutOutline />
-                Sign Out
-              </button>
+          {/* Help */}
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Support</div>
+            <div className={styles.menuItem} onClick={() => go("/contact")}>
+              <div className={styles.menuIconWrap}><IoCallOutline size={18} /></div>
+              <span>Contact Us</span>
+              <IoChevronForward size={14} className={styles.menuChevron} />
             </div>
-          )}
+          </div>
         </div>
+
+        {/* ── Footer ── */}
+        {user && (
+          <div className={styles.footer}>
+            <button
+              className={styles.logoutBtn}
+              onClick={() => {
+                clearReduxData(dispatch);
+                signOut({ callbackUrl: "/" });
+                onClose();
+              }}
+            >
+              <IoLogOutOutline size={18} />
+              Sign Out
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

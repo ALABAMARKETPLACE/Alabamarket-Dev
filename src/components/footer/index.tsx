@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import "./styles.scss";
 import Link from "next/link";
@@ -28,10 +28,19 @@ const Footer = () => {
   const { t } = useTranslation();
   const pathname = usePathname();
 
+  const [showTop, setShowTop] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setShowTop(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
   return pathname?.includes("/auth") ? null : (
+    <>
     <footer className="Footer">
       <I18nextProvider i18n={i18n}>
         <Container fluid className="Footer-container">
@@ -195,15 +204,6 @@ const Footer = () => {
                   </a>
                 </Col>
               </Row>
-              <div className="back-to-top-container">
-                <button
-                  onClick={scrollToTop}
-                  className="back-to-top-btn"
-                  title="Back to top"
-                >
-                  <MdKeyboardArrowUp />
-                </button>
-              </div>
             </Col>
           </Row>
         </Container>
@@ -214,6 +214,16 @@ const Footer = () => {
         RIGHTS RESERVED
       </div>
     </footer>
+
+    <button
+      onClick={scrollToTop}
+      className={`back-to-top-btn${showTop ? " back-to-top-visible" : ""}`}
+      title="Back to top"
+      aria-label="Back to top"
+    >
+      <MdKeyboardArrowUp />
+    </button>
+    </>
   );
 };
 

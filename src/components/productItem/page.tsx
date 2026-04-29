@@ -9,6 +9,7 @@ import { Popover, Rate, App } from "antd";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 
 import { getRatingInfo } from "@/util/ratingUtils";
+import { FiShoppingBag } from "react-icons/fi";
 
 // Generate a consistent discount percentage based on product id
 const getDiscountPercentage = (productId: string): number => {
@@ -61,18 +62,25 @@ function ProductItem(props: any) {
     navigate.push(`/${props?.item?.slug}/`);
   };
 
-  // Resolve store identifier — prefer slug, fall back to store_id
+  // Resolve store identifier — prefer slug, fall back to id
   const storeIdentifier =
     props?.item?.storeDetails?.slug ||
     props?.item?.storeDetails?.store_slug ||
     props?.item?.storeDetails?.storeSlug ||
+    props?.item?.store?.slug ||
+    props?.item?.store?.store_slug ||
     props?.item?.store_slug ||
     props?.item?.storeSlug ||
+    props?.item?.storeDetails?.id ||
+    props?.item?.store?.id ||
     props?.item?.store_id ||
+    props?.item?.storeId ||
     null;
 
   const storeName =
     props?.item?.storeDetails?.store_name ||
+    props?.item?.store?.store_name ||
+    props?.item?.store?.name ||
     props?.item?.store_name ||
     null;
   const content = (
@@ -137,19 +145,23 @@ function ProductItem(props: any) {
           {props?.item?.name}
         </div>
         {storeName && (
-          storeIdentifier ? (
-            <Link
-              href={`/product_search/store/${storeIdentifier}?storeName=${encodeURIComponent(storeName ?? "")}`}
-              className="ProductItem-seller"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {storeName}
-            </Link>
-          ) : (
-            <span className="ProductItem-seller" style={{ color: "#6b7280", cursor: "default" }}>
-              {storeName}
-            </span>
-          )
+          <div className="ProductItem-seller-wrap">
+            <FiShoppingBag size={10} color="#9ca3af" style={{ flexShrink: 0 }} />
+            <span className="ProductItem-seller-by">by</span>
+            {storeIdentifier ? (
+              <Link
+                href={`/product_search/store/${storeIdentifier}?storeName=${encodeURIComponent(storeName ?? "")}`}
+                className="ProductItem-seller"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {storeName}
+              </Link>
+            ) : (
+              <span className="ProductItem-seller" style={{ cursor: "default" }}>
+                {storeName}
+              </span>
+            )}
+          </div>
         )}
         <Popover content={content} title={title}>
           <div className="d-flex gap-2">

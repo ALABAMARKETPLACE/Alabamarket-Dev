@@ -144,41 +144,50 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-// ─── Back to top ─────────────────────────────────────────────────────────────
+// ─── Back to top (fixed floating button) ─────────────────────────────────────
 .back-to-top-btn {
-  width: 42px;
-  height: 42px;
+  position: fixed;
+  bottom: 84px; // 28px chatbot bottom + ~44px chatbot height + 12px gap
+  right: 28px;
+  z-index: 1200;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: vars.$primary;
   border: none;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 24px;
   color: #fff;
-  transition: background 0.2s ease, transform 0.22s ease, box-shadow 0.22s ease;
-  box-shadow: 0 4px 14px rgba(255, 95, 21, 0.4);
+  box-shadow: 0 4px 18px rgba(255, 95, 21, 0.45);
+  opacity: 0;
+  transform: translateY(16px) scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease, box-shadow 0.2s ease, background 0.2s ease;
+
+  &.back-to-top-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
 
   &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 22px rgba(255, 95, 21, 0.55);
     background: #e55510;
+    box-shadow: 0 8px 26px rgba(255, 95, 21, 0.55);
+    transform: translateY(-3px) scale(1);
   }
 
   &:active {
-    transform: translateY(-1px);
+    transform: translateY(0) scale(0.95);
   }
 
   @media (max-width: 768px) {
-    width: 38px;
-    height: 38px;
-    font-size: 20px;
+    bottom: 80px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    font-size: 21px;
   }
-}
-
-.back-to-top-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
 }
