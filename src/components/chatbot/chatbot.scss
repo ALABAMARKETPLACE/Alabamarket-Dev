@@ -10,7 +10,9 @@
   background: linear-gradient(135deg, #ff9500 0%, #ff5f15 100%);
   border: none;
   color: white;
-  cursor: pointer;
+  cursor: grab;
+
+  &:active { cursor: grabbing; }
   display: flex;
   align-items: center;
   gap: 10px;
@@ -20,8 +22,8 @@
   position: fixed;
 
   .chatbot-fab-icon {
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
     background: rgba(255,255,255,0.2);
     overflow: hidden;
@@ -86,7 +88,7 @@
     gap: 0;
 
     .chatbot-fab-text { display: none; }
-    .chatbot-fab-icon { width: 28px; height: 28px; }
+    .chatbot-fab-icon { width: 20px; height: 20px; }
   }
 }
 
@@ -188,6 +190,14 @@
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
+}
+
+.chatbot-drag-handle {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+
+  &:active { cursor: grabbing; }
 }
 
 .chatbot-header-deco {
