@@ -148,8 +148,84 @@ const ChatBot: React.FC = () => {
   const [loading,         setLoading]         = useState(false);
   const [isMinimized,     setIsMinimized]     = useState(false);
   const [showQuickActions,setShowQuickActions]= useState(true);
+  const [dragPos,    setDragPos]    = useState<{ x: number; y: number } | null>(null);
+  const [btnDragPos, setBtnDragPos] = useState<{ x: number; y: number } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef       = useRef<HTMLTextAreaElement>(null);
+  const containerRef   = useRef<HTMLDivElement>(null);
+  const btnRef         = useRef<HTMLButtonElement>(null);
+  const dragTarget     = useRef<"window" | "button" | null>(null);
+  const dragOffset     = useRef({ x: 0, y: 0 });
+  const btnHasMoved    = useRef(false);
+
+  // ── Drag logic ─────────────────────────────────────────────────────────────
+  const onHeaderMouseDown = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    e.preventDefault();
+    if (!containerRef.current) return;
+    dragTarget.current = "window";
+    const rect = containerRef.current.getBoundingClientRect();
+    dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  const onHeaderTouchStart = (e: React.TouchEvent) => {
+    if ((e.target as HTMLElement).closest("button")) return;
+    if (!containerRef.current) return;
+    dragTarget.current = "window";
+    const rect = containerRef.current.getBoundingClientRect();
+    dragOffset.current = { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+  };
+
+  const onBtnMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!btnRef.current) return;
+    dragTarget.current = "button";
+    btnHasMoved.current = false;
+    const rect = btnRef.current.getBoundingClientRect();
+    dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  const onBtnTouchStart = (e: React.TouchEvent) => {
+    if (!btnRef.current) return;
+    dragTarget.current = "button";
+    btnHasMoved.current = false;
+    const rect = btnRef.current.getBoundingClientRect();
+    dragOffset.current = { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+  };
+
+  useEffect(() => {
+    const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(v, max));
+
+    const onMove = (clientX: number, clientY: number) => {
+      if (dragTarget.current === "window" && containerRef.current) {
+        const el = containerRef.current;
+        const x = clamp(clientX - dragOffset.current.x, 0, window.innerWidth  - el.offsetWidth);
+        const y = clamp(clientY - dragOffset.current.y, 0, window.innerHeight - el.offsetHeight);
+        setDragPos({ x, y });
+      } else if (dragTarget.current === "button" && btnRef.current) {
+        btnHasMoved.current = true;
+        const el = btnRef.current;
+        const x = clamp(clientX - dragOffset.current.x, 0, window.innerWidth  - el.offsetWidth);
+        const y = clamp(clientY - dragOffset.current.y, 0, window.innerHeight - el.offsetHeight);
+        setBtnDragPos({ x, y });
+      }
+    };
+
+    const onMouseMove = (e: MouseEvent) => onMove(e.clientX, e.clientY);
+    const onTouchMove = (e: TouchEvent) => onMove(e.touches[0].clientX, e.touches[0].clientY);
+    const onUp        = ()              => { dragTarget.current = null; };
+
+    window.addEventListener("mousemove",  onMouseMove);
+    window.addEventListener("mouseup",    onUp);
+    window.addEventListener("touchmove",  onTouchMove, { passive: true });
+    window.addEventListener("touchend",   onUp);
+    return () => {
+      window.removeEventListener("mousemove",  onMouseMove);
+      window.removeEventListener("mouseup",    onUp);
+      window.removeEventListener("touchmove",  onTouchMove);
+      window.removeEventListener("touchend",   onUp);
+    };
+  }, []);
 
   useEffect(() => {
     const loaded = loadMessagesFromStorage();
@@ -222,17 +298,23 @@ const ChatBot: React.FC = () => {
     } finally { setLoading(false); }
   };
 
+  const closeChat = () => { setIsOpen(false); setDragPos(null); };
+
   // ── Floating Button ──────────────────────────────────────────────────────────
   if (!isOpen) {
     return (
       <button
+        ref={btnRef}
         className="chatbot-floating-button"
-        onClick={() => setIsOpen(true)}
+        onClick={() => { if (!btnHasMoved.current) setIsOpen(true); }}
+        onMouseDown={onBtnMouseDown}
+        onTouchStart={onBtnTouchStart}
         aria-label="Open chat"
         suppressHydrationWarning
+        style={btnDragPos ? { left: btnDragPos.x, top: btnDragPos.y, right: "auto", bottom: "auto" } : undefined}
       >
         <span className="chatbot-fab-icon">
-          <Image src={CHATBOT_AVATAR} alt={CHATBOT_NAME} width={28} height={28} className="chatbot-avatar-img" />
+          <Image src={CHATBOT_AVATAR} alt={CHATBOT_NAME} width={20} height={20} className="chatbot-avatar-img" />
         </span>
         <span className="chatbot-fab-label">Ask {CHATBOT_NAME}</span>
         <span className="chat-pulse" />
@@ -242,10 +324,18 @@ const ChatBot: React.FC = () => {
 
   // ── Chat Window ──────────────────────────────────────────────────────────────
   return (
-    <div className={`chatbot-container${isMinimized ? " minimized" : ""}`}>
+    <div
+      ref={containerRef}
+      className={`chatbot-container${isMinimized ? " minimized" : ""}`}
+      style={dragPos ? { left: dragPos.x, top: dragPos.y, right: "auto", bottom: "auto" } : undefined}
+    >
 
-      {/* Header */}
-      <div className="chatbot-header">
+      {/* Header — drag handle */}
+      <div
+        className="chatbot-header chatbot-drag-handle"
+        onMouseDown={onHeaderMouseDown}
+        onTouchStart={onHeaderTouchStart}
+      >
         <div className="chatbot-header-deco">
           <div className="chatbot-header-circle1" />
           <div className="chatbot-header-circle2" />
@@ -271,7 +361,7 @@ const ChatBot: React.FC = () => {
             </button>
           </Tooltip>
           <Tooltip title="Close">
-            <button className="chatbot-icon-btn" onClick={() => setIsOpen(false)}>
+            <button className="chatbot-icon-btn" onClick={closeChat}>
               <CloseOutlined />
             </button>
           </Tooltip>
