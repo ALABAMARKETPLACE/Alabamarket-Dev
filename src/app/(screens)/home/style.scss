@@ -1580,12 +1580,17 @@
 
 .home-cat-grid {
   display: grid;
-  // gridTemplateColumns is set inline per render (dynamic column count)
+  grid-template-columns: repeat(4, 1fr); // mobile default
   gap: 8px;
   margin-top: 16px;
 
-  @media (max-width: 640px) {
-    gap: 6px;
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(var(--cat-cols, 7), 1fr);
+    gap: 8px;
   }
 }
 
@@ -1681,10 +1686,12 @@
   text-transform: capitalize;
   transition: color 0.2s ease;
   background: #fff;
+  word-break: break-word;
+  overflow-wrap: break-word;
 
-  @media (max-width: 640px) {
+  @media (max-width: 479px) {
     font-size: 10px;
-    padding: 5px 5px 7px;
+    padding: 5px 4px 7px;
   }
 }
 

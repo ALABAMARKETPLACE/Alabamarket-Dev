@@ -1,254 +1,295 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import Loading from "@/app/(dashboard)/_components/loading";
 import ErrorDisplay from "@/app/(dashboard)/_components/error";
-import { Tag, Button, Table, Input, InputNumber, Space, Tooltip, notification } from "antd";
+import { Tag, Button, Table, Input, Space, Tooltip, notification } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 import {
   FiRefreshCw,
   FiSearch,
-  FiChevronRight,
-  FiDollarSign,
   FiX,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiUser,
+  FiShoppingBag,
 } from "react-icons/fi";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 
+// ── Types ──────────────────────────────────────────────────────────────────────
+
+interface SettlementEstimate {
+  order_amount: number;
+  seller_amount: number;
+  company_amount: number;
+  admin_percentage: number;
+  seller_percentage: number;
+  currency: string;
+}
+
 interface AuditRecord {
-  id?: number | string;
-  reference?: string;
-  amount?: number;
-  buyerEmail?: string;
-  storeId?: number | string;
-  storeName?: string;
-  status?: string;
-  channel?: string;
-  currency?: string;
-  paidAt?: string;
-  createdAt?: string;
-  metadata?: Record<string, unknown>;
+  id: string;
+  order_id: string;
+  status: string;
+  is_guest_order: boolean;
+  totalItems: number;
+  total: number;
+  grandTotal: number;
+  deliveryCharge: number;
+  discount: number;
+  tax: number;
+  createdAt: string;
+  buyer: {
+    type: string;
+    id?: number;
+    name: string;
+    email: string;
+    phone: string;
+    image?: string;
+    country_code?: string;
+  };
+  store: {
+    id: string;
+    name: string;
+    store_name: string;
+    email: string;
+    phone: string;
+    slug: string;
+    subaccount_status: string | null;
+    paystack_subaccount_code: string | null;
+  };
+  items: { id: string; name: string; quantity: number; price: number; totalPrice: number; image: string }[];
+  audit: {
+    category: "manual_seller_payout" | "legacy_review_required" | string;
+    reason: string;
+    requires_manual_payout: boolean;
+    requires_review: boolean;
+    settlement_estimate: SettlementEstimate;
+    store_link: { has_store_assignment: boolean; has_store_record: boolean; has_active_subaccount: boolean };
+  };
+  payment: {
+    id: string;
+    paymentType: string;
+    status: string;
+    ref: string | null;
+    amount: number;
+    currency: string | null;
+    collection_mode: string;
+    paystack_account_used: string | null;
+    requires_manual_settlement: boolean;
+    manual_settlement_reason: string | null;
+  };
 }
 
-interface PaginationMeta {
-  itemCount?: number;
-  totalCount?: number;
-  total?: number;
-  totalPages?: number;
-  pageCount?: number;
-  hasNextPage?: boolean;
-  hasPreviousPage?: boolean;
-  page?: number;
-  take?: number;
-}
-
-interface AuditResponse {
-  statusCode?: number;
-  status: boolean;
-  message?: string;
-  data?: {
-    rows?: AuditRecord[];
-    meta?: PaginationMeta;
-  } | AuditRecord[];
-  meta?: PaginationMeta;
+interface Summary {
+  total_records: number;
+  total_order_amount: number;
+  total_company_amount: number;
+  total_manual_payout_amount: number;
+  manual_payout_count: number;
+  unassigned_company_collection_count: number;
+  legacy_review_count: number;
 }
 
 interface CustomSession {
-  user?: { type?: string; [key: string]: unknown };
-  role?: string;
-  type?: string;
   token?: string;
   [key: string]: unknown;
 }
 
-const PAGE_SIZE = 20;
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
-const STATUS_COLORS: Record<string, string> = {
-  success: "green",
-  failed: "red",
+const fmt = (n: number) =>
+  "₦" + (n ?? 0).toLocaleString("en-NG", { minimumFractionDigits: 2 });
+
+const ORDER_STATUS_COLORS: Record<string, string> = {
+  processing: "blue",
   pending: "orange",
-  abandoned: "default",
-  reversed: "volcano",
+  completed: "green",
+  failed: "red",
+  cancelled: "default",
 };
+
+const CATEGORY_META: Record<string, { color: string; label: string }> = {
+  manual_seller_payout:   { color: "volcano", label: "Manual Payout" },
+  legacy_review_required: { color: "purple",  label: "Legacy Review" },
+};
+
+// ── Summary Cards ─────────────────────────────────────────────────────────────
+
+function SummaryCards({ s }: { s: Summary }) {
+  const cards = [
+    { label: "Total Records",       value: String(s.total_records),                             color: "#3b82f6" },
+    { label: "Order Amount",        value: fmt(s.total_order_amount),                           color: "#10b981" },
+    { label: "Company Collected",   value: fmt(s.total_company_amount),                         color: "#f59e0b" },
+    { label: "Manual Payout Due",   value: fmt(s.total_manual_payout_amount),                   color: "#ef4444" },
+    { label: "Payout Count",        value: `${s.manual_payout_count} orders`,                   color: "#8b5cf6" },
+    { label: "Legacy Review",       value: `${s.legacy_review_count} orders`,                   color: "#6b7280" },
+  ];
+  return (
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: 12, marginBottom: 24 }}>
+      {cards.map((c) => (
+        <div key={c.label} style={{ background: "#fff", borderRadius: 10, padding: "14px 16px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)", borderTop: `3px solid ${c.color}` }}>
+          <div style={{ fontSize: 11, color: "#9ca3af", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 6 }}>{c.label}</div>
+          <div style={{ fontSize: 18, fontWeight: 700, color: "#1a1a2e" }}>{c.value}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── Table columns ──────────────────────────────────────────────────────────────
 
 const columns: ColumnsType<AuditRecord> = [
   {
-    title: "Reference",
-    dataIndex: "reference",
-    key: "reference",
-    width: 180,
-    render: (val) => <span className="table__code">{val ?? "-"}</span>,
-  },
-  {
-    title: "Buyer Email",
-    dataIndex: "buyerEmail",
-    key: "buyerEmail",
-    width: 200,
-    render: (val) => (
-      <span style={{ fontSize: 13, color: "#4a5568" }}>{val ?? "-"}</span>
+    title: "Order",
+    key: "order",
+    width: 160,
+    render: (_, r) => (
+      <div>
+        <div style={{ fontFamily: "monospace", fontSize: 12, color: "#374151", fontWeight: 600 }}>{r.order_id}</div>
+        <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2 }}>{dayjs(r.createdAt).format("DD MMM YYYY HH:mm")}</div>
+        <Tag color={ORDER_STATUS_COLORS[r.status] ?? "default"} style={{ marginTop: 4, fontSize: 10, textTransform: "capitalize" }}>
+          {r.status}
+        </Tag>
+      </div>
     ),
   },
   {
-    title: "Amount",
-    dataIndex: "amount",
-    key: "amount",
-    width: 140,
-    render: (val) => (
-      <span className="table__amount">
-        ₦{((val ?? 0) / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
-      </span>
+    title: "Buyer",
+    key: "buyer",
+    width: 170,
+    render: (_, r) => (
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+        <FiUser size={14} color="#9ca3af" style={{ marginTop: 2, flexShrink: 0 }} />
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: "#1f2937" }}>{r.buyer.name}</div>
+          <div style={{ fontSize: 11, color: "#6b7280" }}>{r.buyer.email}</div>
+          {r.is_guest_order && <Tag color="default" style={{ fontSize: 10, marginTop: 3 }}>Guest</Tag>}
+        </div>
+      </div>
     ),
   },
   {
     title: "Store",
     key: "store",
     width: 160,
-    render: (_, row) => (
-      <div>
-        <div style={{ fontWeight: 500, fontSize: 13 }}>{row.storeName ?? "-"}</div>
-        {row.storeId && (
-          <div style={{ fontSize: 11, color: "#718096" }}>ID: {row.storeId}</div>
-        )}
+    render: (_, r) => (
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+        <FiShoppingBag size={14} color="#9ca3af" style={{ marginTop: 2, flexShrink: 0 }} />
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: "#1f2937" }}>{r.store.store_name}</div>
+          <div style={{ fontSize: 11, color: "#6b7280" }}>{r.store.name}</div>
+          {r.audit.store_link.has_active_subaccount
+            ? <Tag color="green"  style={{ fontSize: 10, marginTop: 3 }}>Subaccount ✓</Tag>
+            : <Tag color="red"    style={{ fontSize: 10, marginTop: 3 }}>No Subaccount</Tag>}
+        </div>
       </div>
     ),
   },
   {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    width: 110,
-    render: (val) => (
-      <Tag
-        color={STATUS_COLORS[val ?? ""] ?? "default"}
-        style={{ textTransform: "capitalize" }}
-      >
-        {val ?? "-"}
-      </Tag>
-    ),
-  },
-  {
-    title: "Channel",
-    dataIndex: "channel",
-    key: "channel",
-    width: 100,
-    render: (val) => (
-      <span style={{ fontSize: 12, color: "#718096", textTransform: "capitalize" }}>
-        {val ?? "-"}
-      </span>
-    ),
-  },
-  {
-    title: "Date",
-    key: "date",
+    title: "Amount",
+    key: "amount",
     width: 150,
-    render: (_, row) => {
-      const d = row.paidAt ?? row.createdAt;
+    render: (_, r) => {
+      const est = r.audit.settlement_estimate;
       return (
-        <span className="table__date">
-          {d ? dayjs(d).format("DD MMM YYYY HH:mm") : "-"}
-        </span>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: "#111827" }}>{fmt(r.grandTotal)}</div>
+          <div style={{ fontSize: 11, color: "#10b981", marginTop: 2 }}>Seller: {fmt(est.seller_amount)}</div>
+          <div style={{ fontSize: 11, color: "#f59e0b" }}>Platform: {fmt(est.company_amount)}</div>
+        </div>
       );
     },
   },
+  {
+    title: "Audit",
+    key: "audit",
+    width: 140,
+    render: (_, r) => {
+      const meta = CATEGORY_META[r.audit.category] ?? { color: "default", label: r.audit.category };
+      return (
+        <div>
+          <Tag color={meta.color} style={{ fontSize: 11 }}>{meta.label}</Tag>
+          <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 4, lineHeight: 1.4 }}>
+            {r.audit.requires_manual_payout && (
+              <span style={{ color: "#ef4444", display: "flex", alignItems: "center", gap: 3 }}>
+                <FiAlertCircle size={10} /> Needs payout
+              </span>
+            )}
+            {r.audit.requires_review && (
+              <span style={{ color: "#8b5cf6", display: "flex", alignItems: "center", gap: 3 }}>
+                <FiAlertCircle size={10} /> Needs review
+              </span>
+            )}
+            {!r.audit.requires_manual_payout && !r.audit.requires_review && (
+              <span style={{ color: "#10b981", display: "flex", alignItems: "center", gap: 3 }}>
+                <FiCheckCircle size={10} /> OK
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    title: "Payment",
+    key: "payment",
+    width: 160,
+    render: (_, r) => (
+      <div>
+        <div style={{ fontFamily: "monospace", fontSize: 11, color: "#374151" }}>{r.payment.ref ?? "—"}</div>
+        <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 2, textTransform: "capitalize" }}>
+          {r.payment.collection_mode?.replace(/_/g, " ")}
+        </div>
+        <Tag
+          color={r.payment.status === "success" ? "green" : r.payment.status === "pending" ? "orange" : "red"}
+          style={{ fontSize: 10, marginTop: 3, textTransform: "capitalize" }}
+        >
+          {r.payment.status}
+        </Tag>
+      </div>
+    ),
+  },
 ];
+
+// ── Page ───────────────────────────────────────────────────────────────────────
 
 function Page() {
   const { data: sessionData, status: authStatus } = useSession();
   const session = sessionData as CustomSession | null;
-  const router = useRouter();
 
-  const [page, setPage] = useState(1);
-  const [referenceInput, setReferenceInput] = useState("");
-  const [emailInput, setEmailInput] = useState("");
-  const [storeIdInput, setStoreIdInput] = useState<number | null>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch]           = useState("");
 
-  // Applied filters (only committed on search)
-  const [reference, setReference] = useState("");
-  const [buyerEmail, setBuyerEmail] = useState("");
-  const [storeId, setStoreId] = useState<number | null>(null);
-
-  const applyFilters = useCallback(() => {
-    setReference(referenceInput.trim());
-    setBuyerEmail(emailInput.trim());
-    setStoreId(storeIdInput ?? null);
-    setPage(1);
-  }, [referenceInput, emailInput, storeIdInput]);
-
-  const clearFilters = useCallback(() => {
-    setReferenceInput("");
-    setEmailInput("");
-    setStoreIdInput(null);
-    setReference("");
-    setBuyerEmail("");
-    setStoreId(null);
-    setPage(1);
-  }, []);
-
-  const hasActiveFilters = reference || buyerEmail || storeId;
-
-  const queryParams: Record<string, unknown> = { page, take: PAGE_SIZE };
-  if (reference) queryParams.reference = reference;
-  if (buyerEmail) queryParams.buyerEmail = buyerEmail;
-  if (storeId) queryParams.storeId = storeId;
-
-  const queryKey = [
-    API.PAYSTACK_MANUAL_SETTLEMENT_AUDIT,
-    page,
-    reference,
-    buyerEmail,
-    storeId,
-  ];
+  const applySearch = useCallback(() => setSearch(searchInput.trim()), [searchInput]);
+  const clearSearch = useCallback(() => { setSearchInput(""); setSearch(""); }, []);
 
   const { data: raw, isLoading, isFetching, isError, error, refetch } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      console.log("[ManualSettlementAudit] Fetching:", queryParams);
-      const res = await GET(
-        API.PAYSTACK_MANUAL_SETTLEMENT_AUDIT,
-        queryParams,
-        null,
-        { token: session?.token },
-      );
-      console.log("[ManualSettlementAudit] Response:", res);
-      return res;
-    },
+    queryKey: [API.PAYSTACK_MANUAL_SETTLEMENT_AUDIT],
+    queryFn: () => GET(API.PAYSTACK_MANUAL_SETTLEMENT_AUDIT, {}, null, { token: session?.token }),
     enabled: authStatus === "authenticated" && !!session?.token,
     retry: false,
   });
 
-  useEffect(() => {
-    if (isError && error) {
-      const msg = (error as Error)?.message ?? "Failed to load audit records.";
-      console.error("[ManualSettlementAudit] Error:", msg);
-      notification.error({
-        message: "Failed to load audit records",
-        description: msg,
-        duration: 6,
-      });
-    }
-  }, [isError, error]);
+  const response = raw as { status: boolean; data?: { summary?: Summary; records?: AuditRecord[] } } | undefined;
+  const summary  = response?.data?.summary;
+  const allRows  = response?.data?.records ?? [];
 
-  const response = raw as AuditResponse | undefined;
-  const dataBlock = response?.data;
-  const rows: AuditRecord[] = Array.isArray(dataBlock)
-    ? dataBlock
-    : Array.isArray((dataBlock as any)?.rows)
-    ? (dataBlock as any).rows
-    : [];
-
-  const metaBlock: PaginationMeta =
-    (dataBlock as any)?.meta ?? response?.meta ?? {};
-
-  const totalCount =
-    metaBlock.itemCount ??
-    metaBlock.totalCount ??
-    metaBlock.total ??
-    (metaBlock.totalPages ?? metaBlock.pageCount ?? 1) * PAGE_SIZE;
+  const rows = search
+    ? allRows.filter(
+        (r) =>
+          r.order_id.includes(search) ||
+          r.buyer.name.toLowerCase().includes(search.toLowerCase()) ||
+          r.buyer.email.toLowerCase().includes(search.toLowerCase()) ||
+          r.store.store_name.toLowerCase().includes(search.toLowerCase()) ||
+          (r.payment.ref ?? "").includes(search),
+      )
+    : allRows;
 
   return (
     <>
@@ -257,111 +298,56 @@ function Page() {
         bredcume="Dashboard / Settlement Audit"
         icon={<HiOutlineDocumentReport />}
       >
-        <Button
-          onClick={() => refetch()}
-          loading={isFetching && !isLoading}
-          icon={<FiRefreshCw />}
-        >
+        <Button onClick={() => refetch()} loading={isFetching && !isLoading} icon={<FiRefreshCw />}>
           Refresh
         </Button>
       </PageHeader>
 
-      {/* Filter bar */}
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          flexWrap: "wrap",
-          alignItems: "flex-end",
-          marginBottom: 20,
-          padding: "14px 16px",
-          background: "#fff",
-          borderRadius: 10,
-          boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span style={{ fontSize: 11, color: "#718096", fontWeight: 500 }}>Reference</span>
-          <Input
-            prefix={<FiSearch size={13} color="#9ca3af" />}
-            placeholder="PSK_REF_123"
-            value={referenceInput}
-            onChange={(e) => setReferenceInput(e.target.value)}
-            onPressEnter={applyFilters}
-            style={{ width: 190 }}
-            allowClear
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span style={{ fontSize: 11, color: "#718096", fontWeight: 500 }}>Buyer Email</span>
-          <Input
-            prefix={<FiSearch size={13} color="#9ca3af" />}
-            placeholder="buyer@example.com"
-            value={emailInput}
-            onChange={(e) => setEmailInput(e.target.value)}
-            onPressEnter={applyFilters}
-            style={{ width: 210 }}
-            allowClear
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span style={{ fontSize: 11, color: "#718096", fontWeight: 500 }}>Store ID</span>
-          <InputNumber
-            placeholder="e.g. 22"
-            value={storeIdInput}
-            onChange={(v) => setStoreIdInput(v)}
-            onPressEnter={applyFilters}
-            style={{ width: 120 }}
-            min={1}
-          />
-        </div>
-
-        <Space style={{ marginTop: 18 }}>
-          <Button type="primary" icon={<FiSearch />} onClick={applyFilters}>
-            Search
-          </Button>
-          {hasActiveFilters && (
-            <Tooltip title="Clear all filters">
-              <Button icon={<FiX />} onClick={clearFilters}>
-                Clear
-              </Button>
-            </Tooltip>
-          )}
-        </Space>
-      </div>
-
       {isLoading ? (
         <Loading />
       ) : isError ? (
-        <ErrorDisplay
-          description={(error as Error)?.message}
-          onRetry={() => refetch()}
-        />
+        <ErrorDisplay description={(error as Error)?.message} onRetry={() => refetch()} />
       ) : (
         <>
+          {summary && <SummaryCards s={summary} />}
+
+          {/* Search bar */}
+          <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16, flexWrap: "wrap" }}>
+            <Input
+              prefix={<FiSearch size={13} color="#9ca3af" />}
+              placeholder="Search order ID, buyer, store or payment ref…"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onPressEnter={applySearch}
+              style={{ maxWidth: 340 }}
+              allowClear
+            />
+            <Space>
+              <Button type="primary" icon={<FiSearch />} onClick={applySearch}>Search</Button>
+              {search && (
+                <Tooltip title="Clear search">
+                  <Button icon={<FiX />} onClick={clearSearch}>Clear</Button>
+                </Tooltip>
+              )}
+            </Space>
+            <span style={{ fontSize: 12, color: "#9ca3af", marginLeft: "auto" }}>
+              {rows.length} of {allRows.length} records
+            </span>
+          </div>
+
           {/* Desktop Table */}
-          <div className="hide-tablet" style={{ marginBottom: 24 }}>
+          <div className="hide-tablet">
             <Table
               columns={columns}
               dataSource={rows}
-              rowKey={(r) => String(r.id ?? r.reference ?? Math.random())}
-              pagination={{
-                pageSize: PAGE_SIZE,
-                current: page,
-                total: totalCount,
-                showSizeChanger: false,
-                showTotal: (total) => `${total} records`,
-                onChange: (p) => setPage(p),
-              }}
+              rowKey={(r) => r.id}
+              pagination={{ pageSize: 20, showSizeChanger: false, showTotal: (t) => `${t} records` }}
               loading={isFetching}
-              scroll={{ x: 1050 }}
+              scroll={{ x: 1000 }}
               locale={{
                 emptyText: (
-                  <div className="table__empty-state">
-                    <FiDollarSign className="table__empty-icon" />
-                    <p className="table__empty-text">No audit records found.</p>
+                  <div style={{ padding: "40px 0", color: "#9ca3af", textAlign: "center" }}>
+                    No audit records found.
                   </div>
                 ),
               }}
@@ -373,83 +359,51 @@ function Page() {
             {rows.length === 0 ? (
               <div className="dashboard-tableMobileEmpty">No audit records found.</div>
             ) : (
-              rows.map((r, i) => (
-                <div
-                  key={String(r.id ?? r.reference ?? i)}
-                  className="dashboard-tableMobileCard"
-                >
-                  <div className="dashboard-tableMobileHeader">
-                    <div className="dashboard-tableMobileImage">
-                      <FiDollarSign
-                        size={22}
-                        color="#718096"
-                        style={{ margin: "auto", display: "block", marginTop: 12 }}
-                      />
-                    </div>
-                    <div className="dashboard-tableMobileTitle" style={{ flex: 1, minWidth: 0 }}>
-                      <div className="title">{r.reference ?? "-"}</div>
-                      <div className="sub">{r.buyerEmail}</div>
-                      <div style={{ marginTop: 6 }}>
-                        <Tag
-                          color={STATUS_COLORS[r.status ?? ""] ?? "default"}
-                          style={{ textTransform: "capitalize", fontSize: 11 }}
-                        >
-                          {r.status ?? "-"}
-                        </Tag>
+              rows.map((r) => {
+                const est  = r.audit.settlement_estimate;
+                const meta = CATEGORY_META[r.audit.category] ?? { color: "default", label: r.audit.category };
+                return (
+                  <div key={r.id} className="dashboard-tableMobileCard">
+                    <div className="dashboard-tableMobileHeader">
+                      <div className="dashboard-tableMobileTitle" style={{ flex: 1, minWidth: 0 }}>
+                        <div className="title" style={{ fontFamily: "monospace", fontSize: 12 }}>{r.order_id}</div>
+                        <div className="sub">{r.buyer.name} · {r.buyer.email}</div>
+                        <div style={{ marginTop: 6, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                          <Tag color={ORDER_STATUS_COLORS[r.status] ?? "default"} style={{ textTransform: "capitalize", fontSize: 10 }}>{r.status}</Tag>
+                          <Tag color={meta.color} style={{ fontSize: 10 }}>{meta.label}</Tag>
+                          {r.is_guest_order && <Tag color="default" style={{ fontSize: 10 }}>Guest</Tag>}
+                        </div>
                       </div>
                     </div>
-                    <FiChevronRight size={16} color="#9ca3af" style={{ flexShrink: 0 }} />
+                    <div className="dashboard-tableMobileBody">
+                      <div className="dashboard-tableMobileRow">
+                        <span className="label">Store</span>
+                        <span className="value">{r.store.store_name}</span>
+                      </div>
+                      <div className="dashboard-tableMobileRow">
+                        <span className="label">Order Total</span>
+                        <span className="value" style={{ fontWeight: 700 }}>{fmt(r.grandTotal)}</span>
+                      </div>
+                      <div className="dashboard-tableMobileRow">
+                        <span className="label">Seller Gets</span>
+                        <span className="value" style={{ color: "#10b981" }}>{fmt(est.seller_amount)}</span>
+                      </div>
+                      <div className="dashboard-tableMobileRow">
+                        <span className="label">Platform Gets</span>
+                        <span className="value" style={{ color: "#f59e0b" }}>{fmt(est.company_amount)}</span>
+                      </div>
+                      <div className="dashboard-tableMobileRow">
+                        <span className="label">Payment Ref</span>
+                        <span className="value" style={{ fontFamily: "monospace", fontSize: 11 }}>{r.payment.ref ?? "—"}</span>
+                      </div>
+                      <div className="dashboard-tableMobileRow">
+                        <span className="label">Date</span>
+                        <span className="value">{dayjs(r.createdAt).format("DD MMM YYYY HH:mm")}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="dashboard-tableMobileBody">
-                    <div className="dashboard-tableMobileRow">
-                      <span className="label">Amount</span>
-                      <span className="value table__amount">
-                        ₦{((r.amount ?? 0) / 100).toLocaleString("en-NG", { minimumFractionDigits: 2 })}
-                      </span>
-                    </div>
-                    <div className="dashboard-tableMobileRow">
-                      <span className="label">Store</span>
-                      <span className="value">{r.storeName ?? r.storeId ?? "-"}</span>
-                    </div>
-                    <div className="dashboard-tableMobileRow">
-                      <span className="label">Channel</span>
-                      <span className="value" style={{ textTransform: "capitalize" }}>
-                        {r.channel ?? "-"}
-                      </span>
-                    </div>
-                    <div className="dashboard-tableMobileRow">
-                      <span className="label">Date</span>
-                      <span className="value table__date">
-                        {(r.paidAt ?? r.createdAt)
-                          ? dayjs(r.paidAt ?? r.createdAt).format("DD MMM YYYY")
-                          : "-"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-
-            {totalCount > PAGE_SIZE && (
-              <div style={{ display: "flex", justifyContent: "center", gap: 12, padding: "16px 0" }}>
-                <Button
-                  size="small"
-                  disabled={page <= 1}
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                >
-                  Previous
-                </Button>
-                <span style={{ fontSize: 13, color: "#6b7280", alignSelf: "center" }}>
-                  Page {page} of {Math.ceil(totalCount / PAGE_SIZE)}
-                </span>
-                <Button
-                  size="small"
-                  disabled={page >= Math.ceil(totalCount / PAGE_SIZE)}
-                  onClick={() => setPage((p) => p + 1)}
-                >
-                  Next
-                </Button>
-              </div>
+                );
+              })
             )}
           </div>
         </>

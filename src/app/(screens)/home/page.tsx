@@ -142,7 +142,7 @@ function CategoryStrip({ categories }: { categories: any[] }) {
       </div>
       <div
         className="home-cat-grid"
-        style={{ gridTemplateColumns: `repeat(${cols}, 1fr)` }}
+        style={{ "--cat-cols": String(cols) } as React.CSSProperties}
       >
         {items.map((cat: any, i: number) =>
           cat.isViewAll ? (
