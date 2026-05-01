@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,8 @@ export default function CategorySidebar() {
   const router = useRouter();
   const sidebarRef = useRef<HTMLElement>(null);
   const [flyout, setFlyout] = useState<FlyoutState>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const leaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const cancelLeave = () => {
@@ -69,7 +71,7 @@ export default function CategorySidebar() {
     return `/category/${sub.slug ?? id}?id=${enc}&type=${encodeURIComponent(sub.name ?? "")}`;
   };
 
-  if (!categories?.length) return null;
+  if (!mounted || !categories?.length) return null;
 
   const flyoutEl = flyout && typeof document !== "undefined"
     ? createPortal(
