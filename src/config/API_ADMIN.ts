@@ -37,6 +37,12 @@ const API_ADMIN = {
 
   APP_USERS: "user", //
   USER_DETAILS: "user/details/", //to get all user info
+  ADMIN_INVITE: "users/admin-invite", // POST — send admin invite email
+  ADMIN_INVITE_ACCEPT: "users/admin-invite/accept", // POST — accept invite (public)
+  ASSIGN_ADMIN: "users/", // PATCH {id}/assign-admin
+  UPGRADE_TO_SELLER: "users/upgrade-to-seller", // POST — upgrade user to seller
+  DOWNGRADE_TO_BUYER: "users/downgrade-to-buyer", // POST — downgrade user to buyer
+  ACTIVE_ROLE: "users/me/active-role", // PATCH — switch current user's active role
   ADDRESS_GET: "address/all/",
 
   CORPORATE_STORE_GETALL: "coorporate_store/pgn/", //get

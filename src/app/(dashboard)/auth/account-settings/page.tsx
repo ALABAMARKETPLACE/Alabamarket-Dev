@@ -8,19 +8,86 @@ import {
   Descriptions,
   Form,
   Input,
+  Select,
   Tabs,
   Typography,
   message,
 } from "antd";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
-import { GET, PUT } from "@/util/apicall";
+import { GET, PATCH, PUT } from "@/util/apicall";
 import API from "@/config/API";
+import API_ADMIN from "@/config/API_ADMIN";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import SubscriptionTab from "./_components/subscriptionTab";
 import { useSearchParams } from "next/navigation";
 
 const tabKey = "account-details";
+
+const ROLE_OPTIONS = [
+  { value: "buyer",  label: "Buyer — browse and purchase products" },
+  { value: "seller", label: "Seller — manage store and list products" },
+  { value: "admin",  label: "Admin — access the admin dashboard" },
+];
+
+function RoleTab() {
+  const [roleForm] = Form.useForm();
+
+  const { mutate: switchRole, isPending } = useMutation({
+    mutationFn: (role: string) =>
+      PATCH(API_ADMIN.ACTIVE_ROLE, { role } as unknown as Record<string, unknown>),
+    onSuccess: (res: any) => {
+      if (res?.status === false) {
+        message.error(res?.message || "Failed to switch active role.");
+        return;
+      }
+      message.success("Active role updated. Please refresh the page to see changes.");
+    },
+    onError: (err: any) => {
+      message.error(err?.message || "Failed to switch active role.");
+    },
+  });
+
+  return (
+    <div className="d-flex flex-column gap-3">
+      <Alert
+        showIcon
+        type="info"
+        message="Switch your active role"
+        description="Your active role determines which dashboard and features you see. Changing your role takes effect on your next page load."
+      />
+
+      <Card title="Active Role" size="small" variant="borderless">
+        <Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
+          Select the role you want to be active in your current session. You must
+          already have the role assigned to your account before you can switch to it.
+        </Typography.Paragraph>
+        <Form
+          form={roleForm}
+          layout="vertical"
+          requiredMark={false}
+          onFinish={(v) => switchRole(v.role)}
+          style={{ maxWidth: 420 }}
+        >
+          <Form.Item
+            name="role"
+            label="Switch to Role"
+            rules={[{ required: true, message: "Please select a role" }]}
+          >
+            <Select
+              options={ROLE_OPTIONS}
+              placeholder="Select active role"
+              size="large"
+            />
+          </Form.Item>
+          <Button type="primary" htmlType="submit" loading={isPending}>
+            Apply Role
+          </Button>
+        </Form>
+      </Card>
+    </div>
+  );
+}
 
 function AccountSettingsPage() {
   const [form] = Form.useForm();
@@ -199,6 +266,9 @@ function AccountSettingsPage() {
           </Tabs.TabPane>
           <Tabs.TabPane tab="Subscription Plan" key="subscription">
             <SubscriptionTab />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Role & Access" key="role">
+            <RoleTab />
           </Tabs.TabPane>
         </Tabs>
       </Card>
