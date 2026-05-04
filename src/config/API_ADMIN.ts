@@ -109,6 +109,9 @@ const API_ADMIN = {
   USER_CHECK_EMAIL: "auth/checkEmail/", //check email
   USER_FORGOT_PASSWORD: "auth/forgot-password", //post forgot password request
 
+  ADMIN_FORGOT_PASSWORD: "admin/auth/forgot-password", // POST — send admin reset email
+  ADMIN_RESET_PASSWORD: "admin/auth/reset-password",   // POST — set new admin password
+
   //SUBSCRIPTION PLANS API
   SUBSCRIPTION_PLANS: "subscription-plans", //GET,POST,PUT,DELETE
   SUBSCRIPTION_PLANS_FEATURED_POSITION: "subscription-plans/featured-position", //PUT - Update featured position

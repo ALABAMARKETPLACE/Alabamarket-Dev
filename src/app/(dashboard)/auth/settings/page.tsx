@@ -11,6 +11,7 @@ import States from "./states";
 import Countries from "./countries";
 import NewDistanceChargePage from "./new-distance-charge/page";
 import SubscriptionPlansPage from "./subscription-plans/page";
+import Security from "./security";
 
 function Page() {
   const searchParams = useSearchParams();
@@ -67,6 +68,9 @@ function Page() {
         </Tabs.TabPane>
         <Tabs.TabPane tab={<span>Subscription Plans</span>} key="7">
           <SubscriptionPlansPage />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab={<span>Security</span>} key="8">
+          <Security />
         </Tabs.TabPane>
       </Tabs>
     </div>
