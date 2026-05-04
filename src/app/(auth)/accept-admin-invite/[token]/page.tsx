@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 import { Button, Form, Input, notification, Result } from "antd";
 import { useState } from "react";
 import { PUBLIC_POST } from "@/util/apicall";

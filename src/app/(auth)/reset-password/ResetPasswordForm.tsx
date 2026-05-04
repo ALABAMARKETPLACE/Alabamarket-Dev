@@ -1,21 +1,24 @@
 "use client";
-export const dynamic = "force-dynamic";
 import { useState } from "react";
 import { Button, Form, Input, Result, notification } from "antd";
 import { PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
-import { useRouter, useParams } from "next/navigation";
-import "../../forgot-password/style.scss";
+import { useRouter, useSearchParams } from "next/navigation";
+import "../forgot-password/style.scss";
 
-function UserResetPassword() {
+function ResetPasswordForm() {
   const [notifApi, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
   const [done, setDone] = useState(false);
   const router = useRouter();
-  const params = useParams();
-  const token = params?.token as string;
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
 
   const handleSubmit = async (values: { password: string }) => {
+    if (!token) {
+      notifApi.error({ message: "Reset token is missing. Please use the link from your email." });
+      return;
+    }
     try {
       setIsLoading(true);
       const res: any = await PUBLIC_POST(API.USER_RESET_PASSWORD, {
@@ -120,4 +123,4 @@ function UserResetPassword() {
   );
 }
 
-export default UserResetPassword;
+export default ResetPasswordForm;
