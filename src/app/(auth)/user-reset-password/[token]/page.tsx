@@ -4,7 +4,7 @@ import { Button, Form, Input, Result, notification } from "antd";
 import { PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { useRouter, useParams } from "next/navigation";
-import "../../../forgot-password/style.scss";
+import "../../forgot-password/style.scss";
 
 function UserResetPassword() {
   const [notifApi, contextHolder] = notification.useNotification();
