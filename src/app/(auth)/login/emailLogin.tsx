@@ -82,7 +82,7 @@ function EmailLogin() {
           <div className="col-sm-6">
             <div
               className="LoginScreen-txt3 h-100 d-flex align-items-center"
-              onClick={() => navigation.push("/forgot-password")}
+              onClick={() => navigation.push("/user-forgot-password")}
             >
               Forgot password ?
             </div>
@@ -92,7 +92,6 @@ function EmailLogin() {
               loading={isLoading}
               block
               size="large"
-              // type="primary"
               className="btn-clr"
               htmlType="submit"
               style={{ height: 45 }}

@@ -17,7 +17,7 @@ function ForgotPassword() {
   const handleSubmit = async (val: any) => {
     try {
       setIsLoading(true);
-      const response: any = await POST(API.USER_FORGOT_PASSWORD, { email: val?.email });
+      const response: any = await POST(API.ADMIN_FORGOT_PASSWORD, { email: val?.email });
       if (response.status) {
         setSentEmail(val?.email);
         setSent(true);
