@@ -111,6 +111,7 @@ const API_ADMIN = {
 
   ADMIN_FORGOT_PASSWORD: "admin/auth/forgot-password", // POST — send admin reset email
   ADMIN_RESET_PASSWORD: "admin/auth/reset-password",   // POST — set new admin password
+  ADMIN_CHANGE_PASSWORD: "auth/change-password",        // PATCH — change password (authenticated)
 
   //SUBSCRIPTION PLANS API
   SUBSCRIPTION_PLANS: "subscription-plans", //GET,POST,PUT,DELETE
