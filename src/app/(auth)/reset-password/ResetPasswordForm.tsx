@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form, Input, Result, notification } from "antd";
 import { PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
@@ -7,30 +7,43 @@ import { useRouter, useSearchParams } from "next/navigation";
 import "../forgot-password/style.scss";
 
 function ResetPasswordForm() {
+  const [form] = Form.useForm();
   const [notifApi, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
   const [done, setDone] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") ?? "";
+  const tokenFromUrl = searchParams.get("token") ?? "";
 
-  const handleSubmit = async (values: { password: string }) => {
-    if (!token) {
-      notifApi.error({ message: "Reset token is missing. Please use the link from your email." });
-      return;
-    }
+  useEffect(() => {
+    const savedEmail = sessionStorage.getItem("reset_email") ?? "";
+    form.setFieldsValue({
+      email: savedEmail,
+      token: tokenFromUrl,
+    });
+  }, [form, tokenFromUrl]);
+
+  const handleSubmit = async (values: {
+    email: string;
+    token: string;
+    newPassword: string;
+    confirmPassword: string;
+  }) => {
     try {
       setIsLoading(true);
       const res: any = await PUBLIC_POST(API.USER_RESET_PASSWORD, {
-        token,
-        password: values.password,
+        email:           values.email,
+        token:           values.token,
+        newPassword:     values.newPassword,
+        confirmPassword: values.confirmPassword,
       });
       if (res?.status === false) {
         notifApi.error({
-          message: res?.message || "Password reset failed. The link may have expired.",
+          message: res?.message || "Password reset failed. The code may have expired.",
         });
         return;
       }
+      sessionStorage.removeItem("reset_email");
       setDone(true);
     } catch (err: any) {
       notifApi.error({
@@ -49,8 +62,8 @@ function ResetPasswordForm() {
           {done ? (
             <Result
               status="success"
-              title="Password Updated!"
-              subTitle="Your password has been reset successfully. You can now sign in with your new password."
+              title="Password Reset!"
+              subTitle="Your password has been updated successfully. You can now sign in."
               extra={
                 <Button
                   type="primary"
@@ -66,11 +79,37 @@ function ResetPasswordForm() {
           ) : (
             <>
               <h2 className="LoginScreen-txt1">Reset Password</h2>
-              <p className="LoginScreen-txt2">Enter your new password below.</p>
+              <p className="LoginScreen-txt2">
+                Enter the reset code from your email and choose a new password.
+              </p>
 
-              <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+              <Form
+                form={form}
+                layout="vertical"
+                onFinish={handleSubmit}
+                requiredMark={false}
+              >
                 <Form.Item
-                  name="password"
+                  name="email"
+                  label="Email Address"
+                  rules={[
+                    { required: true, message: "Email is required" },
+                    { type: "email", message: "Enter a valid email" },
+                  ]}
+                >
+                  <Input size="large" placeholder="your@email.com" />
+                </Form.Item>
+
+                <Form.Item
+                  name="token"
+                  label="Reset Code"
+                  rules={[{ required: true, message: "Reset code is required" }]}
+                >
+                  <Input size="large" placeholder="Paste the code from your email" />
+                </Form.Item>
+
+                <Form.Item
+                  name="newPassword"
                   label="New Password"
                   rules={[
                     { required: true, message: "Password is required" },
@@ -81,14 +120,14 @@ function ResetPasswordForm() {
                 </Form.Item>
 
                 <Form.Item
-                  name="confirm"
+                  name="confirmPassword"
                   label="Confirm Password"
-                  dependencies={["password"]}
+                  dependencies={["newPassword"]}
                   rules={[
                     { required: true, message: "Please confirm your password" },
                     ({ getFieldValue }) => ({
                       validator(_, value) {
-                        if (!value || getFieldValue("password") === value)
+                        if (!value || getFieldValue("newPassword") === value)
                           return Promise.resolve();
                         return Promise.reject(new Error("Passwords do not match"));
                       },

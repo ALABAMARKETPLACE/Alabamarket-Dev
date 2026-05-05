@@ -1,29 +1,31 @@
 "use client";
-import { useState } from "react";
-import { Button, Card, Form, Input, Result, Typography, notification } from "antd";
+import { Button, Card, Form, Input, Typography, notification } from "antd";
 import { useMutation } from "@tanstack/react-query";
-import { POST } from "@/util/apicall";
+import { PATCH } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
-import { MdOutlineLockReset } from "react-icons/md";
 
 const { Text } = Typography;
 
 function Security() {
+  const [form] = Form.useForm();
   const [notifApi, contextHolder] = notification.useNotification();
-  const [sentEmail, setSentEmail] = useState("");
 
-  const { mutate: sendReset, isPending } = useMutation({
-    mutationFn: (email: string) =>
-      POST(API.ADMIN_FORGOT_PASSWORD, { email } as unknown as Record<string, unknown>),
-    onSuccess: (res: any, email) => {
+  const { mutate: changePassword, isPending } = useMutation({
+    mutationFn: (values: {
+      oldPassword: string;
+      newPassword: string;
+      confirmPassword: string;
+    }) => PATCH(API.ADMIN_CHANGE_PASSWORD, values as unknown as Record<string, unknown>),
+    onSuccess: (res: any) => {
       if (res?.status === false) {
-        notifApi.error({ message: res?.message || "Failed to send reset email." });
+        notifApi.error({ message: res?.message || "Failed to change password." });
         return;
       }
-      setSentEmail(email);
+      notifApi.success({ message: "Password changed successfully." });
+      form.resetFields();
     },
     onError: (err: any) => {
-      notifApi.error({ message: err?.message || "Failed to send reset email. Please try again." });
+      notifApi.error({ message: err?.message || "Failed to change password. Please try again." });
     },
   });
 
@@ -31,64 +33,67 @@ function Security() {
     <>
       {contextHolder}
       <Card style={{ maxWidth: 480 }}>
-        {sentEmail ? (
-          <Result
-            icon={<MdOutlineLockReset size={52} color="#6d28d9" />}
-            title="Check your inbox"
-            subTitle={
-              <>
-                A password reset link has been sent to{" "}
-                <strong>{sentEmail}</strong>. Click the link in the email to
-                set a new password.
-              </>
-            }
-            extra={
-              <Button onClick={() => setSentEmail("")}>
-                Use a different email
-              </Button>
-            }
-          />
-        ) : (
-          <>
-            <div style={{ marginBottom: 20 }}>
-              <Text strong style={{ fontSize: 15 }}>
-                Reset Admin Password
-              </Text>
-              <br />
-              <Text type="secondary" style={{ fontSize: 13 }}>
-                Enter your admin email address. We'll send you a secure link
-                to set a new password.
-              </Text>
-            </div>
+        <div style={{ marginBottom: 20 }}>
+          <Text strong style={{ fontSize: 15 }}>Change Password</Text>
+          <br />
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            Update your admin account password. You'll need your current password to confirm.
+          </Text>
+        </div>
 
-            <Form
-              layout="vertical"
-              requiredMark={false}
-              onFinish={(v) => sendReset(v.email)}
-            >
-              <Form.Item
-                name="email"
-                label="Admin Email"
-                rules={[
-                  { required: true, message: "Email is required" },
-                  { type: "email", message: "Enter a valid email address" },
-                ]}
-              >
-                <Input size="large" placeholder="your-email@example.com" />
-              </Form.Item>
+        <Form
+          form={form}
+          layout="vertical"
+          requiredMark={false}
+          onFinish={(v) => changePassword(v)}
+        >
+          <Form.Item
+            name="oldPassword"
+            label="Current Password"
+            rules={[{ required: true, message: "Current password is required" }]}
+          >
+            <Input.Password size="large" placeholder="Enter current password" />
+          </Form.Item>
 
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={isPending}
-                size="large"
-                block
-              >
-                Send Reset Email
-              </Button>
-            </Form>
-          </>
-        )}
+          <Form.Item
+            name="newPassword"
+            label="New Password"
+            rules={[
+              { required: true, message: "New password is required" },
+              { min: 8, message: "At least 8 characters" },
+            ]}
+          >
+            <Input.Password size="large" placeholder="Enter new password" />
+          </Form.Item>
+
+          <Form.Item
+            name="confirmPassword"
+            label="Confirm New Password"
+            dependencies={["newPassword"]}
+            rules={[
+              { required: true, message: "Please confirm your new password" },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value || getFieldValue("newPassword") === value)
+                    return Promise.resolve();
+                  return Promise.reject(new Error("Passwords do not match"));
+                },
+              }),
+            ]}
+          >
+            <Input.Password size="large" placeholder="Confirm new password" />
+          </Form.Item>
+
+          <Button
+            type="primary"
+            htmlType="submit"
+            loading={isPending}
+            size="large"
+            block
+          >
+            Change Password
+          </Button>
+        </Form>
       </Card>
     </>
   );
