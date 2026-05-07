@@ -20,6 +20,20 @@ function Checkout() {
   useEffect(() => {
     window.scrollTo(0, 0);
 
+    // Fire Meta Pixel Purchase event before clearing order data
+    try {
+      const fbq = (window as any).fbq;
+      if (typeof fbq === "function") {
+        const raw = localStorage.getItem("last_order_response") || localStorage.getItem("order_payload");
+        const parsed = raw ? JSON.parse(raw) : null;
+        const value = parsed?.data?.total_price ?? parsed?.total_price ?? parsed?.amount ?? undefined;
+        fbq("track", "Purchase", {
+          currency: "NGN",
+          ...(value !== undefined && { value: Number(value) }),
+        });
+      }
+    } catch {}
+
     // Order was already created by the backend at /paystack/success callback.
     // Just clear local state and cart.
     localStorage.removeItem("order_payload");

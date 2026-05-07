@@ -32,6 +32,41 @@ function DetailsCard(props: any) {
   const [currentVariant, setCurrentVariant] = useState<any>({});
   const [defaultImage,   setDefaultImage]   = useState<string>(props?.data?.image);
 
+  // ── Breadcrumb navigation ──────────────────────────────────────
+  // Top-level IDs from the API response (categoryName object only has .name)
+  const catIdRaw =
+    props?.data?.categoryId ??
+    props?.data?.category_id ??
+    props?.data?.category ??
+    props?.data?.categoryName?._id ??
+    props?.data?.categoryName?.id;
+  const catId   = catIdRaw != null && catIdRaw !== "" ? String(catIdRaw) : "";
+  const catName = props?.data?.categoryName?.name ?? "";
+
+  const subIdRaw =
+    props?.data?.subCategoryId ??
+    props?.data?.sub_category_id ??
+    props?.data?.subCategory ??
+    props?.data?.subCategoryName?._id ??
+    props?.data?.subCategoryName?.id;
+  const subId   = subIdRaw != null && subIdRaw !== "" ? String(subIdRaw) : "";
+  const subName = props?.data?.subCategoryName?.name ?? "";
+  const subSlug = props?.data?.subCategoryName?.slug ?? props?.data?.sub_category_slug ?? subId;
+
+  const handleCategoryClick = () => {
+    if (!catId) return;
+    const enc = window.btoa(catId);
+    router.push(`/category/${catId}?id=${enc}&type=${encodeURIComponent(catName)}&categoryId=${encodeURIComponent(catId)}`);
+  };
+
+  const handleSubCategoryClick = () => {
+    if (!subId) return;
+    const enc = window.btoa(subId);
+    let url = `/category/${subSlug}?id=${enc}&type=${encodeURIComponent(subName)}`;
+    if (catId) url += `&ogCategory=${encodeURIComponent(catId)}`;
+    router.push(url);
+  };
+
   useEffect(() => {
     if (props?.data && props?.data?.productVariant?.length) {
       const variantData = findVariantWithId(props?.data?.productVariant, vid);
@@ -137,16 +172,16 @@ function DetailsCard(props: any) {
           <span className="pd-bc-item" onClick={() => router.push("/")}>
             <IoHomeOutline size={13} /> Home
           </span>
-          {props?.data?.categoryName?.name && (
+          {catName && (
             <>
               <IoChevronForward size={11} className="pd-bc-sep" />
-              <span className="pd-bc-item">{props.data.categoryName.name}</span>
+              <span className="pd-bc-item" onClick={handleCategoryClick}>{catName}</span>
             </>
           )}
-          {props?.data?.subCategoryName?.name && (
+          {subName && (
             <>
               <IoChevronForward size={11} className="pd-bc-sep" />
-              <span className="pd-bc-item">{props.data.subCategoryName.name}</span>
+              <span className="pd-bc-item" onClick={handleSubCategoryClick}>{subName}</span>
             </>
           )}
           {props?.data?.name && (

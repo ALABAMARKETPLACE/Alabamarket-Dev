@@ -1,88 +1,177 @@
 @use "../../config/styleVariable.scss" as global;
 
-.MultiSearchProductList {
-}
+// ─── Store result card ────────────────────────────────────────────
+.msp-card {
+  background: #fff;
+  border: 1px solid #f0f0f0;
+  border-radius: 14px;
+  padding: 18px 20px 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
 
-.MultiSearchProductList-Header {
-  border-bottom: 1px solid rgb(231, 231, 231);
-  padding-top: 20px;
-  padding-bottom: 10px;
-  margin-bottom: 15px;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding-top: 20px;
-    margin-bottom: 10px;
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+  }
+
+  @media (max-width: 576px) {
+    padding: 14px 14px 12px;
+    border-radius: 10px;
   }
 }
 
-.MultiSearchProductList-box {
+// ─── Header row ───────────────────────────────────────────────────
+.msp-header {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  height: 100%;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    height: auto;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+
+  @media (max-width: 576px) {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 }
 
-.MultiSearchProductList-box2 {
+// ─── Store info (left) ────────────────────────────────────────────
+.msp-store-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.msp-store-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid #e8e8e8;
+  background: #f5f5f5;
+
+  @media (max-width: 576px) {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.msp-store-meta {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  cursor: pointer;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    flex-direction: row;
-    justify-content: space-between;
-    margin-top: -20px;
-  }
+  gap: 3px;
+  min-width: 0;
 }
 
-.MultiSearchProductList-box3 {
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    padding-left: 0px;
-    margin-left: -10px;
-  }
-}
-
-.MultiSearchProductList-txt1 {
+.msp-store-name {
   font-family: global.$SemiBold;
-  font-size: 20px;
-  margin-block: 0px;
-  cursor: pointer;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    font-size: 18px;
+  font-size: 16px;
+  color: global.$grey1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+
+  @media (max-width: 576px) {
+    font-size: 14px;
   }
 }
 
-.MultiSearchProductList-txt2 {
-  text-align: right;
-  font-family: global.$Bold;
-  font-size: 14px;
-  color: global.$primary;
-  cursor: pointer;
-  margin-bottom: 10px;
-  @media screen and (min-width: 320px) and (max-width: 768px) {
-    margin-bottom: 0px;
-  }
-}
-
-.MultiSearchProductList-txt3 {
+.msp-store-sub {
   font-family: global.$Regular;
-  font-size: 14px;
-  color: gray;
-  cursor: pointer;
+  font-size: 13px;
+  color: global.$grey3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.MultiSearchProductList-txt4{
-  color: rgb(0, 151, 0);
+.msp-delivery {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #00a300;
+  font-family: global.$Medium;
   font-size: 12px;
 }
 
-.MultiSearchProductList-img {
-  width: 65px;
-  height: 65px;
-  margin-right: 15px;
-  object-fit: cover;
+// ─── Actions (right) ──────────────────────────────────────────────
+.msp-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.msp-viewall {
+  font-family: global.$Bold;
+  font-size: 13px;
+  color: global.$primary;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.msp-scroll-btns {
+  display: flex;
+  gap: 6px;
+
+  @media (max-width: 576px) {
+    display: none;
+  }
+}
+
+.msp-scroll-btn {
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  outline: 1px solid rgb(211, 211, 211);
-  background-color: rgb(242, 242, 242);
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: global.$grey2;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: global.$primary;
+    color: global.$primary;
+    box-shadow: 0 2px 8px rgba(255, 95, 21, 0.15);
+  }
+}
+
+// ─── Product horizontal scroll ────────────────────────────────────
+.msp-products {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 12px;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.msp-product-item {
+  flex: 0 0 auto;
+  width: 200px;
+
+  @media (max-width: 768px) {
+    width: 170px;
+  }
+
+  @media (max-width: 480px) {
+    width: 150px;
+  }
 }

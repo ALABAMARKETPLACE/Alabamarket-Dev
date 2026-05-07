@@ -1,5 +1,14 @@
 @use "../../../../../config/styleVariable.scss" as global;
 
+/* ── Top bar (back + breadcrumb) ───────────────────────────── */
+.store-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
 /* ── Back button ───────────────────────────────────────────── */
 .store-back-btn {
   display: inline-flex;
@@ -12,11 +21,32 @@
   font-weight: 500;
   color: #555;
   padding: 6px 0;
-  margin-bottom: 10px;
+  flex-shrink: 0;
   transition: color 0.2s;
 
   &:hover {
     color: global.$primary;
+  }
+}
+
+/* ── Breadcrumb ────────────────────────────────────────────── */
+.store-breadcrumb {
+  font-size: 13px;
+
+  .ant-breadcrumb-link {
+    a {
+      color: global.$primary;
+      &:hover { text-decoration: underline; }
+    }
+
+    span {
+      color: global.$grey2;
+      font-weight: 500;
+    }
+  }
+
+  .ant-breadcrumb-separator {
+    color: global.$grey4;
   }
 }
 
