@@ -194,9 +194,12 @@ export const options: NextAuthOptions = {
 
     async session({ session, token, user }: any) {
       if (token) {
+        const rawRole = token?.user?.role;
+        const normalizedRole = rawRole === "super_admin" ? "admin" : rawRole;
+
         session.token = token?.token;
         session.refreshToken = token?.refreshToken;
-        session.role = token?.user?.role;
+        session.role = normalizedRole;
         session.type = token?.user?.type;
         session.user = {
           id: token?.user?.id ?? token?.user?._id,
@@ -215,6 +218,8 @@ export const options: NextAuthOptions = {
           phone: token?.user?.phone,
           countrycode: token?.user?.countrycode,
           type: token?.user?.type,
+          role: normalizedRole,
+          active_role: token?.user?.active_role,
           delivery_company_id: token?.user?.delivery_company_id,
           driver_id: token?.user?.driver_id,
         };

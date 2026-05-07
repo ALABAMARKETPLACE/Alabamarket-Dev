@@ -22,8 +22,7 @@ export async function middleware(req: NextRequest) {
   const token = (await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-  })) as { user?: { role?: string; type?: string } } | null;
-  const role = token?.user?.role;
+  })) as { user?: { role?: string; type?: string; active_role?: string } } | null;
   const url = req.nextUrl.clone();
 
   //================================non authenticated routes (/login)
@@ -45,18 +44,19 @@ export async function middleware(req: NextRequest) {
   }
 
   //===============================admin, seller, delivery_company, or driver routes(/auth)
-  const userType = token?.user?.type;
-  const userRole = token?.user?.role || role;
-  const allowedRoles = ["seller", "admin", "delivery_company", "driver"];
-  const allowedTypes = ["seller", "admin", "delivery_company", "driver"];
-  const isAllowed =
-    allowedRoles.includes(userRole ?? "") ||
-    allowedTypes.includes(userType ?? "");
+  const role       = token?.user?.role        ?? "";
+  const activeRole = token?.user?.active_role ?? "";
+
+  const isAdmin   = ["super_admin", "admin"].includes(role) ||
+                    ["super_admin", "admin"].includes(activeRole);
+  const isAllowed = isAdmin ||
+                    ["seller", "delivery_company", "driver"].includes(role) ||
+                    ["seller", "delivery_company", "driver"].includes(activeRole);
 
   if (
     url.pathname.startsWith("/auth") &&
     (!isAllowed ||
-      (admin_only_routes.includes(url.pathname) && userRole !== "admin"))
+      (admin_only_routes.some(r => url.pathname.startsWith(r)) && !isAdmin))
   ) {
     url.pathname = "/";
     return NextResponse.redirect(url);

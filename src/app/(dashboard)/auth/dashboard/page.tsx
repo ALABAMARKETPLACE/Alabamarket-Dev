@@ -21,12 +21,16 @@ import API from "@/config/API_ADMIN";
 import SkeletonLoading from "@/app/(dashboard)/_components/skeleton";
 import PieChart from "../../_components/charts/chart";
 import dayjs from "dayjs";
+import { useAppSelector } from "@/redux/hooks";
+import { reduxAccessToken } from "@/redux/slice/authSlice";
 
 interface DashboardCounts {
   userCount: number;
   orderCount: number;
+  totalOrders: number;
   sellerCount: number;
   productsCount: number;
+  totalProducts: number;
 }
 
 interface OrderStatisticItem {
@@ -67,6 +71,7 @@ const getGreeting = () => {
 function DashboardAdmin() {
   const [date, setDate] = useState<string | null>(null);
   const greeting = getGreeting();
+  const token = useAppSelector(reduxAccessToken);
 
   const {
     data: counts,
@@ -74,6 +79,8 @@ function DashboardAdmin() {
     refetch: refetchCounts,
   } = useQuery({
     queryKey: [API.DASHBOARD_COUNTS],
+    enabled: Boolean(token),
+    staleTime: 0,
     select: (data: ApiResponse<DashboardCounts>) => {
       if (data?.status) return data?.data;
       return {} as DashboardCounts;
@@ -87,6 +94,8 @@ function DashboardAdmin() {
     isFetching: isFetchingStats,
   } = useQuery({
     queryKey: [API.DASHBOARD_STATISTICS],
+    enabled: Boolean(token),
+    staleTime: 0,
     select: (data: ApiResponse<DashboardStatistics>) => {
       if (data?.status) return data?.data;
       return {} as DashboardStatistics;
@@ -95,6 +104,8 @@ function DashboardAdmin() {
 
   const { data: orderStatistics, isLoading: isLoading3 } = useQuery({
     queryKey: [API.DASHBOARD_ORDER_STATISTICS, { ...(date && { date }) }],
+    enabled: Boolean(token),
+    staleTime: 0,
     select: (data: ApiResponse<DashboardOrderStatistics>) => {
       if (data?.status) return data?.data;
       return {} as DashboardOrderStatistics;
@@ -169,7 +180,7 @@ function DashboardAdmin() {
               <Cards
                 Title="Total Orders"
                 Desc="All time orders"
-                value={counts?.orderCount ?? 0}
+                value={counts?.orderCount ?? counts?.totalOrders ?? 0}
                 icon={<FiPackage />}
                 link="/auth/orders"
                 color="success"
@@ -189,7 +200,7 @@ function DashboardAdmin() {
               <Cards
                 Title="Products"
                 Desc="Listed products"
-                value={counts?.productsCount ?? 0}
+                value={counts?.productsCount ?? counts?.totalProducts ?? 0}
                 icon={<HiOutlineRectangleGroup />}
                 link="/auth/products"
                 color="warning"
