@@ -4,7 +4,7 @@ import "./style.scss";
 import useDidUpdateEffect from "@/shared/hook/useDidUpdate";
 import { GET } from "@/util/apicall";
 import { getRatingInfo } from "@/util/ratingUtils";
-import { Avatar, Card, Rate, Skeleton } from "antd";
+import { Avatar, Breadcrumb, Card, Rate, Skeleton } from "antd";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { IoArrowBack } from "react-icons/io5";
@@ -220,11 +220,34 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
   const ratingValue = apiRating > 0 ? apiRating   : generated.rating;
   const ratingCount = apiCount  > 0 ? apiCount    : generated.reviews;
 
+  // Derive the selected category name for the breadcrumb
+  const selectedCategoryName = selectedCid
+    ? categories.find((c: any) => String(c._id) === selectedCid)?.name
+    : null;
+
+  // Base URL for the store (without category filter)
+  const storeBaseUrl = `/product_search/store/${slug}?storeName=${encodeURIComponent(storeName)}`;
+
+  const breadcrumbItems = [
+    { title: <a href="/">Home</a> },
+    {
+      title: selectedCategoryName
+        ? <a href={storeBaseUrl}>{storeName || "Store"}</a>
+        : <span>{storeName || "Store"}</span>,
+    },
+    ...(selectedCategoryName
+      ? [{ title: <span>{selectedCategoryName}</span> }]
+      : []),
+  ];
+
   return (
     <div className="Screen-box py-2">
-      <button className="store-back-btn" onClick={() => router.back()}>
-        <IoArrowBack size={16} /> Back
-      </button>
+      <div className="store-topbar">
+        <button className="store-back-btn" onClick={() => router.back()}>
+          <IoArrowBack size={16} /> Back
+        </button>
+        <Breadcrumb items={breadcrumbItems} className="store-breadcrumb" />
+      </div>
 
       <Card className="store-header-card">
         {loadingStore ? (

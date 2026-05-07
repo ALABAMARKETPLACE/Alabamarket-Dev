@@ -16,11 +16,11 @@ function StoreFront() {
   const searchParams = useSearchParams();
   const slug = params?.slug as string;
 
-  const sort        = searchParams.get("sort")        || "newest";
   const minPrice    = searchParams.get("minPrice")    || "";
   const maxPrice    = searchParams.get("maxPrice")    || "";
   const category    = searchParams.get("cid")         || "";
   const subCategory = searchParams.get("subCategory") || "";
+  const sort        = searchParams.get("sort")        || "newest";
 
   // Endpoint requires a numeric store ID — resolve from slug if necessary
   const [numericStoreId, setNumericStoreId] = useState<string | null>(
@@ -44,19 +44,15 @@ function StoreFront() {
   const seenIds = useRef(new Set<string>());
 
   const buildParams = useCallback(
-    (pageNum: number) => {
-      const p: Record<string, string | number> = {
-        page: pageNum,
-        take: PAGE_SIZE,
-        sort,
-      };
-      if (minPrice)    p.minPrice    = Number(minPrice);
-      if (maxPrice)    p.maxPrice    = Number(maxPrice);
-      if (category)    p.category    = Number(category);
-      if (subCategory) p.subCategory = Number(subCategory);
+    (pageNum: number): Record<string, unknown> => {
+      const p: Record<string, unknown> = { page: pageNum, take: PAGE_SIZE, sort };
+      if (category)    p.categoryId    = Number(category);
+      if (subCategory) p.subCategoryId = Number(subCategory);
+      if (minPrice)    p.minPrice      = Number(minPrice);
+      if (maxPrice)    p.maxPrice      = Number(maxPrice);
       return p;
     },
-    [sort, minPrice, maxPrice, category, subCategory],
+    [sort, category, subCategory, minPrice, maxPrice],
   );
 
   const fetchProducts = useCallback(
@@ -72,21 +68,26 @@ function StoreFront() {
         const url = `${API.MARKETPLACE_FEED_STORE_PRODUCTS}/${numericStoreId}/products`;
         const res: any = await GET(url, buildParams(pageNum));
 
-        if (res?.status) {
-          const incoming: any[] = Array.isArray(res.data) ? res.data : [];
+        // Accept { data:[...] }, { items:[...] }, or a bare array — endpoint may omit status field
+        const incoming: any[] =
+          Array.isArray(res?.data)  ? res.data  :
+          Array.isArray(res?.items) ? res.items :
+          Array.isArray(res)        ? res        : [];
 
-          // Deduplicate across pages
-          const fresh = incoming.filter((item) => {
-            const id = String(item?._id ?? item?.id ?? "");
-            if (!id || seenIds.current.has(id)) return false;
-            seenIds.current.add(id);
-            return true;
-          });
+        // Deduplicate across pages
+        const fresh = incoming.filter((item) => {
+          const id = String(item?._id ?? item?.id ?? "");
+          if (!id || seenIds.current.has(id)) return false;
+          seenIds.current.add(id);
+          return true;
+        });
 
-          setProducts((prev) => (reset ? fresh : [...prev, ...fresh]));
-          setHasNext(res?.meta?.hasNextPage ?? false);
-          setPage(pageNum);
-        }
+        setProducts((prev) => (reset ? fresh : [...prev, ...fresh]));
+        setHasNext(
+          res?.meta?.hasNextPage ??
+          (res?.meta?.totalPages ? pageNum < res.meta.totalPages : false)
+        );
+        setPage(pageNum);
       } catch {
         // silent — NoData shown when array is empty
       } finally {

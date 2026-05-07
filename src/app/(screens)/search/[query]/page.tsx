@@ -178,7 +178,7 @@ function Page() {
     : "";
 
   return (
-    <div className="Screen-box search-page mb-4 mt-4">
+    <div className="search-page">
       {contextHolder}
 
       {/* ── Header ─────────────────────────────────────────── */}

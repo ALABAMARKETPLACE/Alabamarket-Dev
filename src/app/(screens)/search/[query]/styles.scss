@@ -2,9 +2,15 @@
 
 // ─── Page wrapper ───────────────────────────────────────────────
 .search-page {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
   min-height: 80vh;
-  padding-bottom: 48px;
+  padding: 24px 66px 48px;
   animation: searchPageEnter 0.5s ease-out both;
+
+  @media (max-width: 992px) { padding: 20px 32px 40px; }
+  @media (max-width: 576px) { padding: 16px 12px 32px; }
 }
 
 @keyframes searchPageEnter {
@@ -19,6 +25,7 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
+  width: 100%;
   padding: 18px 20px;
   margin-bottom: 24px;
   background: rgba(255, 255, 255, 0.85);
@@ -26,6 +33,7 @@
   border: 1px solid rgba(255, 95, 21, 0.1);
   border-radius: 14px;
   box-shadow: 0 2px 16px rgba(255, 95, 21, 0.06);
+  box-sizing: border-box;
 
   @media (max-width: 576px) {
     padding: 14px 16px;
@@ -203,7 +211,8 @@
 .search-page__multi-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 16px;
+  width: 100%;
 }
 
 // ─── Empty state ─────────────────────────────────────────────────

@@ -1,16 +1,30 @@
 "use client";
-import { Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import { Col } from "react-bootstrap";
 import InfiniteScroll from "react-infinite-scroll-component";
 import _ from "lodash";
 import ProductItem from "@/components/productItem/page";
-import SkelotonProductLoading from "@/components/skeleton";
 import NoData from "@/components/noData";
 import API from "@/config/API";
 import { GET } from "@/util/apicall";
 import { useParams, useSearchParams } from "next/navigation";
 import useDidUpdateEffect from "@/shared/hook/useDidUpdate";
+import "./styles.scss";
+
+const SKELETON_COUNT = 12;
+
+function SkeletonGrid() {
+  return (
+    <div className="store-search-skeleton-grid">
+      {Array.from({ length: SKELETON_COUNT }).map((_, i) => (
+        <div key={i} className="store-search-skeleton-card">
+          <div className="store-search-skeleton-img" />
+          <div className="store-search-skeleton-line" />
+          <div className="store-search-skeleton-line store-search-skeleton-line--short" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function StoreSearchPage() {
   const [loading, setLoading] = useState(true);
@@ -24,6 +38,7 @@ function StoreSearchPage() {
   const pageSize = 18;
   const price = searchParams.get("price") || "RAND";
   const order = searchParams.get("order") || "ASC";
+
   const getProducts = async (current: number) => {
     const url =
       API.PRODUCT_SEARCH_ITEM +
@@ -32,89 +47,82 @@ function StoreSearchPage() {
     if (storeId && search) {
       try {
         const response: any = await GET(url);
-
-        if (response?.status == true) {
+        if (response?.status === true) {
           setProducts((prod) => _.uniqBy([...prod, ...response?.data], "_id"));
           setMeta(response?.meta);
         } else {
           setProducts([]);
-          throw new Error(response.message);
         }
-      } catch (err) {
+      } catch {
       } finally {
         setLoading(false);
       }
     }
   };
-  const changePage = async (page: number) => {
-    await getProducts(page);
-    setPage(page);
-    // window.scrollTo(0, 0);
+
+  const changePage = async (pg: number) => {
+    await getProducts(pg);
+    setPage(pg);
   };
+
   useEffect(() => {
     getProducts(1);
     window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function sortProductsByRetailRate(data: any[], price: string, order: string) {
-    if (order == "DESC") {
-      return _.orderBy(products, [(product) => Number(product._id)], ['desc']);
-    } else if (price == "ASC" || price == "DESC") {
-      return Array.isArray(data)
-        ? _.orderBy(
-            products,
-            ["retail_rate"],
-            [price == "ASC" ? "asc" : "desc"]
-          )
-        : [];
-    } else {
-      return data;
+    if (order === "DESC") {
+      return _.orderBy(data, [(p) => Number(p._id)], ["desc"]);
+    } else if (price === "ASC" || price === "DESC") {
+      return _.orderBy(data, ["retail_rate"], [price === "ASC" ? "asc" : "desc"]);
     }
+    return data;
   }
+
   useDidUpdateEffect(() => {
     const sorted = sortProductsByRetailRate(products, price, order);
-    setProducts(() => [...sorted]);
+    setProducts([...sorted]);
   }, [price, order, page]);
+
+  if (loading) return <SkeletonGrid />;
+
+  if (!products.length) return <NoData text1="No Products available" />;
+
   return (
-    <>
-      {loading ? (
-        <SkelotonProductLoading count={18} />
-      ) : products.length ? (
-        <InfiniteScroll
-          dataLength={products.length}
-          next={() => {
-            changePage(page + 1);
-          }}
-          hasMore={meta?.hasNextPage ?? false}
-          loader={<SkelotonProductLoading />}
-          endMessage={
-            <p className="fw-bold text-center mt-3">
-              {products?.length > 18
-                ? `Showing ${meta?.itemCount} of ${meta?.itemCount} Products`
-                : ""}
+    <div className="store-search-page">
+      {/* Results header */}
+      <div className="store-search-header">
+        <span className="store-search-title">
+          Results for &ldquo;<span style={{ color: "var(--primary, #FF5F15)" }}>{search}</span>&rdquo;
+        </span>
+        {meta?.itemCount ? (
+          <span className="store-search-count">{meta.itemCount} product{meta.itemCount !== 1 ? "s" : ""} found</span>
+        ) : null}
+      </div>
+
+      <InfiniteScroll
+        dataLength={products.length}
+        next={() => changePage(page + 1)}
+        hasMore={meta?.hasNextPage ?? false}
+        loader={<SkeletonGrid />}
+        endMessage={
+          products.length > pageSize ? (
+            <p className="store-search-end-msg">
+              Showing all {meta?.itemCount} products
             </p>
-          }
-        >
-          <Row className="gy-2 gy-md-3 mx-0 gx-2 gx-md-3 ">
-            <Col md="12">
-              <h5 className="mt-md-0 mt-2 card-subtitle-text">{`${meta.itemCount} Results For "${search}"`}</h5>
-            </Col>
-            {products.map((item: any, index: number) => (
-              <Col
-                md="3"
-                sm="4"
-                className="ps-md-0 col-6 product-card-searchstore lg-25"
-                key={index}
-              >
-                <ProductItem item={item} />
-              </Col>
-            ))}
-          </Row>
-        </InfiniteScroll>
-      ) : (
-        <NoData text1="No Products available" />
-      )}
-    </>
+          ) : null
+        }
+      >
+        <div className="store-search-grid">
+          {products.map((item: any, index: number) => (
+            <div key={item?._id ?? index} className="store-search-card">
+              <ProductItem item={item} />
+            </div>
+          ))}
+        </div>
+      </InfiniteScroll>
+    </div>
   );
 }
 
