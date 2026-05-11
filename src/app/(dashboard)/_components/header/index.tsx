@@ -47,7 +47,7 @@ function Header(props: any) {
 
   // Fetch notifications (seller only)
   const { data: notifications, isLoading: isLoadingNotifications } = useQuery({
-    enabled: props?.data?.role !== "admin",
+    enabled: !["admin", "super_admin"].includes(props?.data?.role),
     queryKey: [API.USER_NOTIFICATIONS],
     queryFn: ({ signal }) => GET(API.USER_NOTIFICATIONS, {}, signal),
     select: (res: any) => (res?.status ? res?.data : []),
@@ -79,7 +79,7 @@ function Header(props: any) {
         <div className="dashboard-HeaderPanelText">
           <div className="dashboard-HeaderBrandText">Alaba Marketplace</div>
           <div className="dashboard-Headertext3">
-            {props?.data?.role === "admin"
+            {["admin", "super_admin"].includes(props?.data?.role)
               ? "Admin Panel"
               : props?.data?.role === "delivery_company" || props?.data?.type === "delivery_company"
               ? "Delivery Company Panel"
@@ -117,7 +117,7 @@ function Header(props: any) {
         </div>
 
         {/* Notification icon with unread count (Seller only) */}
-        {props?.data?.role !== "admin" ? (
+        {!["admin", "super_admin"].includes(props?.data?.role) ? (
           <Popover
             content={
               <NotificationPopover
@@ -141,7 +141,7 @@ function Header(props: any) {
             </div>
           </Popover>
         ) : null}
-        {props?.data?.role === "admin" ? (
+        {["admin", "super_admin"].includes(props?.data?.role) ? (
           <div
             className="dashboard-HeaderBox3"
             onClick={() => router.push("/auth/settings")}
