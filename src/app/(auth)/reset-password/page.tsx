@@ -1,13 +1,14 @@
 "use client";
 export const dynamic = "force-dynamic";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Button, Form, Input, Result, notification } from "antd";
 import { PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Spin } from "antd";
 import "../forgot-password/style.scss";
 
-function ResetPassword() {
+function ResetPasswordContent() {
   const [notifApi, contextHolder] = notification.useNotification();
   const [isLoading, setIsLoading] = useState(false);
   const [done, setDone] = useState(false);
