@@ -1,11 +1,10 @@
 "use client";
 export const dynamic = "force-dynamic";
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { Button, Form, Input, Result, notification } from "antd";
 import { PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Spin } from "antd";
 import "../forgot-password/style.scss";
 
 function ResetPasswordContent() {
@@ -18,25 +17,29 @@ function ResetPasswordContent() {
 
   const handleSubmit = async (values: { password: string }) => {
     if (!token) {
-      notifApi.error({ message: "Reset token is missing. Please use the link from your email." });
+      notifApi.error({
+        message: "Reset token is missing. Please use the link from your email.",
+      });
       return;
     }
     try {
       setIsLoading(true);
-      const res: any = await PUBLIC_POST(API.USER_RESET_PASSWORD, {
+      const res = (await PUBLIC_POST(API.USER_RESET_PASSWORD, {
         token,
         password: values.password,
-      });
+      })) as { status?: boolean; message?: string };
       if (res?.status === false) {
         notifApi.error({
-          message: res?.message || "Password reset failed. The link may have expired.",
+          message:
+            res?.message || "Password reset failed. The link may have expired.",
         });
         return;
       }
       setDone(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unable to reset password. Please try again.";
       notifApi.error({
-        message: err?.message || "Unable to reset password. Please try again.",
+        message,
       });
     } finally {
       setIsLoading(false);
@@ -70,7 +73,11 @@ function ResetPasswordContent() {
               <h2 className="LoginScreen-txt1">Reset Password</h2>
               <p className="LoginScreen-txt2">Enter your new password below.</p>
 
-              <Form layout="vertical" onFinish={handleSubmit} requiredMark={false}>
+              <Form
+                layout="vertical"
+                onFinish={handleSubmit}
+                requiredMark={false}
+              >
                 <Form.Item
                   name="password"
                   label="New Password"
@@ -79,7 +86,10 @@ function ResetPasswordContent() {
                     { min: 8, message: "At least 8 characters" },
                   ]}
                 >
-                  <Input.Password size="large" placeholder="Enter new password" />
+                  <Input.Password
+                    size="large"
+                    placeholder="Enter new password"
+                  />
                 </Form.Item>
 
                 <Form.Item
@@ -92,12 +102,17 @@ function ResetPasswordContent() {
                       validator(_, value) {
                         if (!value || getFieldValue("password") === value)
                           return Promise.resolve();
-                        return Promise.reject(new Error("Passwords do not match"));
+                        return Promise.reject(
+                          new Error("Passwords do not match"),
+                        );
                       },
                     }),
                   ]}
                 >
-                  <Input.Password size="large" placeholder="Confirm new password" />
+                  <Input.Password
+                    size="large"
+                    placeholder="Confirm new password"
+                  />
                 </Form.Item>
 
                 <Button
@@ -125,4 +140,4 @@ function ResetPasswordContent() {
   );
 }
 
-export default ResetPassword;
+export default ResetPasswordContent;
