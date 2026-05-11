@@ -1,6 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Button, Form, Input, Result, notification } from "antd";
 import { PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
@@ -140,4 +139,21 @@ function ResetPasswordContent() {
   );
 }
 
-export default ResetPasswordContent;
+export default function ResetPasswordPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="Screen-box">
+          <div className="auth-container">
+            <div className="auth-form-side">
+              <h2 className="LoginScreen-txt1">Reset Password</h2>
+              <p className="LoginScreen-txt2">Loading...</p>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
