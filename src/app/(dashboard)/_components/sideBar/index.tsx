@@ -36,7 +36,8 @@ function SideBar(props: any) {
     }
   };
 
-  const userRole = props?.data?.role;
+  const rawRole = props?.data?.role;
+  const userRole = rawRole === "super_admin" ? "admin" : rawRole;
   const userType = props?.data?.type || props?.data?.user?.type;
   const isDeliveryCompany = userRole === "delivery_company" || userType === "delivery_company";
   const isDriver = userRole === "driver" || userType === "driver";
@@ -88,7 +89,7 @@ function SideBar(props: any) {
           );
         })}
       </div>
-      {props?.data?.role == "admin" ? (
+      {["admin", "super_admin"].includes(props?.data?.role) ? (
         <div
           className={`dashboard-SideBarItem ${
             "/auth/settings" === pathname ? "active" : null

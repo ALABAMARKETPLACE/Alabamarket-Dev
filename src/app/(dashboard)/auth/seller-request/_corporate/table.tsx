@@ -68,6 +68,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       <Table
         dataSource={data}
         columns={columns}
+        rowKey={(record: any) => record?.id ?? record?._id ?? record?.email}
         pagination={false}
         size="small"
         locale={{

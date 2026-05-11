@@ -25,7 +25,7 @@ function Page() {
       console.log("User Role:", userRole);
       console.log("Session:", session);
       
-      if (userRole === "admin") {
+      if (userRole === "admin" || userRole === "super_admin") {
         router.push("/auth/dashboard");
       } else if (userType === "delivery_company" || userRole === "delivery_company") {
         console.log("Redirecting to delivery company dashboard...");
