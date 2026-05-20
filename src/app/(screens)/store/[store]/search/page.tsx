@@ -74,9 +74,9 @@ function StoreSearchPage() {
 
   function sortProductsByRetailRate(data: any[], price: string, order: string) {
     if (order === "DESC") {
-      returnorderBy(data, [(p) => Number(p._id)], ["desc"]);
+      return orderBy(data, [(p) => Number(p._id)], ["desc"]);
     } else if (price === "ASC" || price === "DESC") {
-      returnorderBy(data, ["retail_rate"], [price === "ASC" ? "asc" : "desc"]);
+      return orderBy(data, ["retail_rate"], [price === "ASC" ? "asc" : "desc"]);
     }
     return data;
   }
