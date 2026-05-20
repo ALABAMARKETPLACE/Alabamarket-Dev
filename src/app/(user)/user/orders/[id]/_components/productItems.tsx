@@ -9,7 +9,7 @@ import {
   notification,
 } from "antd";
 import Meta from "antd/es/card/Meta";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import React, { useState } from "react";
 import { Col, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
@@ -114,7 +114,7 @@ function ProductItems(props: any) {
 
                           <div>
                             Ordered on:{" "}
-                            {moment(item.createdAt).format("DD/MM/YYYY")}
+                            {dayjs(item.createdAt).format("DD/MM/YYYY")}
                           </div>
                         </div>
                       }

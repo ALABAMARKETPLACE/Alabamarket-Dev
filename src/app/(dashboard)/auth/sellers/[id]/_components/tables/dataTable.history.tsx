@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Button, Table, Pagination, Badge, Tag } from "antd";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { FaFileInvoice } from "react-icons/fa6";
@@ -63,7 +63,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
       title: "Settlement Date", //
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (item: any) => <span>{moment(item).format("MMM Do YYYY")}</span>,
+      render: (item: any) => <span>{dayjs(item).format("MMM Do YYYY")}</span>,
     },
   ];
 

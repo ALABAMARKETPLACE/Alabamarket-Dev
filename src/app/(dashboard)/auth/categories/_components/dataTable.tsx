@@ -18,7 +18,7 @@ import {
 import { FiEdit2, FiTrash2, FiStar, FiImage, FiLayers } from "react-icons/fi";
 import { MdHourglassEmpty } from "react-icons/md";
 import { CgReorder } from "react-icons/cg";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE, PUT } from "@/util/apicall";
@@ -164,7 +164,7 @@ function DataTable({
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => (
-        <div className="table__date">{moment(date).format("MMM DD, YYYY")}</div>
+        <div className="table__date">{dayjs(date).format("MMM DD, YYYY")}</div>
       ),
       responsive: ["md"] as any,
     },
@@ -327,7 +327,7 @@ function DataTable({
               <div className="dashboard-mobile-card__row">
                 <span className="dashboard-mobile-card__label">Created</span>
                 <span className="dashboard-mobile-card__value">
-                  {moment(category.createdAt).format("MMM DD, YYYY")}
+                  {dayjs(category.createdAt).format("MMM DD, YYYY")}
                 </span>
               </div>
             </div>

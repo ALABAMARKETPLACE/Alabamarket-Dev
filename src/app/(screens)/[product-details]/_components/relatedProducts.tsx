@@ -22,11 +22,11 @@ function RelatedProducts({ data }: Props) {
 
     // Otherwise, fetch suggestions based on category or tags
     const fetchSuggestions = async () => {
-      if (!data?.categoryId && !data?.category_id) return;
-      
+      const categoryId = data?.categoryId || data?.category_id || data?.category;
+      if (!categoryId) return;
+
       setLoading(true);
       try {
-        const categoryId = data.categoryId || data.category_id;
         // Use the product search endpoint filtering by category
         // Exclude current product ID
         const url = `${API.PRODUCT_SEARCH_NEW_SINGLE}?take=8&category=${categoryId}`;

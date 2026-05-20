@@ -8,7 +8,7 @@ import { GET, POST } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import RequestDocument from "../_components/request_modal";
 import ApproveModal from "../_components/approve_modal";
 
@@ -61,11 +61,11 @@ function CorporateSeller() {
     "Seller Name": seller?.seller_name,
     Country: seller?.seller_country,
     "Birth Country": seller?.birth_country,
-    Dob: moment(seller?.dob).format("MM/DD/YYYY"),
+    Dob: dayjs(seller?.dob).format("MM/DD/YYYY"),
     "ID Type": seller?.id_type,
     "ID Proof": seller?.id_proof,
     "ID Issue Country": seller?.id_issue_country,
-    "ID Expiry Date": moment(seller?.id_expiry_date).format("MM/DD/YYYY"),
+    "ID Expiry Date": dayjs(seller?.id_expiry_date).format("MM/DD/YYYY"),
   };
 
   const store_details: any = {
@@ -112,7 +112,7 @@ function CorporateSeller() {
   };
 
   const dates: any = {
-    "Submited Date": moment(seller?.createdAt).format("MM/DD/YYYY"),
+    "Submited Date": dayjs(seller?.createdAt).format("MM/DD/YYYY"),
     "Subaccount Code": seller?.paystack_subaccount_code || "Not Created",
     "Subaccount Status": seller?.subaccount_status || "Pending",
   };

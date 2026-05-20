@@ -16,7 +16,7 @@ function ProfilePopover(props: any) {
       <div className="dashboard-ProfilePopoverItem">
         <div>
           {props?.data?.user?.image ? (
-            <img src={props?.data?.user?.image} />
+            <img src={props?.data?.user?.image} loading="lazy" />
           ) : (
             <HiOutlineUserCircle size={60} color="grey" />
           )}

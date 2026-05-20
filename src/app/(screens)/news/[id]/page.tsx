@@ -11,7 +11,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
 import API from "@/config/API";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import "../styles.scss";
 
 interface NewsItem {
@@ -120,7 +120,7 @@ export default function NewsDetailPage() {
             <div className="news-detail-meta">
               <span className="news-detail-meta-item">
                 <CalendarOutlined />
-                {moment(news.createdAt).format("MMMM DD, YYYY")}
+                {dayjs(news.createdAt).format("MMMM DD, YYYY")}
               </span>
 
               {news.author && (

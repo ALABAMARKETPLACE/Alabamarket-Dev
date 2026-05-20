@@ -91,9 +91,7 @@ function Products() {
     },
     queryKey: ["admin_products", productQueryParams],
     enabled: sessionStatus === "authenticated",
-    staleTime: 0,
-    refetchOnMount: "always",
-    refetchOnReconnect: "always",
+    staleTime: 1000 * 30,
     refetchOnWindowFocus: false,
   });
 

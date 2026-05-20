@@ -10,7 +10,7 @@ import {
   Tooltip,
 } from "antd";
 import { FiTrash2, FiMail, FiMessageSquare, FiCalendar } from "react-icons/fi";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE } from "@/util/apicall";
 interface props {
@@ -76,7 +76,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "Enquired on",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (item: any) => <span>{moment(item).format("MMM Do YYYY")}</span>,
+      render: (item: any) => <span>{dayjs(item).format("MMM Do YYYY")}</span>,
     },
     {
       title: "Action",
@@ -127,7 +127,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             <h4 className="dashboard-mobile-card__title">{record?.email}</h4>
             <span className="dashboard-mobile-card__subtitle">
               <FiCalendar size={12} />{" "}
-              {moment(record?.createdAt).format("MMM Do YYYY")}
+              {dayjs(record?.createdAt).format("MMM Do YYYY")}
             </span>
           </div>
         </div>

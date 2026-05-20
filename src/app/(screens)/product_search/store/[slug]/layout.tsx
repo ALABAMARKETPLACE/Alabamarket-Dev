@@ -36,7 +36,7 @@ function StoreBannerSVG({ name, hue }: { name: string; hue: number }) {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1200 180"
-      preserveAspectRatio="xMidYMid slice"
+      preserveAspectRatio="xMinYMid slice"
       style={{ width: "100%", height: "100%", display: "block" }}
     >
       <defs>
@@ -54,22 +54,22 @@ function StoreBannerSVG({ name, hue }: { name: string; hue: number }) {
       <rect width="1200" height="180" fill={`url(#bg-${id})`} />
       <rect width="1200" height="180" fill={`url(#d-${id})`} />
 
-      {/* Decorative circles */}
-      <circle cx="1190" cy="-30"  r="210" fill="rgba(255,255,255,0.07)" />
-      <circle cx="1080" cy="210"  r="140" fill="rgba(255,255,255,0.05)" />
+      {/* Decorative circles — kept near left so they're visible on narrow viewports */}
       <circle cx="-50"  cy="210"  r="150" fill="rgba(0,0,0,0.1)" />
-      <circle cx="600"  cy="-60"  r="100" fill="rgba(255,255,255,0.04)" />
+      <circle cx="550"  cy="-60"  r="120" fill="rgba(255,255,255,0.05)" />
+      <circle cx="620"  cy="220"  r="140" fill="rgba(255,255,255,0.05)" />
+      <circle cx="1190" cy="-30"  r="210" fill="rgba(255,255,255,0.06)" />
 
-      {/* Ghost initials watermark */}
+      {/* Ghost initials watermark — centred in the left half so it shows on mobile */}
       <text
-        x="1080" y="185"
+        x="420" y="185"
         fontSize="230" fontWeight="900"
         fill="rgba(255,255,255,0.07)"
         fontFamily="Arial Black, Arial, sans-serif"
         textAnchor="middle" letterSpacing="-6"
       >{initials}</text>
 
-      {/* Vertical accent bar — starts at x=160 to clear the avatar overlap area */}
+      {/* Vertical accent bar */}
       <rect x="160" y="68" width="4" height={fs * 1.9} rx="2" fill="rgba(255,255,255,0.75)" />
 
       {/* Store name */}
@@ -120,12 +120,14 @@ function StoreLayout({ children }: { children: React.ReactNode }) {
   const [selectedTags, setSelectedTags] = useState(initialTags);
 
   const getStoreDetails = async () => {
-    // store_search/info only accepts text slugs; derive one from storeName when slug is numeric
-    const textSlug = /^\d+$/.test(slug)
-      ? storeNameParam.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
-      : slug;
+    // Numeric IDs are never accepted by store_search/info — skip the round-trip
+    if (/^\d+$/.test(slug)) {
+      if (storeNameParam) setStore({ store_name: storeNameParam });
+      setLoadingStore(false);
+      return;
+    }
     try {
-      const response: any = await GET(`${API.STORE_SEARCH_GETINFO}${textSlug}`);
+      const response: any = await GET(`${API.STORE_SEARCH_GETINFO}${slug}`);
       if (response?.status) {
         setStore(response.data?.store ?? { store_name: storeNameParam });
         const cats = (response.data?.category ?? []).map((cat: any) => ({

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
 import { Table, Pagination } from "antd";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import {
@@ -117,7 +117,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "Settlement Date",
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (item: any) => <span>{moment(item).format("MMM Do YYYY")}</span>,
+      render: (item: any) => <span>{dayjs(item).format("MMM Do YYYY")}</span>,
     },
   ];
 
@@ -149,7 +149,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
             </h4>
             <span className="dashboard-mobile-card__subtitle">
               <FiCalendar size={12} />{" "}
-              {moment(record?.createdAt).format("MMM Do YYYY")}
+              {dayjs(record?.createdAt).format("MMM Do YYYY")}
             </span>
           </div>
           {getStatusBadge(record?.status)}

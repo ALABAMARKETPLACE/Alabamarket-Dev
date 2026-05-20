@@ -11,7 +11,7 @@ import {
 } from "antd";
 import { Col, Row, Container } from "react-bootstrap";
 import dayjs from "dayjs";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import "../../styles.scss";
 import API from "@/config/API";
 import { GET, PUT } from "@/util/apicall";
@@ -63,7 +63,7 @@ const EditInvoice: React.FC = () => {
           invoiceAddress: response?.data?.invoice_address,
           deliveryAddress: response?.data?.delivery_address,
           customerName: response?.data?.to_name,
-          dueDate: moment(response?.data?.due_date).format("YYYY-MM-DD"),
+          dueDate: dayjs(response?.data?.due_date).format("YYYY-MM-DD"),
           to_mail: response?.data?.to_mail,
         });
         handleVatPercentageChange(response?.data?.invoiceItemDetails[0]?.tax);

@@ -17,7 +17,7 @@ import {
   FiDollarSign,
   FiBox,
 } from "react-icons/fi";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import Link from "next/link";
@@ -188,7 +188,7 @@ function DataTable({
       dataIndex: "createdAt",
       key: "createdAt",
       render: (text: any, record: any) => {
-        return <div>{moment(text).format("MMM Do YYYY")}</div>;
+        return <div>{dayjs(text).format("MMM Do YYYY")}</div>;
       },
     },
     {
@@ -241,7 +241,7 @@ function DataTable({
     return data.map((record: any) => {
       const id = record?._id ?? record?.id;
       const createdAt = record?.createdAt
-        ? moment(record?.createdAt).format("MMM Do YYYY")
+        ? dayjs(record?.createdAt).format("MMM Do YYYY")
         : "-";
       const price =
         typeof record?.retail_rate === "number"

@@ -1,5 +1,5 @@
 import "./styles.scss";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import Dropzone from "react-dropzone";
 import { Button, message } from "antd";
 import { FiInbox } from "react-icons/fi";
@@ -36,7 +36,7 @@ const ImagePicker = (props: Props) => {
         if (myFile.size > maxFileSize) {
           message.error("File size exceeded the 3MB limit.");
         } else {
-          let name = moment(new Date()).unix();
+          let name = dayjs(new Date()).unix();
           const myNewFile = new File([myFile], name + "G.png", {
             type: myFile.type,
           });
@@ -65,7 +65,7 @@ const ImagePicker = (props: Props) => {
       if (canvas) {
         const croppedData = canvas.toDataURL("image/jpeg");
         const ImageBlob = await fetch(croppedData).then((r) => r.blob());
-        let name = moment(new Date()).unix();
+        let name = dayjs(new Date()).unix();
         let file = new File([ImageBlob], name + "N.jpg");
         const url = URL.createObjectURL(file);
         let obj = {

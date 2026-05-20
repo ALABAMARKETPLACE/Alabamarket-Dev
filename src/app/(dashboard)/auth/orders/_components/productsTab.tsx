@@ -1,7 +1,7 @@
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { Card, Image } from "antd";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { Col, Row } from "react-bootstrap";
 import { formatCurrency } from "@/utils/formatNumber";
 
@@ -108,7 +108,7 @@ export default function ProductTab(props: Props) {
                         Ordered:{" "}
                         <span className="text-dark">
                           {item.createdAt
-                            ? moment(item.createdAt).format(DATE_FORMAT)
+                            ? dayjs(item.createdAt).format(DATE_FORMAT)
                             : "N/A"}
                         </span>
                       </div>

@@ -23,7 +23,7 @@ import {
   FiFolder,
 } from "react-icons/fi";
 import { CgReorder } from "react-icons/cg";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE, PUT } from "../../../../../util/apicall";
 interface props {
@@ -132,7 +132,7 @@ function DataTable({
       dataIndex: "createdAt",
       key: "createdAt",
       render: (text: any, record: any) => {
-        return <div>{moment(text).format("MMM Do YYYY")}</div>;
+        return <div>{dayjs(text).format("MMM Do YYYY")}</div>;
       },
     },
     {
@@ -243,7 +243,7 @@ function DataTable({
             <h4 className="dashboard-mobile-card__title">{record?.name}</h4>
             <span className="dashboard-mobile-card__subtitle">
               <FiCalendar size={12} />{" "}
-              {moment(record?.createdAt).format("MMM Do YYYY")}
+              {dayjs(record?.createdAt).format("MMM Do YYYY")}
             </span>
           </div>
           <span className="dashboard-badge dashboard-badge--info">

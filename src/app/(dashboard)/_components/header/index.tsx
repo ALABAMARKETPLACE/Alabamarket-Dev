@@ -156,7 +156,7 @@ function Header(props: any) {
         >
           <div className="dashboard-HeaderBox2">
             {props?.data?.user?.image ? (
-              <img src={props?.data?.user?.image} />
+              <img src={props?.data?.user?.image} loading="lazy" />
             ) : (
               <HiOutlineUserCircle size={40} />
             )}

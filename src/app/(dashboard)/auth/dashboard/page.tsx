@@ -80,7 +80,7 @@ function DashboardAdmin() {
   } = useQuery({
     queryKey: [API.DASHBOARD_COUNTS],
     enabled: Boolean(token),
-    staleTime: 0,
+    staleTime: 1000 * 60 * 2,
     select: (data: ApiResponse<DashboardCounts>) => {
       if (data?.status) return data?.data;
       return {} as DashboardCounts;
@@ -95,7 +95,7 @@ function DashboardAdmin() {
   } = useQuery({
     queryKey: [API.DASHBOARD_STATISTICS],
     enabled: Boolean(token),
-    staleTime: 0,
+    staleTime: 1000 * 60 * 2,
     select: (data: ApiResponse<DashboardStatistics>) => {
       if (data?.status) return data?.data;
       return {} as DashboardStatistics;
@@ -105,7 +105,7 @@ function DashboardAdmin() {
   const { data: orderStatistics, isLoading: isLoading3 } = useQuery({
     queryKey: [API.DASHBOARD_ORDER_STATISTICS, { ...(date && { date }) }],
     enabled: Boolean(token),
-    staleTime: 0,
+    staleTime: 1000 * 60 * 2,
     select: (data: ApiResponse<DashboardOrderStatistics>) => {
       if (data?.status) return data?.data;
       return {} as DashboardOrderStatistics;

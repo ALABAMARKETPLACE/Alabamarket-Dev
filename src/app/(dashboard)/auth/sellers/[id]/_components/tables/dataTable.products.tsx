@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 import { Button, Table, Image, Tag, Pagination } from "antd";
 import { TbEdit } from "react-icons/tb";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { AiOutlineProduct } from "react-icons/ai";
@@ -101,7 +101,7 @@ function DataTable({ data, count, setPage, pageSize, page }: props) {
         responsive: ["lg" as const],
         render: (text: any) => (
           <span className="table__date">
-            {moment(text).format("MMM DD, YY")}
+            {dayjs(text).format("MMM DD, YY")}
           </span>
         ),
       },

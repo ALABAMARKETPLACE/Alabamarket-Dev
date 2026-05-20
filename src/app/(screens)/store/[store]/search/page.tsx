@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import _ from "lodash";
+import uniqBy from "lodash/uniqBy";
+import orderBy from "lodash/orderBy";
 import ProductItem from "@/components/productItem/page";
 import NoData from "@/components/noData";
 import API from "@/config/API";
@@ -48,7 +49,7 @@ function StoreSearchPage() {
       try {
         const response: any = await GET(url);
         if (response?.status === true) {
-          setProducts((prod) => _.uniqBy([...prod, ...response?.data], "_id"));
+          setProducts((prod) =>uniqBy([...prod, ...response?.data], "_id"));
           setMeta(response?.meta);
         } else {
           setProducts([]);
@@ -73,9 +74,9 @@ function StoreSearchPage() {
 
   function sortProductsByRetailRate(data: any[], price: string, order: string) {
     if (order === "DESC") {
-      return _.orderBy(data, [(p) => Number(p._id)], ["desc"]);
+      returnorderBy(data, [(p) => Number(p._id)], ["desc"]);
     } else if (price === "ASC" || price === "DESC") {
-      return _.orderBy(data, ["retail_rate"], [price === "ASC" ? "asc" : "desc"]);
+      returnorderBy(data, ["retail_rate"], [price === "ASC" ? "asc" : "desc"]);
     }
     return data;
   }

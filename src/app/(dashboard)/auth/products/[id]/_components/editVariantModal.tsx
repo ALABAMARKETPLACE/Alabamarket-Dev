@@ -5,7 +5,7 @@ import { GET, COMPRESS_IMAGE, PUT } from "@/util/apicall";
 import { Col, Row } from "react-bootstrap";
 import ImagePicker from "../../../../_components/picker2";
 import { ReactCropperElement } from "react-cropper";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 
 const EditProductVariantModal = (props: any) => {
   const [Notifications, contextHolder] = notification.useNotification();

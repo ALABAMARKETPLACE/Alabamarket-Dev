@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 // import "./styles.scss";
 import Dropzone from "react-dropzone";
 import { PiFilesThin } from "react-icons/pi";

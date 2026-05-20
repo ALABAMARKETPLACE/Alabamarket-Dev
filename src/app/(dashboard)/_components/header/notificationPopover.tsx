@@ -6,10 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import API from "@/config/API";
 import { PATCH } from "@/util/apicall";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-
-dayjs.extend(relativeTime);
+import dayjs from "@/util/dayjs";
 
 const { Text, Title } = Typography;
 

@@ -1,6 +1,7 @@
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import uniqBy from "lodash/uniqBy";
 import NoData from "@/components/noData";
 import API from "@/config/API";
 import { GET } from "@/util/apicall";
@@ -16,103 +17,68 @@ function StoreFront() {
   const searchParams = useSearchParams();
   const slug = params?.slug as string;
 
-  const minPrice    = searchParams.get("minPrice")    || "";
-  const maxPrice    = searchParams.get("maxPrice")    || "";
-  const category    = searchParams.get("cid")         || "";
-  const subCategory = searchParams.get("subCategory") || "";
-  const sort        = searchParams.get("sort")        || "newest";
-
-  // Endpoint requires a numeric store ID — resolve from slug if necessary
-  const [numericStoreId, setNumericStoreId] = useState<string | null>(
-    /^\d+$/.test(slug) ? slug : null,
-  );
-  useEffect(() => {
-    if (/^\d+$/.test(slug)) { setNumericStoreId(slug); return; }
-    GET(`${API.STORE_SEARCH_GETINFO}${slug}`)
-      .then((res: any) => {
-        const id = res?.data?.store?._id ?? res?.data?.store?.id;
-        if (id) setNumericStoreId(String(id));
-      })
-      .catch(() => {});
-  }, [slug]);
+  const sort = searchParams.get("sort") || "newest";
+  const cid  = searchParams.get("cid")  || "";
 
   const [loading, setLoading]   = useState(true);
   const [products, setProducts] = useState<any[]>([]);
   const [page, setPage]         = useState(1);
-  const [hasNext, setHasNext]   = useState(false);
+  const [meta, setMeta]         = useState<any>({});
 
-  const seenIds = useRef(new Set<string>());
+  const filtersRef = useRef({ sort, cid });
 
-  const buildParams = useCallback(
-    (pageNum: number): Record<string, unknown> => {
-      const p: Record<string, unknown> = { page: pageNum, take: PAGE_SIZE, sort };
-      if (category)    p.categoryId    = Number(category);
-      if (subCategory) p.subCategoryId = Number(subCategory);
-      if (minPrice)    p.minPrice      = Number(minPrice);
-      if (maxPrice)    p.maxPrice      = Number(maxPrice);
-      return p;
+  const buildUrl = useCallback(
+    (pageNum: number) => {
+      const qs = new URLSearchParams();
+      qs.set("page", String(pageNum));
+      qs.set("take", String(PAGE_SIZE));
+      qs.set("sort", sort);
+      if (cid) qs.set("category", cid);
+      return `${API.MARKETPLACE_FEED_STORE_PRODUCTS}/${slug}/products?${qs.toString()}`;
     },
-    [sort, category, subCategory, minPrice, maxPrice],
+    [slug, sort, cid],
   );
 
   const fetchProducts = useCallback(
     async (pageNum: number, reset: boolean) => {
-      if (!numericStoreId) return;
+      if (!slug) return;
       if (reset) {
         setLoading(true);
         setProducts([]);
-        seenIds.current = new Set();
       }
-
       try {
-        const url = `${API.MARKETPLACE_FEED_STORE_PRODUCTS}/${numericStoreId}/products`;
-        const res: any = await GET(url, buildParams(pageNum));
-
-        // Accept { data:[...] }, { items:[...] }, or a bare array — endpoint may omit status field
-        const incoming: any[] =
-          Array.isArray(res?.data)  ? res.data  :
-          Array.isArray(res?.items) ? res.items :
-          Array.isArray(res)        ? res        : [];
-
-        // Deduplicate across pages
-        const fresh = incoming.filter((item) => {
-          const id = String(item?._id ?? item?.id ?? "");
-          if (!id || seenIds.current.has(id)) return false;
-          seenIds.current.add(id);
-          return true;
-        });
-
-        setProducts((prev) => (reset ? fresh : [...prev, ...fresh]));
-        setHasNext(
-          res?.meta?.hasNextPage ??
-          (res?.meta?.totalPages ? pageNum < res.meta.totalPages : false)
-        );
-        setPage(pageNum);
+        const response: any = await GET(buildUrl(pageNum));
+        if (response?.status) {
+          const incoming: any[] = response?.data ?? [];
+          setProducts((prev) =>
+            reset ? incoming : uniqBy([...prev, ...incoming], "_id"),
+          );
+          setMeta(response?.meta ?? {});
+          setPage(pageNum);
+        }
       } catch {
         // silent — NoData shown when array is empty
       } finally {
         setLoading(false);
       }
     },
-    [numericStoreId, buildParams],
+    [buildUrl, slug],
   );
 
-  // Reset on filter change
-  const filtersKey = `${sort}|${minPrice}|${maxPrice}|${category}|${subCategory}`;
-  const prevFiltersKey = useRef(filtersKey);
+  // Reset + refetch when filters change
   useEffect(() => {
-    if (prevFiltersKey.current !== filtersKey) {
-      prevFiltersKey.current = filtersKey;
-      if (numericStoreId) fetchProducts(1, true);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filtersKey, numericStoreId]);
+    const prev = filtersRef.current;
+    const changed = prev.sort !== sort || prev.cid !== cid;
+    filtersRef.current = { sort, cid };
+    if (changed) fetchProducts(1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sort, cid]);
 
-  // Load once numeric ID is resolved (covers initial load and slug→id resolution)
+  // Initial load
   useEffect(() => {
-    if (numericStoreId) fetchProducts(1, true);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [numericStoreId]);
+    fetchProducts(1, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="mt-3">
@@ -123,12 +89,12 @@ function StoreFront() {
           style={{ margin: 0, padding: 0, overflow: "initial" }}
           dataLength={products.length}
           next={() => fetchProducts(page + 1, false)}
-          hasMore={hasNext}
+          hasMore={meta?.hasNextPage ?? false}
           loader={<SkelotonProductLoading count={6} />}
           endMessage={
             products.length > PAGE_SIZE ? (
               <p className="fw-bold text-center mt-3">
-                Showing {products.length} products
+                Showing all {meta?.itemCount ?? products.length} products
               </p>
             ) : null
           }
@@ -136,7 +102,7 @@ function StoreFront() {
           <Row className="gy-2 gy-md-3 mx-0 gx-2 gx-md-3">
             {products.map((item: any, index: number) => (
               <Col
-                key={item?._id ?? item?.id ?? index}
+                key={item?._id ?? index}
                 sm={4}
                 md={3}
                 className="ps-md-0 col-6 product-card-searchstore lg-25"

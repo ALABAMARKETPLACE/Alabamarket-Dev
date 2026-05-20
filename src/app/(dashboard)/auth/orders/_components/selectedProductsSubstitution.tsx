@@ -23,7 +23,7 @@ const SelectedProductsSubstitution = ({ select, changeData, handleSubmit }: any)
                         <Col key={Item._id} className="border-bottom p-2">
                             <Row className="py-2">
                                 <Col md={2} className="d-flex justify-center align-items-center">
-                                    <img src={Item.image} width='100%' />
+                                    <img src={Item.image} width='100%' loading="lazy" />
                                 </Col>
                                 <Col md={9} className="d-flex justify-center align-items-center">
                                     <div>

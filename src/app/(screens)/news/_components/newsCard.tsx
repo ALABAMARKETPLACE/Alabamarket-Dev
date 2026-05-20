@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { PlayCircleOutlined, CalendarOutlined } from "@ant-design/icons";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useRouter } from "next/navigation";
 
 interface NewsItem {
@@ -67,7 +67,7 @@ export default function NewsCard({ news }: NewsCardProps) {
         <div className="news-card-footer">
           <span className="news-card-meta-item">
             <CalendarOutlined />
-            {moment(news.createdAt).format("MMM DD, YYYY")}
+            {dayjs(news.createdAt).format("MMM DD, YYYY")}
           </span>
           <span className="news-card-read-more">
             Read more&nbsp;→

@@ -14,7 +14,7 @@ import API_ADMIN from "@/config/API_ADMIN";
 import Loading from "@/app/(dashboard)/_components/loading";
 import { Button, Tag } from "antd";
 import Image from "next/image";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -209,8 +209,8 @@ export default function OrderDetails() {
   const [receiptOpen, setReceiptOpen] = useState(false);
 
   const formatDateRelative = (date: string) => {
-    const givenDate = moment(date);
-    const diffInHours = moment().diff(givenDate, "hours");
+    const givenDate = dayjs(date);
+    const diffInHours = dayjs().diff(givenDate, "hours");
     if (diffInHours < 24) return `${diffInHours} hrs ago`;
     return `${Math.floor(diffInHours / 24)} days ago`;
   };

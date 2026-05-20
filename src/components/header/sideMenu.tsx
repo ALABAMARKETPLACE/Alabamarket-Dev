@@ -80,7 +80,7 @@ const SideMenu = ({
             <div className={styles.userInfo}>
               {user ? (
                 user.image ? (
-                  <img src={user.image} alt="avatar" className={styles.avatarImg} />
+                  <img src={user.image} alt="avatar" loading="lazy" className={styles.avatarImg} />
                 ) : (
                   <div className={styles.avatarInitials}>{initials}</div>
                 )
@@ -201,7 +201,7 @@ const SideMenu = ({
                         }}
                       >
                         {cat.image ? (
-                          <img src={cat.image} alt={cleanName} className={styles.catThumb} />
+                          <img src={cat.image} alt={cleanName} loading="lazy" className={styles.catThumb} />
                         ) : (
                           <div className={styles.catThumbFallback}>
                             {cleanName[0]?.toUpperCase() ?? "?"}

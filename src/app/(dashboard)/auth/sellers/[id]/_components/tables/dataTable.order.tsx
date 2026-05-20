@@ -3,7 +3,7 @@
 import { Button, Table, Pagination, Avatar, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { TbListDetails } from "react-icons/tb";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useRouter } from "next/navigation";
@@ -100,7 +100,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         responsive: ["lg" as const],
         render: (item: string | number | Date) => (
           <span className="table__date">
-            {moment(item).format("MMM DD, YY")}
+            {dayjs(item).format("MMM DD, YY")}
           </span>
         ),
       },

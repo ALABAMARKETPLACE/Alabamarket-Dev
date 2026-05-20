@@ -24,7 +24,7 @@ import API from "@/config/API_ADMIN";
 import { useParams } from "next/navigation";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { FiArrowDown, FiArrowUp, FiShield } from "react-icons/fi";
 import dayjs from "dayjs";
 import CountryData from "@/shared/helpers/countryCode.json";
@@ -202,7 +202,7 @@ function UserDetails() {
       {
         key: "joined",
         label: "Joined On",
-        children: moment(user?.createdAt).format("MM/DD/YYYY"),
+        children: dayjs(user?.createdAt).format("MM/DD/YYYY"),
       },
       {
         key: "mail_verify",

@@ -3,7 +3,8 @@ import { Row } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
 import { Col } from "react-bootstrap";
 import InfiniteScroll from "react-infinite-scroll-component";
-import _ from "lodash";
+import uniqBy from "lodash/uniqBy";
+import orderBy from "lodash/orderBy";
 import useMediaQuery from "@/shared/hook/useMediaQuery";
 import ProductItem from "@/components/productItem/page";
 import NoData from "@/components/noData";
@@ -44,7 +45,7 @@ function SecondPage() {
         }
         const response: any = await GET(url,{}, signal);
         if (response.status) {
-          setProducts((prod) => _.uniqBy([...prod, ...response?.data], "_id"));
+          setProducts((prod) =>uniqBy([...prod, ...response?.data], "_id"));
           setMeta(response.meta);
         } else throw new Error(response.message);
       } catch (err) {
@@ -67,10 +68,10 @@ function SecondPage() {
 
   function sortProductsByRetailRate(data: any[], price: string, order: string) {
     if (order == "DESC") {
-      return Array.isArray(data) ? _.orderBy(products, ["_id"], ["desc"]) : [];
+      return Array.isArray(data) ?orderBy(products, ["_id"], ["desc"]) : [];
     } else if (price == "ASC" || price == "DESC") {
       return Array.isArray(data)
-        ? _.orderBy(
+        ?orderBy(
             products,
             ["retail_rate"],
             [price == "ASC" ? "asc" : "desc"]

@@ -8,7 +8,7 @@ import API from "@/config/API_ADMIN";
 import { useParams } from "next/navigation";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import RequestDocument from "../../corporate/_components/request_modal";
 import ApproveModal from "../../corporate/_components/approve_modal";
 
@@ -89,7 +89,7 @@ function IndividualSeller() {
         label: item,
         children:
           item === "createdAt"
-            ? moment(seller?.createdAt).format("DD/MM/YYYY")
+            ? dayjs(seller?.createdAt).format("DD/MM/YYYY")
             : seller?.[item],
       }));
   }, [seller]);
