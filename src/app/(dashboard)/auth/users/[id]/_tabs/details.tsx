@@ -26,7 +26,6 @@ import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
 import dayjs from "@/util/dayjs";
 import { FiArrowDown, FiArrowUp, FiShield } from "react-icons/fi";
-import dayjs from "dayjs";
 import CountryData from "@/shared/helpers/countryCode.json";
 
 const { Text } = Typography;

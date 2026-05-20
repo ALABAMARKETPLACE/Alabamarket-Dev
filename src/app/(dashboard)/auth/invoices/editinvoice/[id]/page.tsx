@@ -10,7 +10,6 @@ import {
   notification,
 } from "antd";
 import { Col, Row, Container } from "react-bootstrap";
-import dayjs from "dayjs";
 import dayjs from "@/util/dayjs";
 import "../../styles.scss";
 import API from "@/config/API";

@@ -20,7 +20,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@/config/API_ADMIN";
 import Loading from "@/app/(dashboard)/_components/loading/index";
 import dayjs from "@/util/dayjs";
-import dayjs from "dayjs";
 import ImagePicker from "@/app/(dashboard)/_components/ImagePicker/imagePicker";
 import { COMPRESS_IMAGE, PUT } from "@/util/apicall";
 import PrefixSelector from "@/components/prefixSelector/page";
