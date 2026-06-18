@@ -9,12 +9,12 @@ import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE } from "@/util/apicall";
 import API from "@/config/API";
-import { Button, notification, Popconfirm, Steps } from "antd";
+import { App, Button, Popconfirm, Steps } from "antd";
 
 function Page() {
   const [current, setCurrent] = useState(0);
   const [storeId, setStoreId] = useState<string | number | null>(null);
-  const [Notifications, contextHolder] = notification.useNotification();
+  const { notification } = App.useApp();
   const params = useParams();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -26,22 +26,28 @@ function Page() {
         storeId ? { storeId } : undefined,
       );
     },
-    onError: (error: any, variables, context) => {
-      // Extract error message from nested structure
+    onError: (error: any) => {
       let errorMessage = error?.message || "Failed to delete product";
       if (typeof error?.message === "object" && error.message.message) {
         errorMessage = error.message.message;
       }
-      Notifications["error"]({
-        message: errorMessage,
-      });
+      notification.error({ message: errorMessage });
     },
-    onSuccess: (data, variables, context) => {
-      Notifications["success"]({
-        message: `Product Deleted Successfully`,
-      });
-      router.replace("/auth/products");
-      queryClient.invalidateQueries({ queryKey: ["admin_products"] });
+    onSuccess: (data: any) => {
+      const msg: string =
+        typeof data?.message === "string" ? data.message : "";
+      if (msg.toLowerCase().includes("disabled")) {
+        notification.warning({
+          message: "Product Disabled",
+          description: msg,
+          duration: 6,
+        });
+        queryClient.invalidateQueries({ queryKey: ["admin_products"] });
+      } else {
+        notification.success({ message: "Product Deleted Successfully" });
+        router.replace("/auth/products");
+        queryClient.invalidateQueries({ queryKey: ["admin_products"] });
+      }
     },
   });
   return (

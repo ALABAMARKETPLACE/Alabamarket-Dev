@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  App,
   Button,
   Table,
   Image,
   Pagination,
   Popconfirm,
-  notification,
   Tooltip,
 } from "antd";
 import {
@@ -43,6 +43,7 @@ function DataTable({
   page,
   onDeleted,
 }: props) {
+  const { notification } = App.useApp();
   const Settings = useAppSelector(reduxSettings);
   const [isMobile, setIsMobile] = useState(false);
   const [deleteLoadingId, setDeleteLoadingId] = useState<
@@ -99,7 +100,17 @@ function DataTable({
         storeId ? { storeId } : undefined,
       );
       if (response?.status) {
-        notification.success({ message: "Product deleted successfully" });
+        const msg: string =
+          typeof response.message === "string" ? response.message : "";
+        if (msg.toLowerCase().includes("disabled")) {
+          notification.warning({
+            message: "Product Disabled",
+            description: msg,
+            duration: 6,
+          });
+        } else {
+          notification.success({ message: "Product deleted successfully" });
+        }
         onDeleted?.();
       } else {
         // Extract error message from nested structure
@@ -292,33 +303,37 @@ function DataTable({
             </div>
           </div>
           <div className="dashboard-mobile-card__actions">
-            <Link href={`/auth/products/${id}`}>
-              <Button
-                type="primary"
-                ghost
-                icon={<FiEdit2 size={14} />}
-                size="small"
+            <div className="dashboard-mobile-card__action-item">
+              <Link href={`/auth/products/${id}`}>
+                <Button
+                  type="primary"
+                  ghost
+                  icon={<FiEdit2 size={15} />}
+                  block
+                >
+                  Edit
+                </Button>
+              </Link>
+            </div>
+            <div className="dashboard-mobile-card__action-item">
+              <Popconfirm
+                title="Delete product"
+                description="Are you sure you want to delete this product?"
+                okText="Delete"
+                okType="danger"
+                placement="top"
+                onConfirm={() => handleDelete(id, record?.storeId)}
               >
-                Edit
-              </Button>
-            </Link>
-            <Popconfirm
-              title="Delete product"
-              description="Are you sure you want to delete this product?"
-              okText="Delete"
-              okType="danger"
-              placement="topRight"
-              onConfirm={() => handleDelete(id, record?.storeId)}
-            >
-              <Button
-                danger
-                size="small"
-                loading={deleteLoadingId === id}
-                icon={<FiTrash2 size={14} />}
-              >
-                Delete
-              </Button>
-            </Popconfirm>
+                <Button
+                  danger
+                  block
+                  loading={deleteLoadingId === id}
+                  icon={<FiTrash2 size={15} />}
+                >
+                  Delete
+                </Button>
+              </Popconfirm>
+            </div>
           </div>
         </div>
       );
