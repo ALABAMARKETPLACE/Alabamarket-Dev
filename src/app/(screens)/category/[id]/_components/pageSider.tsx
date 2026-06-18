@@ -39,7 +39,7 @@ const PageSider = () => {
                   }`}
                 >
                   <div>
-                    <img src={subCat?.image} className="productByCat-img" />
+                    <img src={subCat?.image} loading="lazy" className="productByCat-img" />
                   </div>
                   <div
                     style={{

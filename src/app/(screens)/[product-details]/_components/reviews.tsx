@@ -5,7 +5,7 @@ import { DELETE, GET } from "@/util/apicall";
 import { generateReviews, getRatingInfo } from "@/util/ratingUtils";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Button, notification, Pagination, Popconfirm, Progress, Rate } from "antd";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useSession } from "next-auth/react";
 import React, { useMemo, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -112,7 +112,7 @@ function ReviewCard({ item, onDelete }: { item: ReviewItem; onDelete?: () => voi
         <div className="review-card__meta">
           <div className="review-card__name">{item.userName}</div>
           <div className="review-card__date-row">
-            <span className="review-card__date">{moment(item.createdAt).format("MMM D, YYYY")}</span>
+            <span className="review-card__date">{dayjs(item.createdAt).format("MMM D, YYYY")}</span>
             {isGenerated && (
               <span className="review-card__verified">
                 <FaCheckCircle size={11} color="#16a34a" />

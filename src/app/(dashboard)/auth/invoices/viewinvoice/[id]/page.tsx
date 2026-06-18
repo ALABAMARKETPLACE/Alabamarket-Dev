@@ -6,7 +6,7 @@
 // // import NoData from "../../../components/noData";
 // import { Table, notification } from "antd";
 // import { Col, Row } from "react-bootstrap";
-// import moment from "moment";
+// import dayjs from "@/util/dayjs";
 // import "./styles.scss";
 // import AdminLoading from "@/app/(dashboard)/_components/AdminLoading/page";
 // import PageHeader from "@/app/(dashboard)/_components/pageHeader";
@@ -103,13 +103,13 @@
 //             <Col md={4}>
 //               <div>
 //                 <span className="invoiceview-item-title">Issue Date:</span>
-//                 <span className="invoiceview-item">{moment(invoice?.issue_date).format("DD/MM/YYYY")}</span>
+//                 <span className="invoiceview-item">{dayjs(invoice?.issue_date).format("DD/MM/YYYY")}</span>
 //               </div>
 //             </Col>
 //             <Col md={4}>
 //               <div>
 //                 <span className="invoiceview-item-title">Due Date:</span>
-//                 <span className="invoiceview-item">{moment(invoice?.due_date).format("DD/MM/YYYY")}</span>
+//                 <span className="invoiceview-item">{dayjs(invoice?.due_date).format("DD/MM/YYYY")}</span>
 //               </div>
 //             </Col>
 //           </Row>
@@ -172,7 +172,7 @@ import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import NoData from "@/components/noData";
 import { Table, notification } from "antd";
 import { Col, Row } from "react-bootstrap";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import "../styles.scss";
 import API from "@/config/API";
 import { GET } from "@/util/apicall";
@@ -271,7 +271,7 @@ export default function ViewInvoice() {
               <div>
                 <span className="invoiceview-item-title">Issue Date:</span>
                 <span className="invoiceview-item">
-                  {moment(invoice?.issue_date).format("DD/MM/YYYY")}
+                  {dayjs(invoice?.issue_date).format("DD/MM/YYYY")}
                 </span>
               </div>
             </Col>
@@ -279,7 +279,7 @@ export default function ViewInvoice() {
               <div>
                 <span className="invoiceview-item-title">Due Date:</span>
                 <span className="invoiceview-item">
-                  {moment(invoice?.due_date).format("DD/MM/YYYY")}
+                  {dayjs(invoice?.due_date).format("DD/MM/YYYY")}
                 </span>
               </div>
             </Col>

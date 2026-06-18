@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import Dropzone from "react-dropzone";
 import { Button, Modal } from "antd";
 import { BsCloudUpload } from "react-icons/bs";
@@ -29,7 +29,7 @@ const ImagePicker = ({ remove, onChange, fileUrl }: props) => {
 
   const handleDrop = (acceptedFiles: any) => {
     var myFile = acceptedFiles[0];
-    let name = moment(new Date()).unix();
+    let name = dayjs(new Date()).unix();
     const myNewFile = new File([myFile], name + "N.png", { type: myFile.type });
     const url = URL.createObjectURL(myNewFile);
     let obj = {
@@ -58,7 +58,7 @@ const ImagePicker = ({ remove, onChange, fileUrl }: props) => {
     try {
       if (blob) {
         const croppedImageBlob = await fetch(blob).then((r) => r.blob());
-        let name = moment(new Date()).unix();
+        let name = dayjs(new Date()).unix();
         let myNewFiles = new File([croppedImageBlob], name + "N.jpg", {
           type: "image/jpeg",
         });
@@ -89,7 +89,7 @@ const ImagePicker = ({ remove, onChange, fileUrl }: props) => {
         {fileUrl ? (
           <>
             <div className="p-1 border rounded">
-              <img src={fileUrl} className="img-fluid" />
+              <img src={fileUrl} loading="lazy" className="img-fluid" />
             </div>
           </>
         ) : (

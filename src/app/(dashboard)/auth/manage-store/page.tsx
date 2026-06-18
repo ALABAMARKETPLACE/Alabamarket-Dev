@@ -19,8 +19,7 @@ import { IoLocationSharp } from "react-icons/io5";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "@/config/API_ADMIN";
 import Loading from "@/app/(dashboard)/_components/loading/index";
-import moment from "moment";
-import dayjs from "dayjs";
+import dayjs from "@/util/dayjs";
 import ImagePicker from "@/app/(dashboard)/_components/ImagePicker/imagePicker";
 import { COMPRESS_IMAGE, PUT } from "@/util/apicall";
 import PrefixSelector from "@/components/prefixSelector/page";
@@ -189,7 +188,7 @@ function Page() {
             email: store?.email,
             phone: store?.phone,
             id_issue_country: store?.id_issue_country,
-            id_expiry_date: moment(store?.id_expiry_date).format("MMM Do YYYY"),
+            id_expiry_date: dayjs(store?.id_expiry_date).format("MMM Do YYYY"),
             id_type: store?.id_type,
             trade_lisc_no: store?.trade_lisc_no,
             trn_number: store?.trn_number,

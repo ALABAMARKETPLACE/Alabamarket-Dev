@@ -179,7 +179,7 @@ function SubstitutionModal({
                 }`}
               >
                 <div className="img-container">
-                  <img src={it?.image} alt={it?.name} className="img-fluid" />
+                  <img src={it?.image} alt={it?.name} loading="lazy" className="img-fluid" />
                 </div>
                 <div className="px-2 product-card-pos-title-card">
                   <p className="product-card-pos-title">{it?.name ?? ""}</p>{" "}

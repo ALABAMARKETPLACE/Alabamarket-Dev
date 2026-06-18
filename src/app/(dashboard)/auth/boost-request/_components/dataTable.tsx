@@ -24,7 +24,7 @@ import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DELETE } from "@/util/apicall";
 import API_ADMIN from "@/config/API_ADMIN";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import "../styles.scss";
 
 interface Seller {
@@ -224,7 +224,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "start_date",
       width: 120,
       render: (date?: string) =>
-        date ? moment(date).format("DD/MM/YYYY") : "-",
+        date ? dayjs(date).format("DD/MM/YYYY") : "-",
     },
     {
       title: "End Date",
@@ -232,7 +232,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       key: "end_date",
       width: 120,
       render: (date?: string) =>
-        date ? moment(date).format("DD/MM/YYYY") : "-",
+        date ? dayjs(date).format("DD/MM/YYYY") : "-",
     },
     {
       title: "Action",
@@ -260,10 +260,10 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
         ? record.product_ids.length
         : 0;
       const startDate = record?.start_date
-        ? moment(record.start_date).format("DD MMM YYYY")
+        ? dayjs(record.start_date).format("DD MMM YYYY")
         : "-";
       const endDate = record?.end_date
-        ? moment(record.end_date).format("DD MMM YYYY")
+        ? dayjs(record.end_date).format("DD MMM YYYY")
         : "-";
       const totalAmount =
         typeof record?.total_amount === "number"

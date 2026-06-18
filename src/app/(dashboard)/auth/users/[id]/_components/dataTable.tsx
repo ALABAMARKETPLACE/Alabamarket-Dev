@@ -2,7 +2,7 @@
 import React from "react";
 import { Button, Table, Pagination } from "antd";
 import { TbListDetails } from "react-icons/tb";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       title: "OrderDate", //
       dataIndex: "createdAt",
       key: "createdAt",
-      render: (item: string) => <span>{moment(item).format("MMM Do YYYY")}</span>,
+      render: (item: string) => <span>{dayjs(item).format("MMM Do YYYY")}</span>,
     },
     {
       title: "Total", //

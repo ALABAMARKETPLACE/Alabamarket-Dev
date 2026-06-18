@@ -4,7 +4,7 @@ import { Modal, Button, Form, notification } from "antd";
 import Cropper, { ReactCropperElement } from "react-cropper";
 import "cropperjs/dist/cropper.css";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { COMPRESS_IMAGE, PUT } from "@/util/apicall";
 import API from "@/config/API";
 import ImagePicker from "@/app/(dashboard)/_components/ImagePicker/imagePicker";
@@ -40,7 +40,7 @@ const EditProfilePhoto = (props: any) => {
       let imageUrl: any;
       if (croppedImage) {
         const ImageBlob = await fetch(croppedImage).then((r) => r.blob());
-        let name = moment(new Date()).unix();
+        let name = dayjs(new Date()).unix();
         let file = new File([ImageBlob], name + "N.jpg");
         imageUrl = await COMPRESS_IMAGE(file);
       }

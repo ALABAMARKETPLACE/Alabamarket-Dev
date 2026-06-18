@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Table, Tag, Pagination, Avatar, Tooltip } from "antd";
 import { MdHourglassEmpty } from "react-icons/md";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { FiEye, FiMail, FiPhone, FiCheckCircle, FiUser } from "react-icons/fi";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { useRouter } from "next/navigation";
@@ -112,7 +112,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => (
-        <div className="table__date">{moment(date).format("MMM DD, YYYY")}</div>
+        <div className="table__date">{dayjs(date).format("MMM DD, YYYY")}</div>
       ),
       responsive: ["md"] as any,
     },
@@ -210,7 +210,7 @@ function DataTable({ data, count, setPage, pageSize, page }: DataTableProps) {
               <div className="dashboard-mobile-card__row">
                 <span className="dashboard-mobile-card__label">Joined</span>
                 <span className="dashboard-mobile-card__value">
-                  {moment(user.createdAt).format("MMM DD, YYYY")}
+                  {dayjs(user.createdAt).format("MMM DD, YYYY")}
                 </span>
               </div>
             </div>

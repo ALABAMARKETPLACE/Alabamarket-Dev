@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import "../../(user)/cart/styles.scss";
 import { Container } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { notification } from "antd";
+import { Modal, notification } from "antd";
 
 import NewAddressBox from "./_components/newAddressBox";
 import PaymentBox from "./_components/paymentBox";
@@ -16,12 +16,15 @@ import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
 import { getGuestInfo } from "./_components/guestAddressForm";
+import { useRouter as useNextRouter } from "next/navigation";
+import CONFIG from "@/config/configuration";
 
 enum PaymentTypeEnum {
   Paystack = "paystack",
 }
 
 function Checkout() {
+  const mainRouter = useNextRouter();
   const { data: session, status } = useSession();
   const user = session?.user;
   const isAuthenticated = status === "authenticated" && !!user;
@@ -421,6 +424,94 @@ function Checkout() {
 
   return (
     <div className="Screen-box" style={{ backgroundImage: "none" }}>
+      {/* ── PAYMENT MAINTENANCE BLOCK — remove this Modal when payment is restored ── */}
+      <Modal
+        open
+        closable={false}
+        footer={null}
+        centered
+        width={440}
+        styles={{ mask: { backdropFilter: "blur(4px)" } }}
+      >
+        <div style={{ textAlign: "center", padding: "12px 8px 8px" }}>
+          <div style={{ fontSize: 52, marginBottom: 12 }}>🔧</div>
+          <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, color: "#1a1a1a" }}>
+            Payment Temporarily Unavailable
+          </h2>
+          <p style={{ color: "#555", fontSize: 14, lineHeight: 1.7, marginBottom: 16 }}>
+            We&apos;re currently performing maintenance on our payment system to
+            serve you better. Online checkout is unavailable for a short while —
+            we&apos;re working hard to resolve this as quickly as possible.
+          </p>
+
+          <div style={{
+            background: "#fff7ed",
+            border: "1px solid #fed7aa",
+            borderRadius: 10,
+            padding: "14px 16px",
+            marginBottom: 20,
+            textAlign: "left",
+          }}>
+            <p style={{ fontWeight: 700, fontSize: 13, color: "#c2410c", marginBottom: 8 }}>
+              Need to place an order now?
+            </p>
+            <p style={{ color: "#555", fontSize: 13, lineHeight: 1.6, marginBottom: 12 }}>
+              Our customer service team can assist you with alternative payment
+              methods and help you complete your order manually.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <a
+                href={`mailto:${CONFIG.CONTACT_MAIL}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "#f97316",
+                  fontWeight: 600,
+                  fontSize: 13,
+                  textDecoration: "none",
+                }}
+              >
+                <span>✉️</span>
+                {CONFIG.CONTACT_MAIL}
+              </a>
+              <a
+                href={`tel:${CONFIG.CONTACT_NUMBER.replace(/\s/g, "")}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  color: "#f97316",
+                  fontWeight: 600,
+                  fontSize: 13,
+                  textDecoration: "none",
+                }}
+              >
+                <span>📞</span>
+                {CONFIG.CONTACT_NUMBER}
+              </a>
+            </div>
+          </div>
+
+          <button
+            onClick={() => mainRouter.back()}
+            style={{
+              background: "#f97316",
+              color: "#fff",
+              border: "none",
+              borderRadius: 8,
+              padding: "11px 28px",
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: "pointer",
+              width: "100%",
+            }}
+          >
+            Go Back to Shopping
+          </button>
+        </div>
+      </Modal>
+      {/* ── END MAINTENANCE BLOCK ── */}
       {contextHolder}
       <br />
       <Container fluid style={{ minHeight: "80vh" }}>

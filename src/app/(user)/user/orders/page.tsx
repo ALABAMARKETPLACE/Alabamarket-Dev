@@ -12,7 +12,7 @@ import Search from "antd/es/input/Search";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import API from "@/config/API";
 import { useQuery } from "@tanstack/react-query";
 import { GET } from "@/util/apicall";
@@ -164,7 +164,7 @@ const OrderCard = ({
           </span>
           <span className="order-card__date">
             <FaCalendarAlt size={12} />
-            {moment(order?.createdAt).format("MMM DD, YYYY")}
+            {dayjs(order?.createdAt).format("MMM DD, YYYY")}
           </span>
         </div>
         <div className="order-card__header-right">
@@ -199,7 +199,7 @@ const OrderCard = ({
         <span className="order-card__footer-info">
           {remainingItems > 0
             ? `+${remainingItems} more item${remainingItems > 1 ? "s" : ""}`
-            : `Ordered ${moment(order?.createdAt).fromNow()}`}
+            : `Ordered ${dayjs(order?.createdAt).fromNow()}`}
         </span>
         <span className="order-card__footer-action">
           View Details <FaChevronRight size={12} />

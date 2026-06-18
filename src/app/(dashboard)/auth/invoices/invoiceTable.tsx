@@ -1,6 +1,6 @@
 "use client";
 import { Button, Pagination, Table, notification } from "antd";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { MomentInput } from "moment";
 import React from "react";
 import { AiFillEdit, AiOutlineEye } from "react-icons/ai";
@@ -54,7 +54,7 @@ const settings = useAppSelector(reduxSettings);
       title: "Due Date",
       dataIndex: "due_date",
       key: "due_date",
-      render: (text: any, record: any) => moment(text).format("DD/MM/YYYY"),
+      render: (text: any, record: any) => dayjs(text).format("DD/MM/YYYY"),
     },
 
     {

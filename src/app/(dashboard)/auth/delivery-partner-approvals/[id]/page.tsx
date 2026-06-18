@@ -8,7 +8,7 @@ import { GET, PUT } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import Loading from "@/app/(dashboard)/_components/loading";
 import Error from "@/app/(dashboard)/_components/error";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 
 function DeliveryPartnerDetails() {
   const params = useParams();
@@ -121,7 +121,7 @@ function DeliveryPartnerDetails() {
                 <Descriptions.Item label="Contact Name">{company?.user?.name}</Descriptions.Item>
                 <Descriptions.Item label="Email">{company?.user?.email}</Descriptions.Item>
                 <Descriptions.Item label="Phone">{company?.phone}</Descriptions.Item>
-                <Descriptions.Item label="Registered Date">{moment(company?.createdAt).format("DD/MM/YYYY")}</Descriptions.Item>
+                <Descriptions.Item label="Registered Date">{dayjs(company?.createdAt).format("DD/MM/YYYY")}</Descriptions.Item>
               </Descriptions>
             </Card>
           </div>

@@ -1,6 +1,6 @@
 import { Line } from "react-chartjs-2";
 import { Chart as ChartJS, ScriptableContext, registerables } from "chart.js";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 
 ChartJS.register(...registerables);
 
@@ -114,7 +114,7 @@ interface SalesChartProps {
 
 export default function SalesChart(props: SalesChartProps) {
   const labels = props?.data?.map((entry) =>
-    moment(entry.orderDate).format("MMM D"),
+    dayjs(entry.orderDate).format("MMM D"),
   );
 
   const datas = props?.data?.map((entry) => entry.orderCount);

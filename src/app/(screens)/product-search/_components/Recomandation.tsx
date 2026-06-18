@@ -6,7 +6,7 @@ const Recomandation = (props: any) => {
   return (
     <div className="search-Recomandation">
       <div>
-        <img src={props?.item?.image} />
+        <img src={props?.item?.image} loading="lazy" />
       </div>
       <div className="search-Recomandation-text1">{props?.item?.name}</div>
       {/* <div className="search-Recomandation-text2">

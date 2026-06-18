@@ -172,7 +172,7 @@ const ProductsFilterBar = ({
         className="products-filterTrigger"
         size="large"
       >
-        Filters
+        <span className="btn-text">Filters</span>
       </Button>
     </Dropdown>
   );

@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import PageHeader from "@/app/(dashboard)/_components/pageHeader";
 import { GET } from "@/util/apicall";
 import { TbEdit } from "react-icons/tb";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import "../styles.scss";
 
 interface Props {
@@ -173,12 +173,12 @@ function ViewBoostRequest({ params }: Props) {
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Start Date">
                   {request?.start_date
-                    ? moment(request.start_date).format("DD MMM YYYY")
+                    ? dayjs(request.start_date).format("DD MMM YYYY")
                     : "-"}
                 </Descriptions.Item>
                 <Descriptions.Item label="End Date">
                   {request?.end_date
-                    ? moment(request.end_date).format("DD MMM YYYY")
+                    ? dayjs(request.end_date).format("DD MMM YYYY")
                     : "-"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Total Days">
@@ -262,24 +262,24 @@ function ViewBoostRequest({ params }: Props) {
               <Descriptions column={1} size="small">
                 <Descriptions.Item label="Requested At">
                   {request?.requested_at
-                    ? moment(request.requested_at).format(
+                    ? dayjs(request.requested_at).format(
                         "DD MMM YYYY, hh:mm A",
                       )
                     : "-"}
                 </Descriptions.Item>
                 {request?.approved_at && (
                   <Descriptions.Item label="Approved At">
-                    {moment(request.approved_at).format("DD MMM YYYY, hh:mm A")}
+                    {dayjs(request.approved_at).format("DD MMM YYYY, hh:mm A")}
                   </Descriptions.Item>
                 )}
                 <Descriptions.Item label="Created At">
                   {request?.createdAt
-                    ? moment(request.createdAt).format("DD MMM YYYY, hh:mm A")
+                    ? dayjs(request.createdAt).format("DD MMM YYYY, hh:mm A")
                     : "-"}
                 </Descriptions.Item>
                 <Descriptions.Item label="Last Updated">
                   {request?.updatedAt
-                    ? moment(request.updatedAt).format("DD MMM YYYY, hh:mm A")
+                    ? dayjs(request.updatedAt).format("DD MMM YYYY, hh:mm A")
                     : "-"}
                 </Descriptions.Item>
               </Descriptions>

@@ -604,9 +604,8 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     margin-bottom: $space-xl;
     gap: $space-sm;
     padding: $space-md;
-    flex-direction: row;
     align-items: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
   }
 
   @media (max-width: 480px) {
@@ -622,7 +621,7 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   align-items: center;
   gap: $space-md;
   flex: 1;
-  min-width: 0;
+  min-width: 150px;
 
   @media (max-width: 768px) {
     gap: $space-sm;
@@ -732,7 +731,9 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   margin: 0;
   letter-spacing: -0.3px;
   line-height: 1.3;
-  word-break: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 1024px) {
     font-size: 22px;
@@ -740,9 +741,6 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   @media (max-width: 768px) {
     font-size: 17px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
   @media (max-width: 480px) {
@@ -756,6 +754,9 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   font-family: vars.$Regular;
   margin: 0;
   line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 768px) {
     font-size: 11px;
@@ -827,10 +828,10 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @media (max-width: 768px) {
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     flex-shrink: 0;
     justify-content: flex-end;
-    width: auto;
+    margin-left: auto;
 
     .header-search-input,
     .header-filter-select {
@@ -2916,12 +2917,16 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     color: $text-color-primary;
     margin: 0 0 $space-xs;
     line-height: 1.3;
+    word-break: break-word;
   }
 
   &__subtitle {
     font-size: 12px;
     color: $text-color-secondary;
     margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
   }
 
   &__body {
@@ -2965,7 +2970,29 @@ $transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     padding: $space-md $space-lg;
     border-top: 1px solid $border-color;
     background: #f9fafb;
-    flex-wrap: wrap;
+  }
+
+  &__action-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    // <a> from Next.js Link
+    > a {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ant-btn {
+      flex: 1;
+      height: 38px;
+      font-size: 13px;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   &__footer {

@@ -1,6 +1,6 @@
 import { Button, Card, Form, Modal, Steps, notification } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import React, { useState } from "react";
 import API from "../../../../../../config/API";
 import { PUT } from "../../../../../../util/apicall";
@@ -146,7 +146,7 @@ function OrderStatusCard(props: any) {
 
                   <div>
                     orderDate:{" "}
-                    {moment(props?.data?.orderPayment?.createdAt).format(
+                    {dayjs(props?.data?.orderPayment?.createdAt).format(
                       "DD/MM/YYYY",
                     )}
                   </div>
@@ -177,7 +177,7 @@ function OrderStatusCard(props: any) {
               Expected Delivery Date:
               <span className="text-success">
                 {props?.data?.delivery_date
-                  ? moment(props?.data?.delivery_date).format(
+                  ? dayjs(props?.data?.delivery_date).format(
                       "MMMM Do YYYY, h:mm:ss a",
                     )
                   : ""}
@@ -197,7 +197,7 @@ function OrderStatusCard(props: any) {
                       description={
                         <>
                           <div>
-                            {moment(statusUpdate.createdAt).format(
+                            {dayjs(statusUpdate.createdAt).format(
                               "DD/MM/YYYY",
                             )}
                           </div>

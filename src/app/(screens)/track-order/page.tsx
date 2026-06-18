@@ -22,7 +22,7 @@ import {
   FiBox,
   FiAlertCircle,
 } from "react-icons/fi";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import API from "@/config/API";
 import { formatCurrency } from "@/utils/formatNumber";
 import { useSelector } from "react-redux";
@@ -296,7 +296,7 @@ function TrackOrderPage() {
                         Estimated Delivery
                       </span>
                       <span className="track-order-summary__value">
-                        {moment(trackingData.estimated_delivery).format(
+                        {dayjs(trackingData.estimated_delivery).format(
                           "MMMM Do, YYYY",
                         )}
                       </span>
@@ -330,7 +330,7 @@ function TrackOrderPage() {
                       description={
                         <div className="track-order-timeline__step-desc">
                           <span className="track-order-timeline__step-time">
-                            {moment(update.timestamp).format(
+                            {dayjs(update.timestamp).format(
                               "MMM DD, YYYY • h:mm A",
                             )}
                           </span>

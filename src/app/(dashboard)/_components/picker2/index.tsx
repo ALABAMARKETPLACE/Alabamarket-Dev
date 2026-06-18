@@ -1,5 +1,5 @@
 import "./style.scss";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import Dropzone from "react-dropzone";
 import { message, Modal } from "antd";
 import { FiInbox } from "react-icons/fi";
@@ -84,7 +84,7 @@ const ImagePicker2 = ({
       );
       cropper.getCroppedCanvas().toBlob((blob) => {
         if (blob) {
-          let name = moment(new Date()).unix();
+          let name = dayjs(new Date()).unix();
           const myNewFile = new File(
             [blob],
             name + (originalExtension || ".jpeg"),

@@ -3,7 +3,7 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { PUT } from "@/util/apicall";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button, Card, Modal, notification } from "antd";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useState } from "react";
 import API from "@/config/API_ADMIN";
 import { formatCurrency } from "@/utils/formatNumber";
@@ -155,7 +155,7 @@ export default function PaymentStatusTab(props: Props) {
             <div className="d-flex justify-content-between">
               <span className="text-muted">Date:</span>
               <span>
-                {moment(props?.data?.orderPayment?.createdAt).format(
+                {dayjs(props?.data?.orderPayment?.createdAt).format(
                   DATE_FORMAT,
                 )}
               </span>

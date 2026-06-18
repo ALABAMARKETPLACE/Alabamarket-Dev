@@ -5,7 +5,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { PUT, GET } from "@/util/apicall";
 import API from "@/config/API_ADMIN";
 import API_MAIN from "@/config/API";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 
 interface OrderData {
   id?: string | number;
@@ -110,7 +110,7 @@ export default function OrderStatusTab(props: Props) {
           <Timeline
             mode="left"
             items={history.map((item: OrderHistoryItem) => ({
-              label: moment(item?.createdAt).format("DD/MM/YYYY HH:mm"),
+              label: dayjs(item?.createdAt).format("DD/MM/YYYY HH:mm"),
               children: (
                 <div className="d-flex flex-column">
                   <span

@@ -26,23 +26,17 @@ export const useGetSettings = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        // load site settings
-        const settings: any = await GET(API.SETTINGS);
-        if (settings.status) {
-          dispatch(storeSettings(settings.data));
-        }
-        // load categories
-        let response: any = await GET(API.CATEGORY);
-        if (response?.status) {
-          dispatch(storeCategory(response?.data));
-        }
-      } catch (err) {
-        console.error(err);
+        const [settings, response]: any[] = await Promise.all([
+          GET(API.SETTINGS),
+          GET(API.CATEGORY),
+        ]);
+        if (settings?.status) dispatch(storeSettings(settings.data));
+        if (response?.status) dispatch(storeCategory(response?.data));
+      } catch {
+        // silent
       }
     };
     fetchSettings();
-
-    // Load guest cart from localStorage on initial load
     dispatch(loadGuestCart());
   }, [dispatch]);
 };
@@ -124,48 +118,28 @@ export const useTokenExpiration = () => {
 
   const fetchCartItems = async () => {
     try {
-      // Check if there are guest cart items to sync
       const guestCartItems = getGuestCartFromStorage();
 
       if (guestCartItems.length > 0) {
-        console.log(
-          "🛒 Syncing guest cart items to backend:",
-          guestCartItems.length,
-          "items",
-        );
-
-        // Sync each guest cart item to the backend
-        for (const item of guestCartItems) {
-          try {
-            const cartData = {
+        // Sync all guest cart items in parallel instead of sequentially
+        await Promise.allSettled(
+          guestCartItems.map((item: any) =>
+            POST(API.CART, {
               productId: item.productId || item._id,
               storeId: item.storeId || item.store_id,
-              qty: Math.floor(Number(item.qty || item.quantity) || 1), // Ensure integer
-            };
-            await POST(API.CART, cartData);
-            console.log("✅ Synced item:", item.name || item.productName);
-          } catch (syncError) {
-            console.error(
-              "❌ Failed to sync item:",
-              item.name || item.productName,
-              syncError,
-            );
-          }
-        }
-
-        // Clear guest cart after syncing
+              qty: Math.floor(Number(item.qty || item.quantity) || 1),
+            }),
+          ),
+        );
         clearGuestCartFromStorage();
-        console.log("🗑️ Guest cart cleared after sync");
       }
 
-      // Fetch all cart items from backend
-      const url = API.CART_GET_ALL;
-      const cartItems: any = await GET(url);
-      if (cartItems.status) {
+      const cartItems: any = await GET(API.CART_GET_ALL);
+      if (cartItems?.status) {
         dispatch(storeCart(cartItems.data));
       }
-    } catch (err) {
-      console.error("Error fetching cart items:", err);
+    } catch {
+      // silent
     }
   };
 

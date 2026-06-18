@@ -9,7 +9,7 @@ import {
   FiDollarSign,
   FiHash,
 } from "react-icons/fi";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { formatCurrency } from "@/utils/formatNumber";
@@ -73,12 +73,12 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "due_date",
       key: "due_date",
       render: (text: any, record: any) => {
-        const isOverdue = moment(text).isBefore(moment());
+        const isOverdue = dayjs(text).isBefore(dayjs());
         return (
           <span
             className={`dashboard-badge dashboard-badge--${isOverdue ? "danger" : "default"}`}
           >
-            {moment(text).format("DD/MM/YYYY")}
+            {dayjs(text).format("DD/MM/YYYY")}
           </span>
         );
       },
@@ -119,7 +119,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
     }
 
     return data.map((record: any) => {
-      const isOverdue = moment(record?.due_date).isBefore(moment());
+      const isOverdue = dayjs(record?.due_date).isBefore(dayjs());
       return (
         <div
           className="dashboard-mobile-card"
@@ -159,7 +159,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
                 <span
                   className={`dashboard-badge dashboard-badge--${isOverdue ? "danger" : "default"}`}
                 >
-                  {moment(record?.due_date).format("DD/MM/YYYY")}
+                  {dayjs(record?.due_date).format("DD/MM/YYYY")}
                 </span>
               </span>
             </div>

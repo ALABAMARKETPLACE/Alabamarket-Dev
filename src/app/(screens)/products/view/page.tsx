@@ -12,7 +12,7 @@ import { reduxLocation } from "../../../../redux/slice/locationSlice";
 import { reduxSettings } from "../../../../redux/slice/settingsSlice";
 import API from "../../../../config/API";
 import { GET } from "../../../../util/apicall";
-import _ from "lodash";
+import uniqBy from "lodash/uniqBy";
 import useMediaQuery from "../../../../shared/hook/useMediaQuery";
 import NoData from "../../../../components/noData";
 const result: any = {
@@ -192,7 +192,7 @@ function Page() {
         setProducts((prev) =>
           pageNumber === 1
             ? fetchedProducts
-            : _.uniqBy([...prev, ...fetchedProducts], "_id"),
+            :uniqBy([...prev, ...fetchedProducts], "_id"),
         );
 
         const metaData = response.meta ?? {
@@ -275,7 +275,7 @@ function Page() {
       if (response?.status) {
         const fallbackData = response?.data ?? [];
         setProducts((prev) =>
-          reset ? fallbackData : _.uniqBy([...prev, ...fallbackData], "_id"),
+          reset ? fallbackData :uniqBy([...prev, ...fallbackData], "_id"),
         );
         setFallbackHasMore(response?.meta?.hasNextPage ?? false);
         setFallbackPage(nextPage);

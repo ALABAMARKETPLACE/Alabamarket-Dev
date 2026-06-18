@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import InfiniteScroll from "react-infinite-scroll-component";
-import _ from "lodash";
+import uniqBy from "lodash/uniqBy";
+import orderBy from "lodash/orderBy";
 import NoData from "@/components/noData";
 import useDidUpdateEffect from "@/shared/hook/useDidUpdate";
 import API from "@/config/API";
@@ -31,7 +32,7 @@ function StoreFront() {
       try {
         const response: any = await GET(url);
         if (response.status) {
-          setProducts((prod) => _.uniqBy([...prod, ...response?.data], "_id"));
+          setProducts((prod) =>uniqBy([...prod, ...response?.data], "_id"));
           setMeta(response?.meta);
         } else throw new Error(response.message);
       } catch (err) {
@@ -55,7 +56,7 @@ function StoreFront() {
         ? data.map((category) => {
             return {
               ...category,
-              products: _.orderBy(category?.products, ["_id"], ["desc"]),
+              products:orderBy(category?.products, ["_id"], ["desc"]),
             };
           })
         : [];
@@ -64,7 +65,7 @@ function StoreFront() {
         ? data.map((category) => {
             return {
               ...category,
-              products: _.orderBy(
+              products:orderBy(
                 category?.products,
                 ["retail_rate"],
                 [price == "ASC" ? "asc" : "desc"]

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button, Table, Pagination, Tag, Card } from "antd";
-import moment from "moment";
+import dayjs from "@/util/dayjs";
 import { MdHourglassEmpty } from "react-icons/md";
 import ActionModal from "./actionModal";
 
@@ -92,7 +92,7 @@ function DataTable({ data, count, setPage, setTake, pageSize, page }: props) {
       dataIndex: "createdAt",
       key: "createdAt",
       width: 120,
-      render: (date: string) => moment(date).format("DD/MM/YYYY"),
+      render: (date: string) => dayjs(date).format("DD/MM/YYYY"),
     },
     {
       title: "Action",
