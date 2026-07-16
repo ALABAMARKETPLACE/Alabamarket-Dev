@@ -41,7 +41,8 @@ type EnquiryFormValues = {
 };
 
 interface ProductData {
-  _id: string;
+  _id: number | string;
+  id?: number;
   pid: string;
   slug?: string;
   name: string;
@@ -75,6 +76,7 @@ type Props = {
   currentVariant: VariantData | null;
   handleBuyNow: (val: number) => void;
   pid?: string;
+  nid?: string | number;
 };
 
 function Description(props: Props) {
@@ -274,7 +276,8 @@ function Description(props: Props) {
 
       const guestCartItem = {
         productId: props?.data?.pid,
-        pid: props?.data?.pid, // Store numeric pid explicitly for guest order
+        pid: props?.data?.pid,
+        product_id: Number(props?.data?.id) || Number(props?.nid) || 0,
         name: props?.data?.name,
         price: props?.currentVariant?.price ?? props?.data?.retail_rate,
         quantity: Math.floor(quantity), // Ensure integer quantity

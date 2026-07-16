@@ -59,7 +59,8 @@ function ProductItem(props: any) {
   }, [props?.item?.pid, props?.item?.id, props?.item?.averageRating, props?.item?.totalReviews]);
 
   const openDetails = () => {
-    navigate.push(`/${props?.item?.slug}/`);
+    const nid = props?.item?.id;
+    navigate.push(`/${props?.item?.slug}/${nid ? `?nid=${nid}` : ""}`);
   };
 
   // Resolve store identifier — prefer slug, fall back to id

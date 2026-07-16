@@ -261,6 +261,7 @@ function DetailsCard(props: any) {
               currentVariant={currentVariant}
               handleBuyNow={handleBuyNow}
               pid={props?.params?.pid}
+              nid={props?.params?.nid}
             />
 
             {/* Variants */}
