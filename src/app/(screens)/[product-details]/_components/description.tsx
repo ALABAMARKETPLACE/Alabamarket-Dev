@@ -137,7 +137,7 @@ function Description(props: Props) {
   // Calculate discount info for display (visual only - does not affect payment)
   const discountInfo = useMemo(() => {
     // Use pid to match the discount calculation in ProductItem component
-    const productId = props?.data?.pid || props?.data?._id || "";
+    const productId = props?.data?.pid || String(props?.data?._id ?? "") || "";
     const discountPercent = getDiscountPercentage(productId);
     const originalPrice = calculateOriginalPrice(basePrice, discountPercent);
     const originalTotalPrice = originalPrice * quantity;
