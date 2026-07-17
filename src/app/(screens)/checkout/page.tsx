@@ -312,7 +312,9 @@ function Checkout() {
       const guestPayload = {
         guest_info: guestInfoPayload,
         cart_items: cartItems,
-        amount: Number(grand_total ?? 0) * 100, // kobo
+        amount: paymentProvider === "budpay"
+          ? Number(grand_total ?? 0)        // BudPay expects Naira
+          : Number(grand_total ?? 0) * 100, // Paystack expects kobo
         delivery_charge: Number(delivery_charge ?? 0),
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
         payment_provider: paymentProvider,

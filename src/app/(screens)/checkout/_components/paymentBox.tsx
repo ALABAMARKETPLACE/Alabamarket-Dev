@@ -85,16 +85,18 @@ function PaymentBox({ onContinue }: { onContinue?: (provider: Provider) => void 
         </div>
       </div>
 
-      {/* BudPay option — temporarily disabled */}
-      <div style={{ ...cardStyle(false), opacity: 0.5, cursor: "not-allowed" }}>
+      {/* BudPay option */}
+      <div style={cardStyle(selected === "budpay")} onClick={() => setSelected("budpay")}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <IoMdRadioButtonOff size={22} color="#9ca3af" style={{ flexShrink: 0 }} />
+          {selected === "budpay"
+            ? <IoMdRadioButtonOn size={22} color="#ff5f15" style={{ flexShrink: 0 }} />
+            : <IoMdRadioButtonOff size={22} color="#9ca3af" style={{ flexShrink: 0 }} />}
           <div style={{ minWidth: 0 }}>
             <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 2 }}>
               BudPay
             </div>
             <div style={{ fontSize: 12, color: "#6b7280" }}>
-              Coming soon
+              Cards, Bank Transfer, USSD
             </div>
           </div>
         </div>
