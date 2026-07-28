@@ -342,9 +342,8 @@ function Checkout() {
 
       localStorage.setItem("guest_order_payload", JSON.stringify(guestPayload));
 
-      const guestEndpoint = paymentProvider === "budpay"
-        ? API.BUDPAY_INITIALIZE_GUEST
-        : API.PAYSTACK_INITIALIZE_GUEST;
+      // Both providers share the same initialize-guest endpoint — backend routes via payment_provider
+      const guestEndpoint = API.PAYSTACK_INITIALIZE_GUEST;
 
       const response = await PUBLIC_POST(guestEndpoint, guestPayload as unknown as Record<string, unknown>);
       const authUrl =

@@ -212,7 +212,8 @@ const API = {
   BUDPAY_INITIALIZE: "budpay/initialize", //POST logged-in direct payment
   BUDPAY_INITIALIZE_CHECKOUT: "budpay/initialize-checkout", //POST logged-in cart checkout
   BUDPAY_INITIALIZE_GUEST: "budpay/initialize-guest", //POST guest checkout
-  BUDPAY_VERIFY: "budpay/verify", //POST verify payment (auth + guest)
+  BUDPAY_VERIFY: "budpay/verify", //POST verify payment (auth)
+  BUDPAY_VERIFY_GUEST: "budpay/verify-guest", //POST verify guest payment
 
   //PAYMENT GATEWAY - PAYSTACK
   PAYSTACK_INITIALIZE: "paystack/initialize", //POST to initialize payment

@@ -42,7 +42,7 @@ function ProductItem(props: any) {
 
   // Calculate discount and original price
   const discountInfo = useMemo(() => {
-    const productId = props?.item?.pid || props?.item?.id || "";
+    const productId = String(props?.item?.pid || props?.item?.id || "");
     const discountPercent = getDiscountPercentage(productId);
     const actualPrice = props?.item?.retail_rate || 0;
     const originalPrice = calculateOriginalPrice(actualPrice, discountPercent);
@@ -51,7 +51,7 @@ function ProductItem(props: any) {
 
   // Use API rating/reviews when available, otherwise generate consistent values from product id
   const ratingInfo = useMemo(() => {
-    const productId = props?.item?.pid || props?.item?.id || "";
+    const productId = String(props?.item?.pid || props?.item?.id || "");
     const apiRating = props?.item?.averageRating;
     const apiReviews = props?.item?.totalReviews;
     if (apiRating) return { rating: Number(apiRating), reviews: apiReviews ?? 0 };
@@ -60,7 +60,7 @@ function ProductItem(props: any) {
 
   const openDetails = () => {
     const nid = props?.item?.id;
-    navigate.push(`/${props?.item?.slug}/${nid ? `?nid=${nid}` : ""}`);
+    navigate.push(`/${props?.item?.slug}${nid ? `?nid=${nid}` : ""}`);
   };
 
   // Resolve store identifier — prefer slug, fall back to id

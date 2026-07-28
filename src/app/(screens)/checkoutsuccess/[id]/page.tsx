@@ -73,17 +73,23 @@ function CheckoutSuccessContent() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let response: any;
 
+      const getGuestEmail = () => {
+        try {
+          const raw = localStorage.getItem("guest_order_payload");
+          return raw ? (JSON.parse(raw)?.guest_info?.email ?? "") : "";
+        } catch { return ""; }
+      };
+
       if (provider === "budpay") {
-        response = await POST(API.BUDPAY_VERIFY, { reference: ref });
+        if (isAuth) {
+          response = await POST(API.BUDPAY_VERIFY, { reference: ref });
+        } else {
+          response = await PUBLIC_POST(API.BUDPAY_VERIFY_GUEST, { reference: ref, guest_email: getGuestEmail() });
+        }
       } else if (isAuth) {
         response = await POST(API.PAYSTACK_VERIFY, { reference: ref });
       } else {
-        let guestEmail = "";
-        try {
-          const raw = localStorage.getItem("guest_order_payload");
-          guestEmail = raw ? (JSON.parse(raw)?.guest_info?.email ?? "") : "";
-        } catch {}
-        response = await PUBLIC_POST(API.PAYSTACK_VERIFY_GUEST, { reference: ref, guest_email: guestEmail });
+        response = await PUBLIC_POST(API.PAYSTACK_VERIFY_GUEST, { reference: ref, guest_email: getGuestEmail() });
       }
 
       if (response?.status) {
