@@ -2,6 +2,7 @@ import API from "@/config/API";
 import { store } from "@/redux/store/store";
 import { message } from "antd";
 import { parseApiMessage } from "@/util/parseApiError";
+import { storeToken, clearToken } from "@/redux/slice/authSlice";
 
 const getFullUrl = (url: string): string => {
   if (!url) return "";
@@ -24,7 +25,71 @@ const getFullUrl = (url: string): string => {
 interface AuthState {
   Auth?: {
     token?: string;
+    refreshToken?: string | null;
   };
+}
+
+// ── Token refresh ─────────────────────────────────────────────────────────────
+// Single in-flight refresh; all concurrent 401s share one Promise
+let refreshPromise: Promise<string | null> | null = null;
+
+async function doRefresh(): Promise<string | null> {
+  const state = store.getState() as AuthState;
+  const refreshToken = state?.Auth?.refreshToken;
+
+  if (!refreshToken) {
+    store.dispatch(clearToken());
+    if (typeof window !== "undefined") window.location.href = "/login";
+    return null;
+  }
+
+  try {
+    const resp = await fetch(getFullUrl(API.USER_REFRESH_TOKEN), {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!resp.ok) throw new Error("Refresh failed");
+
+    const data = await resp.json();
+    const newToken: string =
+      data?.data?.token ?? data?.token ?? data?.accessToken ?? data?.data?.accessToken ?? "";
+    const newRefresh: string =
+      data?.data?.refreshToken ?? data?.refreshToken ?? refreshToken;
+
+    if (!newToken) throw new Error("No token in refresh response");
+
+    store.dispatch(storeToken({ token: newToken, refreshToken: newRefresh }));
+    return newToken;
+  } catch {
+    store.dispatch(clearToken());
+    if (typeof window !== "undefined") window.location.href = "/login";
+    return null;
+  }
+}
+
+function getRefreshedToken(): Promise<string | null> {
+  if (!refreshPromise) {
+    refreshPromise = doRefresh().finally(() => { refreshPromise = null; });
+  }
+  return refreshPromise;
+}
+
+// Wraps fetch for authenticated requests: retries once after a 401 refresh
+async function authFetch(url: string, init: RequestInit): Promise<Response> {
+  const resp = await fetch(url, init);
+
+  if (resp.status === 401) {
+    const newToken = await getRefreshedToken();
+    if (newToken) {
+      const headers = new Headers(init.headers as HeadersInit);
+      headers.set("Authorization", `Bearer ${newToken}`);
+      return fetch(url, { ...init, headers });
+    }
+  }
+
+  return resp;
 }
 // comss
 const GET = async (
@@ -53,7 +118,7 @@ const GET = async (
 
     const queryParams = new URLSearchParams(cleanParams).toString();
     const URL = queryParams ? url + `?${queryParams}` : url;
-    const response = await fetch(getFullUrl(URL), {
+    const response = await authFetch(getFullUrl(URL), {
       ...(signal && { signal }),
       method: "GET",
       headers: {
@@ -98,7 +163,7 @@ const POST = async (
         ? { Authorization: `Bearer ${token}` }
         : {};
     const isForm = typeof FormData !== "undefined" && body instanceof FormData;
-    const response = await fetch(getFullUrl(url), {
+    const response = await authFetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "POST",
       headers: {
@@ -184,7 +249,7 @@ const PUT = async (
         ? { Authorization: `Bearer ${token}` }
         : {};
     const isForm = typeof FormData !== "undefined" && body instanceof FormData;
-    const response = await fetch(getFullUrl(url), {
+    const response = await authFetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PUT",
       headers: {
@@ -229,7 +294,7 @@ const PATCH = async (
         ? { Authorization: `Bearer ${token}` }
         : {};
     const isForm = typeof FormData !== "undefined" && body instanceof FormData;
-    const response = await fetch(getFullUrl(url), {
+    const response = await authFetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "PATCH",
       headers: {
@@ -313,7 +378,7 @@ const DELETE = async (
       typeof token === "string" && token.trim().length > 0
         ? { Authorization: `Bearer ${token}` }
         : {};
-    const response = await fetch(getFullUrl(url), {
+    const response = await authFetch(getFullUrl(url), {
       ...(signal && { signal }),
       method: "DELETE",
       headers: {
