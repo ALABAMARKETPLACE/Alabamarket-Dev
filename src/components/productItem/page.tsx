@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import "./styles.scss";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useSelector } from "react-redux";
 import { FaStar } from "react-icons/fa6";
 import { Popover, Rate, App } from "antd";
@@ -42,7 +43,7 @@ function ProductItem(props: any) {
 
   // Calculate discount and original price
   const discountInfo = useMemo(() => {
-    const productId = props?.item?.pid || props?.item?.id || "";
+    const productId = String(props?.item?.pid || props?.item?.id || "");
     const discountPercent = getDiscountPercentage(productId);
     const actualPrice = props?.item?.retail_rate || 0;
     const originalPrice = calculateOriginalPrice(actualPrice, discountPercent);
@@ -51,7 +52,7 @@ function ProductItem(props: any) {
 
   // Use API rating/reviews when available, otherwise generate consistent values from product id
   const ratingInfo = useMemo(() => {
-    const productId = props?.item?.pid || props?.item?.id || "";
+    const productId = String(props?.item?.pid || props?.item?.id || "");
     const apiRating = props?.item?.averageRating;
     const apiReviews = props?.item?.totalReviews;
     if (apiRating) return { rating: Number(apiRating), reviews: apiReviews ?? 0 };
@@ -59,7 +60,8 @@ function ProductItem(props: any) {
   }, [props?.item?.pid, props?.item?.id, props?.item?.averageRating, props?.item?.totalReviews]);
 
   const openDetails = () => {
-    navigate.push(`/${props?.item?.slug}/`);
+    const nid = props?.item?.id;
+    navigate.push(`/${props?.item?.slug}${nid ? `?nid=${nid}` : ""}`);
   };
 
   // Resolve store identifier — prefer slug, fall back to id
@@ -109,12 +111,13 @@ function ProductItem(props: any) {
   return (
     <div className={`ProductItem position-relative`}>
       <div className="ProductItem-Box1">
-        <img
-          src={props?.item?.image}
+        <Image
+          src={props?.item?.image || "/icon.jpeg"}
+          alt={props?.item?.name || "product image"}
+          fill
           className="ProductItem-img"
-          alt="ProductItem-img"
-          loading="lazy"
-          decoding="async"
+          sizes="(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"
+          quality={75}
           onClick={() => openDetails()}
         />
         {props?.item?.unit <= 0 ? (

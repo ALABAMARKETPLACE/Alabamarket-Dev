@@ -67,8 +67,9 @@ async function ProductScreen({ params, searchParams }: any) {
   // for cart operations, URL history, wishlist, etc. — regardless of what was
   // used to fetch.
   const pid = data?.pid || queryParams?.pid || id;
+  const nid = queryParams?.nid;
 
-  return <DetailsCard data={data} params={{ ...queryParams, pid }} />;
+  return <DetailsCard data={data} params={{ ...queryParams, pid, nid }} />;
 }
 
 export default ProductScreen;

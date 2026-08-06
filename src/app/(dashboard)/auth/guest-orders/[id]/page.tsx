@@ -118,7 +118,7 @@ interface GuestOrder {
 
 interface GuestOrdersResponse {
   status: boolean;
-  data: GuestOrder[];
+  data: GuestOrder;
 }
 
 interface CustomSession {
@@ -337,22 +337,18 @@ export default function GuestOrderDetail() {
   const { data: sessionData, status: authStatus } = useSession();
   const session = sessionData as CustomSession | null;
 
-  const userRole = session?.role;
-  const userType = session?.user?.type || session?.type;
-  const isSeller = userRole === "seller" || userType === "seller";
-  const endpoint = isSeller ? API.ORDER_GUEST_STORE : API.ORDER_GUEST_ALL;
-  const queryKey = [endpoint];
+  const queryKey = [API.ORDER_GUEST_DETAILS, id];
 
   const { data: ordersRaw, isLoading, isError, error } = useQuery({
     queryKey,
-    queryFn: () => GET(endpoint, {}, null, { token: session?.token }),
+    queryFn: () => GET(API.ORDER_GUEST_DETAILS + id, {}, null, { token: session?.token }),
     enabled: authStatus === "authenticated" && !!session?.token,
     retry: false,
   });
 
   const orders = ordersRaw as GuestOrdersResponse | undefined;
-  const order: GuestOrder | undefined = Array.isArray(orders?.data)
-    ? orders.data.find((o) => String(o.id) === String(id))
+  const order: GuestOrder | undefined = orders?.data && !Array.isArray(orders.data)
+    ? orders.data
     : undefined;
 
 

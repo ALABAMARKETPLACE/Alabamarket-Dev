@@ -25,7 +25,7 @@ function DetailsCard(props: any) {
   const router       = useRouter();
   const pathname     = usePathname();
   const searchParams = useSearchParams();
-  const { data: session }: any = useSession();
+  const { data: session, status: sessionStatus }: any = useSession();
   const [showFullText, setShowFullText] = useState(false);
 
   const vid = searchParams.get("vid");
@@ -95,7 +95,7 @@ function DetailsCard(props: any) {
   })();
 
   const handleBuyNow = (val: any) => {
-    if (!session?.token) router?.push("/login");
+    if (sessionStatus !== "loading" && !session?.token) router?.push("/login");
   };
 
   const createQueryString = useCallback(
@@ -261,6 +261,7 @@ function DetailsCard(props: any) {
               currentVariant={currentVariant}
               handleBuyNow={handleBuyNow}
               pid={props?.params?.pid}
+              nid={props?.params?.nid}
             />
 
             {/* Variants */}

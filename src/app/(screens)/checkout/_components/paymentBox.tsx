@@ -1,13 +1,30 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { IoCardOutline, IoLockClosedOutline, IoShieldCheckmarkOutline } from "react-icons/io5";
-import { IoMdRadioButtonOn } from "react-icons/io";
+import { IoMdRadioButtonOn, IoMdRadioButtonOff } from "react-icons/io";
 import Visa from "../../../../assets/images/visa.png";
 import Mster from "../../../../assets/images/mastercard.png";
 import Paystack from "../../../../assets/images/paystack-logo.png";
 import Image from "next/image";
 
-function PaymentBox({ onContinue }: { onContinue?: () => void }) {
+type Provider = "paystack" | "budpay";
+
+function PaymentBox({ onContinue }: { onContinue?: (provider: Provider) => void }) {
+  const [selected, setSelected] = useState<Provider>("paystack");
+
+  const cardStyle = (active: boolean): React.CSSProperties => ({
+    border: `2px solid ${active ? "#ff5f15" : "#e5e7eb"}`,
+    borderRadius: 14,
+    padding: "16px 20px",
+    background: active
+      ? "linear-gradient(135deg, #fffaf7 0%, #fff 100%)"
+      : "#fafafa",
+    boxShadow: active ? "0 4px 16px rgba(255, 95, 21, 0.1)" : "none",
+    cursor: "pointer",
+    marginBottom: 12,
+    transition: "border 0.15s, box-shadow 0.15s",
+  });
+
   return (
     <div>
       {/* Section label */}
@@ -28,29 +45,21 @@ function PaymentBox({ onContinue }: { onContinue?: () => void }) {
       </div>
       <div style={{ height: 1, background: "#f0f0f0", marginBottom: 18 }} />
 
-      {/* Payment option card */}
-      <div style={{
-        border: "2px solid #ff5f15",
-        borderRadius: 14,
-        padding: "16px 20px",
-        background: "linear-gradient(135deg, #fffaf7 0%, #fff 100%)",
-        boxShadow: "0 4px 16px rgba(255, 95, 21, 0.1)",
-        cursor: "pointer",
-      }}>
-        {/* Top row: radio + label */}
+      {/* Paystack option */}
+      <div style={cardStyle(selected === "paystack")} onClick={() => setSelected("paystack")}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
-          <IoMdRadioButtonOn size={22} color="#ff5f15" style={{ flexShrink: 0 }} />
+          {selected === "paystack"
+            ? <IoMdRadioButtonOn size={22} color="#ff5f15" style={{ flexShrink: 0 }} />
+            : <IoMdRadioButtonOff size={22} color="#9ca3af" style={{ flexShrink: 0 }} />}
           <div style={{ minWidth: 0 }}>
             <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 2 }}>
-              Pay Online
+              Paystack
             </div>
             <div style={{ fontSize: 12, color: "#6b7280" }}>
-              Secured by Paystack · Cards, Bank Transfer, USSD
+              Cards, Bank Transfer, USSD
             </div>
           </div>
         </div>
-
-        {/* Card logos row — wraps on small screens */}
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -72,6 +81,23 @@ function PaymentBox({ onContinue }: { onContinue?: () => void }) {
             letterSpacing: "0.3px",
           }}>
             Verve
+          </div>
+        </div>
+      </div>
+
+      {/* BudPay option */}
+      <div style={cardStyle(selected === "budpay")} onClick={() => setSelected("budpay")}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          {selected === "budpay"
+            ? <IoMdRadioButtonOn size={22} color="#ff5f15" style={{ flexShrink: 0 }} />
+            : <IoMdRadioButtonOff size={22} color="#9ca3af" style={{ flexShrink: 0 }} />}
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 2 }}>
+              BudPay
+            </div>
+            <div style={{ fontSize: 12, color: "#6b7280" }}>
+              Cards, Bank Transfer, USSD
+            </div>
           </div>
         </div>
       </div>
@@ -100,7 +126,7 @@ function PaymentBox({ onContinue }: { onContinue?: () => void }) {
       {onContinue && (
         <button
           className="step-continue-btn"
-          onClick={() => onContinue()}
+          onClick={() => onContinue(selected)}
         >
           Continue to Review →
         </button>

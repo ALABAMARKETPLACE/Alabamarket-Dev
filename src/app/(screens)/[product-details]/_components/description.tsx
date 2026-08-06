@@ -41,7 +41,8 @@ type EnquiryFormValues = {
 };
 
 interface ProductData {
-  _id: string;
+  _id: number | string;
+  id?: number;
   pid: string;
   slug?: string;
   name: string;
@@ -75,6 +76,7 @@ type Props = {
   currentVariant: VariantData | null;
   handleBuyNow: (val: number) => void;
   pid?: string;
+  nid?: string | number;
 };
 
 function Description(props: Props) {
@@ -135,7 +137,7 @@ function Description(props: Props) {
   // Calculate discount info for display (visual only - does not affect payment)
   const discountInfo = useMemo(() => {
     // Use pid to match the discount calculation in ProductItem component
-    const productId = props?.data?.pid || props?.data?._id || "";
+    const productId = props?.data?.pid || String(props?.data?._id ?? "") || "";
     const discountPercent = getDiscountPercentage(productId);
     const originalPrice = calculateOriginalPrice(basePrice, discountPercent);
     const originalTotalPrice = originalPrice * quantity;
@@ -157,11 +159,11 @@ function Description(props: Props) {
   // );
 
   useEffect(() => {
-    if (props?.data?.pid) {
+    if (props?.data?.pid && user?.user) {
       checkWishlistStatus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props?.data?.pid]);
+  }, [props?.data?.pid, user?.user]);
 
   // Format price only on client to avoid hydration mismatch
   useEffect(() => {
@@ -274,7 +276,8 @@ function Description(props: Props) {
 
       const guestCartItem = {
         productId: props?.data?.pid,
-        pid: props?.data?.pid, // Store numeric pid explicitly for guest order
+        pid: props?.data?.pid,
+        product_id: Number(props?.data?.id) || Number(props?.nid) || 0,
         name: props?.data?.name,
         price: props?.currentVariant?.price ?? props?.data?.retail_rate,
         quantity: Math.floor(quantity), // Ensure integer quantity
@@ -491,7 +494,7 @@ function Description(props: Props) {
                   Free Nationwide Shipping
                 </div>
                 <div className="promo-card__shipping-date">
-                  Valid till <strong>April 30th</strong>
+                  Available on all orders
                 </div>
               </div>
             </div>

@@ -17,16 +17,12 @@ import { reduxSettings } from "@/redux/slice/settingsSlice";
 import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
 import { getGuestInfo } from "./_components/guestAddressForm";
 
-enum PaymentTypeEnum {
-  Paystack = "paystack",
-}
+type PaymentProvider = "paystack" | "budpay";
 
 function Checkout() {
   const { data: session, status } = useSession();
   const user = session?.user;
   const isAuthenticated = status === "authenticated" && !!user;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const customerId = (user as any)?.id || null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const Checkout = useSelector((state: any) => state?.Checkout);
   const Settings = useAppSelector(reduxSettings);
@@ -76,6 +72,7 @@ function Checkout() {
   }, [Checkout?.Checkout, total, Settings?.currency]);
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [paymentProvider, setPaymentProvider] = useState<PaymentProvider>("paystack");
   const [isDeliveryCalculating, setIsDeliveryCalculating] = useState(false);
 
   /* Guest inline Paystack setup temporarily disabled */
@@ -157,20 +154,11 @@ function Checkout() {
           response = await PUBLIC_POST(API.PUBLIC_CALCULATE_DELIVERY_CHARGE, deliveryObj);
         }
 
-        console.log("Delivery response:", response);
-
         if (response?.status) {
           const deliveryToken = response?.token ?? "";
           const delivery = Number(response?.details?.totalCharge ?? 0);
           const discountVal = Number(response?.details?.discount ?? 0);
           const gTotal = Number(totals) + Number(delivery) - discountVal;
-
-          console.log(
-            "Setting delivery charge:",
-            delivery,
-            "Grand total:",
-            gTotal,
-          );
 
           setDeliveryToken(deliveryToken);
           setDelivery_charge(delivery);
@@ -189,8 +177,6 @@ function Checkout() {
       setDelivery_charge(0);
       setDiscount(0);
       setDeliveryToken("");
-      console.log(err);
-
       if (err?.response?.data?.message) {
         notificationApi.error({
           message: "Delivery Calculation Failed",
@@ -238,23 +224,26 @@ function Checkout() {
           quantity: Number(item?.quantity ?? 0),
         }));
 
-        const payload = {
+        const basePayload = {
           cart,
           payment: {
-            type: PaymentTypeEnum.Paystack,
+            type: paymentProvider,
             callback_url: `${window.location.origin}/checkoutsuccess/2`,
           },
           address: { id: Number(Checkout.address.id) },
           charges: { token: deliveryToken ?? "" },
+          payment_provider: paymentProvider,
         };
 
-        const response = await POST(API.ORDER, payload);
+        const endpoint = paymentProvider === "budpay" ? API.BUDPAY_INITIALIZE_CHECKOUT : API.ORDER;
+        const response = await POST(endpoint, basePayload);
         const authUrl =
           response?.data?.authorization_url ||
           response?.authorization_url ||
           null;
 
         if (authUrl) {
+          localStorage.setItem("payment_provider", paymentProvider);
           localStorage.setItem("order_payload", JSON.stringify({
             cart,
             address: { id: Number(Checkout.address.id) },
@@ -277,54 +266,11 @@ function Checkout() {
 
       const addr = Checkout.address;
 
-      // Top-level cart_items: snake_case format required by paystack/initialize-guest
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const topLevelCartItems = (Checkout?.Checkout ?? []).map((item: any) => ({
-        product_id: Number(item?.productId) || Number(item?.product_id) || Number(item?.product?.id) || 0,
-        store_id: Number(item?.storeId ?? item?.store_id ?? 0),
-        variant_id: item?.variantId ? Number(item.variantId) : item?.variant_id ? Number(item.variant_id) : null,
-        quantity: Number(item?.quantity ?? 0),
-        unit_price: Number(item?.buyPrice ?? item?.price ?? 0),
-      }));
-
-      // order_payload cart_items: detailed snake_case format for webhook order creation
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const orderPayloadCartItems = (Checkout?.Checkout ?? []).map((item: any) => {
-        const productId =
-          Number(item?.productId) ||
-          Number(item?.product_id) ||
-          Number(item?.product?.id) ||
-          0;
-        const variantId =
-          item?.variantId ? Number(item.variantId) :
-          item?.variant_id ? Number(item.variant_id) : null;
-        return {
-          product_id: productId,
-          variant_id: variantId,
-          store_id: Number(item?.storeId ?? item?.store_id ?? 0),
-          product_name: item?.name ?? "",
-          variant_name: Array.isArray(item?.combination)
-            ? item.combination.map((c: { value: string }) => c.value).join(", ")
-            : "",
-          quantity: Number(item?.quantity ?? 0),
-          unit_price: Number(item?.buyPrice ?? item?.price ?? 0),
-          total_price: Number(item?.totalPrice ?? 0),
-          weight: Number(item?.weight ?? 1),
-          image: item?.image ?? "",
-        };
-      });
-
-      const totalWeight = orderPayloadCartItems.reduce(
-        (sum: number, it: { weight: number; quantity: number }) => sum + it.weight * it.quantity,
-        0,
-      );
-
       const guestInfoPayload = {
         email: guestInfo.email,
         first_name: guestInfo.first_name,
         last_name: guestInfo.last_name,
         phone: guestInfo.phone,
-        country_code: guestInfo.country_code || "+234",
       };
 
       const deliveryAddress = {
@@ -342,63 +288,71 @@ function Checkout() {
         address_type: addr?.address_type ?? "Home",
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const cartItems = (Checkout?.Checkout ?? []).map((item: any) => ({
+        product_id: Number(item?.product_id) || 0,
+        store_id: Number(item?.storeId ?? item?.store_id ?? 0),
+        variant_id: item?.variantId ? Number(item.variantId) : item?.variant_id ? Number(item.variant_id) : null,
+        quantity: Number(item?.quantity ?? 0),
+        unit_price: Number(item?.buyPrice ?? item?.price ?? 0),
+      }));
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const orderPayloadCartItems = (Checkout?.Checkout ?? []).map((item: any) => ({
+        product_id: Number(item?.product_id) || 0,
+        store_id: Number(item?.storeId ?? item?.store_id ?? 0),
+        variant_id: item?.variantId ? Number(item.variantId) : item?.variant_id ? Number(item.variant_id) : null,
+        quantity: Number(item?.quantity ?? 0),
+        unit_price: Number(item?.buyPrice ?? item?.price ?? 0),
+        total_price: Number(item?.totalPrice ?? 0),
+        product_name: item?.name ?? "",
+        image: item?.image ?? "",
+      }));
+
       const guestPayload = {
         guest_info: guestInfoPayload,
-        cart_items: topLevelCartItems,
-        amount: Number(grand_total ?? 0) * 100, // Paystack expects kobo (1 NGN = 100 kobo)
+        cart_items: cartItems,
+        amount: paymentProvider === "budpay"
+          ? Number(grand_total ?? 0)        // BudPay expects Naira
+          : Number(grand_total ?? 0) * 100, // Paystack expects kobo
         delivery_charge: Number(delivery_charge ?? 0),
-        currency: "NGN",
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
-        metadata: {
-          order_notes: "",
-          preferred_delivery_time: "",
-          source: "web",
-          device_id: "",
-        },
+        payment_provider: paymentProvider,
         order_payload: {
           guest_info: guestInfoPayload,
           delivery_address: deliveryAddress,
           cart_items: orderPayloadCartItems,
           payment: {
-            payment_reference: "",
-            payment_method: "paystack",
-            transaction_reference: "",
+            payment_method: paymentProvider,
             amount_paid: Number(grand_total ?? 0),
             payment_status: "pending",
-            paid_at: "",
           },
           delivery: {
             delivery_token: deliveryToken ?? "",
             delivery_charge: Number(delivery_charge ?? 0),
-            total_weight: totalWeight,
-            estimated_delivery_days: 0,
           },
           order_summary: {
             subtotal: Number(total ?? 0),
             delivery_fee: Number(delivery_charge ?? 0),
-            tax: 0,
             discount: Number(discount ?? 0),
             total: Number(grand_total ?? 0),
-          },
-          metadata: {
-            order_notes: "",
-            preferred_delivery_time: "",
-            source: "web",
-            device_id: "",
           },
         },
       };
 
-      // Store for fallback to /order/guest if webhook fails
       localStorage.setItem("guest_order_payload", JSON.stringify(guestPayload));
 
-      const response = await PUBLIC_POST(API.PAYSTACK_INITIALIZE_GUEST, guestPayload as unknown as Record<string, unknown>);
+      // Both providers share the same initialize-guest endpoint — backend routes via payment_provider
+      const guestEndpoint = API.PAYSTACK_INITIALIZE_GUEST;
+
+      const response = await PUBLIC_POST(guestEndpoint, guestPayload as unknown as Record<string, unknown>);
       const authUrl =
         response?.data?.authorization_url ||
         response?.authorization_url ||
         null;
 
       if (authUrl) {
+        localStorage.setItem("payment_provider", paymentProvider);
         window.location.href = authUrl;
       } else {
         throw new Error(response?.message || "Payment initialization failed. Please try again.");
@@ -496,12 +450,17 @@ function Checkout() {
               )}
             </div>
             {currentStep > 2 && (
-              <div className="step-card__summary">💳 Paystack</div>
+              <div className="step-card__summary">
+                💳 {paymentProvider === "budpay" ? "BudPay" : "Paystack"}
+              </div>
             )}
             {currentStep === 2 && (
               <div className="step-card__body">
                 <PaymentBox
-                  onContinue={() => setCurrentStep(3)}
+                  onContinue={(provider) => {
+                    setPaymentProvider(provider);
+                    setCurrentStep(3);
+                  }}
                 />
               </div>
             )}
@@ -528,7 +487,7 @@ function Checkout() {
                   loading={isLoading}
                   discount={discount}
                   selectedAddress={Checkout?.address}
-                  selectedPayment="Paystack"
+                  selectedPayment={paymentProvider === "budpay" ? "BudPay" : "Paystack"}
                 />
               </div>
             )}

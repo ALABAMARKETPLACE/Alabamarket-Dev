@@ -168,6 +168,7 @@ const API = {
   COMPLETE_PAYMENT: "order/update_payment/", //put update payment for seller only
   ORDER_GUEST_ALL: "order/guest/all", //GET all guest orders - admin only
   ORDER_GUEST_STORE: "order/guest/store", //GET guest orders for a seller's store
+  ORDER_GUEST_DETAILS: "order/guest/details/", //GET single guest order detail (Seller/Admin)
   ORDER_GUEST_UPDATE_STATUS: "order/guest/update_status/", //PUT update guest order status (Seller/Admin)
 
   // STORE STATISTICS
@@ -206,6 +207,13 @@ const API = {
   INVOICE: "invoice/create", // post create a new invoice
   INVOICE_UPDATE: "invoice/",
   INVOICE_GET_ALL: "invoice/all", // get all invoices
+
+  // PAYMENT GATEWAY - BUDPAY
+  BUDPAY_INITIALIZE: "budpay/initialize", //POST logged-in direct payment
+  BUDPAY_INITIALIZE_CHECKOUT: "budpay/initialize-checkout", //POST logged-in cart checkout
+  BUDPAY_INITIALIZE_GUEST: "budpay/initialize-guest", //POST guest checkout
+  BUDPAY_VERIFY: "budpay/verify", //POST verify payment (auth)
+  BUDPAY_VERIFY_GUEST: "budpay/verify-guest", //POST verify guest payment
 
   //PAYMENT GATEWAY - PAYSTACK
   PAYSTACK_INITIALIZE: "paystack/initialize", //POST to initialize payment

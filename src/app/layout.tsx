@@ -17,6 +17,7 @@ import CONFIG from "@/config/configuration";
 // import WhatsAppChatTab from "@/components/whatsappSupport/WhatsAppChatTab";
 import LayoutContent from "@/components/LayoutContent";
 import ChatBot from "@/components/chatbot/ChatBot";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: CONFIG.NAME,
@@ -111,13 +112,15 @@ fbq('track','PageView');}`,
                 <App>
                   <StoreProvider>
                     <LayoutContent>
-                      <div className="layout-container">
-                        <Header />
-                        <main className="layout-main">{children}</main>
-                        <Footer />
-                        {/* <WhatsAppChatTab /> */}
-                        <ChatBot />
-                      </div>
+                      <ErrorBoundary>
+                        <div className="layout-container">
+                          <Header />
+                          <main className="layout-main">{children}</main>
+                          <Footer />
+                          {/* <WhatsAppChatTab /> */}
+                          <ChatBot />
+                        </div>
+                      </ErrorBoundary>
                     </LayoutContent>
                   </StoreProvider>
                 </App>
