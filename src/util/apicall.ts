@@ -76,16 +76,23 @@ function getRefreshedToken(): Promise<string | null> {
   return refreshPromise;
 }
 
-// Wraps fetch for authenticated requests: retries once after a 401 refresh
+// Wraps fetch for authenticated requests: retries once after a 401 refresh.
+// Only triggers refresh when the original request carried a Bearer token —
+// guest API calls have no auth header and should never cause a login redirect.
 async function authFetch(url: string, init: RequestInit): Promise<Response> {
   const resp = await fetch(url, init);
 
   if (resp.status === 401) {
-    const newToken = await getRefreshedToken();
-    if (newToken) {
-      const headers = new Headers(init.headers as HeadersInit);
-      headers.set("Authorization", `Bearer ${newToken}`);
-      return fetch(url, { ...init, headers });
+    const reqHeaders = init.headers as Record<string, string> | undefined;
+    const hadToken = reqHeaders?.["Authorization"]?.startsWith("Bearer ");
+
+    if (hadToken) {
+      const newToken = await getRefreshedToken();
+      if (newToken) {
+        const retryHeaders = new Headers(init.headers as HeadersInit);
+        retryHeaders.set("Authorization", `Bearer ${newToken}`);
+        return fetch(url, { ...init, headers: retryHeaders });
+      }
     }
   }
 

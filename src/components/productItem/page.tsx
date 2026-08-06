@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import "./styles.scss";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useSelector } from "react-redux";
 import { FaStar } from "react-icons/fa6";
 import { Popover, Rate, App } from "antd";
@@ -110,12 +111,13 @@ function ProductItem(props: any) {
   return (
     <div className={`ProductItem position-relative`}>
       <div className="ProductItem-Box1">
-        <img
-          src={props?.item?.image}
+        <Image
+          src={props?.item?.image || "/icon.jpeg"}
+          alt={props?.item?.name || "product image"}
+          fill
           className="ProductItem-img"
-          alt="ProductItem-img"
-          loading="lazy"
-          decoding="async"
+          sizes="(max-width: 576px) 50vw, (max-width: 992px) 33vw, 25vw"
+          quality={75}
           onClick={() => openDetails()}
         />
         {props?.item?.unit <= 0 ? (

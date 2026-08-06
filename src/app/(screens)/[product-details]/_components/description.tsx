@@ -159,11 +159,11 @@ function Description(props: Props) {
   // );
 
   useEffect(() => {
-    if (props?.data?.pid) {
+    if (props?.data?.pid && user?.user) {
       checkWishlistStatus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props?.data?.pid]);
+  }, [props?.data?.pid, user?.user]);
 
   // Format price only on client to avoid hydration mismatch
   useEffect(() => {
@@ -494,7 +494,7 @@ function Description(props: Props) {
                   Free Nationwide Shipping
                 </div>
                 <div className="promo-card__shipping-date">
-                  Valid till <strong>April 30th</strong>
+                  Available on all orders
                 </div>
               </div>
             </div>
