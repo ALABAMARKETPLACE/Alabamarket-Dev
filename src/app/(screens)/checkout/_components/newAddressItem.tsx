@@ -1,49 +1,51 @@
 "use client";
 import React from "react";
-import { IoIosRadioButtonOff, IoMdRadioButtonOn } from "react-icons/io";
+import { IoCheckmarkCircle, IoHomeOutline, IoBriefcaseOutline, IoLocationOutline } from "react-icons/io5";
 
 function NewAddressItem(props: any) {
+  const isSelected = props?.selected === props?.item?.id;
+  const addressType = props?.item?.address_type || "Home";
+
+  const TypeIcon = () => {
+    const lower = addressType.toLowerCase();
+    if (lower === "work" || lower === "office") return <IoBriefcaseOutline size={11} />;
+    if (lower === "home") return <IoHomeOutline size={11} />;
+    return <IoLocationOutline size={11} />;
+  };
+
   return (
     <div
-      className={`Cart-AddressItem ${
-        props?.selected === props?.item?.id ? "active" : ""
-      }`}
+      className={`addr-item ${isSelected ? "addr-item--selected" : ""}`}
       onClick={() => props?.onSelect(props?.item)}
     >
-      <div className="Cart-row" style={{ alignItems: "flex-start" }}>
-        <div>
-          {props?.selected === props?.item?.id ? (
-            <IoMdRadioButtonOn size={25} />
-          ) : (
-            <IoIosRadioButtonOff size={25} />
+      <div className="addr-item__radio">
+        {isSelected
+          ? <IoCheckmarkCircle size={22} color="#ff5f15" />
+          : <div className="addr-item__radio-off" />
+        }
+      </div>
+      <div className="addr-item__content">
+        <div className="addr-item__top">
+          <span className="addr-item__type-badge">
+            <TypeIcon />
+            {addressType}
+          </span>
+          {props?.item?.full_name && (
+            <span className="addr-item__name">{props.item.full_name}</span>
           )}
         </div>
-        <div style={{ flex: 1, marginLeft: 10 }}>
-          <div className="Cart-txt9">{props?.item?.address_type}</div>
-
-          <div className="Cart-txt8" style={{ color: "gray" }}>
-            {props?.item?.full_address}
+        {(props?.item?.full_address || props?.item?.address) && (
+          <div className="addr-item__address">
+            {props?.item?.full_address || props?.item?.address}
           </div>
-
-          {/* <div className="Cart-txt5 mt-1">
-            <strong>Pincode:</strong> {props?.item?.pincode}
-          </div> */}
-
-          {props?.item?.countryDetails && (
-            <div className="Cart-txt8 text-muted">
-              <i className="bi bi-geo-alt"></i>{" "}
-              {props?.item?.countryDetails?.country_name}
-            </div>
+        )}
+        <div className="addr-item__meta">
+          {(props?.item?.stateDetails?.name || props?.item?.state) && (
+            <span>{props?.item?.stateDetails?.name || props?.item?.state}</span>
           )}
-
-          {props?.item?.stateDetails && (
-            <div className="Cart-txt8 text-muted">
-              <i className="bi bi-geo-alt"></i>{" "}
-              {props?.item?.stateDetails?.name}
-            </div>
+          {props?.item?.phone_no && (
+            <span className="addr-item__phone">{props.item.phone_no}</span>
           )}
-
-          <div className="Cart-txt3 mt-1">{props?.item?.phone_no}</div>
         </div>
       </div>
     </div>

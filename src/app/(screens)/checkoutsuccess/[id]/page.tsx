@@ -80,13 +80,15 @@ function CheckoutSuccessContent() {
         } catch { return ""; }
       };
 
-      if (provider === "budpay") {
-        if (isAuth) {
-          response = await POST(API.BUDPAY_VERIFY, { reference: ref });
-        } else {
-          response = await PUBLIC_POST(API.BUDPAY_VERIFY_GUEST, { reference: ref, guest_email: getGuestEmail() });
-        }
-      } else if (isAuth) {
+      // BudPay verification disabled — coming soon
+      // if (provider === "budpay") {
+      //   if (isAuth) {
+      //     response = await POST(API.BUDPAY_VERIFY, { reference: ref });
+      //   } else {
+      //     response = await PUBLIC_POST(API.BUDPAY_VERIFY_GUEST, { reference: ref, guest_email: getGuestEmail() });
+      //   }
+      // } else
+      if (isAuth) {
         response = await POST(API.PAYSTACK_VERIFY, { reference: ref });
       } else {
         response = await PUBLIC_POST(API.PAYSTACK_VERIFY_GUEST, { reference: ref, guest_email: getGuestEmail() });

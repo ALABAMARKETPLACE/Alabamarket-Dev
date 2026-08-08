@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import "../../(user)/cart/styles.scss";
 import { Container } from "react-bootstrap";
 import { useSelector } from "react-redux";
+import { IoLockClosedOutline } from "react-icons/io5";
 import { notification } from "antd";
 
 import NewAddressBox from "./_components/newAddressBox";
@@ -235,7 +236,8 @@ function Checkout() {
           payment_provider: paymentProvider,
         };
 
-        const endpoint = paymentProvider === "budpay" ? API.BUDPAY_INITIALIZE_CHECKOUT : API.ORDER;
+        // const endpoint = paymentProvider === "budpay" ? API.BUDPAY_INITIALIZE_CHECKOUT : API.ORDER;
+        const endpoint = API.ORDER;
         const response = await POST(endpoint, basePayload);
         const authUrl =
           response?.data?.authorization_url ||
@@ -312,9 +314,10 @@ function Checkout() {
       const guestPayload = {
         guest_info: guestInfoPayload,
         cart_items: cartItems,
-        amount: paymentProvider === "budpay"
-          ? Number(grand_total ?? 0)        // BudPay expects Naira
-          : Number(grand_total ?? 0) * 100, // Paystack expects kobo
+        // amount: paymentProvider === "budpay"
+        //   ? Number(grand_total ?? 0)        // BudPay expects Naira
+        //   : Number(grand_total ?? 0) * 100, // Paystack expects kobo
+        amount: Number(grand_total ?? 0) * 100, // Paystack expects kobo
         delivery_charge: Number(delivery_charge ?? 0),
         callback_url: `${window.location.origin}/checkoutsuccess/2`,
         payment_provider: paymentProvider,
@@ -378,6 +381,33 @@ function Checkout() {
       {contextHolder}
       <br />
       <Container fluid style={{ minHeight: "80vh" }}>
+
+        {/* ── Page Header ── */}
+        <div className="co-page-header">
+          <div className="co-page-title-row">
+            <div className="co-secure-badge">
+              <IoLockClosedOutline size={13} />
+              <span>Secure Checkout</span>
+            </div>
+          </div>
+          <div className="co-progress">
+            <div className={`co-step-dot ${currentStep > 1 ? "co-step-dot--done" : currentStep === 1 ? "co-step-dot--active" : ""}`}>
+              <div className="co-step-dot__circle">{currentStep > 1 ? "✓" : "1"}</div>
+              <div className="co-step-dot__label">Address</div>
+            </div>
+            <div className={`co-progress-line ${currentStep > 1 ? "co-progress-line--filled" : ""}`} />
+            <div className={`co-step-dot ${currentStep > 2 ? "co-step-dot--done" : currentStep === 2 ? "co-step-dot--active" : ""}`}>
+              <div className="co-step-dot__circle">{currentStep > 2 ? "✓" : "2"}</div>
+              <div className="co-step-dot__label">Payment</div>
+            </div>
+            <div className={`co-progress-line ${currentStep > 2 ? "co-progress-line--filled" : ""}`} />
+            <div className={`co-step-dot ${currentStep === 3 ? "co-step-dot--active" : ""}`}>
+              <div className="co-step-dot__circle">3</div>
+              <div className="co-step-dot__label">Review</div>
+            </div>
+          </div>
+        </div>
+
         <div className="checkout-steps">
           {/* Step 1: Delivery Address */}
           <div
