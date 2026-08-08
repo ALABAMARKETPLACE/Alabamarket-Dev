@@ -85,22 +85,42 @@ function PaymentBox({ onContinue }: { onContinue?: (provider: Provider) => void 
         </div>
       </div>
 
-      {/* BudPay option */}
-      <div style={cardStyle(selected === "budpay")} onClick={() => setSelected("budpay")}>
+      {/* BudPay option — commented out until enabled */}
+      {/* <div style={{
+        ...cardStyle(false),
+        opacity: 0.55,
+        cursor: "not-allowed",
+        border: "2px solid #e5e7eb",
+        background: "#f9fafb",
+        boxShadow: "none",
+      }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {selected === "budpay"
-            ? <IoMdRadioButtonOn size={22} color="#ff5f15" style={{ flexShrink: 0 }} />
-            : <IoMdRadioButtonOff size={22} color="#9ca3af" style={{ flexShrink: 0 }} />}
-          <div style={{ minWidth: 0 }}>
-            <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e", marginBottom: 2 }}>
-              BudPay
+          <IoMdRadioButtonOff size={22} color="#d1d5db" style={{ flexShrink: 0 }} />
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontWeight: 700, fontSize: 15, color: "#9ca3af" }}>
+                BudPay
+              </span>
+              <span style={{
+                fontSize: 10,
+                fontWeight: 700,
+                color: "#ff5f15",
+                background: "#fff4ee",
+                border: "1px solid rgba(255,95,21,0.25)",
+                borderRadius: 5,
+                padding: "2px 7px",
+                letterSpacing: "0.4px",
+                textTransform: "uppercase",
+              }}>
+                Coming Soon
+              </span>
             </div>
-            <div style={{ fontSize: 12, color: "#6b7280" }}>
+            <div style={{ fontSize: 12, color: "#9ca3af" }}>
               Cards, Bank Transfer, USSD
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Security assurance */}
       <div style={{
@@ -126,7 +146,7 @@ function PaymentBox({ onContinue }: { onContinue?: (provider: Provider) => void 
       {onContinue && (
         <button
           className="step-continue-btn"
-          onClick={() => onContinue(selected)}
+          onClick={() => onContinue("paystack")}
         >
           Continue to Review →
         </button>

@@ -367,57 +367,70 @@ function Description(props: Props) {
     <div className="pd-description">
       {contextHolder}
 
-      {/* Category breadcrumb */}
-      {(props?.data?.categoryName?.name ||
-        props?.data?.subCategoryName?.name) && (
-        <div className="pd-category-breadcrumb">
-          {props?.data?.categoryName?.name && (
-            <span className="pd-category-chip">
-              {props?.data?.categoryName?.name}
-            </span>
-          )}
-          {props?.data?.subCategoryName?.name && (
-            <>
-              <span className="pd-category-sep">›</span>
-              <span className="pd-category-chip">
-                {props?.data?.subCategoryName?.name}
-              </span>
-            </>
-          )}
-        </div>
-      )}
+      {/* ── Row 1: category chips + stock badge ── */}
+      <div className="pd-top-row">
+        {(props?.data?.categoryName?.name || props?.data?.subCategoryName?.name) && (
+          <div className="pd-category-breadcrumb">
+            {props?.data?.categoryName?.name && (
+              <span className="pd-category-chip">{props?.data?.categoryName?.name}</span>
+            )}
+            {props?.data?.subCategoryName?.name && (
+              <>
+                <span className="pd-category-sep">›</span>
+                <span className="pd-category-chip">{props?.data?.subCategoryName?.name}</span>
+              </>
+            )}
+          </div>
+        )}
+        {availableQuantity === 0 ? (
+          <div className="pd-stock-badge pd-stock-badge--out"><span>✕</span> Out of Stock</div>
+        ) : availableQuantity <= 5 ? (
+          <div className="pd-stock-badge pd-stock-badge--low"><span>⚡</span> Only {availableQuantity} left</div>
+        ) : (
+          <div className="pd-stock-badge pd-stock-badge--in"><span>✓</span> In Stock</div>
+        )}
+      </div>
 
-      {/* Stock status */}
-      {availableQuantity === 0 ? (
-        <div className="pd-stock-badge pd-stock-badge--out">
-          <span>✕</span> Out of Stock
-        </div>
-      ) : availableQuantity <= 5 ? (
-        <div className="pd-stock-badge pd-stock-badge--low">
-          <span>⚡</span> Only {availableQuantity} left
-        </div>
-      ) : (
-        <div className="pd-stock-badge pd-stock-badge--in">
-          <span>✓</span> In Stock
-        </div>
-      )}
-
-      {/* Price block */}
-      <div className="pd-price-block">
-        <div className="pd-price-label">Total Price</div>
-        <div className="productDetails-price-section">
-          <span className="productDetails-current-price">{formattedPrice}</span>
-          <span className="productDetails-original-price">
-            {formattedOriginalPrice}
+      {/* ── Row 2: price panel ── */}
+      <div className="pd-price-panel">
+        <div className="pd-price-panel__header">
+          <span className="pd-price-panel__label">Unit Price</span>
+          <span className="pd-price-panel__discount-pill">
+            -{discountInfo.discountPercent}% OFF
           </span>
-          <span className="productDetails-discount-badge">
-            -{discountInfo.discountPercent}%
-          </span>
+        </div>
+        <div className="pd-price-panel__body">
+          <span className="pd-price-panel__current">{formattedPrice}</span>
+          {formattedOriginalPrice && (
+            <span className="pd-price-panel__original">{formattedOriginalPrice}</span>
+          )}
+        </div>
+        <div className="pd-price-panel__savings">
+          You save {discountInfo.discountPercent}% on this item
         </div>
       </div>
 
-      {/* Quantity + action buttons */}
-      <div className="pd-purchase-section">
+      {/* ── Row 3: trust strip ── */}
+      <div className="pd-trust-strip">
+        <div className="pd-trust-item">
+          <span className="pd-trust-icon">🚚</span>
+          <span className="pd-trust-label">Free Delivery</span>
+        </div>
+        <span className="pd-trust-divider" />
+        <div className="pd-trust-item">
+          <span className="pd-trust-icon">🔒</span>
+          <span className="pd-trust-label">Secure Payment</span>
+        </div>
+        <span className="pd-trust-divider" />
+        <div className="pd-trust-item">
+          <span className="pd-trust-icon">↩</span>
+          <span className="pd-trust-label">Easy Returns</span>
+        </div>
+      </div>
+
+      {/* ── Row 4: action block ── */}
+      <div className="pd-action-block">
+        {/* Quantity selector */}
         <div className="pd-qty-row">
           <span className="pd-qty-label">Quantity</span>
           <div className="pd-qty-control">
@@ -441,29 +454,40 @@ function Description(props: Props) {
             <span className="pd-qty-hint">Only {availableQuantity} left</span>
           )}
         </div>
+
+        {/* Primary CTA */}
         <button
           className={`pd-cart-cta${isProductInCart ? " pd-cart-cta--in-cart" : ""}`}
           disabled={availableQuantity === 0}
-          onClick={() => {
-            if (isProductInCart) {
-              router.push("/cart");
-            } else {
-              addToCart();
-            }
-          }}
+          onClick={() => isProductInCart ? router.push("/cart") : addToCart()}
         >
           <AiOutlineShoppingCart size={20} />
-          {isProductInCart
-            ? "Go to Cart →"
-            : availableQuantity === 0
-              ? "Out of Stock"
-              : "Add to Cart"}
+          {isProductInCart ? "Go to Cart →" : availableQuantity === 0 ? "Out of Stock" : "Add to Cart"}
         </button>
+
+        {/* Save + Share */}
+        <div className="pd-secondary-actions">
+          <button
+            className={`pd-wishlist-btn${favourited ? " pd-wishlist-btn--active" : ""}`}
+            onClick={() => user ? AddWishlist() : router.push("/login")}
+          >
+            <FaHeart size={14} />
+            {favourited ? "Saved" : "Save to Wishlist"}
+          </button>
+          <button className="pd-share-btn" onClick={shareLink}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" /><line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+            </svg>
+            Share
+          </button>
+        </div>
       </div>
 
-      {/* PROMOTIONS + ENQUIRY Section */}
+      {/* ── Row 5: promotions + enquiry ── */}
       <div className="promo-enquiry-section">
-        {/* Promotions Card */}
+
+        {/* Promotions card */}
         <div className="promo-card">
           <div className="promo-card__header">
             <div className="promo-card__badge">
@@ -471,41 +495,29 @@ function Description(props: Props) {
               PROMOTIONS
             </div>
             <div className="promo-card__title">Special Offers</div>
-            <div className="promo-card__subtitle">
-              Exclusive deals for our customers
-            </div>
+            <div className="promo-card__subtitle">Exclusive deals for our customers</div>
           </div>
           <div className="promo-card__body">
             <div className="promo-card__cta">
-              <div className="promo-card__cta-label">
-                Wholesale Prices Available
-              </div>
-              <a href="tel:09117356897" className="promo-card__phone">
-                0911 735 6897
-              </a>
-              <div className="promo-card__cta-hint">
-                Call to place your order
-              </div>
+              <div className="promo-card__cta-label">Wholesale Prices Available</div>
+              <a href="tel:09117356897" className="promo-card__phone">0911 735 6897</a>
+              <div className="promo-card__cta-hint">Call to place your order</div>
             </div>
             <div className="promo-card__shipping">
               <span className="promo-card__shipping-emoji">🚚</span>
               <div>
-                <div className="promo-card__shipping-title">
-                  Free Nationwide Shipping
-                </div>
-                <div className="promo-card__shipping-date">
-                  Available on all orders
-                </div>
+                <div className="promo-card__shipping-title">Free Nationwide Shipping</div>
+                <div className="promo-card__shipping-date">Available on all orders</div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Message to Seller Card */}
+        {/* Message to seller */}
         <div className="enquiry-card">
           <div className="enquiry-card__header">
             <div className="enquiry-card__title">
-              <AiOutlineMessage size={18} />
+              <AiOutlineMessage size={17} />
               Message the Seller
             </div>
             <div className="enquiry-card__subtitle">
@@ -514,14 +526,8 @@ function Description(props: Props) {
             </div>
           </div>
           <div className="enquiry-card__form">
-            <Form form={form} onFinish={onFinishSendMessage} layout="vertical">
-              <Form.Item
-                name="subject"
-                label="Subject"
-                rules={[
-                  { required: true, message: "Please select a subject" },
-                ]}
-              >
+            <Form form={form} onFinish={onFinishSendMessage} layout="vertical" size="middle">
+              <Form.Item name="subject" label="Subject" rules={[{ required: true, message: "Please select a subject" }]}>
                 <Select placeholder="What is this about?">
                   <Select.Option value="orders">Orders</Select.Option>
                   <Select.Option value="services">Services</Select.Option>
@@ -529,112 +535,28 @@ function Description(props: Props) {
                 </Select>
               </Form.Item>
               <div className="enquiry-form__row">
-                <Form.Item
-                  name="name"
-                  label="Name"
-                  rules={[{ required: true, message: "Required" }]}
-                >
-                  <Input
-                    prefix={
-                      <AiOutlineUser className="enquiry-form__icon" />
-                    }
-                    placeholder="Your name"
-                  />
+                <Form.Item name="name" label="Name" rules={[{ required: true, message: "Required" }]}>
+                  <Input prefix={<AiOutlineUser className="enquiry-form__icon" />} placeholder="Your name" />
                 </Form.Item>
-                <Form.Item
-                  name="phone"
-                  label="Phone"
-                  rules={[{ required: true, message: "Required" }]}
-                >
-                  <Input
-                    prefix={
-                      <AiOutlinePhone className="enquiry-form__icon" />
-                    }
-                    type="tel"
-                    placeholder="Phone number"
-                  />
+                <Form.Item name="phone" label="Phone" rules={[{ required: true, message: "Required" }]}>
+                  <Input prefix={<AiOutlinePhone className="enquiry-form__icon" />} type="tel" placeholder="Phone number" />
                 </Form.Item>
               </div>
-              <Form.Item
-                name="email"
-                label="Email"
-                rules={[
-                  {
-                    required: true,
-                    type: "email",
-                    message: "Valid email required",
-                  },
-                ]}
-              >
-                <Input
-                  prefix={<AiOutlineMail className="enquiry-form__icon" />}
-                  placeholder="your@email.com"
-                />
+              <Form.Item name="email" label="Email" rules={[{ required: true, type: "email", message: "Valid email required" }]}>
+                <Input prefix={<AiOutlineMail className="enquiry-form__icon" />} placeholder="your@email.com" />
               </Form.Item>
-              <Form.Item
-                name="message"
-                label="Message"
-                rules={[{ required: true, message: "Please write a message" }]}
-              >
-                <Input.TextArea
-                  rows={3}
-                  placeholder="Type your message here..."
-                />
+              <Form.Item name="message" label="Message" rules={[{ required: true, message: "Please write a message" }]}>
+                <Input.TextArea rows={3} placeholder="Type your message here..." />
               </Form.Item>
               <Form.Item style={{ marginBottom: 0 }}>
-                <button
-                  type="submit"
-                  className="enquiry-form__submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <span className="enquiry-form__spinner" />
-                      Sending…
-                    </>
-                  ) : (
-                    "Send Message →"
-                  )}
+                <button type="submit" className="enquiry-form__submit" disabled={isSubmitting}>
+                  {isSubmitting ? (<><span className="enquiry-form__spinner" />Sending…</>) : "Send Message →"}
                 </button>
               </Form.Item>
             </Form>
           </div>
         </div>
-      </div>
-      {/* Secondary actions */}
-      <div className="pd-secondary-actions">
-        <button
-          className={`pd-wishlist-btn${favourited ? " pd-wishlist-btn--active" : ""}`}
-          onClick={() => {
-            if (user) {
-              AddWishlist();
-            } else {
-              router.push("/login");
-            }
-          }}
-        >
-          <FaHeart size={15} />
-          {favourited ? "Saved" : "Save"}
-        </button>
-        <button className="pd-share-btn" onClick={shareLink}>
-          <svg
-            width="15"
-            height="15"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="18" cy="5" r="3" />
-            <circle cx="6" cy="12" r="3" />
-            <circle cx="18" cy="19" r="3" />
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-          </svg>
-          Share
-        </button>
+
       </div>
     </div>
   );

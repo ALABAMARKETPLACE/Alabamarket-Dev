@@ -208,12 +208,12 @@ const API = {
   INVOICE_UPDATE: "invoice/",
   INVOICE_GET_ALL: "invoice/all", // get all invoices
 
-  // PAYMENT GATEWAY - BUDPAY
-  BUDPAY_INITIALIZE: "budpay/initialize", //POST logged-in direct payment
-  BUDPAY_INITIALIZE_CHECKOUT: "budpay/initialize-checkout", //POST logged-in cart checkout
-  BUDPAY_INITIALIZE_GUEST: "budpay/initialize-guest", //POST guest checkout
-  BUDPAY_VERIFY: "budpay/verify", //POST verify payment (auth)
-  BUDPAY_VERIFY_GUEST: "budpay/verify-guest", //POST verify guest payment
+  // PAYMENT GATEWAY - BUDPAY (disabled — coming soon)
+  // BUDPAY_INITIALIZE: "budpay/initialize",
+  // BUDPAY_INITIALIZE_CHECKOUT: "budpay/initialize-checkout",
+  // BUDPAY_INITIALIZE_GUEST: "budpay/initialize-guest",
+  // BUDPAY_VERIFY: "budpay/verify",
+  // BUDPAY_VERIFY_GUEST: "budpay/verify-guest",
 
   //PAYMENT GATEWAY - PAYSTACK
   PAYSTACK_INITIALIZE: "paystack/initialize", //POST to initialize payment

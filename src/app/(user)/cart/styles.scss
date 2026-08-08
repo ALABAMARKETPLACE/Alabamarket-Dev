@@ -882,3 +882,225 @@
     }
   }
 }
+
+// ===== CHECKOUT PAGE HEADER & PROGRESS =====
+.co-page-header {
+  max-width: 700px;
+  margin: 0 auto 28px;
+  padding: 0 16px;
+
+  @media screen and (max-width: 768px) {
+    margin-bottom: 20px;
+    padding: 0;
+  }
+}
+
+.co-page-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+
+.co-secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #16a34a;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 100px;
+  padding: 6px 18px;
+  letter-spacing: 0.2px;
+}
+
+.co-progress {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.co-step-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+  &__circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #9ca3af;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+
+    @media screen and (max-width: 480px) {
+      width: 28px;
+      height: 28px;
+      font-size: 11px;
+    }
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+
+    @media screen and (max-width: 480px) {
+      font-size: 10px;
+    }
+  }
+
+  &--active {
+    .co-step-dot__circle {
+      background: linear-gradient(135deg, #ff5f15 0%, #ff8c42 100%);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(255, 95, 21, 0.38);
+    }
+
+    .co-step-dot__label {
+      color: #ff5f15;
+      font-weight: 700;
+    }
+  }
+
+  &--done {
+    .co-step-dot__circle {
+      background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(22, 163, 74, 0.28);
+    }
+
+    .co-step-dot__label {
+      color: #16a34a;
+    }
+  }
+}
+
+.co-progress-line {
+  flex: 1;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 17px 12px 0;
+  min-width: 50px;
+  max-width: 120px;
+  border-radius: 2px;
+  transition: background 0.25s;
+
+  &--filled {
+    background: linear-gradient(90deg, #16a34a 0%, #22c55e 100%);
+  }
+
+  @media screen and (max-width: 480px) {
+    margin-top: 13px;
+    min-width: 28px;
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+}
+
+// ===== ADDRESS ITEM CARDS (checkout) =====
+.addr-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  height: 100%;
+
+  &:hover {
+    border-color: rgba(255, 95, 21, 0.4);
+    background: #fffaf7;
+    box-shadow: 0 2px 10px rgba(255, 95, 21, 0.08);
+  }
+
+  &--selected {
+    border-color: #ff5f15;
+    background: linear-gradient(135deg, #fffaf7 0%, #fff4ee 100%);
+    box-shadow: 0 0 0 3px rgba(255, 95, 21, 0.08), 0 2px 10px rgba(255, 95, 21, 0.1);
+  }
+
+  &__radio {
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &__radio-off {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-radius: 50%;
+    background: #fff;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+  }
+
+  &__type-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #ff5f15;
+    background: #fff4ee;
+    border: 1px solid rgba(255, 95, 21, 0.2);
+    padding: 2px 8px;
+    border-radius: 100px;
+  }
+
+  &__name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+
+  &__address {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.45;
+  }
+
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #9ca3af;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  &__phone {
+    font-weight: 600;
+    color: #6b7280;
+  }
+}

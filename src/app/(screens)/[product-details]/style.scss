@@ -938,7 +938,135 @@
 .pd-description {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
+}
+
+// ── Top row: category chips + stock badge ─────────────────────────────────────
+.pd-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+// ── Price panel ───────────────────────────────────────────────────────────────
+.pd-price-panel {
+  background: linear-gradient(135deg, #fff8f5 0%, #fff4ee 100%);
+  border: 1.5px solid #fde8d0;
+  border-radius: 16px;
+  padding: 18px 20px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+  }
+
+  &__discount-pill {
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #ff5f15 0%, #ff8c42 100%);
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  &__body {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+
+  &__current {
+    font-size: 34px;
+    font-weight: 800;
+    color: #ff5f15;
+    letter-spacing: -0.8px;
+    font-family: "DM Sans", sans-serif;
+    line-height: 1.1;
+
+    @media (max-width: 768px) {
+      font-size: 28px;
+    }
+  }
+
+  &__original {
+    font-size: 16px;
+    font-weight: 500;
+    color: #9ca3af;
+    text-decoration: line-through;
+    letter-spacing: -0.2px;
+  }
+
+  &__savings {
+    font-size: 12px;
+    color: #16a34a;
+    font-weight: 600;
+  }
+}
+
+// ── Trust strip ───────────────────────────────────────────────────────────────
+.pd-trust-strip {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  justify-content: space-around;
+}
+
+.pd-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  justify-content: center;
+}
+
+.pd-trust-icon {
+  font-size: 17px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.pd-trust-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
+}
+
+.pd-trust-divider {
+  width: 1px;
+  height: 28px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+
+// ── Action block ──────────────────────────────────────────────────────────────
+.pd-action-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 // Category breadcrumb chips
@@ -1141,7 +1269,7 @@
   }
 }
 
-// Secondary actions (wishlist + share)
+// Secondary actions (wishlist + share) — sits inside pd-action-block
 .pd-secondary-actions {
   display: flex;
   align-items: center;
@@ -1151,38 +1279,40 @@
 .pd-wishlist-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 8px;
-  border: 1.5px solid #e5e7eb;
-  background: #fff;
+  gap: 7px;
+  height: 42px;
+  flex: 1;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1.5px solid #fbb6ce;
+  background: #fff5f8;
   font-size: 13px;
   font-weight: 600;
-  color: #6b7280;
+  color: #ec4899;
   cursor: pointer;
   transition: all 0.2s;
 
   &:hover {
-    border-color: #fbb6ce;
-    color: #ec4899;
-    background: #fff5f8;
+    background: #fce7f3;
+    border-color: #f9a8d4;
+    transform: translateY(-1px);
   }
 
   &--active {
-    border-color: #fbb6ce;
-    color: #ec4899;
-    background: #fff5f8;
+    background: #fce7f3;
+    border-color: #f9a8d4;
+    color: #db2777;
   }
 }
 
 .pd-share-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 8px;
+  gap: 7px;
+  height: 42px;
+  flex: 1;
+  justify-content: center;
+  border-radius: 12px;
   border: 1.5px solid #e5e7eb;
   background: #fff;
   font-size: 13px;
@@ -1195,6 +1325,7 @@
     border-color: #93c5fd;
     color: #3b82f6;
     background: #eff6ff;
+    transform: translateY(-1px);
   }
 }
 

@@ -56,7 +56,7 @@ const SummaryCard = (props: any) => {
   const itemCount = props?.Cart?.Checkout?.length ?? 0;
 
   return (
-    <div className="Cart-SummaryCard">
+    <div className="Cart-SummaryCard" style={{ margin: 0, boxShadow: "none", border: "none", background: "transparent", borderRadius: 0, padding: "0 0 4px" }}>
 
       {/* Shipping + payment summary bar */}
       {(props?.selectedAddress || props?.selectedPayment) && (

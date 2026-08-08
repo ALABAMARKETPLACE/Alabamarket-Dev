@@ -81,16 +81,22 @@ function NewAddressBox({ onGuestEmailChange, onContinue }: NewAddressBoxProps) {
   if (!isAuthenticated) {
     return (
       <div>
-        <div className="Cart-row" style={{ padding: 0 }}>
-          <div className="Cart-txt1">
-            <span className="Cart-txt1Icon">
-              <IoLocationOutline />
-            </span>
-            DELIVERY DETAILS
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+          <div style={{
+            background: "linear-gradient(135deg, #fff4ee 0%, #ffe8d6 100%)",
+            border: "1px solid rgba(255,95,21,0.2)",
+            padding: "6px 9px",
+            borderRadius: 10,
+            fontSize: 17,
+            color: "#ff5f15",
+            display: "flex",
+            alignItems: "center",
+          }}>
+            <IoLocationOutline />
           </div>
+          <span style={{ fontWeight: 700, fontSize: 17, color: "#1a1a2e" }}>DELIVERY DETAILS</span>
         </div>
-        <div className="Cart-line" />
-        <div style={{ margin: 20 }} />
+        <div style={{ height: 1, background: "#f0f0f0", marginBottom: 18 }} />
         <GuestAddressForm
           onAddressSubmit={(address, email) => {
             if (onGuestEmailChange) onGuestEmailChange(email);
@@ -104,26 +110,38 @@ function NewAddressBox({ onGuestEmailChange, onContinue }: NewAddressBoxProps) {
   // Authenticated user UI
   return (
     <div>
-      <div className="Cart-row" style={{ padding: 0 }}>
-        <div className="Cart-txt1">
-          <span className="Cart-txt1Icon">
-            <IoLocationOutline />
-          </span>
-          DELIVERY ADDRESS
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+        <div style={{
+          background: "linear-gradient(135deg, #fff4ee 0%, #ffe8d6 100%)",
+          border: "1px solid rgba(255,95,21,0.2)",
+          padding: "6px 9px",
+          borderRadius: 10,
+          fontSize: 17,
+          color: "#ff5f15",
+          display: "flex",
+          alignItems: "center",
+        }}>
+          <IoLocationOutline />
         </div>
-        <div style={{ flex: 1 }} />
-        <div>
-          <div
-            className="Cart-txt2"
-            style={{ color: "#000", cursor: "pointer" }}
-            onClick={() => setAddNew(true)}
-          >
-            New Address +{" "}
-          </div>
-        </div>
+        <span style={{ fontWeight: 700, fontSize: 17, color: "#1a1a2e", flex: 1 }}>DELIVERY ADDRESS</span>
+        <button
+          style={{
+            background: "none",
+            border: "1.5px solid #ff5f15",
+            color: "#ff5f15",
+            padding: "5px 14px",
+            borderRadius: 100,
+            fontSize: 12,
+            fontWeight: 700,
+            cursor: "pointer",
+            flexShrink: 0,
+          }}
+          onClick={() => setAddNew(true)}
+        >
+          + New Address
+        </button>
       </div>
-      <div className="Cart-line" />
-      <div style={{ margin: 20 }} />
+      <div style={{ height: 1, background: "#f0f0f0", marginBottom: 20 }} />
       {isLoading ? (
         <div className="text-center py-4">
           <div className="spinner-border text-primary" role="status">
