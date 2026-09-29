@@ -10,7 +10,12 @@ import { useDispatch, useSelector } from "react-redux";
 import API from "../../../../config/API";
 import { GET, POST } from "../../../../util/apicall";
 import { useSession } from "next-auth/react";
-import { formatGAItem, trackAddToCart } from "@/utils/analytics";
+import {
+  formatGAItem,
+  trackAddToCart,
+  trackAddToWishlist,
+  trackContact,
+} from "@/utils/analytics";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import GuestCheckoutModal from "@/components/guestCheckoutModal";
 
@@ -222,6 +227,7 @@ function Description(props: Props) {
         storeName: props?.data?.storeDetails?.store_name ?? "",
       });
       if (response?.status) {
+        trackContact("product_enquiry");
         api.success({
           message: "Message submitted successfully",
           description: "We'll get back to you within 24 hours.",
@@ -347,6 +353,13 @@ function Description(props: Props) {
         // Update state immediately for better UX
         const newFavoritedState = !favourited;
         setFavourited(newFavoritedState);
+
+        if (newFavoritedState) {
+          // Only a save is a conversion — removing an item is not.
+          trackAddToWishlist(
+            formatGAItem(props.data, props.currentVariant, 1),
+          );
+        }
 
         const message = newFavoritedState
           ? "Successfully added to Wishlist"

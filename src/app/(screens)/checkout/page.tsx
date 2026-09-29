@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import "../../(user)/cart/styles.scss";
 import { Container } from "react-bootstrap";
 import { useSelector } from "react-redux";
@@ -15,7 +15,12 @@ import API from "@/config/API";
 import { useSession } from "next-auth/react";
 import { useAppSelector } from "@/redux/hooks";
 import { reduxSettings } from "@/redux/slice/settingsSlice";
-import { formatGAItem, trackBeginCheckout } from "@/utils/analytics";
+import {
+  formatGAItem,
+  stashPendingPurchase,
+  trackAddPaymentInfo,
+  trackBeginCheckout,
+} from "@/utils/analytics";
 import { getGuestInfo } from "./_components/guestAddressForm";
 
 type PaymentProvider = "paystack" | "budpay";
@@ -62,15 +67,30 @@ function Checkout() {
 
   // Do NOT mutate Checkout.address directly. Instead, always create a new object with email when needed.
 
-  useEffect(() => {
-    if (Checkout?.Checkout && Checkout.Checkout.length > 0) {
+  // One mapping of the checkout basket, reused by begin_checkout /
+  // add_payment_info / purchase so all three report identical contents.
+  const buildAnalyticsItems = useCallback(
+    () =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const gaItems = Checkout.Checkout.map((item: any) =>
+      (Checkout?.Checkout ?? []).map((item: any) =>
         formatGAItem(item, null, item.quantity),
-      );
-      trackBeginCheckout(gaItems, total, Settings?.currency);
-    }
-  }, [Checkout?.Checkout, total, Settings?.currency]);
+      ),
+    [Checkout?.Checkout],
+  );
+
+  // GA `begin_checkout` + Meta `InitiateCheckout`, once per basket.
+  const trackedCheckoutRef = useRef<string>("");
+  useEffect(() => {
+    if (!Checkout?.Checkout?.length || !total) return;
+
+    const items = buildAnalyticsItems();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const key = `${items.map((i: any) => `${i.item_id}x${i.quantity}`).join("|")}:${total}`;
+    if (trackedCheckoutRef.current === key) return;
+
+    trackedCheckoutRef.current = key;
+    trackBeginCheckout(items, total, Settings?.currency);
+  }, [Checkout?.Checkout, total, Settings?.currency, buildAnalyticsItems]);
 
   const [currentStep, setCurrentStep] = useState(1);
   const [paymentProvider, setPaymentProvider] = useState<PaymentProvider>("paystack");
@@ -213,6 +233,15 @@ function Checkout() {
 
     try {
       setIsLoading(true);
+
+      // The gateway takes the shopper off-site, so the basket is gone by the
+      // time we land on /checkoutsuccess. Stash what Purchase needs now.
+      stashPendingPurchase(
+        buildAnalyticsItems(),
+        Number(grand_total ?? 0),
+        Settings?.currency,
+        Number(delivery_charge ?? 0),
+      );
 
       // ── AUTHENTICATED FLOW ──
       if (isAuthenticated) {
@@ -489,6 +518,12 @@ function Checkout() {
                 <PaymentBox
                   onContinue={(provider) => {
                     setPaymentProvider(provider);
+                    trackAddPaymentInfo(
+                      buildAnalyticsItems(),
+                      Number(grand_total ?? total ?? 0),
+                      provider,
+                      Settings?.currency,
+                    );
                     setCurrentStep(3);
                   }}
                 />

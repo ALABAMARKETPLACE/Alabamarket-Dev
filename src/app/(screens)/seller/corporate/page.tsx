@@ -12,6 +12,7 @@ import Step2 from "./_components/step2";
 import Step3 from "./_components/step3";
 import Step4 from "./_components/step4";
 import Step5 from "./_components/step5";
+import { trackSubmitApplication } from "@/utils/analytics";
 
 function Page() {
   const navigation = useRouter();
@@ -108,6 +109,7 @@ function Page() {
 
       const response: any = await POST(url, obj);
       if (response.status) {
+        trackSubmitApplication("corporate_seller");
         notification.success({
           message: "Success",
           description: "Seller Registration is successful",

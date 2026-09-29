@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import Images from "./_components/images";
 import { Rate, Tabs } from "antd";
@@ -85,6 +85,21 @@ function DetailsCard(props: any) {
     const url = vid ? `/${slug}?vid=${vid}` : `/${slug}`;
     window.history.replaceState(null, "", url);
   }, [props?.data?.slug, vid]);
+
+  // GA `view_item` + Meta `ViewContent`, once per product. Keyed on the product
+  // ID rather than the variant: the variant resolves in a later render pass, and
+  // switching variants is still the same product view, not a second one.
+  const lastViewedRef = useRef<string>("");
+  useEffect(() => {
+    const product = props?.data;
+    if (!product) return;
+
+    const item = formatGAItem(product, currentVariant);
+    if (!item.item_id || lastViewedRef.current === item.item_id) return;
+
+    lastViewedRef.current = item.item_id;
+    trackViewItem(item);
+  }, [props?.data, currentVariant]);
 
   const productId  = props?.data?.pid || props?.params?.pid || "";
   const ratingInfo = (() => {

@@ -11,6 +11,7 @@ import { Button, Spin } from "antd";
 import { clearCheckout } from "@/redux/slice/checkoutSlice";
 import { DELETE, POST, PUBLIC_POST } from "@/util/apicall";
 import API from "@/config/API";
+import { flushPendingPurchase } from "@/utils/analytics";
 import { clearCart } from "@/redux/slice/cartSlice";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -39,24 +40,24 @@ function CheckoutSuccessContent() {
   const clearCartAndOrder = () => {
     if (hasCleared.current) return;
     hasCleared.current = true;
+    // GA `purchase` + Meta `Purchase`, from the basket stashed at checkout.
+    // `flushPendingPurchase` clears the stash before firing, so a refresh of
+    // this page cannot double-count the conversion.
     try {
-      const fbq = (window as any).fbq;
-      if (typeof fbq === "function") {
-        const raw =
-          localStorage.getItem("last_order_response") ||
-          localStorage.getItem("order_payload");
-        const parsed = raw ? JSON.parse(raw) : null;
-        const value =
-          parsed?.data?.total_price ??
-          parsed?.total_price ??
-          parsed?.amount ??
-          undefined;
-        fbq("track", "Purchase", {
-          currency: "NGN",
-          ...(value !== undefined && { value: Number(value) }),
-        });
-      }
-    } catch {}
+      let fallbackValue: number | undefined;
+      const raw =
+        localStorage.getItem("last_order_response") ||
+        localStorage.getItem("order_payload");
+      const parsed = raw ? JSON.parse(raw) : null;
+      const value =
+        parsed?.data?.total_price ?? parsed?.total_price ?? parsed?.amount;
+      if (value !== undefined && value !== null) fallbackValue = Number(value);
+
+      flushPendingPurchase(reference ?? "", fallbackValue);
+    } catch {
+      flushPendingPurchase(reference ?? "");
+    }
+
     localStorage.removeItem("order_payload");
     localStorage.removeItem("guest_order_payload");
     localStorage.removeItem("order_creation_completed");

@@ -23,6 +23,7 @@ export const options: NextAuthOptions = {
   pages: {
     signIn: "/login",
     signOut: "/signout",
+    error: "/auth-error",
   },
   session: {
     strategy: "jwt",
