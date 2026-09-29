@@ -7,6 +7,7 @@ import API from "../../../../config/API";
 import { GET, POST } from "../../../../util/apicall";
 import { parseApiMessage } from "../../../../util/parseApiError";
 import PrefixSelector from "../../../../components/prefixSelector/page";
+import { trackSubmitApplication } from "@/utils/analytics";
 
 function DriverRegistration() {
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,7 @@ function DriverRegistration() {
       const response: any = await POST(url, payload);
 
       if (response.status) {
+        trackSubmitApplication("driver");
         notification.success({
           message: "Success",
           description:

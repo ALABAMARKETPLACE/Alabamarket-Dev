@@ -9,6 +9,7 @@ import { parseApiMessage } from "../../../../util/parseApiError";
 import { notification } from "antd";
 import Step1 from "./_components/step1";
 import Step2 from "./_components/step2";
+import { trackSubmitApplication } from "@/utils/analytics";
 
 function Page() {
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,7 @@ function Page() {
       let url = API.INDIVIDUAL_STORE_CREATE;
       const response: any = await POST(url, obj);
       if (response.status) {
+        trackSubmitApplication("individual_seller");
         notification.success({
           message: "Success",
           description: "successful",

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { notification, Pagination } from "antd";
 import ProductItem from "../../../../components/productItem/page";
 import MultiSearchProductList from "../../../../components/multiSearch";
@@ -13,6 +13,7 @@ import useDidUpdateEffect from "../../../../shared/hook/useDidUpdate";
 import { TbSortAscending, TbSortDescending, TbSparkles } from "react-icons/tb";
 import { FiSearch } from "react-icons/fi";
 import "./styles.scss";
+import { formatGAItem, trackSearch } from "@/utils/analytics";
 
 const SORT_OPTIONS = [
   { title: "Newest",           icon: <TbSparkles size={13} /> },
@@ -93,6 +94,7 @@ function Page() {
   const [page, setPage] = useState(currentPage);
   const pageSize = 12;
   const [meta, setMeta] = useState<any>({});
+  const lastTrackedSearch = useRef<string>("");
   const [initial, setInitial] = useState(true);
   const [selectedTags, setSelectedTags] = useState<any>(initialValues);
 
@@ -127,6 +129,21 @@ function Page() {
         if (response?.status) {
           setProduct(response?.data);
           setMeta(response?.meta);
+
+          // GA `search` + Meta `Search`. Fire once per search term — paging and
+          // re-sorting re-run this fetch but are not new searches.
+          const term = decodeURIComponent(String(serchInput ?? ""));
+          if (term && lastTrackedSearch.current !== term) {
+            lastTrackedSearch.current = term;
+            trackSearch(
+              term,
+              (response?.data ?? [])
+                .slice(0, 10)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                .map((item: any) => formatGAItem(item)),
+              Settings?.currency,
+            );
+          }
         }
       }
     } catch (err: any) {

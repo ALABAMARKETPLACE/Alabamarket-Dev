@@ -14,6 +14,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { storeToken } from "@/redux/slice/authSlice";
 import bgImage from "@/assets/images/position1.jpg";
 import "./style.scss";
+import { trackSignUp } from "@/utils/analytics";
 
 export default function SignupScreen() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export default function SignupScreen() {
       const signupRes: any = await POST(API.SIGNUP, body);
 
       if (signupRes?.status) {
+        trackSignUp("email");
         setSignupSuccess(true);
 
         notificationApi.success({

@@ -12,6 +12,7 @@ import {
 } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import API from "@/config/API";
+import { trackContact } from "@/utils/analytics";
 import { POST } from "@/util/apicall";
 import CONFIG from "@/config/configuration";
 import PolicyPageLayout from "@/components/policyPageLayout";
@@ -31,6 +32,7 @@ function ContactUs() {
       setIsLoading(true);
       const response = await POST(API.ENQUIRY_CREATE, values);
       if (response.status) {
+        trackContact("contact_us");
         notificationApi.success({ message: "Successfully Submitted" });
         form.resetFields();
       } else {

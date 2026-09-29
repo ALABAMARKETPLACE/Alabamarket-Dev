@@ -18,6 +18,8 @@ import CONFIG from "@/config/configuration";
 import LayoutContent from "@/components/LayoutContent";
 import ChatBot from "@/components/chatbot/ChatBot";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import MetaPixelRouteTracker from "@/components/analytics/MetaPixelRouteTracker";
+import { META_PIXEL_ID } from "@/utils/metaPixel";
 
 export const metadata: Metadata = {
   title: CONFIG.NAME,
@@ -90,7 +92,7 @@ n.queue=[];t=b.createElement(e);t.async=!0;
 t.src=v;s=b.getElementsByTagName(e)[0];
 s.parentNode.insertBefore(t,s)}(window,document,'script',
 'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','899498256163552');
+fbq('init','${META_PIXEL_ID}');
 fbq('track','PageView');}`,
           }}
         />
@@ -104,7 +106,17 @@ fbq('track','PageView');}`,
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        {/* Meta Pixel noscript — production only (JS guard above prevents fbq load on dev) */}
+        {/* Meta Pixel noscript fallback — Meta's setup check looks for this tag */}
+        <noscript>
+          {/* eslint-disable-next-line @next/next/no-img-element -- a 1x1 tracking beacon, not content */}
+          <img
+            height="1"
+            width="1"
+            style={{ display: "none" }}
+            alt=""
+            src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+          />
+        </noscript>
         <AuthProvider>
           <ReactQueryProvider>
             <AntdRegistry>
@@ -119,6 +131,8 @@ fbq('track','PageView');}`,
                           <Footer />
                           {/* <WhatsAppChatTab /> */}
                           <ChatBot />
+                          {/* Fires PageView on client-side route changes */}
+                          <MetaPixelRouteTracker />
                         </div>
                       </ErrorBoundary>
                     </LayoutContent>
