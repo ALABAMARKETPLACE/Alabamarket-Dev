@@ -56,6 +56,20 @@ function EmptyState({ query }: { query: string }) {
   );
 }
 
+/**
+ * `multi` search returns one row per store with the matches nested under
+ * `productList`; `single` search returns products directly. Analytics always
+ * wants the products, so flatten whichever shape came back.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const flattenSearchProducts = (rows: any): any[] => {
+  if (!Array.isArray(rows)) return [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return rows.flatMap((row: any) =>
+    Array.isArray(row?.productList) ? row.productList : [row],
+  );
+};
+
 function Page() {
   const [product, setProduct] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -137,7 +151,7 @@ function Page() {
             lastTrackedSearch.current = term;
             trackSearch(
               term,
-              (response?.data ?? [])
+              flattenSearchProducts(response?.data)
                 .slice(0, 10)
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 .map((item: any) => formatGAItem(item)),
