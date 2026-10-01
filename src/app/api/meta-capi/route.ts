@@ -25,7 +25,7 @@ const GRAPH_API_VERSION = "v21.0";
 
 const ACCESS_TOKEN = process.env.META_CAPI_ACCESS_TOKEN;
 const PIXEL_ID =
-  process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID || "2050037755879694";
+  process.env.META_PIXEL_ID || process.env.NEXT_PUBLIC_META_PIXEL_ID || "2200490810890736";
 /** Set while validating in Events Manager → Test events; leave unset in production. */
 const TEST_EVENT_CODE = process.env.META_CAPI_TEST_EVENT_CODE;
 
