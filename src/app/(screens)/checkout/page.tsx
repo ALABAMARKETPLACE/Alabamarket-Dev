@@ -236,11 +236,24 @@ function Checkout() {
 
       // The gateway takes the shopper off-site, so the basket is gone by the
       // time we land on /checkoutsuccess. Stash what Purchase needs now.
+      // A signed-in shopper is identified from the session server-side, so only
+      // guests need their details carried along for Conversions API matching.
+      const guestForMatching = isAuthenticated ? undefined : getGuestInfo();
       stashPendingPurchase(
         buildAnalyticsItems(),
         Number(grand_total ?? 0),
         Settings?.currency,
         Number(delivery_charge ?? 0),
+        0,
+        guestForMatching
+          ? {
+              email: guestForMatching.email,
+              phone: guestForMatching.phone,
+              firstName: guestForMatching.first_name,
+              lastName: guestForMatching.last_name,
+              countryCode: guestForMatching.country_code,
+            }
+          : undefined,
       );
 
       // ── AUTHENTICATED FLOW ──
