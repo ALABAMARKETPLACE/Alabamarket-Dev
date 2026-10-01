@@ -15,6 +15,7 @@ import {
   pixelSubmitApplication,
   pixelViewContent,
   getContentId,
+  type CapiUserData,
   type PixelContent,
 } from "./metaPixel";
 
@@ -196,6 +197,7 @@ export const trackPurchase = (
   shipping = 0,
   tax = 0,
   eventId?: string,
+  userData?: CapiUserData,
 ) => {
   trackEvent("purchase", {
     transaction_id: transactionId,
@@ -209,6 +211,7 @@ export const trackPurchase = (
   pixelPurchase(toPixelContents(items), value, currency, {
     orderId: transactionId,
     eventId,
+    userData,
   });
 };
 
@@ -229,9 +232,9 @@ export const trackSignUp = (method = "email") => {
 };
 
 /** Contact / product-enquiry form submitted. */
-export const trackContact = (source: string) => {
+export const trackContact = (source: string, userData?: CapiUserData) => {
   trackEvent("generate_lead", { source });
-  pixelContact(source);
+  pixelContact(source, userData);
 };
 
 /* ────────────────────────────────────────────────────────────────────────── */
@@ -252,6 +255,8 @@ type PendingPurchase = {
   currency: string;
   shipping: number;
   tax: number;
+  /** Guest checkout only — a signed-in shopper is identified from the session. */
+  userData?: CapiUserData;
 };
 
 export const stashPendingPurchase = (
@@ -260,6 +265,7 @@ export const stashPendingPurchase = (
   currency = DEFAULT_CURRENCY,
   shipping = 0,
   tax = 0,
+  userData?: CapiUserData,
 ) => {
   if (typeof window === "undefined") return;
   try {
@@ -270,6 +276,7 @@ export const stashPendingPurchase = (
       currency,
       shipping: Number(shipping) || 0,
       tax: Number(tax) || 0,
+      userData,
     };
     localStorage.setItem(PENDING_PURCHASE_KEY, JSON.stringify(pending));
   } catch {
@@ -316,6 +323,7 @@ export const flushPendingPurchase = (
       pending.shipping,
       pending.tax,
       pending.eventId,
+      pending.userData,
     );
     return;
   }

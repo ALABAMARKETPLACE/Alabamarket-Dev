@@ -227,7 +227,11 @@ function Description(props: Props) {
         storeName: props?.data?.storeDetails?.store_name ?? "",
       });
       if (response?.status) {
-        trackContact("product_enquiry");
+        trackContact("product_enquiry", {
+          email: values?.email,
+          phone: values?.phone,
+          firstName: values?.name,
+        });
         api.success({
           message: "Message submitted successfully",
           description: "We'll get back to you within 24 hours.",

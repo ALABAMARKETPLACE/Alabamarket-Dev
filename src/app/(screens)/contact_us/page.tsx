@@ -32,7 +32,11 @@ function ContactUs() {
       setIsLoading(true);
       const response = await POST(API.ENQUIRY_CREATE, values);
       if (response.status) {
-        trackContact("contact_us");
+        trackContact("contact_us", {
+          email: values?.email,
+          phone: values?.phone,
+          firstName: values?.name,
+        });
         notificationApi.success({ message: "Successfully Submitted" });
         form.resetFields();
       } else {

@@ -13,7 +13,7 @@
  */
 
 export const META_PIXEL_ID =
-  process.env.NEXT_PUBLIC_META_PIXEL_ID || "899498256163552";
+  process.env.NEXT_PUBLIC_META_PIXEL_ID || "2050037755879694";
 
 export const DEFAULT_CURRENCY = "NGN";
 
@@ -204,6 +204,81 @@ const totalItems = (contents: PixelContent[]): number =>
   contents.reduce((sum, content) => sum + (content.quantity ?? 1), 0);
 
 /* ────────────────────────────────────────────────────────────────────────── */
+/* Conversions API                                                            */
+/* ────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Identifiers for a shopper the server cannot look up itself (guest checkout).
+ * Raw values go to OUR endpoint only — it hashes them before they reach Meta.
+ * For signed-in shoppers this is unnecessary: the route reads the session.
+ */
+export type CapiUserData = {
+  email?: string;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  countryCode?: string;
+};
+
+const CAPI_ENDPOINT = "/api/meta-capi";
+
+/**
+ * Mirror an event to the Conversions API. Browser-side pixel calls are lost to
+ * ad blockers and ITP; the server-side copy is not. Meta collapses the two using
+ * (event_name, event_id), so both halves must carry the same `eventId`.
+ *
+ * Fire-and-forget: analytics must never block or break a user flow.
+ */
+export const sendCapiEvent = (
+  event: MetaStandardEvent,
+  params: PixelParams | undefined,
+  eventId: string,
+  userData?: CapiUserData,
+): void => {
+  if (typeof window === "undefined") return;
+
+  try {
+    const body = JSON.stringify({
+      eventName: event,
+      eventId,
+      eventSourceUrl: window.location.href,
+      customData: clean(params) ?? {},
+      userData,
+    });
+
+    // `keepalive` lets the request outlive the page — Purchase fires right
+    // before a redirect, and InitiateCheckout right before leaving for the
+    // payment gateway.
+    void fetch(CAPI_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+      credentials: "same-origin",
+    }).catch(() => {
+      /* offline or blocked — the browser pixel is the fallback */
+    });
+  } catch {
+    /* never let analytics break a user flow */
+  }
+};
+
+/**
+ * Fire an event through both channels under one event ID so Meta deduplicates
+ * them. This is the function every event helper below goes through.
+ */
+export const dispatchMetaEvent = (
+  event: MetaStandardEvent,
+  params?: PixelParams,
+  options: { eventId?: string; userData?: CapiUserData } = {},
+): string => {
+  const eventId = options.eventId || newEventId();
+  trackPixelEvent(event, params, eventId);
+  sendCapiEvent(event, params, eventId, options.userData);
+  return eventId;
+};
+
+/* ────────────────────────────────────────────────────────────────────────── */
 /* Standard events                                                            */
 /* ────────────────────────────────────────────────────────────────────────── */
 
@@ -214,7 +289,7 @@ export const pixelViewContent = (
   content: PixelContent,
   meta: { name?: string; category?: string; currency?: string } = {},
 ) =>
-  trackPixelEvent("ViewContent", {
+  dispatchMetaEvent("ViewContent", {
     content_type: "product",
     content_ids: [content.id],
     contents: [content],
@@ -229,7 +304,7 @@ export const pixelSearch = (
   contents: PixelContent[] = [],
   currency = DEFAULT_CURRENCY,
 ) =>
-  trackPixelEvent("Search", {
+  dispatchMetaEvent("Search", {
     search_string: searchString,
     content_type: "product",
     content_ids: contentIdsOf(contents),
@@ -241,7 +316,7 @@ export const pixelAddToCart = (
   content: PixelContent,
   meta: { name?: string; category?: string; currency?: string } = {},
 ) =>
-  trackPixelEvent("AddToCart", {
+  dispatchMetaEvent("AddToCart", {
     content_type: "product",
     content_ids: [content.id],
     contents: [content],
@@ -255,7 +330,7 @@ export const pixelAddToWishlist = (
   content: PixelContent,
   meta: { name?: string; category?: string; currency?: string } = {},
 ) =>
-  trackPixelEvent("AddToWishlist", {
+  dispatchMetaEvent("AddToWishlist", {
     content_type: "product",
     content_ids: [content.id],
     contents: [content],
@@ -270,7 +345,7 @@ export const pixelInitiateCheckout = (
   value: number,
   currency = DEFAULT_CURRENCY,
 ) =>
-  trackPixelEvent("InitiateCheckout", {
+  dispatchMetaEvent("InitiateCheckout", {
     content_type: "product",
     content_ids: contentIdsOf(contents),
     contents,
@@ -285,7 +360,7 @@ export const pixelAddPaymentInfo = (
   currency = DEFAULT_CURRENCY,
   paymentProvider?: string,
 ) =>
-  trackPixelEvent("AddPaymentInfo", {
+  dispatchMetaEvent("AddPaymentInfo", {
     content_type: "product",
     content_ids: contentIdsOf(contents),
     contents,
@@ -299,9 +374,9 @@ export const pixelPurchase = (
   contents: PixelContent[],
   value: number,
   currency = DEFAULT_CURRENCY,
-  extra: { orderId?: string; eventId?: string } = {},
+  extra: { orderId?: string; eventId?: string; userData?: CapiUserData } = {},
 ) =>
-  trackPixelEvent(
+  dispatchMetaEvent(
     "Purchase",
     {
       content_type: "product",
@@ -312,14 +387,14 @@ export const pixelPurchase = (
       value: money(value) ?? 0,
       order_id: extra.orderId,
     },
-    extra.eventId || newEventId(),
+    { eventId: extra.eventId, userData: extra.userData },
   );
 
 export const pixelSubmitApplication = (applicationType: string) =>
-  trackPixelEvent("SubmitApplication", { content_name: applicationType });
+  dispatchMetaEvent("SubmitApplication", { content_name: applicationType });
 
 export const pixelCompleteRegistration = (method = "email") =>
-  trackPixelEvent("CompleteRegistration", { content_name: method, status: true });
+  dispatchMetaEvent("CompleteRegistration", { content_name: method, status: true });
 
-export const pixelContact = (source: string) =>
-  trackPixelEvent("Contact", { content_name: source });
+export const pixelContact = (source: string, userData?: CapiUserData) =>
+  dispatchMetaEvent("Contact", { content_name: source }, { userData });
